@@ -3,6 +3,7 @@ const {description, base} = require('../../package');
 const dbSchemaSidebar = require('./sidebars/db-schema');
 const globalFunctionsSidebar = require('./sidebars/global-functions');
 const hooksSidebar = require('./sidebars/hooks');
+const helpersSidebar = require('./sidebars/helpers');
 
 module.exports = {
     /**
@@ -146,6 +147,7 @@ module.exports = {
             '/database/': dbSchemaSidebar,
             '/global-functions/': globalFunctionsSidebar,
             '/hooks/': hooksSidebar,
+            '/helpers/': helpersSidebar,
 
         }
     },
