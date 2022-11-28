@@ -1,0 +1,24 @@
+{
+  "name": "fluentcrm-developers-docs",
+  "version": "1.0.0",
+  "description": "Resources and tutorials for FluentCRM developers",
+  "main": "index.js",
+  "base": "/",
+  "authors": {
+    "name": "Shahjahn Jewel",
+    "email": "jewel@wpmanageninja.com"
+  },
+  "scripts": {
+    "dev": "vuepress dev src",
+    "build": "vuepress build src"
+  },
+  "devDependencies": {
+    "@vuepress/plugin-pwa": "^1.9.7",
+    "vuepress": "^1.9.7",
+    "vuepress-plugin-clean-urls": "^1.1.2",
+    "vuepress-plugin-seo": "^0.2.0"
+  },
+  "dependencies": {
+    "markdown-it-include": "^2.0.0"
+  }
+}
