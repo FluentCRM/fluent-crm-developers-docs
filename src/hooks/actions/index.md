@@ -11,117 +11,177 @@ Action hooks are used to run custom code when certain events occur.
 
 ## Available of Action Hooks in FluentCRM
 
-<div class="listed_internals">
 
 ### Contact / Subscriber Specific
+<hr />
 
-* do_action('`fluentcrm_contact_created`', $subscriber);
-* do_action('`fluentcrm_contact_updated`', $subscriber);
-* do_action( '`fluentcrm_contact_added_to_tags`', $attachedTagIds, $subscriber)
-* do_action( '`fluentcrm_contact_added_to_lists`', $attachedListIds, $subscriber)
-* do_action( '`fluentcrm_contact_removed_from_tags`', $detachedTagIds, $subscriber)
-* do_action( '`fluentcrm_contact_removed_from_lists`', $detachedListIds, $subscriber)
-* do_action('`fluentcrm_subscriber_status_to_{$new_status}`', $subscriber, $oldStatus); // status values: subscribed |
-  unsubscribed | pending | bounced | complained
-* do_action('`fluentcrm_subscriber_unsubscribed_from_web_ui`', $subscriber, $postedData);
-* do_action('`fluentcrm_subscribed_confirmed_via_double_optin`', $subscriber);
-* do_action('`fluentcrm_subscriber_contact_type_to_{$new_type}`', $subscriber, $oldType); // type values: lead /
-  customer
-
-#### Data Types Explanations
-
-| Variable         | Data Type                                                                        | Comment     |
-|------------------|----------------------------------------------------------------------------------|-------------|
-| $subscriber      | <a href="/database/models/subscriber/">FluentCrm\App\Models\Subscriber Model</a> |             |
-| $attachedTagIds  | array of tag ids                                                                 | EX: [1,2,3] |
-| $attachedListIds | array of lists ids                                                               | EX: [1,2,3] |
-| $detachedTagIds  | array of tag ids                                                                 | EX: [1,2,3] |
-| $detachedListIds | array of list ids                                                                | EX: [1,2,3] |
-| $postedData      | array of posted data from web UI                                                 | |
-| other variables  | all other mentioned variables are string                                         | |
-
-### Fluent Forms - Contact Specific
-
-* do_action('`fluentcrm_contact_added_by_fluentform`', $subscriber, $entry, $form, $feed);
-* do_action('`fluentcrm_contact_updated_by_fluentform`', $subscriber, $entry, $form, $feed);
-
+!!!include(./src/hooks/actions/_contact_hooks.md)!!!
 
 ### Contact Activity Specifics
+<hr />
 
-* do_action('`fluencrm_benchmark_link_clicked`', $benchmarkActionId, $currentContact);
-* do_action('`fluentcrm_smartlink_clicked`', $smartLinkSlug);
-* do_action('`fluentcrm_email_url_clicked`', $campaignEmail, $urlData);
-* do_action('`fluentform_track_activity_by_subscriber`', $subscriberOrSubscriberId);
-* do_action('`fluent_crm/pref_form_self_contact_updated`', $subscriber, $postedData);
+!!!include(./src/hooks/actions/_contact_activity_hooks.md)!!!
+
 
 ### List Specifics
+<hr />
 
-* do_action('`fluentcrm_list_created`', $listId);
-* do_action('`fluentcrm_list_updated`', $listId);
-* do_action('`fc_list_deleted`', $listId);
+!!!include(./src/hooks/actions/_list_hooks.md)!!!
 
 ### Tag Specifics
+<hr />
 
-* do_action('`fluentcrm_tag_created`', $tagId);
-* do_action('`fluentcrm_tag_updated`', $tagId);
-* do_action('`fc_tag_deleted`', $tagId);
+!!!include(./src/hooks/actions/_tag_hooks.md)!!!
 
 ### Email Template Specific
+<hr />
 
-* do_action('`fluent_crm/email_template_created`', $templateId, $templateData);
-* do_action('`fluent_crm/email_template_duplicated`', $newTemplateId, $template);
-* do_action('`fluent_crm/email_template_updated`', $templateData, $oldTemplate);
+!!!include(./src/hooks/actions/_template_hooks.md)!!!
+
 
 ### Email Campaign Specific
+<hr />
 
-* do_action('`fluent_crm/campaign_created`', $campaign);
-* do_action('`fluent_crm/campaign_data_updated`', $campaign, $postedData);
-* do_action('`fluentcrm_campaign_deleted`', $campaignId);
-* do_action('`fluent_crm/campaign_duplicated`', $campaign, $oldCampaign);
-* do_action('`fluent_crm/campaign_recipients_query_updated`', $campaign);
-* do_action('`fluent_crm/campaign_scheduled`', $campaign, $scheduleAt);
-* do_action('`fluent_crm/campaign_set_send_now`', $campaign);
-* do_action('`fluent_crm/campaign_processing_start`', $campaign);
+!!!include(./src/hooks/actions/_campaign_hooks.md)!!!
+
 
 ### Automation Funnel Specific
+<hr />
 
-* do_action('`fluent_crm/automation_funnel_start`', $funnel, $subscriber);
-* do_action('`fluent_crm/automation_funnel_completed`', $funnel, $subscriber);
+::: details fluent_crm/automation_funnel_start
+This action runs when a funnel starts for a subscriber
+
+**Parameters**
+- `$funnel` Funnel Model
+- `$subscriber` Subscriber Model
+
+**Usage:**
+```php 
+add_action('fluent_crm/automation_funnel_start', function($funnel, $subscriber) {
+   // Do whatever you want
+}, 10, 2);
+```
+:::
+
+::: details fluent_crm/automation_funnel_completed
+This action runs when a funnel has been completed for a subscriber
+
+**Parameters**
+- `$funnel` Funnel Model
+- `$subscriber` Subscriber Model
+
+**Usage:**
+```php 
+add_action('fluent_crm/automation_funnel_completed', function($funnel, $subscriber) {
+   // Do whatever you want
+}, 10, 2);
+```
+:::
 
 ### Admin App & View Specific
+<hr />
 
-* do_action('`fluent_crm/admin_app`'); // After Main FluentCRM Admin View
+::: details fluent_crm/admin_app
+After Main FluentCRM Admin View
 
-### Email Template Specific
+**Usage:**
+```php 
+add_action('fluent_crm/admin_app', function() {
+   echo 'My Custom Content Here';
+});
+```
+:::
 
-* do_action('`fluentform_email_header`', $designSlug); // $designSlug = classic | plain | raw_classic | simple
+### Email Template Design Specific
+<hr />
+
+::: details fluent_crm/email_header
+If you want to add your own custom CSS for a specific email template or all email template then you can use this hook.
+
+**Parameters**
+- `$designSlug` String - Design Name (classic | plain | raw_classic | simple)
+
+**Usage:**
+```php 
+/*
+* Add Custom CSS for plain design type
+*/
+add_action('fluent_crm/email_header', function($designName) {
+   if($designName == 'plain') {
+    ?>
+    <style>
+      h1 {
+        color: red;
+      }
+    </style>
+    <?php
+   }
+});
+```
+:::
 
 ### Double Optin Confirmation Page Actions
 
-* do_action('`fluentcrm_confirmation_head`', $subscriber); // just after wp_head (between <span><</span>
+* do_action('`fluent_crm/confirmation_head`', $subscriber); // just after wp_head (between <span><</span>
   head> <span><</span>/head>)
-* do_action('`fluentcrm_confirmation_head_footer`', $subscriber); // After footer
+* do_action('`fluent_crm/confirmation_footer`', $subscriber); // After footer
 
 ### Manage Subscriptions Page Actions
 
-* do_action('`fluentcrm_confirmation_head`', $subscriber); // just after wp_head (between <span><</span>
+* do_action('`fluent_crm/manage_subscription_head`', $subscriber); // just after wp_head (between <span><</span>
   head> <span><</span>/head>)
-* do_action('`fluentcrm_confirmation_footer`', $subscriber); // After footer
+* do_action('`fluent_crm/manage_subscription_footer`', $subscriber); // After footer
 
 ### Unsubscribe Page Actions
 
-* do_action('`fluentcrm_unsubscribe_head`', $subscriber, $campaignEmail);
-* do_action('`fluentcrm_before_unsubscribe_form`', $subscriber, $campaignEmail);
-* do_action('`fluentcrm_before_unsubscribe_submit`', $campaignEmail);
-* do_action('`fluentcrm_after_unsubscribe_content`', $subscriber, $campaignEmail)
-* do_action('`fluentcrm_unsubscribe_footer`', $subscriber, $campaignEmail)
+* do_action('`fluent_crm/unsubscribe_head`', $subscriber, $campaignEmail);
+* do_action('`fluent_crm/before_unsubscribe_form`', $subscriber, $campaignEmail);
+* do_action('`fluent_crm/before_unsubscribe_submit`', $campaignEmail);
+* do_action('`fluent_crm/after_unsubscribe_content`', $subscriber, $campaignEmail)
+* do_action('`fluent_crm/unsubscribe_footer`', $subscriber, $campaignEmail)
 
 ### View On Browser Page Actions
 
-* do_action('`fluentcrm_view_on_browser_head`');
-* do_action('`fluentcrm_view_on_browser_after_email_heading`', $email);
-* do_action('`fluentcrm_view_on_browser_before_email_body`');
-* do_action('`fluentcrm_view_on_browser_after_email_body`');
-* do_action('`fluentcrm_view_on_browser_footer`', $email);
+* do_action('`fluent_crm/view_on_browser_head`');
+* do_action('`fluent_crm/view_on_browser_before_heading`', $email);
+* do_action('`fluent_crm/view_on_browser_before_email_body`');
+* do_action('`fluent_crm/view_on_browser_after_email_body`');
+* do_action('`fluent_crm/view_on_browser_footer`', $email);
 
-</div>
+
+### Fluent Forms - Contact Specific
+<hr />
+
+::: details fluent_crm/contact_added_by_fluentform
+This action runs when a contact has been added via Fluent Forms
+
+**Parameters**
+- `$subscriber` Subscriber Model
+- `$entry` Array
+- `$form` Object
+- `$feed` Array
+
+**Usage:**
+```php 
+add_action('fluent_crm/contact_added_by_fluentform', function($subscriber, $entry, $form, $feed) {
+   // Do whatever you want with the $subscriber created by Fluent Forms
+}, 10, 4);
+```
+:::
+
+::: details fluent_crm/contact_updated_by_fluentform
+This action runs when a contact has been updated via Fluent Forms
+
+**Parameters**
+- `$subscriber` Subscriber Model
+- `$entry` Array
+- `$form` Object
+- `$feed` Array
+
+**Usage:**
+```php 
+add_action('fluent_crm/contact_updated_by_fluentform', function($subscriber, $entry, $form, $feed) {
+   // Do whatever you want with the $subscriber updated via Fluent Forms
+}, 10, 4);
+```
+:::

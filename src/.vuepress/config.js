@@ -37,7 +37,6 @@ module.exports = {
         ['meta', {name: 'msapplication-TileImage', content: '/assets/img/icon.svg'}],
         ['meta', {name: 'msapplication-TileColor', content: '#000000'}],
         // Fonts
-        ['link', {rel: 'preconnect', href: 'https://fluentcrm.com', crossorigin: ''}],
         ['link', {rel: 'preconnect', href: 'https://fonts.googleapis.com'}],
         ['link', {rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: ''}],
         ['link', {
@@ -162,6 +161,11 @@ module.exports = {
         toc: true
     },
 
+    extendMarkdown: (md) => {
+        // use more markdown-it plugins!
+        md.use(require('markdown-it-include'))
+    },
+
     /**
      * Apply vue plugins.
      *
@@ -202,10 +206,5 @@ module.exports = {
                 modifiedAt: $page => $page.lastUpdated && new Date($page.lastUpdated),
             }
         ]
-    ],
-
-    extendsMarkdown: (md) => {
-        // use more markdown-it plugins!
-        md.use(require('markdown-it-include'))
-    }
+    ]
 }
