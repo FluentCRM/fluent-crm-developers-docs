@@ -1,23 +1,21 @@
-# Contact API Function
+# List API Function
 
-Contact API Function provides many utility methods that you can use to interact with contact related operations from your custom PHP Snippet or a custom plugin.
+List API Function provides many utility methods that you can use to interact with contact related operations from your custom PHP Snippet or a custom plugin.
 
 ## Initialization
 ```php 
-$contactApi = FluentCrmApi('contacts');
+$listApi = FluentCrmApi('lists');
 ```
-`FluentCrmApi('contacts')` basically returns `FluentCrm\App\Api\Classes\Contacts` class which has different methods for interacting with `Subscriber` Model.
+`FluentCrmApi('lists')` basically returns `FluentCrm\App\Api\Classes\Lists` Model class instance.
 
 ## Methods
 
-### getContact($emailOrContactId)
+### all()
 ```php 
 /*
-* Find a contact by Email or Subscriber ID
-* You can find a contact by email or Subscriber id (SubscriberId is not the user ID).
-* @return: null or FluentCrm\App\Models\Subscriber Model
+* The all method returns the underlying array represented by the collection of Lists
 */
-$contact = $contactApi->getContact($emailOrContactId);
+$allLists = $listApi->all();
 ```
 
 ### getContactByUserRef($userId)
