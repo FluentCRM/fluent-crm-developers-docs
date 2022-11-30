@@ -12,7 +12,8 @@ module.exports = [
     collapsable: false,
     sidebarDepth: -1,
     children: [
-      'contact-api-function'
+      'contact-api-function',
+      'list-api-function'
     ]
   }
 ];
