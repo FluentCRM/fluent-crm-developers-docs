@@ -121,33 +121,25 @@ add_action('fluent_crm/email_header', function($designName) {
 :::
 
 ### Double Optin Confirmation Page Actions
+<hr />
 
-* do_action('`fluent_crm/confirmation_head`', $subscriber); // just after wp_head (between <span><</span>
-  head> <span><</span>/head>)
-* do_action('`fluent_crm/confirmation_footer`', $subscriber); // After footer
+!!!include(./src/hooks/actions/_double_optin_page.md)!!!
 
 ### Manage Subscriptions Page Actions
+<hr />
 
-* do_action('`fluent_crm/manage_subscription_head`', $subscriber); // just after wp_head (between <span><</span>
-  head> <span><</span>/head>)
-* do_action('`fluent_crm/manage_subscription_footer`', $subscriber); // After footer
+!!!include(./src/hooks/actions/_manage_subscription_page.md)!!!
 
 ### Unsubscribe Page Actions
+<hr />
 
-* do_action('`fluent_crm/unsubscribe_head`', $subscriber, $campaignEmail);
-* do_action('`fluent_crm/before_unsubscribe_form`', $subscriber, $campaignEmail);
-* do_action('`fluent_crm/before_unsubscribe_submit`', $campaignEmail);
-* do_action('`fluent_crm/after_unsubscribe_content`', $subscriber, $campaignEmail)
-* do_action('`fluent_crm/unsubscribe_footer`', $subscriber, $campaignEmail)
+!!!include(./src/hooks/actions/_unsubscribe_page_actions.md)!!!
 
 ### View On Browser Page Actions
 
-* do_action('`fluent_crm/view_on_browser_head`');
-* do_action('`fluent_crm/view_on_browser_before_heading`', $email);
-* do_action('`fluent_crm/view_on_browser_before_email_body`');
-* do_action('`fluent_crm/view_on_browser_after_email_body`');
-* do_action('`fluent_crm/view_on_browser_footer`', $email);
+<hr />
 
+!!!include(./src/hooks/actions/_view_on_browser_page_actions.md)!!!
 
 ### Fluent Forms - Contact Specific
 <hr />
