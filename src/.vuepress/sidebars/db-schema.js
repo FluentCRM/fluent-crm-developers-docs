@@ -21,8 +21,12 @@ module.exports = [
         children: [
             [
                 '/database/models/subscriber',
-                'Subscriber Model'
-            ]
+                'Subscriber Model',
+            ],
+            [
+                '/database/models/funnel',
+                'Funnel Model',
+            ],
         ]
     }
 ];
