@@ -156,3 +156,19 @@ add_action('fluentcrm_subscriber_contact_type_to_customer', function($subscriber
 }, 10, 2);
 ```
 :::
+
+::: details fluent_crm/contact_email_changed
+This action hook fires when a subscriber's has been changed to a new email address
+
+
+**Parameters**
+- `$subscriber` Subscriber Model
+- `$oldEmail` string - Old Email Address
+
+**Usage:**
+```php 
+add_action('fluent_crm/contact_email_changed', function($subscriber, $oldEmail) {
+   // the conact's email changed. You can do run your code here
+}, 10, 2);
+```
+:::
