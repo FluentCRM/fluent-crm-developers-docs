@@ -334,12 +334,12 @@ $subscriberTags = $subscriber->tags;
 // For Filtering by tags relationship
 
 // Get Subscribers which has tag ids: 1/2/3
-$subscribers = FluentCrm\App\Models\Subscriber::whereHas('tags', fcuntion($query) {
+$subscribers = FluentCrm\App\Models\Subscriber::whereHas('tags', function($query) {
     $query->whereIn('id', [1,2,3]);
 })->get();
 
 // Get Subscribers which does not have tag ids: 1/2/3
-$subscribers = FluentCrm\App\Models\Subscriber::whereDoesntHave('tags', fcuntion($query) {
+$subscribers = FluentCrm\App\Models\Subscriber::whereDoesntHave('tags', function($query) {
     $query->whereIn('id', [1,2,3]);
 })->get();
 
@@ -358,12 +358,12 @@ $subscriberLists = $subscriber->lists;
 // For Filtering by tags relationship
 
 // Get Subscribers which has list ids: 1/2/3
-$subscribers = FluentCrm\App\Models\Subscriber::whereHas('lists', fcuntion($query) {
+$subscribers = FluentCrm\App\Models\Subscriber::whereHas('lists', function($query) {
     $query->whereIn('id', [1,2,3]);
 })->get();
 
 // Get Subscribers which does not have list ids: 1/2/3
-$subscribers = FluentCrm\App\Models\Subscriber::whereDoesntHave('lists', fcuntion($query) {
+$subscribers = FluentCrm\App\Models\Subscriber::whereDoesntHave('lists', function($query) {
     $query->whereIn('id', [1,2,3]);
 })->get();
 ```
