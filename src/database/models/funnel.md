@@ -123,36 +123,38 @@ Get all the actions of Funnel Sequence related to this funnel
 ```php 
 // Accessing actions
 $funnelActions = $funnel->actions;
+```
 
-// For Filtering by tags relationship
+// You can also limit your results based on the existence of a relationship. 
+For example, if you want to get all the funnels that have ids 1, 2 and 3 in the actions, you can do the following:
 
-// Get Subscribers which has tag ids: 1/2/3
-$subscribers = FluentCrm\App\Models\Subscriber::whereHas('tags', fcuntion($query) {
-    $query->whereIn('id', [1,2,3]);
+```php
+// Get Funnels which have squence ids: 1/2
+$funnels = FluentCrm\App\Models\Funnel::whereHas('actions', function($query) {
+    $query->whereIn('id', [1,2]);
 })->get();
-
-
 ```
 
 ### subscribers
-Access all the associated lists of a model
-
-- return FluentCrm\App\Models\FunnelSubscriber Model Collections
+Similar to actions, get all the funnel subscribers related to funnel like following:
+- return `FluentCrm\App\Models\FunnelSubscriber` Model Collections
 
 #### Example:
 ```php 
-// Accessing subscribers
+// returns all the funnel subscribers related to funnel
 $subscribersOfFunnel = $funnel->subscribers;
 
-// For Filtering by tags relationship
+// Get funnels filtered by funnel subscribers
 
 // Get Subscribers which has list ids: 1/2/3
-$subscribers = FluentCrm\App\Models\Subscriber::whereHas('lists', fcuntion($query) {
+$subscribers = FluentCrm\App\Models\Funnel::whereHas('subscribers', function($query) {
     $query->whereIn('id', [1,2,3]);
 })->get();
-
+```
+You can also use `whereDoseNotHave` to get the funnels that do not have the given relationship.
+```php
 // Get Subscribers which does not have list ids: 1/2/3
-$subscribers = FluentCrm\App\Models\Subscriber::whereDoesntHave('lists', fcuntion($query) {
+$subscribers = FluentCrm\App\Models\Funnel::whereDoesntHave('subscribers', function($query) {
     $query->whereIn('id', [1,2,3]);
 })->get();
 ```
