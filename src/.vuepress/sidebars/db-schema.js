@@ -20,6 +20,10 @@ module.exports = [
         sidebarDepth: -1,
         children: [
             [
+                '/database/models/campaign',
+                'Campaign Model'
+            ],
+            [
                 '/database/models/subscriber',
                 'Subscriber Model'
             ]
