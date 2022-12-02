@@ -73,3 +73,51 @@ Please check <a href="/database/models/">Model Basic</a> for Common methods.
 
 ## Methods
 Along with Global Model methods, this model has few helper methods.
+
+### getFields()
+Get all fields (custom_fields & other fields) for webhook setup 
+
+- Parameters
+  - none
+- Returns `array`
+
+#### Usage
+```php 
+$fields = $webhook->getFields();
+```
+
+### getSchema()
+Get webhook schema which contains name, lists, tags, url & status
+
+- Parameters
+  - none 
+- Returns `array`
+
+#### Usage
+```php 
+$schema = $webhook->getSchema();
+```
+
+### store($data)
+Save webhook data 
+
+- Parameters
+  - $data `array`
+- Returns FluentCrm\App\Models\Webhook
+
+#### Usage
+```php 
+$webhook = $webhook->store($data);
+```
+
+### saveChanges($data)
+Update webhook data
+
+- Parameters
+  - $data `array`
+- Returns FluentCrm\App\Models\Webhook
+
+#### Usage
+```php 
+$webhook = $webhook->saveChanges($data);
+```
