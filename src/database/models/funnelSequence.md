@@ -1,11 +1,11 @@
-# Funnel Model
+# FunnelSequence Model
 
-| DB Table Name | {wp_db_prefix}_fc_funnels                                                |
-|---------------|--------------------------------------------------------------------------|
-| Schema        | <a :href="$withBase('/database/#fc-subscribers-table')">Check Schema</a> |
-| Source File   | fluent-crm/app/Models/FunnelSequence.php                                 |
-| Name Space    | FluentCrm\App\Models                                                     |
-| Class         | FluentCrm\App\Models\FunnelSequence                                      |
+| DB Table Name | {wp_db_prefix}_fc_funnel_sequences                                      |
+|---------------|-------------------------------------------------------------------------|
+| Schema        | <a :href="$withBase('/database/#fc_funnel_sequences')">Check Schema</a> |
+| Source File   | fluent-crm/app/Models/FunnelSequence.php                                |
+| Name Space    | FluentCrm\App\Models                                                    |
+| Class         | FluentCrm\App\Models\FunnelSequence                                     |
 
 ## Attributes
 <table>
@@ -151,7 +151,7 @@ This model has the following relationship that you can use
 
 ### funnel
 Get all the actions of Funnel Sequence related to this funnel
-- returns `FluentCrm\App\Models\Funnel` Model Collection
+- returns `FluentCrm\App\Models\Funnel` Model
 #### Example:
 ```php 
 // Accessing the relationship

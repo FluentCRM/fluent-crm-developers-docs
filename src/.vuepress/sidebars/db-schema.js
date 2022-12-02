@@ -31,10 +31,10 @@ module.exports = [
                 '/database/models/funnel',
                 'Funnel Model',
             ],
-            // [
-            //     '/database/models/funnelSubscriber',
-            //     'FunnelSubscriber Model',
-            // ],
+            [
+                '/database/models/funnelSubscriber',
+                'FunnelSubscriber Model',
+            ],
             [
                 '/database/models/funnelSequence',
                 'FunnelSequence Model',

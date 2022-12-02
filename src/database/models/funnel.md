@@ -1,11 +1,11 @@
 # Funnel Model
 
-| DB Table Name | {wp_db_prefix}_fc_funnels                                                |
-|---------------|--------------------------------------------------------------------------|
-| Schema        | <a :href="$withBase('/database/#fc-subscribers-table')">Check Schema</a> |
-| Source File   | fluent-crm/app/Models/Funnel.php                                         |
-| Name Space    | FluentCrm\App\Models                                                     |
-| Class         | FluentCrm\App\Models\Funnel                                              |
+| DB Table Name | {wp_db_prefix}_fc_funnels                                      |
+|---------------|----------------------------------------------------------------|
+| Schema        | <a :href="$withBase('/database/#fc-funnels')">Check Schema</a> |
+| Source File   | fluent-crm/app/Models/Funnel.php                               |
+| Name Space    | FluentCrm\App\Models                                           |
+| Class         | FluentCrm\App\Models\Funnel                                    |
 
 ## Attributes
 <table>
