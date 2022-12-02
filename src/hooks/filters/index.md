@@ -12,3 +12,33 @@ Filter hooks are used to return modified values for certain parameters, based on
 
 ## Available Filter Hooks
 
+### General Filters
+<hr />
+
+!!!include(./src/hooks/filters/_general_filters.md)!!!
+
+### Frontend Filters
+<hr />
+
+!!!include(./src/hooks/filters/_frontend_filters.md)!!!
+
+### Admin Dashboard Filters
+<hr />
+
+!!!include(./src/hooks/filters/_dashboard_filters.md)!!!
+
+------
+
+### Other Useful Filters
+<hr />
+
+!!!include(./src/hooks/filters/_other_filters.md)!!!
+
+------
+
+
+### Webhook Related Filters
+<hr />
+
+
+!!!include(./src/hooks/filters/_webhook_filters.md)!!!

@@ -20,17 +20,38 @@ module.exports = [
         sidebarDepth: -1,
         children: [
             [
-                '/database/models/campaign',
-                'Campaign Model'
-            ],
-            [
                 '/database/models/subscriber',
                 'Subscriber Model'
             ],
             [
+                '/database/models/campaign',
+                'Campaign Model'
+            ],
+            [
+                '/database/models/campaign-email',
+                'Campaign Email Model'
+            ],
+           
+            [
                 '/database/models/campaign-url-matrix',
                 'Campaign Url Matrix Model'
-            ]
+            ],
+            [
+                '/database/models/funnel',
+                'Funnel Model',
+            ],
+            [
+                '/database/models/funnelSubscriber',
+                'FunnelSubscriber Model',
+            ],
+            [
+                '/database/models/funnelSequence',
+                'FunnelSequence Model',
+            ],
+            [
+                '/database/models/funnelMetric',
+                'FunnelMetric Model',
+            ],
         ]
     }
 ];
