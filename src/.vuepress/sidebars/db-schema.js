@@ -31,10 +31,13 @@ module.exports = [
                 '/database/models/campaign-email',
                 'Campaign Email Model'
             ],
-           
             [
                 '/database/models/campaign-url-matrix',
                 'Campaign Url Matrix Model'
+            ],
+            [
+                '/database/models/custom-contact-field',
+                'Custom Contact Field Model'
             ],
             [
                 '/database/models/funnel',
