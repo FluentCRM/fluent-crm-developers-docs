@@ -26,6 +26,10 @@ module.exports = [
             [
                 '/database/models/subscriber',
                 'Subscriber Model'
+            ],
+            [
+                '/database/models/campaign-url-matrix',
+                'Campaign Url Matrix Model'
             ]
         ]
     }
