@@ -60,6 +60,10 @@ module.exports = [
                 'Meta Model',
             ],
             [
+                '/database/models/user',
+                'User Model',
+            ],
+            [
                 '/database/models/webhook',
                 'Webhook Model',
             ],
