@@ -20,6 +20,10 @@ module.exports = [
         sidebarDepth: -1,
         children: [
             [
+                '/database/models/subscriber',
+                'Subscriber Model'
+            ],
+            [
                 '/database/models/campaign',
                 'Campaign Model'
             ],
@@ -27,9 +31,10 @@ module.exports = [
                 '/database/models/campaign-email',
                 'Campaign Email Model'
             ],
+           
             [
-                '/database/models/subscriber',
-                'Subscriber Model',
+                '/database/models/campaign-url-matrix',
+                'Campaign Url Matrix Model'
             ],
             [
                 '/database/models/funnel',
