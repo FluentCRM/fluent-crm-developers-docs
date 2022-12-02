@@ -55,6 +55,10 @@ module.exports = [
                 '/database/models/funnelMetric',
                 'FunnelMetric Model',
             ],
+            [
+                '/database/models/webhook',
+                'Webhook Model',
+            ],
         ]
     }
 ];
