@@ -56,8 +56,19 @@
 </table>
 
 ## Usage
-
 Please check <a href="/database/models/">Model Basic</a> for Common methods.
+
+
+### Accessing Attributes
+
+```php 
+
+$meta = FluentCrm\App\Models\Meta::find(1);
+
+$meta->id; // returns id
+$meta->value; // returns meta value
+.......
+```
 
 
 ## Fillable Attributes

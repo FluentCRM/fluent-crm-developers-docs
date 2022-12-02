@@ -56,8 +56,19 @@
 </table>
 
 ## Usage
-
 Please check <a href="/database/models/">Model Basic</a> for Common methods.
+
+
+### Accessing Attributes
+
+```php 
+
+$customContactField = FluentCrm\App\Models\CustomContactField::find(1);
+
+$customContactField->id; // returns id
+$customContactField->value; // returns Contact custom fields
+.......
+```
 
 
 ## Fillable Attributes

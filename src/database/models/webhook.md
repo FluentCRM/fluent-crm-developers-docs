@@ -56,8 +56,19 @@
 </table>
 
 ## Usage
-
 Please check <a href="/database/models/">Model Basic</a> for Common methods.
+
+
+### Accessing Attributes
+
+```php 
+
+$webhook = FluentCrm\App\Models\Webhook::find(1);
+
+$webhook->id; // returns id
+$webhook->value; // returns webhook value
+.......
+```
 
 
 ## Fillable Attributes
