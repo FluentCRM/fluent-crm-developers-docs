@@ -24,6 +24,10 @@ module.exports = [
                 'Campaign Model'
             ],
             [
+                '/database/models/campaign-email',
+                'Campaign Email Model'
+            ],
+            [
                 '/database/models/subscriber',
                 'Subscriber Model',
             ],

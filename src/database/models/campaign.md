@@ -151,7 +151,6 @@
 </table>
 
 ## Usage
-
 Please check <a href="/database/models/">Model Basic</a> for Common methods.
 
 ### Accessing Attributes
@@ -160,51 +159,18 @@ Please check <a href="/database/models/">Model Basic</a> for Common methods.
 
 $campaign = FluentCrm\App\Models\Campaign::find(1);
 
-$subsctiber->id; // returns id
+$campaign->id; // returns id
 $campaign->email; // returns email
 .......
-```
-
-## Fillable Attributes
-
-```php
-
-'hash',
-'prefix',
-'first_name',
-'last_name',
-'user_id',
-'email',
-'status', // pending | subscribed | bounced | unsubscribed; Default: campaign
-'contact_type', // lead | customer
-'address_line_1',
-'address_line_2',
-'postal_code',
-'city',
-'state',
-'country',
-'phone',
-'timezone',
-'date_of_birth',
-'source',
-'life_time_value',
-'last_activity',
-'total_points',
-'latitude',
-'longitude',
-'ip',
-'created_at',
-'updated_at',
-'avatar'
 ```
 
 ## Scopes
 
 This model has the following scopes that you can use
 
-### ofType()
-
+### ofType($status)
 Filter campaign by status
+
 - Parameters
     - $status - string
 
@@ -216,7 +182,6 @@ $campaigns = FluentCrm\App\Models\Campaign::ofType('published')->get();
 ```
 
 ### archived()
-
 Filter campaign by status
 
 #### Usage:
@@ -304,7 +269,7 @@ $campaignSubjects = $campaign->subjects;
 ## Methods
 Along with Global Model methods, this model has few helper methods.
 
-### subscribeBySegment()
+### subscribeBySegment($settings, $limit, $offset)
 
 Subscribe contacts to a campaign
 
@@ -319,8 +284,7 @@ Subscribe contacts to a campaign
 $response = $campaign->subscribeBySegment($settings, 10, 2);
 ```
 
-### getSubscribersModel
-
+### getSubscribersModel($settings)
 Get Contact's model by campaign settings
 
 - Parameters
@@ -332,8 +296,7 @@ Get Contact's model by campaign settings
 $contactModel = $campaign->getSubscribersModel($settings);
 ```
 
-### getSubscriberIdsBySegmentSettings()
-
+### getSubscriberIdsBySegmentSettings($settings, $limit, $offset)
 Get contact's ids by campaign settings
 
 - Parameters
@@ -347,8 +310,7 @@ Get contact's ids by campaign settings
 $subscriberIds = $campaign->getSubscriberIdsBySegmentSettings($settings, 10, 2);
 ```
 
-### getSubscriberIdsCountBySegmentSettings()
-
+### getSubscriberIdsCountBySegmentSettings($settings, $status)
 Get Unsubscribe reason if contact unsubscribe and provide feedback
 
 - Parameters
@@ -361,8 +323,7 @@ Get Unsubscribe reason if contact unsubscribe and provide feedback
 $total = $campaign->getSubscriberIdsCountBySegmentSettings($settings, 'subscribed');
 ```
 
-### getSubQueryForLisTorTagFilter()
-
+### getSubQueryForLisTorTagFilter($query, $ids, $table, $objectType)
 Get the sub-query by list or tag filtering
 
 - Parameters
@@ -377,8 +338,7 @@ Get the sub-query by list or tag filtering
 $query = $campaign->getSubQueryForLisTorTagFilter($query, [1,2,3], 'tags', 'FluentCrm\App\Models\Tag');
 ```
 
-### getSubscribeIdsByList()
-
+### getSubscribeIdsByList($items, $status, $limit, $offset)
 Get the contact list which has provided lists
 
 - Parameters
@@ -393,8 +353,7 @@ Get the contact list which has provided lists
 $isInTags = $campaign->getSubscribeIdsByList($items, 'subscribed', 20, 2);
 ```
 
-### getSubscribeIdsByListCount()
-
+### getSubscribeIdsByListCount($items, $status, $limit, $offset)
 Get the contact list count which has provided lists
 
 - Parameters
@@ -409,8 +368,7 @@ Get the contact list count which has provided lists
 $total = $campaign->getSubscribeIdsByListCount($items, 'subscribed', 20, 2);
 ```
 
-### getSubscribeIdsByListModel()
-
+### getSubscribeIdsByListModel($items, $status, $limit, $offset)
 Get the contact list by list model
 
 - Parameters
@@ -425,8 +383,7 @@ Get the contact list by list model
 $subscriberIds = $campaign->getSubscribeIdsByListModel($items, 'subscribed', 20, 2);
 ```
 
-### subscribe()
-
+### subscribe($subscriberIds, $emailArgs, $isModel)
 Subscribe contact to campaign 
 
 - Parameters
@@ -440,8 +397,7 @@ Subscribe contact to campaign
 $updatedSubscriberIds = $campaign->subscribe([1,2,5], [], false);
 ```
 
-### unsubscribe()
-
+### unsubscribe($subscriberIds)
 Remove contacts from a Campaign
 
 - Parameters
@@ -453,8 +409,7 @@ Remove contacts from a Campaign
 $result = $campaign->unsubscribe([1,2,3]);
 ```
 
-### guessEmailSubject()
-
+### guessEmailSubject($listIds)
 Guess the subject by probability formula
 
 - Parameters
@@ -466,7 +421,7 @@ Guess the subject by probability formula
 $campaign->guessEmailSubject();
 ```
 
-### getParsedText()
+### getParsedText($text, $subscriber)
 Parse shortcodes of contact's info
 
 - Parameters
@@ -479,8 +434,7 @@ Parse shortcodes of contact's info
 $campaign->getParsedText('{{contact.first_name}}', $subscriber);
 ```
 
-### filterDuplicateSubscribers()
-
+### filterDuplicateSubscribers($subscriberIds, $subscribers)
 Filter all duplicate subscribers
 
 - Parameters
@@ -494,7 +448,6 @@ $subscriberIds = $campaign->filterDuplicateSubscribers([1,2,3], $subscribers);
 ```
 
 ### archive()
-
 Archive campaign
 
 - Parameters
@@ -509,7 +462,6 @@ $result = $campaign->archive();
 
 
 ### getUtmParams()
-
 Get utm params [utm_source, utm_medium, utm_campaign, utm_term, utm_content]
 
 - Parameters
@@ -522,7 +474,6 @@ $utm = $campaign->getUtmParams();
 ```
 
 ### stats
-
 Get Campaign's utm records
 
 - Parameters
@@ -535,7 +486,6 @@ $campaignStats = $campaign->stats();
 ```
 
 ### getEmailCount()
-
 get email counts of campaign
 
 - Parameters
@@ -548,7 +498,6 @@ $total = $campaign->getEmailCount();
 ```
 
 ### maybeDeleteDuplicates()
-
 to remove duplicate records of campaign
 
 - Parameters
@@ -561,7 +510,6 @@ $campaign = $campaign->maybeDeleteDuplicates();
 ```
 
 ### getHash()
-
 Get campaign's hash
 
 - Parameters
@@ -574,7 +522,6 @@ $hash = $campaign->getHash();
 ```
 
 ### deleteCampaignData()
-
 Delete campaign's data
 
 - Parameters
