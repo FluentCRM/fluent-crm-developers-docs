@@ -20,10 +20,6 @@ module.exports = [
         sidebarDepth: -1,
         children: [
             [
-                '/database/models/subscriber',
-                'Subscriber Model'
-            ],
-            [
                 '/database/models/campaign',
                 'Campaign Model'
             ],
@@ -62,6 +58,14 @@ module.exports = [
             [
                 '/database/models/subject',
                 'Subject Model',
+            ],
+            [
+                '/database/models/subscriber',
+                'Subscriber Model'
+            ],
+            [
+                '/database/models/subscriber-meta',
+                'Subscriber Meta Model'
             ],
             [
                 '/database/models/tag',
