@@ -72,6 +72,10 @@ module.exports = [
                 'Subscriber Note Model'
             ],
             [
+                '/database/models/subscriber-pivot',
+                'Subscriber Pivot Model'
+            ],
+            [
                 '/database/models/tag',
                 'Tag Model',
             ],
