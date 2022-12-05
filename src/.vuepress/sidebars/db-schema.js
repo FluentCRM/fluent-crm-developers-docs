@@ -80,6 +80,10 @@ module.exports = [
                 'Tag Model',
             ],
             [
+                '/database/models/template',
+                'Template Model',
+            ],
+            [
                 '/database/models/user',
                 'User Model',
             ],
