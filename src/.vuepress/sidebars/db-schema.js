@@ -84,6 +84,10 @@ module.exports = [
                 'Template Model',
             ],
             [
+                '/database/models/url-store',
+                'Url Store Model',
+            ],
+            [
                 '/database/models/user',
                 'User Model',
             ],
