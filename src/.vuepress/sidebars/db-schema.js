@@ -68,6 +68,10 @@ module.exports = [
                 'Subscriber Meta Model'
             ],
             [
+                '/database/models/subscriber-note',
+                'Subscriber Note Model'
+            ],
+            [
                 '/database/models/tag',
                 'Tag Model',
             ],
