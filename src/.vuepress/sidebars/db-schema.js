@@ -60,6 +60,10 @@ module.exports = [
                 'Meta Model',
             ],
             [
+                '/database/models/tag',
+                'Tag Model',
+            ],
+            [
                 '/database/models/user',
                 'User Model',
             ],
