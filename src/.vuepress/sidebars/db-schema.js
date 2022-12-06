@@ -11,6 +11,10 @@ module.exports = [
             [
                 '/database/models/',
                 'Model Basic'
+            ],
+            [
+                '/database/query-builder',
+                'Query Builder'
             ]
         ]
     },
