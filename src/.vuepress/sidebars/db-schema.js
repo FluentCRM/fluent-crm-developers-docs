@@ -13,6 +13,10 @@ module.exports = [
                 'Model Basic'
             ],
             [
+                '/database/orm/',
+                'Fluent ORM'
+            ],
+            [
                 '/database/query-builder',
                 'Query Builder'
             ]
