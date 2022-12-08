@@ -13,10 +13,6 @@ module.exports = [
                 'Model Basic'
             ],
             [
-                '/database/orm/',
-                'Fluent ORM'
-            ],
-            [
                 '/database/query-builder',
                 'Query Builder'
             ]
@@ -24,7 +20,7 @@ module.exports = [
     },
     {
         title: 'Database Models',
-        collapsable: false,
+        collapsable: true,
         sidebarDepth: -1,
         children: [
             [
@@ -102,6 +98,21 @@ module.exports = [
             [
                 '/database/models/webhook',
                 'Webhook Model',
+            ],
+        ]
+    },
+    {
+        title: 'Fluent ORM',
+        collapsable: true,
+        sidebarDepth: -1,
+        children: [
+            [
+                '/database/orm/',
+                'Getting Started'
+            ],
+            [
+                '/database/orm/relationship',
+                'Relationships'
             ],
         ]
     }
