@@ -118,6 +118,10 @@ module.exports = [
                 '/database/orm/collections',
                 'Collections'
             ],
+            [
+                '/database/orm/mutators',
+                'Mutators'
+            ],
         ]
     }
 ];
