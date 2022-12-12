@@ -122,6 +122,10 @@ module.exports = [
                 '/database/orm/mutators',
                 'Mutators'
             ],
+            [
+                '/database/orm/serialization',
+                'Serialization'
+            ],
         ]
     }
 ];
