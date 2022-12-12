@@ -1,4 +1,4 @@
-# Relationships
+# Fluent ORM: Relationships
 
 <Badge type="tip" vertical="top" text="Fluent Framework" /> <Badge type="warning" vertical="top" text="ORM" />
 

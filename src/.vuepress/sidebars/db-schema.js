@@ -114,6 +114,10 @@ module.exports = [
                 '/database/orm/relationship',
                 'Relationships'
             ],
+            [
+                '/database/orm/collections',
+                'Collections'
+            ],
         ]
     }
 ];
