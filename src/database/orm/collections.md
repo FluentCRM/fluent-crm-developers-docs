@@ -355,6 +355,605 @@ $collection->filter()->all();
 ```
 For the inverse of `filter`, see the <a href="#reject">`reject`</a> method.
 
+### first()
+The `first` method returns the first element in the collection that passes a given truth test:
+```php
+collect([1, 2, 3, 4])->first(function ($value, $key) {
+    return $value > 2;
+});
+ 
+// 3
+```
+You may also call the `first` method with no arguments to get the first element in the collection. If the collection is empty, `null` is returned:
+```php
+collect([1, 2, 3, 4])->first();
+ 
+// 1
+```
+
+### flatMap()
+The `flatMap` method iterates through the collection and passes each value to the given callback. The callback is free to modify the item and return it, thus forming a new collection of modified items. Then, the array is flattened by a level:
+```php
+$collection = collect([
+    ['name' => 'Sally'],
+    ['school' => 'Arkansas'],
+    ['age' => 28]
+]);
+ 
+$flattened = $collection->flatMap(function ($values) {
+    return array_map('strtoupper', $values);
+});
+ 
+$flattened->all();
+ 
+// ['name' => 'SALLY', 'school' => 'ARKANSAS', 'age' => '28'];
+```
+
+### flatten()
+The `flatten` method flattens a multi-dimensional collection into a single dimension:
+```php
+$collection = collect(['name' => 'taylor', 'languages' => ['php', 'javascript']]);
+ 
+$flattened = $collection->flatten();
+ 
+$flattened->all();
+ 
+// ['taylor', 'php', 'javascript'];
+```
+You may optionally pass the function a "depth" argument:
+```php
+$collection = collect([
+    'Apple' => [
+        ['name' => 'iPhone 6S', 'brand' => 'Apple'],
+    ],
+    'Samsung' => [
+        ['name' => 'Galaxy S7', 'brand' => 'Samsung']
+    ],
+]);
+ 
+$products = $collection->flatten(1);
+ 
+$products->values()->all();
+ 
+/*
+    [
+        ['name' => 'iPhone 6S', 'brand' => 'Apple'],
+        ['name' => 'Galaxy S7', 'brand' => 'Samsung'],
+    ]
+*/
+```
+In this example, calling `flatten` without providing the depth would have also flattened the nested arrays, resulting in ['iPhone 6S', 'Apple', 'Galaxy S7', 'Samsung']. Providing a depth allows you to restrict the levels of nested arrays that will be flattened.
+
+### flip()
+The `flip` method swaps the collection's keys with their corresponding values:
+```php
+$collection = collect(['name' => 'taylor', 'framework' => 'laravel']);
+ 
+$flipped = $collection->flip();
+ 
+$flipped->all();
+ 
+// ['taylor' => 'name', 'laravel' => 'framework']
+```
+
+### forget()
+The `forget` method removes an item from the collection by its key:
+```php
+$collection = collect(['name' => 'taylor', 'framework' => 'laravel']);
+ 
+$collection->forget('name');
+ 
+$collection->all();
+ 
+// ['framework' => 'laravel']
+```
+
+### forPage()
+The `forPage` method returns a new collection containing the items that would be present on a given page number. The method accepts the page number as its first argument and the number of items to show per page as its second argument:
+```php
+$collection = collect([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+ 
+$chunk = $collection->forPage(2, 3);
+ 
+$chunk->all();
+ 
+// [4, 5, 6]
+```
+
+### get()
+The `get` method returns the item at a given key. If the key does not exist, `null` is returned:
+```php
+$collection = collect(['name' => 'taylor', 'framework' => 'laravel']);
+ 
+$value = $collection->get('name');
+ 
+// taylor
+```
+You may optionally pass a default value as the second argument:
+```php
+$collection = collect(['name' => 'taylor', 'framework' => 'laravel']);
+ 
+$value = $collection->get('foo', 'default-value');
+ 
+// default-value
+```
+You may even pass a callback as the default value. The result of the callback will be returned if the specified key does not exist:
+```php
+$collection->get('email', function () {
+    return 'default-value';
+});
+ 
+// default-value
+```
+
+### groupBy()
+The `groupBy` method groups the collection's items by a given key:
+```php
+$collection = collect([
+    ['account_id' => 'account-x10', 'product' => 'Chair'],
+    ['account_id' => 'account-x10', 'product' => 'Bookcase'],
+    ['account_id' => 'account-x11', 'product' => 'Desk'],
+]);
+ 
+$grouped = $collection->groupBy('account_id');
+ 
+$grouped->toArray();
+ 
+/*
+    [
+        'account-x10' => [
+            ['account_id' => 'account-x10', 'product' => 'Chair'],
+            ['account_id' => 'account-x10', 'product' => 'Bookcase'],
+        ],
+        'account-x11' => [
+            ['account_id' => 'account-x11', 'product' => 'Desk'],
+        ],
+    ]
+*/
+```
+Instead of passing a string `key`, you may pass a callback. The callback should return the value you wish to key the group by:
+```php
+$grouped = $collection->groupBy(function ($item, $key) {
+    return substr($item['account_id'], -3);
+});
+ 
+$grouped->toArray();
+ 
+/*
+    [
+        'x10' => [
+            ['account_id' => 'account-x10', 'product' => 'Chair'],
+            ['account_id' => 'account-x10', 'product' => 'Bookcase'],
+        ],
+        'x11' => [
+            ['account_id' => 'account-x11', 'product' => 'Desk'],
+        ],
+    ]
+*/
+```
+Multiple grouping criteria may be passed as an array. Each array element will be applied to the corresponding level within a multi-dimensional array:
+```php
+$data = new Collection([
+    10 => ['user' => 1, 'skill' => 1, 'roles' => ['Role_1', 'Role_3']],
+    20 => ['user' => 2, 'skill' => 1, 'roles' => ['Role_1', 'Role_2']],
+    30 => ['user' => 3, 'skill' => 2, 'roles' => ['Role_1']],
+    40 => ['user' => 4, 'skill' => 2, 'roles' => ['Role_2']],
+]);
+ 
+$result = $data->groupBy([
+    'skill',
+    function ($item) {
+        return $item['roles'];
+    },
+], $preserveKeys = true);
+ 
+/*
+[
+    1 => [
+        'Role_1' => [
+            10 => ['user' => 1, 'skill' => 1, 'roles' => ['Role_1', 'Role_3']],
+            20 => ['user' => 2, 'skill' => 1, 'roles' => ['Role_1', 'Role_2']],
+        ],
+        'Role_2' => [
+            20 => ['user' => 2, 'skill' => 1, 'roles' => ['Role_1', 'Role_2']],
+        ],
+        'Role_3' => [
+            10 => ['user' => 1, 'skill' => 1, 'roles' => ['Role_1', 'Role_3']],
+        ],
+    ],
+    2 => [
+        'Role_1' => [
+            30 => ['user' => 3, 'skill' => 2, 'roles' => ['Role_1']],
+        ],
+        'Role_2' => [
+            40 => ['user' => 4, 'skill' => 2, 'roles' => ['Role_2']],
+        ],
+    ],
+];
+*/
+```
+
+### has()
+The `has` method determines if a given key exists in the collection:
+```php
+$collection = collect(['account_id' => 1, 'product' => 'Desk']);
+ 
+$collection->has('product');
+ 
+// true
+```
+
+### implode()
+The `implode` method joins the items in a collection. Its arguments depend on the type of items in the collection. If the collection contains arrays or objects, you should pass the key of the attributes you wish to join, and the "glue" string you wish to place between the values:
+```php
+$collection = collect([
+    ['account_id' => 1, 'product' => 'Desk'],
+    ['account_id' => 2, 'product' => 'Chair'],
+]);
+ 
+$collection->implode('product', ', ');
+ 
+// Desk, Chair
+```
+If the collection contains simple strings or numeric values, pass the "glue" as the only argument to the method:
+```php
+collect([1, 2, 3, 4, 5])->implode('-');
+ 
+// '1-2-3-4-5'
+```
+
+### intersect()
+The `intersect` method removes any values from the original collection that are not present in the given `array` or collection. The resulting collection will preserve the original collection's keys:
+```php
+$collection = collect(['Desk', 'Sofa', 'Chair']);
+ 
+$intersect = $collection->intersect(['Desk', 'Chair', 'Bookcase']);
+ 
+$intersect->all();
+ 
+// [0 => 'Desk', 2 => 'Chair']
+```
+
+### isEmpty()
+The `isEmpty` method returns true if the collection is empty; otherwise, false is returned:
+```php
+collect([])->isEmpty();
+ 
+// true
+```
+
+### keyBy()
+The `keyBy` method keys the collection by the given key. If multiple items have the same key, only the last one will appear in the new collection:
+```php
+$collection = collect([
+    ['product_id' => 'prod-100', 'name' => 'Desk'],
+    ['product_id' => 'prod-200', 'name' => 'Chair'],
+]);
+ 
+$keyed = $collection->keyBy('product_id');
+ 
+$keyed->all();
+ 
+/*
+    [
+        'prod-100' => ['product_id' => 'prod-100', 'name' => 'Desk'],
+        'prod-200' => ['product_id' => 'prod-200', 'name' => 'Chair'],
+    ]
+*/
+```
+You may also pass a callback to the method. The callback should return the value to key the collection by:
+```php
+$keyed = $collection->keyBy(function ($item) {
+    return strtoupper($item['product_id']);
+});
+ 
+$keyed->all();
+ 
+/*
+    [
+        'PROD-100' => ['product_id' => 'prod-100', 'name' => 'Desk'],
+        'PROD-200' => ['product_id' => 'prod-200', 'name' => 'Chair'],
+    ]
+*/
+```
+
+### keys()
+The `keys` method returns all the collection's keys:
+```php
+$collection = collect([
+    'prod-100' => ['product_id' => 'prod-100', 'name' => 'Desk'],
+    'prod-200' => ['product_id' => 'prod-200', 'name' => 'Chair'],
+]);
+ 
+$keys = $collection->keys();
+ 
+$keys->all();
+ 
+// ['prod-100', 'prod-200']
+```
+
+### last()
+The `last` method returns the last element in the collection that passes a given truth test:
+```php
+collect([1, 2, 3, 4])->last(function ($value, $key) {
+    return $value < 3;
+});
+ 
+// 2
+```
+You may also call the `last` method with no arguments to get the last element in the collection. If the collection is empty, `null` is returned:
+```php
+collect([1, 2, 3, 4])->last();
+ 
+// 4
+```
+
+### map()
+The `map` method iterates through the collection and passes each value to the given callback. The callback is free to modify the item and return it, thus forming a new collection of modified items:
+```php
+$collection = collect([1, 2, 3, 4, 5]);
+ 
+$multiplied = $collection->map(function ($item, $key) {
+    return $item * 2;
+});
+ 
+$multiplied->all();
+ 
+// [2, 4, 6, 8, 10]
+```
+
+### max()
+The `max` method returns the maximum value of a given key:
+```php
+$max = collect([['foo' => 10], ['foo' => 20]])->max('foo');
+ 
+// 20
+ 
+$max = collect([1, 2, 3, 4, 5])->max();
+ 
+// 5
+```
+
+### median()
+The `median` method returns the median value of a given key:
+```php
+$median = collect([['foo' => 10], ['foo' => 10], ['foo' => 20], ['foo' => 40]])->median('foo');
+ 
+// 15
+ 
+$median = collect([1, 1, 2, 4])->median();
+ 
+// 1.5
+```
+
+### merge()
+The `merge` method merges the given array or collection with the original collection. If a string key in the given items matches a string key in the original collection, the given items's value will overwrite the value in the original collection:
+```php
+$collection = collect(['product_id' => 1, 'price' => 100]);
+ 
+$merged = $collection->merge(['price' => 200, 'discount' => false]);
+ 
+$merged->all();
+ 
+// ['product_id' => 1, 'price' => 200, 'discount' => false]
+```
+If the given items's keys are numeric, the values will be appended to the end of the collection:
+```php
+$collection = collect(['Desk', 'Chair']);
+ 
+$merged = $collection->merge(['Bookcase', 'Door']);
+ 
+$merged->all();
+ 
+// ['Desk', 'Chair', 'Bookcase', 'Door']
+```
+
+### mode()
+The `mode` method returns the mode value of a given key:
+```php
+$mode = collect([['foo' => 10], ['foo' => 10], ['foo' => 20], ['foo' => 40]])->mode('foo');
+ 
+// [10]
+ 
+$mode = collect([1, 1, 2, 4])->mode();
+ 
+// [1]
+```
+
+### min()
+The `min` method returns the minimum value of a given key:
+```php
+$min = collect([['foo' => 10], ['foo' => 20]])->min('foo');
+ 
+// 10
+ 
+$min = collect([1, 2, 3, 4, 5])->min();
+ 
+// 1
+```
+
+### only()
+The `only` method returns the items in the collection with the specified keys:
+```php
+$collection = collect(['product_id' => 1, 'name' => 'Desk', 'price' => 100, 'discount' => false]);
+ 
+$filtered = $collection->only(['product_id', 'name']);
+ 
+$filtered->all();
+ 
+// ['product_id' => 1, 'name' => 'Desk']
+```
+
+### pipe()
+The `pipe` method passes the collection to the given callback and returns the result:
+```php
+
+```
+
+### pluck()
+The `pluck` method retrieves all of the values for a given key:
+```php
+$collection = collect([
+    ['product_id' => 'prod-100', 'name' => 'Desk'],
+    ['product_id' => 'prod-200', 'name' => 'Chair'],
+]);
+ 
+$plucked = $collection->pluck('name');
+ 
+$plucked->all();
+ 
+// ['Desk', 'Chair']
+```
+You may also specify how you wish the resulting collection to be keyed:
+```php
+$plucked = $collection->pluck('name', 'product_id');
+ 
+$plucked->all();
+ 
+// ['prod-100' => 'Desk', 'prod-200' => 'Chair']
+```
+If duplicate keys exist, the last matching element will be inserted into the plucked collection:
+```php
+$collection = collect([
+    ['brand' => 'Tesla',  'color' => 'red'],
+    ['brand' => 'Pagani', 'color' => 'white'],
+    ['brand' => 'Tesla',  'color' => 'black'],
+    ['brand' => 'Pagani', 'color' => 'orange'],
+]);
+ 
+$plucked = $collection->pluck('color', 'brand');
+ 
+$plucked->all();
+ 
+// ['Tesla' => 'black', 'Pagani' => 'orange']
+```
+
+### pop()
+The `pop` method removes and returns the last item from the collection:
+```php
+$collection = collect([1, 2, 3, 4, 5]);
+ 
+$collection->pop();
+ 
+// 5
+ 
+$collection->all();
+ 
+// [1, 2, 3, 4]
+```
+
+### prepend()
+The `prepend` method adds an item to the beginning of the collection:
+```php
+$collection = collect([1, 2, 3, 4, 5]);
+ 
+$collection->prepend(0);
+ 
+$collection->all();
+ 
+// [0, 1, 2, 3, 4, 5]
+```
+You may also pass a second argument to set the key of the prepended item:
+```php
+$collection = collect(['one' => 1, 'two' => 2]);
+ 
+$collection->prepend(0, 'zero');
+ 
+$collection->all();
+ 
+// ['zero' => 0, 'one' => 1, 'two' => 2]
+```
+
+### pull()
+The `pull` method removes and returns an item from the collection by its key:
+```php
+$collection = collect(['product_id' => 'prod-100', 'name' => 'Desk']);
+ 
+$collection->pull('name');
+ 
+// 'Desk'
+ 
+$collection->all();
+ 
+// ['product_id' => 'prod-100']
+```
+
+### push()
+The `push` method appends an item to the end of the collection:
+```php
+$collection = collect([1, 2, 3, 4]);
+ 
+$collection->push(5);
+ 
+$collection->all();
+ 
+// [1, 2, 3, 4, 5]
+```
+
+### put()
+The `put` method sets the given key and value in the collection:
+```php
+$collection = collect(['product_id' => 1, 'name' => 'Desk']);
+ 
+$collection->put('price', 100);
+ 
+$collection->all();
+ 
+// ['product_id' => 1, 'name' => 'Desk', 'price' => 100]
+```
+
+### random()
+The `random` method returns a random item from the collection:
+```php
+$collection = collect([1, 2, 3, 4, 5]);
+ 
+$collection->random();
+ 
+// 4 - (retrieved randomly)
+```
+You may optionally pass an integer to `random` to specify how many items you would like to randomly retrieve. A collection of items is always returned when explicitly passing the number of items you wish to receive:
+```php
+$random = $collection->random(3);
+ 
+$random->all();
+ 
+// [2, 4, 5] - (retrieved randomly)
+```
+
+### reduce()
+The `reduce` method reduces the collection to a single value, passing the result of each iteration into the subsequent iteration:
+```php
+$collection = collect([1, 2, 3]);
+ 
+$total = $collection->reduce(function ($carry, $item) {
+    return $carry + $item;
+});
+ 
+// 6
+```
+The value for `$carry` on the first iteration is `null`; however, you may specify its initial value by passing a second argument to `reduce`:
+```php
+$collection->reduce(function ($carry, $item) {
+    return $carry + $item;
+}, 4);
+ 
+// 10
+```
+
+### reject()
+The `reject` method filters the collection using the given callback. The callback should return `true` if the item should be removed from the resulting collection:
+```php
+$collection = collect([1, 2, 3, 4]);
+ 
+$filtered = $collection->reject(function ($value, $key) {
+    return $value > 2;
+});
+ 
+$filtered->all();
+ 
+// [1, 2]
+```
+
 ### reverse()
 The `reverse` method reverses the order of the collection's items, preserving the original keys:
 ```php
