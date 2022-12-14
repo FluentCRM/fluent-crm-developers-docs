@@ -4,6 +4,7 @@ const dbSchemaSidebar = require('./sidebars/db-schema');
 const globalFunctionsSidebar = require('./sidebars/global-functions');
 const hooksSidebar = require('./sidebars/hooks');
 const helpersSidebar = require('./sidebars/helpers');
+const modulesSidebar = require('./sidebars/modules');
 
 module.exports = {
     /**
@@ -112,7 +113,7 @@ module.exports = {
                 items: [
                     {
                         text: 'Automation',
-                        link: '/automations/',
+                        link: '/modules/automation/',
                     },
                     {
                         text: 'Contact Merge Tags',
@@ -147,6 +148,7 @@ module.exports = {
             '/global-functions/': globalFunctionsSidebar,
             '/hooks/': hooksSidebar,
             '/helpers/': helpersSidebar,
+            '/automation/': modulesSidebar,
 
         }
     },

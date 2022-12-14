@@ -22,7 +22,7 @@ $query = fluentCrmDb()->table('fc_contact_relation_items')
 # Retrieving Results
 
 ### Retrieving All Rows From A Table
-You may use the `table` method on the fluentCrmDb function to begin a query. The `table` method returns a fluent query builder instance for the given table, allowing you to chain more constraints onto the query and then finally get the results using the `get` method:
+You may use the `table` method on the `fluentCrmDb` function to begin a query. The `table` method returns a fluent query builder instance for the given table, allowing you to chain more constraints onto the query and then finally get the results using the `get` method:
 
 ```php
 <?php
