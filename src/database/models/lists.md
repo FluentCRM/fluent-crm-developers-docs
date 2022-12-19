@@ -101,7 +101,7 @@ $lists = FluentCrm\App\Models\Lists::searchBy('test')->get();
 
 Access all the associated subscribers of a list
 
-- return FluentCrm\App\Models\Subscriber Model Collections
+- return `FluentCrm\App\Models\Subscriber` Model Collections
 
 #### Example:
 ```php 

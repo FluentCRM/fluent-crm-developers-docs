@@ -115,7 +115,7 @@ This model has the following relationships that you can use
 ### subscriber
 Access all the associated subscriber of a model
 
-- return FluentCrm\App\Models\Subscriber Model Collections
+- return `FluentCrm\App\Models\Subscriber` Model Collections
 
 #### Example:
 ```php 

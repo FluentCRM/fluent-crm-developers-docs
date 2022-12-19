@@ -198,7 +198,7 @@ This model has the following relationships that you can use
 ### template
 Access the associated template of a model
 
-- return FluentCrm\App\Models\Template Model Collection
+- return `FluentCrm\App\Models\Template` Model Collection
 
 #### Example:
 ```php 
@@ -208,12 +208,12 @@ $campaignTemplate = $campaign->template;
 // For Filtering by template relationship
 
 // Get Campaigns which has post_status: publish
-$campaigns = FluentCrm\App\Models\Campaign::whereHas('template', fcuntion($query) {
+$campaigns = FluentCrm\App\Models\Campaign::whereHas('template', function($query) {
     $query->where('post_status', 'publish');
 })->get();
 
 // Get Campaigns which does not have post_status: publish
-$campaigns = FluentCrm\App\Models\Campaign::whereDoesntHave('template', fcuntion($query) {
+$campaigns = FluentCrm\App\Models\Campaign::whereDoesntHave('template', function($query) {
     $query->where('post_status', 'publish');
 })->get();
 
@@ -222,7 +222,7 @@ $campaigns = FluentCrm\App\Models\Campaign::whereDoesntHave('template', fcuntion
 ### emails
 Access all the associated emails of a model
 
-- return FluentCrm\App\Models\CampaignEmail Model Collections
+- return `FluentCrm\App\Models\CampaignEmail` Model Collections
 
 #### Example:
 ```php 
@@ -232,12 +232,12 @@ $campaignEmails = $campaign->emails;
 // For Filtering by tags relationship
 
 // Get Campaigns which has email ids: 1/2/3
-$campaigns = FluentCrm\App\Models\Campaign::whereHas('emails', fcuntion($query) {
+$campaigns = FluentCrm\App\Models\Campaign::whereHas('emails', funtion($query) {
     $query->whereIn('id', [1,2,3]);
 })->get();
 
 // Get Campaigns which does not have email ids: 1/2/3
-$campaigns = FluentCrm\App\Models\Campaign::whereDoesntHave('emails', fcuntion($query) {
+$campaigns = FluentCrm\App\Models\Campaign::whereDoesntHave('emails', funtion($query) {
     $query->whereIn('id', [1,2,3]);
 })->get();
 ```
@@ -245,7 +245,7 @@ $campaigns = FluentCrm\App\Models\Campaign::whereDoesntHave('emails', fcuntion($
 ### campaign_emails
 Access all the associated campaign emails which has email_type 'campaign' of a model
 
-- return FluentCrm\App\Models\CampaignEmail Model Collections
+- return `FluentCrm\App\Models\CampaignEmail` Model Collections
 
 #### Example:
 ```php 
@@ -256,7 +256,7 @@ $campaignEmails = $campaign->campaign_emails;
 ### subjects
 Access all the associated subjects of a Campaign model
 
-- return FluentCrm\App\Models\Subject Model Collections
+- return `FluentCrm\App\Models\Subject` Model Collections
 
 #### Example:
 ```php 

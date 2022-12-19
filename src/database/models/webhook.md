@@ -114,7 +114,7 @@ Save webhook data
 
 - Parameters
   - $data `array`
-- Returns FluentCrm\App\Models\Webhook
+- Returns `FluentCrm\App\Models\Webhook`
 
 #### Usage
 ```php 
@@ -126,7 +126,7 @@ Update webhook data
 
 - Parameters
   - $data `array`
-- Returns FluentCrm\App\Models\Webhook
+- Returns `FluentCrm\App\Models\Webhook`
 
 #### Usage
 ```php 

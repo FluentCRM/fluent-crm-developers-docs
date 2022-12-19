@@ -88,7 +88,7 @@ This model has the following relationships that you can use
 ### campaign
 Access the associated campaign of a model
 
-- return FluentCrm\App\Models\Campaign Model Collections
+- return `FluentCrm\App\Models\Campaign` Model Collections
 
 #### Example:
 ```php 
@@ -114,7 +114,7 @@ $subjects = FluentCrm\App\Models\Subject::whereDoesntHave('campaign', function($
 ### emails
 Access the associated emails of a model
 
-- return FluentCrm\App\Models\CampaignEmail Model Collections
+- return `FluentCrm\App\Models\CampaignEmail` Model Collections
 
 #### Example:
 ```php 

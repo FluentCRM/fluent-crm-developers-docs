@@ -54,7 +54,7 @@
         </tr>
         <tr>
             <th>created_by</th>
-            <td>Integar</td>
+            <td>Integer</td>
             <td></td>
         </tr>
         <tr>
@@ -129,7 +129,7 @@ $funnelActions = $funnel->actions;
 For example, if you want to get all the funnels that have ids 1, 2 and 3 in the actions, you can do the following:
 
 ```php
-// Get Funnels which have squence ids: 1/2
+// Get Funnels which have sequence ids: 1/2
 $funnels = FluentCrm\App\Models\Funnel::whereHas('actions', function($query) {
     $query->whereIn('id', [1,2]);
 })->get();

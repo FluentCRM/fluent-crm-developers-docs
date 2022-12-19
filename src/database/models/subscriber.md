@@ -371,7 +371,7 @@ $subscribers = FluentCrm\App\Models\Subscriber::whereDoesntHave('lists', functio
 ### sequences
 Access all the associated email sequences of a model
 
-- return FluentCrm\App\Models\Sequence Model Collections
+- return `FluentCrm\App\Models\Sequence` Model Collections
 
 #### Example:
 ```php 
@@ -382,7 +382,7 @@ $subscriberEmailSequences = $subscriber->sequences;
 ### sequence_trackers
 Access all the associated email sequence trackers of a Subscriber model
 
-- return FluentCrm\App\Models\SequenceTracker Model Collections
+- return `FluentCrm\App\Models\SequenceTracker` Model Collections
 
 #### Example:
 ```php 
@@ -393,7 +393,7 @@ $subscriberEmailSequenceTrackers = $subscriber->sequence_trackers;
 ### funnels
 Access all the associated Automation Funnels of a Subscriber model
 
-- return FluentCrm\App\Models\Funnel Model Collections
+- return `FluentCrm\App\Models\Funnel` Model Collections
 
 #### Example:
 ```php 
@@ -404,7 +404,7 @@ $subscriberAutomations = $subscriber->funnels;
 ### funnel_subscribers
 Access all the associated Automation Funnels Subscription Trackers of a Subscriber model
 
-- return FluentCrm\App\Models\FunnelSubscriber Model Collections
+- return `FluentCrm\App\Models\FunnelSubscriber` Model Collections
 
 #### Example:
 ```php 
@@ -415,7 +415,7 @@ $subscriberAutomationTrackers = $subscriber->funnel_subscribers;
 ### campaignEmails
 Access all the sent/sending emails of a Subscriber model
 
-- return FluentCrm\App\Models\CampaignEmail Model Collections
+- return `FluentCrm\App\Models\CampaignEmail` Model Collections
 
 #### Example:
 ```php 
@@ -551,7 +551,7 @@ Attach Lists to a Subscriber
 
 - Parameters
   - $listIds array 
-- Returns FluentCrm\App\Models\Subscriber
+- Returns `FluentCrm\App\Models\Subscriber`
 
 #### Usage
 ```php 
@@ -564,7 +564,7 @@ Remove Lists from a Subscriber
 
 - Parameters
   - $listIds array
-- Returns FluentCrm\App\Models\Subscriber
+- Returns `FluentCrm\App\Models\Subscriber`
 
 #### Usage
 ```php 
@@ -576,7 +576,7 @@ Attach Tags to a Subscriber
 
 - Parameters
   - $tagIds array
-- Returns FluentCrm\App\Models\Subscriber
+- Returns `FluentCrm\App\Models\Subscriber`
 
 #### Usage
 ```php 
@@ -589,7 +589,7 @@ Remove tags from a Subscriber
 
 - Parameters
   - $tagIds array
-- Returns FluentCrm\App\Models\Subscriber
+- Returns `FluentCrm\App\Models\Subscriber`
 
 #### Usage
 ```php 
