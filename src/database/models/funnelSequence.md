@@ -74,7 +74,7 @@
         </tr>
         <tr>
             <th>note</th>
-            <td>Integar</td>
+            <td>Integer</td>
             <td></td>
         </tr>
         <tr>

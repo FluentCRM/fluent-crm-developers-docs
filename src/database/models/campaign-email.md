@@ -131,7 +131,7 @@ This model has the following relationships that you can use
 ### campaign
 Access the associated campaign of a model
 
-- return FluentCrm\App\Models\Campaign Model Collection
+- return `FluentCrm\App\Models\Campaign` Model Collection
 
 #### Example:
 ```php 
@@ -141,12 +141,12 @@ $campaign = $campaignEmail->campaign;
 // For Filtering by template relationship
 
 // Get CampaignEmails which has type: funnel_email_campaign
-$campaignEmails = FluentCrm\App\Models\CampaignEmail::whereHas('campaign', fcuntion($query) {
+$campaignEmails = FluentCrm\App\Models\CampaignEmail::whereHas('campaign', function($query) {
     $query->where('type', 'funnel_email_campaign');
 })->get();
 
 // Get CampaignEmails which does not have type: funnel_email_campaign
-$campaignEmails = FluentCrm\App\Models\CampaignEmail::whereDoesntHave('campaign', fcuntion($query) {
+$campaignEmails = FluentCrm\App\Models\CampaignEmail::whereDoesntHave('campaign', function($query) {
     $query->where('type', 'funnel_email_campaign');
 })->get();
 
@@ -155,7 +155,7 @@ $campaignEmails = FluentCrm\App\Models\CampaignEmail::whereDoesntHave('campaign'
 ### subscriber
 Access all the associated subscriber of a model
 
-- return FluentCrm\App\Models\Subscriber Model Collections
+- return `FluentCrm\App\Models\Subscriber` Model Collections
 
 #### Example:
 ```php 
@@ -165,12 +165,12 @@ $subscriber = $campaignEmail->subscriber;
 // For Filtering by tags relationship
 
 // Get CampaignEmails which has first_name Demo
-$campaignEmails = FluentCrm\App\Models\CampaignEmail::whereHas('subscriber', fcuntion($query) {
+$campaignEmails = FluentCrm\App\Models\CampaignEmail::whereHas('subscriber', function($query) {
     $query->where('first_name', 'Demo');
 })->get();
 
 // Get CampaignEmails which does not have first_name Demo
-$campaignEmails = FluentCrm\App\Models\CampaignEmail::whereDoesntHave('subscriber', fcuntion($query) {
+$campaignEmails = FluentCrm\App\Models\CampaignEmail::whereDoesntHave('subscriber', function($query) {
     $query->where('first_name', 'Demo');
 })->get();
 ```
@@ -178,7 +178,7 @@ $campaignEmails = FluentCrm\App\Models\CampaignEmail::whereDoesntHave('subscribe
 ### subject
 Access all the associated subject of a model
 
-- return FluentCrm\App\Models\Subject Model Collections
+- return `FluentCrm\App\Models\Subject` Model Collections
 
 #### Example:
 ```php 
@@ -196,7 +196,7 @@ Update campaign email status
 
 - Parameters
   - $status `string`
-- Returns FluentCrm\App\Models\CampaignEmail
+- Returns `FluentCrm\App\Models\CampaignEmail`
 
 #### Usage
 ```php 
@@ -208,7 +208,7 @@ Update campaign email status to 'sent'
 
 - Parameters
   - none
-- Returns FluentCrm\App\Models\CampaignEmail
+- Returns `FluentCrm\App\Models\CampaignEmail`
 
 #### Usage
 ```php 
@@ -220,7 +220,7 @@ Update campaign email status to 'failed'
 
 - Parameters
   - none
-- Returns FluentCrm\App\Models\CampaignEmail
+- Returns `FluentCrm\App\Models\CampaignEmail`
 
 #### Usage
 ```php 
@@ -281,7 +281,7 @@ Get the urls which are shared in an email model
 
 - Parameters
   - none
-- Returns  `array` url-list
+- Returns `array` list of urls
 
 #### Usage
 ```php 

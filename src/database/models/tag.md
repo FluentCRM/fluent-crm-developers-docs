@@ -1,4 +1,4 @@
-# Meta Model
+# Tag Model
 
 | DB Table Name | {wp_db_prefix}_fc_tags                                                   |
 |---------------|--------------------------------------------------------------------------|
@@ -100,7 +100,7 @@ This model has the following relationships that you can use
 ### subscribers
 Access all the associated subscribers of a model
 
-- return FluentCrm\App\Models\Subscriber Model Collections
+- return `FluentCrm\App\Models\Subscriber` Model Collections
 
 #### Example:
 ```php 

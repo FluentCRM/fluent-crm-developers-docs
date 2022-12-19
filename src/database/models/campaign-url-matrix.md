@@ -110,7 +110,7 @@ This model has the following relationships that you can use
 ### campaign
 Access the associated campaign of a model
 
-- return FluentCrm\App\Models\Campaign Model Collection
+- return `FluentCrm\App\Models\Campaign` Model Collection
 
 #### Example:
 ```php 
@@ -120,12 +120,12 @@ $campaignUrlMatric = $campaignUrlMatric->campaign;
 // For Filtering by campaign relationship
 
 // Get CampaignUrlMetrics which has type: funnel_email_campaign
-$campaignUrlMatrics = FluentCrm\App\Models\CampaignUrlMetric::whereHas('campaign', fcuntion($query) {
+$campaignUrlMatrics = FluentCrm\App\Models\CampaignUrlMetric::whereHas('campaign', function($query) {
     $query->where('type', 'funnel_email_campaign');
 })->get();
 
 // Get CampaignUrlMetrics which does not have type: funnel_email_campaign
-$campaignUrlMatrics = FluentCrm\App\Models\CampaignUrlMetric::whereDoesntHave('campaign', fcuntion($query) {
+$campaignUrlMatrics = FluentCrm\App\Models\CampaignUrlMetric::whereDoesntHave('campaign', function($query) {
     $query->where('type', 'funnel_email_campaign');
 })->get();
 
@@ -135,7 +135,7 @@ $campaignUrlMatrics = FluentCrm\App\Models\CampaignUrlMetric::whereDoesntHave('c
 ### subscriber
 Access the associated subscriber of a model
 
-- return FluentCrm\App\Models\Subscriber Model Collection
+- return `FluentCrm\App\Models\Subscriber` Model Collection
 
 #### Example:
 ```php 
@@ -145,12 +145,12 @@ $campaignUrlMatric = $campaignUrlMatric->subscriber;
 // For Filtering by subscriber relationship
 
 // Get CampaignUrlMetrics which has first_name: Demo
-$campaignUrlMatrics = FluentCrm\App\Models\CampaignUrlMetric::whereHas('subscriber', fcuntion($query) {
+$campaignUrlMatrics = FluentCrm\App\Models\CampaignUrlMetric::whereHas('subscriber', function($query) {
     $query->where('first_name', 'Demo');
 })->get();
 
 // Get CampaignUrlMetrics which does not have first_name: Demo
-$campaignUrlMatrics = FluentCrm\App\Models\CampaignUrlMetric::whereDoesntHave('subscriber', fcuntion($query) {
+$campaignUrlMatrics = FluentCrm\App\Models\CampaignUrlMetric::whereDoesntHave('subscriber', function($query) {
     $query->where('first_name', 'Demo');
 })->get();
 
@@ -165,7 +165,7 @@ Store or update campaign url matrix data
 
 - Parameters
   - $data `array` campaign url matrix data
-- Returns \FluentCrm\App\Models\CampaignUrlMetric
+- Returns `\FluentCrm\App\Models\CampaignUrlMetric`
 
 #### Usage
 ```php 
