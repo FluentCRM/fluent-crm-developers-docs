@@ -10,14 +10,28 @@ module.exports = [
             ['/modules/benchmark', 'Benchmark '],
         ]
     },
-    // {
-    //     title: 'FluentCRM 222',
-    //     collapsable: false,
-    //     sidebarDepth: -1,
-    //     children: [
-    //         ['', 'Automation Pinik'],
-    //         ['/modules/trigger', 'Trigger '],
-    //         ['/modules/trigger', 'Trigger '],
-    //     ]
-    // }
+    {
+        title: 'Smart Codes',
+        collapsable: false,
+        sidebarDepth: -1,
+        children: [
+            ['/modules/contact-merge-tag', 'Smart Code'],
+        ]
+    },
+    {
+        title: 'Contact Profile Section',
+        collapsable: false,
+        sidebarDepth: -1,
+        children: [
+            ['/modules/contact-profile-section', 'Contact Profile Section'],
+        ]
+    },
+    {
+        title: 'FluentCRM Navigation Menu',
+        collapsable: false,
+        sidebarDepth: -1,
+        children: [
+            ['/modules/navigation-modules', 'Navigation Menu'],
+        ]
+    },
 ];

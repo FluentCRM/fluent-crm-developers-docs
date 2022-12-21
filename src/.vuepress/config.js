@@ -117,15 +117,15 @@ module.exports = {
                     },
                     {
                         text: 'Contact Merge Tags',
-                        link: '/merge-tags/',
+                        link: '/modules/contact-merge-tag/',
                     },
                     {
                         text: 'Contact\'s Profile',
-                        link: '/contact-profile/',
+                        link: '/modules/contact-profile-section/',
                     },
                     {
                         text: 'Global Navigation Menu',
-                        link: '/global-navigation/',
+                        link: '/modules/navigation-modules',
                     },
                     {
                         text: 'Extending REST API',

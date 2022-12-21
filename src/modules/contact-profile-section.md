@@ -1,0 +1,39 @@
+## Custom Profile Section for FluentCRM
+
+```php
+add_action('fluentcrm_loaded',  function () {
+    FluentCrmApi('extender')->addProfileSection('my_custom_thing', [
+        'menu_title' => 'My Custom Section',
+        'callback' => function($contentArr, $subscriber) {
+            $contentArr['heading'] = 'Hello There';
+            $contentArr['content_html'] = "
+                       <div>
+                            <h4>My Content</h4>
+                            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                             Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a
+                             galley of type and scrambled ...</p>
+                       </div>
+               " .$subscriber->email;
+            return $contentArr;
+        }
+    ]);
+});
+```
+### How it works
+The custom section is added via the `addProfileSection` method of the FluentCRM Extender API. This method takes two arguments:
+
+- `my_custom_thing`: the key of the custom section. This ID will be used to identify the section. 
+  You may rename it as you like but make sure that it does not conflict with other section
+
+- An array of options for the custom section. The options include:
+    - `menu_title`: the title that will be displayed for the custom section in the menu.
+    - `callback`: a callback function that will be called when the custom section is displayed. 
+      The function takes two arguments: `$contentArr` and `$subscriber`. `$contentArr` is an array containing the content of the custom section, 
+      and `$subscriber` is an object representing the subscriber whose profile is being displayed.
+
+The `$contentArr` includes two elements: 
+ - `heading`: a string containing the heading for the custom section. This heading will be displayed at the top of the section.
+ - `content_html`: a string containing the HTML content of the custom section. This content will be displayed below the heading. 
+  You may use any html tags you wish. You will enjoy the flexibility of using any HTML tags to display your custom content.
+
+Finally, the modified `$contentArr` is returned.
