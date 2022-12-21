@@ -148,7 +148,7 @@ module.exports = {
             '/global-functions/': globalFunctionsSidebar,
             '/hooks/': hooksSidebar,
             '/helpers/': helpersSidebar,
-            '/automation/': modulesSidebar,
+            '/modules/': modulesSidebar,
 
         }
     },
