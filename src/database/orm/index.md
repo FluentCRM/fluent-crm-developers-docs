@@ -196,7 +196,7 @@ $customer = FluentCrm\App\Models\Customer::where('age', '>', 21)->firstOrFail();
 
 
 ## Retrieving Aggregates
-You may also use the `count`, `sum`, `max`, and other <a :href="$withBase('/database/aggregate-methods')">aggregate methods</a> provided by the <a :href="$withBase('/database/query-builder')">query builder</a>. These methods return the appropriate scalar value instead of a full model instance:
+You may also use the `count`, `sum`, `max`, and other <a :href="$withBase('/database/query-builder/#aggregates')">aggregate methods</a> provided by the <a :href="$withBase('/database/query-builder')">query builder</a>. These methods return the appropriate scalar value instead of a full model instance:
 ```php
 $count = FluentCrm\App\Models\Customer::where('active', 1)->count();
  
