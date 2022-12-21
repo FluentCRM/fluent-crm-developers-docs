@@ -122,14 +122,6 @@ module.exports = {
                     {
                         text: 'Contact\'s Profile',
                         link: '/modules/contact-profile-section/',
-                    },
-                    {
-                        text: 'Global Navigation Menu',
-                        link: '/modules/navigation-modules',
-                    },
-                    {
-                        text: 'Extending REST API',
-                        link: '/extending-rest-api/',
                     }
                 ],
             },
