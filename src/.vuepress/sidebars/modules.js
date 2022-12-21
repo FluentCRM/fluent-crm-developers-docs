@@ -8,6 +8,7 @@ module.exports = [
             ['/modules/trigger', 'Trigger '],
             ['/modules/action', 'Action '],
             ['/modules/benchmark', 'Benchmark '],
+            ['/modules/form-field-code-structure', 'Form Field Code Structure']
         ]
     },
     {

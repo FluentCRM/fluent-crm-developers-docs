@@ -4,7 +4,7 @@
 
 
 ## Introduction
-All multi-result sets returned by Eloquent are instances of the `FluentCrm\Framework\Database\Orm\Collection` object, including results retrieved via the `get` method or accessed via a relationship. The Fluent ORM collection naturally inherits dozens of methods used to fluently work with the underlying array of Fluent ORM models.
+All multi-result sets returned by Fluent ORM are instances of the `FluentCrm\Framework\Database\Orm\Collection` object, including results retrieved via the `get` method or accessed via a relationship. The Fluent ORM collection naturally inherits dozens of methods used to fluently work with the underlying array of Fluent ORM models.
 
 Of course, all collections also serve as iterators, allowing you to loop over them as if they were simple PHP arrays:
 ```php

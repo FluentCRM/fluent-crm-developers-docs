@@ -72,17 +72,17 @@ class Address extends Model
      */
     public function customer()
     {
-        return $this->hasOne('FluentCrm\App\Models\Customer');
+        return $this->belongsTo('FluentCrm\App\Models\Customer');
     }
 }
 ```
 In the example above, Fluent ORM will try to match the `customer_id` from the `Address` model to an id on the `Customer` model. Fluent ORM determines the default foreign key name by examining the name of the relationship method and suffixing the method name with `_id`. However, if the foreign key on the `Address` model is not `customer_id`, you may pass a custom key name as the second argument to the `belongsTo` method:
 ```php
-return $this->belongsTo('FluentCrm\App\Models\Address', 'foreign_key');
+return $this->belongsTo('FluentCrm\App\Models\Customer', 'foreign_key');
 ```
 If your parent model does not use `id` as its primary key, or you wish to join the child model to a different column, you may pass a third argument to the `belongsTo` method specifying your parent table's custom key:
 ```php
-return $this->belongsTo('FluentCrm\App\Models\Address', 'foreign_key', 'other_key');
+return $this->belongsTo('FluentCrm\App\Models\Customer', 'foreign_key', 'other_key');
 ```
 
 ### One To Many
