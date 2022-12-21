@@ -1,22 +1,21 @@
 ## Custom Profile Section for FluentCRM
-
+This code adds a custom profile section to the FluentCRM plugin.
 ```php
 add_action('fluentcrm_loaded',  function () {
-    FluentCrmApi('extender')->addProfileSection('my_custom_thing', [
-        'menu_title' => 'My Custom Section',
-        'callback' => function($contentArr, $subscriber) {
-            $contentArr['heading'] = 'Hello There';
-            $contentArr['content_html'] = "
+    $key = 'my_custom_section';
+    $sectionTitle = 'My Custom Section';
+    $callback = function($contentArr, $subscriber) {
+        $contentArr['heading'] = 'Content Heading';
+        $contentArr['content_html'] = "
                        <div>
                             <h4>My Content</h4>
-                            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                             Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a
-                             galley of type and scrambled ...</p>
+                            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard 
+                            dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled ...</p>
                        </div>
                " .$subscriber->email;
-            return $contentArr;
-        }
-    ]);
+        return $contentArr;
+    };
+    FluentCrmApi('extender')->addProfileSection( $key, $sectionTitle, $callback);
 });
 ```
 ### How it works

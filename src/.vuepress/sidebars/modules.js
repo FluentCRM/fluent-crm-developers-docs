@@ -26,13 +26,5 @@ module.exports = [
         children: [
             ['/modules/contact-profile-section', 'Contact Profile Section'],
         ]
-    },
-    {
-        title: 'FluentCRM Navigation Menu',
-        collapsable: false,
-        sidebarDepth: -1,
-        children: [
-            ['/modules/navigation-modules', 'Navigation Menu'],
-        ]
-    },
+    }
 ];
