@@ -122,6 +122,10 @@ module.exports = {
                     {
                         text: 'Contact\'s Profile',
                         link: '/modules/contact-profile-section/',
+                    },
+                    {
+                        text: 'Extending REST API',
+                        link: '/extending-rest-api/',
                     }
                 ],
             },
