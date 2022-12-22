@@ -36,3 +36,7 @@ The `$contentArr` includes two elements:
   You may use any html tags you wish. You will enjoy the flexibility of using any HTML tags to display your custom content.
 
 Finally, the modified `$contentArr` is returned.
+
+The following Image shows the custom section added by the above code:
+
+<img :src="$withBase('/assets/img/modules/custom_profile_section.jpg')" alt="My Custom Section" />
