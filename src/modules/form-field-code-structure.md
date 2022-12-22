@@ -1,8 +1,8 @@
 # Form Field Code Structure
 
-Fluent CRM has a cool structural format of generating form fields. Using this structural format anyone can make a form without writing any HTML or JavaScript. The form fields will depend on the structural format.
+Fluent CRM offers an easy way to create forms without any knowledge of HTML or JavaScript by using its structural format for generating form fields. The form fields are determined by this structure.
 
-There are several types of form fields in Fluent CRM and all those have almost the same structural format. There are 26 types of form fields in fluent CRM. There are also some common and optional fields in every form block. Let’s look at first the common/optional fields
+There are 26 different types of form fields available in Fluent CRM. In addition to the specific form fields, there are also some common and optional fields that can be included in every form block. These common and optional fields include:
 
 <table>
     <thead>
@@ -14,23 +14,23 @@ There are several types of form fields in Fluent CRM and all those have almost t
     <tbody>
         <tr>
             <td>label</td>
-            <td>Label title of your form field</td>
+            <td>The `label` value is a string that will be displayed as the label for the form field.</td>
         </tr>
         <tr>
             <td>inline_help</td>
-            <td>Help message below your form input</td>
+            <td>The `inline_help` value is a string that will be displayed as inline help text for the form field.</td>
         </tr>
         <tr>
             <td>placeholder</td>
-            <td>Placeholder of the selector</td>
+            <td>The `placeholder` value is a string that will be displayed as the placeholder text in the form field when no option has been selected.</td>
         </tr>
         <tr>
             <td>help</td>
-            <td>Description about selector</td>
+            <td>The `help` value is a string that will be displayed as a help text for the form field.</td>
         </tr>
         <tr>
             <td>wrapper_class</td>
-            <td>(Optional) With this property, someone can customize the form block design.</td>
+            <td>(Optional) The `wrapper_class` value specifies a class that will be applied to the wrapper element for the form field.</td>
         </tr>
         <tr>
             <td>readonly</td>
@@ -81,7 +81,14 @@ There are several types of form fields in Fluent CRM and all those have almost t
     'placeholder' => 'Select Status'
 ]
 ```
-This is a simple `option_selectors` type field component, you can find this structure in every integration. The `option_key` is used to get the correct options from WordPress. The `is_multiple` defines whether the option selector is multiple or not.
+
+This code is defining an array with keys and values for a form field in Fluent CRM. The form field has the key 'subscription_status', and the values for this field include:
+
+- `type`: `option_selectors`
+- `option_key`: `editable_statuses`
+- `is_multiple`: false
+
+The `type` value indicates that this form field is an `option_selectors` field, which is a type of form field that allows the user to select one or more options from a list. The `option_key` value specifies the key for the list of options that will be displayed in the form field, which in this case is `editable_statuses`. The `is_multiple` value is a boolean indicating whether the user can select multiple options from the list or just one.
 
 <table>
     <thead>
@@ -226,13 +233,21 @@ This is a simple `option_selectors` type field component, you can find this stru
           [
                 'id'    => '2',
                 'title' => 'First Product'
-          ]
+          ],
+          ...
     ],
     'inline_help' => 'Keep it blank to run to any product purchase',
 ],
 ```
 
-This is an example `multi-select` type field component, you can find this structure in every integration. The `options` property contains the options of the select field. The structure of single select and multi-select is the same. Every option has two properties, `id` & `title`.
+This code is defining an array with keys and values for a form field in Fluent CRM. The form field has the key `product_ids`, and the values for this field include:
+
+- `type`: `multi-select`
+- `options`: an array with a single element, which is itself an array with two keys: `id` and `title`. The value of `id` is `2`, and the value of `title` is `First Product`.
+
+The `type` value indicates that this form field is a `multi-select` field, which is a type of form field that allows the user to select one or more options from a list. The `options` value is an array that contains the available options for the form field, with each option represented as an array with `id` and `title` keys.
+
+This form field allows the user to select one or more products from a list of available options. The help and inline help text provide additional information and guidance to the user.
 
 #### The preview of the example block
 
@@ -271,13 +286,21 @@ This is an example `multi-select` type field component, you can find this struct
         [
             'id'    => 'all',
             'title' => 'Any type of purchase'
-        ]
+        ],
+        ...
     ],
     'inline_help' => 'For what type of purchase you want to run this goal'
 ],
 ```
 
-This is an example `radio` type field component, you can find this structure in every integration. The `options` property contains the values of the radio fields. Every option has two properties, `id` & `title`.
+This code is defining an array with keys and values for a form field in Fluent CRM. The form field has the key `purchase_type`, and the values for this field include:
+
+- `type`: `radio`
+- `options`: an array with a single element, which is itself an array with two keys: `id` and `title`. The value of `id` is `all`, and the value of `title` is `Any type of purchase`.
+
+The `type` value indicates that this form field is a `radio` field, which is a type of form field that allows the user to select one option from a list of available options by clicking on a radio button. The `options` value is an array that contains the available options for the form field, with each option represented as an array with `id` and `title` keys.
+
+This form field allows the user to select the type of purchase for which they want to run this goal. The user can choose the option `Any type of purchase` by clicking on the corresponding radio button. The help and inline help text provide additional information and guidance to the user.
 
 ### Options Key possible sets:
 
@@ -314,7 +337,13 @@ This is an example `radio` type field component, you can find this structure in 
 ],
 ```
 
-This is an example `input-number` type field component, you can find this structure in every integration. There are also some optional properties.
+This code is defining an array with keys and values for a form field in Fluent CRM. The form field has the key `wait_time_amount`, and the values for this field include:
+
+- `type`: `input-number`
+
+The `type` value indicates that this form field is an `input-number` field, which is a type of form field that allows the user to input a numerical value.
+
+This form field allows the user to input a numerical value for the wait time. The label and wrapper class provide additional styling and layout information for the form field.
 
 #### The preview of the example block.
 
@@ -333,7 +362,13 @@ This is an example `input-number` type field component, you can find this struct
 ]
 ```
 
-This is an example `input-text` type field component, you can find this structure in every integration.
+This code is defining an array with keys and values for a form field in Fluent CRM. The form field has the key `send_email_custom`, and the values for this field include:
+
+- `type`: `input-text`
+
+The `type` value indicates that this form field is an `input-text` field, which is a type of form field that allows the user to input text.
+
+This form field allows the user to input one or more email addresses to which the form should be sent. The user can enter multiple email addresses by separating them with commas. The label, placeholder, and inline help text provide additional guidance and context for the user. The wrapper class provides additional styling information for the form field.
 
 #### The preview of the example block.
 
@@ -351,7 +386,14 @@ This is an example `input-text` type field component, you can find this structur
 ]
 ```
 
-This is an example `input-text-popper` type field component, you can find this structure in every integration. The possible value of the `field_type` property is `text` or `textarea`.
+This code is defining an array with keys and values for a form field in Fluent CRM. The form field has the key `note`, and the values for this field include:
+
+- `type`: `input-text-popper`
+- `field_type`: `textarea`
+
+The `type` value indicates that this form field is an `input-text-popper` field, which is a type of form field that allows the user to input text and displays a popover or tooltip with additional information when the user hovers over the field. The `field_type` value specifies that the form field should be a `textarea`, which is a type of form field that allows the user to input multi-line text.
+
+This form field allows the user to input a note that will be added to the reference order. The user can use smart tags in the note, and the label and help text provide additional context and guidance for the user. The popover or tooltip will display additional information when the user hovers over the field.
 
 #### The preview of the example block.
 
@@ -369,7 +411,14 @@ This is an example `input-text-popper` type field component, you can find this s
 ]
 ```
 
-This is an example `yes_no_check` type field component, you can find this structure in every integration.
+This code is defining an array with keys and values for a form field in Fluent CRM. The form field has the key `run_multiple`, and the values for this field include:
+
+- `type`: `yes_no_check`
+- `check_label`: `Restart the Automation Multiple times for a contact for this event. (Only enable if you want to restart automation for the same contact)`
+
+The `type` value indicates that this form field is a `yes_no_check` field, which is a type of form field that allows the user to select either `yes` or `no` by checking or unchecking a checkbox. The `check_label` value is a string that will be displayed next to the checkbox as the label for the field.
+
+This form field allows the user to specify whether the automation should be restarted multiple times for a contact for a specific event. If the user enables the option by checking the checkbox, the automation will be restarted for a contact if the contact is already in the automation. If the option is not enabled, the automation will be skipped for a contact that is already in the automation. The check label and inline help text provide additional information and guidance to the user.
 
 #### The preview of the example block:
 
@@ -391,16 +440,26 @@ This is an example `yes_no_check` type field component, you can find this struct
                      [
                          'id'    => '1'
                          'title' => 'First Lesson'
-                     ]
+                     ],
+                     ...
                ]
-          ]
+          ],
+          ...
     ],
     'is_multiple' => true,
     'inline_help' => 'Keep it blank to run to any Lesson',
 ],
 ```
 
-This is an example `grouped-select` type field component, you can find this structure in every integration. The `options` property contains a list. Every option has three properties `title`, `slug` & `options`(Every `options` of this property contains two fields named `id` & `title`).
+This code is defining an array with keys and values for a form field in Fluent CRM. The form field has the key `lesson_ids`, and the values for this field include:
+
+- `type`: `grouped-select`
+- `options`: an array with one or more elements, each of which is itself an array with three keys: `title`, `slug`, and `options`. The value of `title` is the title of a course, the value of `slug` is a unique identifier for the course, and the value of `options` is an array with one or more elements, each of which is itself an array with two keys: `id` and `title`. The value of `id` is a unique identifier for a lesson, and the value of `title` is the title of the lesson.
+- `is_multiple`: true
+
+The `type` value indicates that this form field is a `grouped-select` field, which is a type of form field that allows the user to select one or more options from a list that is organized into groups. The `options` value is an array that contains the available options for the form field, grouped by course and represented as arrays with `title`, `slug`, and `options` keys. The `is_multiple` value specifies that the user can select multiple options from the list.
+
+This form field allows the user to select one or more lessons from a list of available options, organized by course. The user can select multiple options by holding down the Ctrl key while making their selections. The help and inline help text provide additional information and guidance to the user. The form field will run the automation for the selected lessons. If no lessons are selected, the automation will run for any lesson.
 
 #### Options possible sets:
 
@@ -414,15 +473,15 @@ This is an example `grouped-select` type field component, you can find this stru
     <tbody>
         <tr>
             <td>title</td>
-            <td>set course title</td>
+            <td>The `title` value is a string that represents the title of the course. </td>
         </tr>
         <tr>
             <td>slug</td>
-            <td>set course slug</td>
+            <td>The `slug` value is a unique identifier for the course.</td>
         </tr>
         <tr>
             <td>options</td>
-            <td>Dynamic Data sets: Possible Values – <a href="#options-options-possible-sets">See below</a></td>
+            <td>The `options` value is an array that contains the lessons for the course – <a href="#options-options-possible-sets">See below</a></td>
         </tr>
     </tbody>
 </table>
@@ -439,11 +498,11 @@ This is an example `grouped-select` type field component, you can find this stru
     <tbody>
         <tr>
             <td>id</td>
-            <td>set selector id</td>
+            <td>The value of `id` is a unique identifier for a option</td>
         </tr>
         <tr>
             <td>title</td>
-            <td>set selector title</td>
+            <td>The value of `title` is the title for a option</td>
         </tr>
     </tbody>
 </table>
@@ -465,7 +524,14 @@ This is an example `grouped-select` type field component, you can find this stru
 ]
 ```
 
-This is an example `multi_text_options` type field component, you can find this structure in every integration.
+This code defines an array with keys and values for a form field in Fluent CRM. The form field has the key `target_lesson`, and the values for this field include:
+
+- `type`: `multi_text_options`
+- `input_type`: `text`
+
+The `type` value indicates that this form field is a `multi_text_options` field, which is a type of form field that allows the user to input multiple text options. The `input_type` value specifies that the form field should be a `text` field, which is a type of form field that allows the user to input a single line of text.
+
+This form field allows the user to input multiple text options, each on a separate line. The options will be stored as an array of strings. The form field has a label and help text that provide context and guidance for the user, and a placeholder and inline help text that provide additional guidance and information. If no options are entered, the form field will run for all lessons.
 
 #### The preview of the example block.
 
@@ -481,7 +547,13 @@ This is an example `multi_text_options` type field component, you can find this 
 ],
 ```
 
-This is an example `email_campaign_composer` type field component, you can find this structure in every integration.
+This code is defining an array with keys and values for a form field in Fluent CRM. The form field has the key `campaign`, and the values for this field include:
+
+- `type`: `email_campaign_composer`
+
+The `type` value indicates that this form field is an `email_campaign_composer` field, which is a type of form field that allows the user to get an email campaign template editor block.
+
+This form field allows the user to get an email campaign template editor block by inputting various campaign details and creating the email content. The form field does not have a label, so it is likely used in conjunction with other form fields that provide context and guidance for the user.
 
 #### The preview of the example block.
 
@@ -499,13 +571,21 @@ This is an example `email_campaign_composer` type field component, you can find 
           [
               'id'    => '1',
               'title' => 'First Course'
-          ]
+          ],
+          ...
      ],
     'inline_help' => 'You must select a course'
 ],
 ```
 
-This is an example `reload_field_selection` type field component, you can find this structure in every integration. The `options` property contains a list. Every option has two properties named `id` & `title`.
+This code is defining an array with keys and values for a form field in Fluent CRM. The form field has the key `course_id`, and the values for this field include:
+
+- `type`: `reload_field_selection`
+- `options`: an array with one or more elements, each of which is itself an array with two keys: `id` and `title`. The value of `id` is a unique identifier for a course, and the value of `title` is the title of the course.
+
+The `type` value indicates that this form field is a `reload_field_selection` field, which is a type of form field that allows the user to select an option from a list and then reloads a selection field based on the selected option. The `options` value is an array that contains the available options for the form field, represented as arrays with `id` and `title` keys.
+
+This form field allows the user to select a course from a list of available options. When the user selects a course, the form field will reload a selection field based on the selected course. The form field has a label and help text that provide context and guidance for the user, and inline help text that reminds the user that they must select a course. The form field uses the unique identifiers and titles of the courses as the options for the selection field.
 
 #### Options possible sets:
 
@@ -519,11 +599,11 @@ This is an example `reload_field_selection` type field component, you can find t
     <tbody>
         <tr>
             <td>id</td>
-            <td>set selector id</td>
+            <td>The value of `id` is a unique identifier for a option</td>
         </tr>
         <tr>
             <td>title</td>
-            <td>set selector title</td>
+            <td>The value of `title` is the title for a option</td>
         </tr>
     </tbody>
 </table>
@@ -543,7 +623,8 @@ This is an example `reload_field_selection` type field component, you can find t
         [
             'id'    => '',
             'title' => ''
-        ]
+        ],
+        ...
     ],
     'local_label'      => 'Contact Field (CRM)',
     'remote_label'     => 'Form Field',
@@ -564,9 +645,17 @@ This is an example `reload_field_selection` type field component, you can find t
 ]
 ```
 
-This is an example `form-group-mapper` type field component, you can find this structure in every integration. The `value_options` property contains a list of options of Fluent Form. Every option has two properties named `id` & `title`.
+This code is defining an array with keys and values for a form field in Fluent CRM. The form field has the key `primary_fields`, and the values for this field include:
 
-There is also a property named `fields` which contains a list of input fields.
+- `type`: `form-group-mapper`
+- `value_options`: an array with one or more elements, each of which is itself an array with two keys: `id` and `title`. The values of `id` and `title` are both empty strings.
+- `local_label`: `Contact Field (CRM)`
+- `remote_label`: `Form Field`
+- `fields`: an array with keys and values for form fields that allow the user to select options from a list.
+
+The `type` value indicates that this form field is a `form-group-mapper` field, which is a type of form field that allows the user to map data between two groups of fields. The `value_options` value is an array that contains the available options for the form field. The `local_label` and `remote_label` values are strings that will be displayed as labels for the two groups of fields. The `fields` value is an array that contains keys and values for form fields that allow the user to select options from a list.
+
+This form field allows the user to map data between two groups of fields. The form field has a label and uses the `local_label` and `remote_label` values to label the two groups of fields. The form field uses the `value_options` array to provide the available options for the user to select from. The form field also has keys and values for form fields that allow the user to select options from a list. These form fields allow the user to map specific data between the two groups of fields.
 
 #### The preview of the example block.
 
@@ -583,7 +672,8 @@ There is also a property named `fields` which contains a list of input fields.
         [
             'id'    => '',
             'title' => ''
-        ]
+        ],
+        ...
     ],
     'local_label'        => 'Select Contact Property',
     'remote_label'       => 'Select Form Field',
@@ -606,9 +696,19 @@ There is also a property named `fields` which contains a list of input fields.
 ]
 ```
 
-This is an example `form-many-drop-down-mapper` type field component, you can find this structure in every integration. The `value_options` property contains a list of options of Fluent Form. Every option has two properties named `id` & `title`.
+This code is defining an array with keys and values for a form field in Fluent CRM. The form field has the key `other_fields`, and the values for this field include:
 
-There is also a property named `fields` which contains a list of input fields.
+- `type`: `form-many-drop-down-mapper`
+- `value_options`: an array with one or more elements, each of which is itself an array with two keys: `id` and `title`. The values of `id` and `title` are both empty strings.
+- `local_label`: `Select Contact Property`
+- `remote_label`: `Select Form Field`
+- `local_placeholder`: `Select Contact Property`
+- `remote_placeholder`: `Select Form Property`
+- `fields`: an array with keys and values for form fields that allow the user to select options from a list.
+
+The `type` value indicates that this form field is a `form-many-drop-down-mapper` field, which is a type of form field that allows the user to map data between two groups of fields using drop-down menus. The `value_options` value is an array that contains the available options for the form field. The `local_label` and `remote_label` values are strings that will be displayed as labels for the two groups of fields, and the `local_placeholder` and `remote_placeholder` values are strings that will be displayed as placeholders for the drop-down menus. The `fields` value is an array that contains keys and values for form fields that allow the user to select options from a list.
+
+This form field allows the user to map data between two groups of fields using drop-down menus. The form field has a label and uses the `local_label` and `remote_label` values to label the two groups of fields. The form field uses the `value_options` array to provide the available options for the user to select from, and the `local_placeholder` and `remote_placeholder` values provide placeholders for the drop-down menus. The form field also has keys and values for form fields that allow the user to select options from a list. These form fields allow the user to map specific data between the two
 
 #### The preview of the example block.
 
@@ -624,7 +724,7 @@ There is also a property named `fields` which contains a list of input fields.
 ]
 ```
 
-This is an example `html` type field component, you can find this structure in every integration. The `info` property is required.
+The `type` element is set to `html`, which indicates that the content in the `info` element is in HTML format.
 
 
 ## Url selector
@@ -639,7 +739,13 @@ This is an example `html` type field component, you can find this structure in e
 ],
 ```
 
-This is an example `url_selector` type field component, you can find this structure in every integration.
+This code is defining an array with keys and values for a form field in Fluent CRM. The form field has the key `redirect_to`, and the values for this field include:
+
+- `type`: `url_selector`
+
+The `type` value indicates that this form field is a `url_selector` field, which is a type of form field that allows the user to input a URL.
+
+This form field allows the user to input a URL. The form field has a label and a placeholder that provide context and guidance for the user, and help and inline help text that explain the purpose of the form field. When the user inputs a URL and submits the form, contacts will be redirected to the URL.
 
 #### The preview of the example block:
 
@@ -664,14 +770,25 @@ This is an example `url_selector` type field component, you can find this struct
                       'id'    => 'lead',
                       'slug'  => 'lead',
                       'title' => 'Lead'
-                  ]
+                  ],
+                  ...
              ]
          ],
     ]
 ]
 ```
 
-This is an example `input_value_pair_properties` type field component, you can find this structure in every integration. The `property_options` property contains a list of other different types of field components.
+This code is defining an array with keys and values for a form field in Fluent CRM. The form field has the key `contact_properties`, and the values for this field include:
+
+- `type`: `input_value_pair_properties`
+- `support_operations`: `yes`
+- `data_key_label`: `Contact Property`
+- `data_value_label`: `Property Value`
+- `property_options`: an array with keys and values for form fields that allow the user to input key-value pairs
+
+The `type` value indicates that this form field is an `input_value_pair_properties` field, which is a type of form field that allows the user to input key-value pairs. The `support_operations` value is a string that specifies whether the form field supports operations. The `data_key_label` and `data_value_label` values are strings that will be displayed as labels for the input fields for the key and value, respectively. The `property_options` value is an array that contains keys and values for form fields that allow the user to input key-value pairs.
+
+This form field allows the user to input key-value pairs for contact properties that they want to update. The form field has a label and labels for the input fields that provide context and guidance for the user. The `property_options` array contains keys and values for form fields that allow the user to input key-value pairs. When the user inputs the key-value pairs and submits the form, the contact properties will be updated with the specified key-value pairs.
 
 #### property_options possible sets:
 
@@ -684,42 +801,16 @@ This is an example `input_value_pair_properties` type field component, you can f
     </thead>
     <tbody>
         <tr>
-            <td>label</td>
-            <td>set selector label</td>
-        </tr>
-        <tr>
-            <td>type</td>
-            <td>set selector type</td>
-        </tr>
-        <tr>
-            <td>options</td>
-            <td>Dynamic Data Sets: Possible Values – <a href="#property-options-options-possible-sets">See below</a></td>
-        </tr>
-    </tbody>
-</table>
-
-
-#### property_options -> options possible sets:
-
-<table>
-    <thead>
-        <tr>
-            <th>key</th>
-            <th>Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
             <td>id</td>
-            <td>set selector id</td>
+            <td>The value of `id` is a unique identifier for a option</td>
         </tr>
         <tr>
             <td>slug</td>
-            <td>set selector slug</td>
+            <td>The value of `slug` is the title for a option</td>
         </tr>
         <tr>
             <td>title</td>
-            <td>set selector title</td>
+            <td>The value of `title` is the title for a option</td>
         </tr>
     </tbody>
 </table>
@@ -744,7 +835,18 @@ This is an example `input_value_pair_properties` type field component, you can f
 ],
 ```
 
-This is an example `text-value-multi-properties` type field component, you can find this structure in every integration.
+This code is defining an array with keys and values for a form field in Fluent CRM. The form field has the key `meta_properties`, and the values for this field include:
+
+- `type`: `text-value-multi-properties`
+- `data_key_label`: `User Meta Key`
+- `data_value_label`: `User Meta Value`
+- `data_value_placeholder`: `Meta Value`
+- `data_key_placeholder`: `Meta key`
+- `value_input_type`: `text-popper`
+
+The `type` value indicates that this form field is a `text-value-multi-properties` field, which is a type of form field that allows the user to input multiple key-value pairs. The `data_key_label` and `data_value_label` values are strings that will be displayed as labels for the input fields for the key and value, respectively. The `data_value_placeholder` and `data_key_placeholder` values are strings that will be displayed as placeholders in the input fields for the value and key, respectively. The `value_input_type` value specifies the type of input field for the value.
+
+This form field allows the user to input multiple key-value pairs for user meta properties. The form field has a label and labels for the input fields that provide context and guidance for the user, and placeholders that provide examples of the expected input. The form field also has a help text that explains the purpose of the form field. When the user inputs the key-value pairs and submits the form, the user meta properties will be updated with the specified key-value pairs.
 
 #### The preview of the example block.
 
@@ -760,7 +862,13 @@ This is an example `text-value-multi-properties` type field component, you can f
 ]
 ```
 
-This is an example `html_editor` type field component, you can find this structure in every integration.
+This code is defining an array with keys and values for a form field in Fluent CRM. The form field has the key `description`, and the values for this field include:
+
+- `type`: `html_editor`
+
+The `type` value indicates that this form field is an `html_editor` field, which is a type of form field that allows the user to input and edit HTML content.
+
+This form field allows the user to input and edit HTML content. The form field has a label that provides context and guidance for the user. When the user inputs and edits the HTML content and submits the form, the HTML content will be stored and processed as needed.
 
 #### The preview of the example block.
 
@@ -780,7 +888,15 @@ This is an example `html_editor` type field component, you can find this structu
 ]
 ```
 
-This is an example `rest_selector` type field component, you can find this structure in every integration. The option_key is a required property.
+This code is defining an array with keys and values for a form field in Fluent CRM. The form field has the key `course_id`, and the values for this field include:
+
+- `type`: `rest_selector`
+- `option_key`: `product_selector_learndash`
+- `clearable`: true
+
+The `type` value indicates that this form field is a `rest_selector` field, which is a type of form field that allows the user to select from a list of options that are loaded from a REST endpoint. The `option_key` value specifies the key for the REST endpoint that will be used to load the options. The `clearable` value specifies whether or not the user can clear their selection.
+
+This form field allows the user to select a course from a list of options that are loaded from a REST endpoint. The form field has a label and a placeholder that provide context and guidance for the user, and the user can select a single option or clear their selection if needed. When the user selects a course and submits the form, the selected course will be stored and processed as needed.
 
 
 #### The preview of the example block.
@@ -812,14 +928,27 @@ This is an example `rest_selector` type field component, you can find this struc
                         'value' => 'first_name',
                         'type'  => 'nullable_text'
                     ],
+                    ...
                  ]
-            ]
+            ],
+            ...
     ],
     'add_label'   => 'Add Condition to check your contact\'s properties',
 ]
 ```
 
-This is an example `condition_block_groups` type field component, you can find this structure in every integration. The `labels` are a required property. The `groups` field contains the condition groups of a specific `condition_block_groups` type field component.
+This code is defining an array with keys and values for a form field in Fluent CRM. The form field has the key `conditions`, and the values for this field include:
+
+- `type`: `condition_block_groups`
+- `labels`: an array of labels for different parts of the form field
+- `groups`: an array of groups of conditions
+- `add_label`: `Add Condition to check your contact`s properties`
+
+The `type` value indicates that this form field is a `condition_block_groups` field, which is a type of form field that allows the user to specify conditions that need to be met for a certain action to be taken.
+
+The `labels` array includes strings that will be used as labels for different parts of the form field, such as the `match_type_all_label` which is the label for the option to match all conditions, the `match_type_any_label` which is the label for the option to match any condition, the `data_key_label` which is the label for the field where the user selects a contact data property, the `condition_label` which is the label for the field where the user selects a condition, and the `data_value_label` which is the label for the field where the user inputs a value to match.
+
+The `groups` array includes groups of conditions that the user can specify. Each group has a `label` and a `value` that identifies the group, and a `children` array that includes the individual conditions in the group. Each condition has a `label`, a `value`, and a `type` that specifies the type of input field to use for the value
 
 #### The preview of the example block.
 
@@ -838,7 +967,12 @@ This is an example `condition_block_groups` type field component, you can find t
 ]
 ```
 
-This is an example `custom_sender_config` type field component, you can find this structure in every integration. The `check_label` property is the title of the block
+This code is defining an array with keys and values for a form field in Fluent CRM. The form field has the key `mailer_settings`, and the value for this field is:
+
+- `type`: `custom_sender_config`
+- `check_label`: `Set Custom From Name and Email`
+
+The `type` value indicates that this form field is a `custom_sender_config` field, which is a type of form field that allows the user to specify custom sender settings for an email. The `check_label` value is a string that will be displayed as the label for a checkbox associated with this form field. When the checkbox is checked, the user can specify custom sender settings. When it is not checked, the default sender settings will be used.
 
 #### The preview of this example block
 
@@ -863,12 +997,20 @@ This is an example `custom_sender_config` type field component, you can find thi
         [
             'id'    => 'to_day',
             'title' => 'To a day of the week'
-        ]
+        ],
+        ...
     ]
 ],
 ```
 
-This is an example `radio_buttons` type field component, you can find this structure in every integration. The `options` property is a list.
+This code is defining an array with keys and values for a form field in Fluent CRM. The form field has the key `wait_type`, and the value for this field is:
+
+- `type`: `radio_buttons`
+- `options`: an array of radio button options
+
+The `type` value indicates that this form field is a `radio_buttons` field, which is a type of form field that allows the user to select one option from a list of radio buttons.
+
+The `options` value is an array of radio button options, where each option is an array containing an `id` and `title` value. The `id` value is a string that specifies the unique identifier for the radio button option, and the `title` value is a string that will be displayed as the label for the radio button option.
 
 #### options possible sets:
 
@@ -882,11 +1024,11 @@ This is an example `radio_buttons` type field component, you can find this struc
     <tbody>
         <tr>
             <td>id</td>
-            <td>set selector id</td>
+            <td>The value of `id` is a unique identifier for a option</td>
         </tr>
         <tr>
             <td>title</td>
-            <td>set selector title</td>
+            <td>The value of `title` is the title for a option</td>
         </tr>
     </tbody>
 </table>
@@ -907,12 +1049,21 @@ This is an example `radio_buttons` type field component, you can find this struc
         [
             'id'    => 'Mon',
             'title' => 'Mon'
-        ]
+        ],
+        ...
     ],
 ],
 ```
 
-This is an example `checkboxes` type field component, you can find this structure in every integration. The `options` property is a list containing days info of a week. This example block depends on a wait_type field. If the `wait_type` value is to_day, then this block will show.
+This code is defining an array with keys and values for a form field in Fluent CRM. The form field has the key `to_day`, and the value for this field is:
+
+- `type`: `checkboxes`
+- `wrapper_class`: `fc_2col_inline pad-r-20`
+- `options`: an array of checkbox options
+
+The `type` value indicates that this form field is a `checkboxes` field, which is a type of form field that allows the user to select one or more options from a list of checkboxes. The `wrapper_class` value is a string that specifies a class name for the container element that wraps this form field. 
+
+The `options` value is an array of checkbox options, where each option is an array containing an `id` and `title` value. The `id` value is a string that specifies the unique identifier for the checkbox option, and the `title` value is a string that will be displayed as the label for the checkbox option.
 
 #### options possible sets:
 
@@ -924,13 +1075,13 @@ This is an example `checkboxes` type field component, you can find this structur
         </tr>
     </thead>
     <tbody>
-        <tr>
+         <tr>
             <td>id</td>
-            <td>set selector id</td>
+            <td>The value of `id` is a unique identifier for a option</td>
         </tr>
         <tr>
             <td>title</td>
-            <td>set selector title</td>
+            <td>The value of `title` is the title for a option</td>
         </tr>
     </tbody>
 </table>
@@ -956,28 +1107,7 @@ This is an example `checkboxes` type field component, you can find this structur
 ]
 ```
 
-This is an example `time_selector` type field component, you can find this structure in every integration. The `picker_options` property contains three properties named `start`, `step` & `end`. This example block depends on a wait_type field. If the `wait_type` value is to_day, then this block will show.
-
-#### options possible sets:
-
-<table>
-    <thead>
-        <tr>
-            <th>key</th>
-            <th>Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>id</td>
-            <td>set selector id</td>
-        </tr>
-        <tr>
-            <td>title</td>
-            <td>set selector title</td>
-        </tr>
-    </tbody>
-</table>
+The `to_day_time` field is a time selector that allows the user to select a specific time of the day. The time picker has options for the start time, time increment step, and end time. The start time is set to 00:00 (midnight), the step is set to 10 minutes, and the end time is set to 23:59 (one minute before midnight). The `to_day_time` field is displayed in a two column layout and has a placeholder text of "Select Time". It is likely used in conjunction with the `to_day` field to specify a specific day and time for the wait period.
 
 #### The preview of this example block.
 
