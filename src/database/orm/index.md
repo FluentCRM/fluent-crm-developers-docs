@@ -4,8 +4,10 @@
 
 ## Introduction
 
-The Fluent ORM provides a beautiful, simple ActiveRecord implementation for working with your database. Each database table has a corresponding "Model" which is used to interact with that table. Models allow you to query for data in your tables, as well as insert new records into the table.
+The Fluent ORM provides a beautiful, simple ActiveRecord implementation for working with your database. 
+Each database table has a corresponding "Model" which is used to interact with that table. Models allow you to query for data in your tables, as well as insert new records into the table.
 
+_Note: Fluent ORM is compatible the PHP Laravel Framework's Eloquent ORM. If you are familiar with Laravel's Eloquent ORM, you will feel right at home using the Fluent ORM._
 
 ## Defining Models
 
