@@ -4,8 +4,8 @@ Smart Code is a feature that allows you to create custom merge tags that can be 
 Smart Code is available in the Pro and Enterprise plans. Let's look at the example given below:
 ```php
 add_action('fluentcrm_loaded', function () {
-    $key = 'your_custom_section_key';
-    $title = 'Your Custom Section Title';
+    $key = 'your_custom_smartcode_group_key';
+    $title = 'Your Custom Smartcode Group Title';
     $shortCodes = [
         'code_4' => 'Code 4 Title',
         'code_5' => 'Code 5 Title',
@@ -29,9 +29,9 @@ add_action('fluentcrm_loaded', function () {
 The custom section is added via the `addSmartCode` method of the FluentCRM Extender API. This method takes four arguments:
 
 - `$key`: The key is unique identifier to identify smartcode group callback. It is recommended to have your own plugin prefix. 
-   For example, if your plugin prefix is `mcp`, then you can use `mcp_your_custom_section_key` as the key so that it will not conflict with other smartcode groups.
+   For example, if your plugin prefix is `mcp`, then you can use `mcp_your_custom_smartcode_group_key` as the key so that it will not conflict with other smartcode groups.
 
-- `$title`: This is the title of the smartcode. 
+- `$title`: This is the title of the smartcode Group. This title will be displayed in the smartcode dropdown.
 
 - `$shortCodes`: This is the array of short codes that will be available in the smartcode group. The key is the shortcode and the value is the title of the short code.
 

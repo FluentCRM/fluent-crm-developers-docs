@@ -21,8 +21,9 @@ add_action('fluentcrm_loaded',  function () {
 ### How it works
 The custom section is added via the `addProfileSection` method of the FluentCRM Extender API. This method takes three arguments:
 
-- `$key`: The key of the custom section. This ID will be used to identify the section. 
-  You may rename it as you like but make sure that it does not conflict with other section
+- `$key`: The key of the custom section which will be used to identify the section. 
+  It is recommended to have your own plugin prefix.
+  For example, if your plugin prefix is `mcp`, then you can use `mcp_my_custom_section` as the key so that it will not conflict with Profile sections.
 
 - `$sectionTitle`: This is the title of the new section within fluent crm profile sections.
 
