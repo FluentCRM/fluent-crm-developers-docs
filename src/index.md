@@ -10,13 +10,13 @@ pageClass: docs-home
 
 <section id="home-hero">
   <h1>FluentCRM Developers Docs</h1>
-  <p>Learn how to extend FluentCRM core to create new integrations or add custom functionalities to your CRM. Here you will find detailed documentation, handy code snippers and full code examples.</p>
+  <p>Learn how to extend FluentCRM core to create new integrations or add custom functionalities to your CRM. Here you will find detailed documentation, handy code snippets and full code examples.</p>
 </section>
 
 <section id="home-get-started" class="home-content">
   <div>
     <h2>Architecture</h2>
-    <p>Learn FluentCRM Data Structure, Framework Basics and how internal Components work together.</p>
+    <p>Learn about FluentCRM Data Structure, Framework Basics and how internal Components work together.</p>
   </div>
   <div>
     <ul>
@@ -30,7 +30,7 @@ pageClass: docs-home
 <section id="home-internals" class="home-content">
   <div>
     <h2>Developer Hooks / Functions</h2>
-    <p>FluentCRM offers lots of easy to use hooks, functions and PHP API to interact with it's data and underlying API. Learn more about it in the detailed sections</p>
+    <p>FluentCRM offers numerous easy-to-use hooks, functions and PHP API to interact with it's data and underlying API. Learn more about them in the detailed sections</p>
   </div>
   <div>
     <ul>
@@ -46,15 +46,16 @@ pageClass: docs-home
 <section id="home-components" class="home-content">
   <div>
     <h2>FluentCRM Modules</h2>
-    <p>FluentCRM's modules are build the way, you can extend it easily, build integrations in hours (not in days), get full control of your data.</p>
-  </div>
+    <p>FluentCRM's modules are designed in a way that allows for easy extension, allowing you to build integrations in just a few 
+    hours(Not in days), and giving you full control of your data.</p>
+</div>
   <div>
     <ul>
       <li><a href="./modules/automation/">Automations Funnels Basic</a></li>
       <li><a href="./modules/trigger/">Build Custom Automation Trigger</a></li>
       <li><a href="./modules/action/">Build Custom Automation Action</a></li>
-      <li><a href="./modules/smart-code/">Extend Contact SmartCodes</a></li>
-      <li><a href="./contact-profile/">Extend Contact\'s Profile</a></li>
+      <li><a href="./modules/smart-code/">Extend SmartCodes</a></li>
+      <li><a href="./modules/contact-profile-section/">Extend Contact's Profile Section</a></li>
       <!-- ><li><a href="./global-navigation/">Extend Global Navigation menu</a></li> -->
       <li><a href="./extending-rest-api/">Extend REST API</a></li>
     </ul>
