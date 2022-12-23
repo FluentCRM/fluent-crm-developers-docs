@@ -56,6 +56,8 @@ public function getFunnelSettingsDefaults()
 ```
 
 Define the `getSettingsFields` method. This method should return an array of the settings fields that will be displayed in the workflow settings page.
+You can customize settings as desired . Visit [Form Field Code Structure](./form-field-code-structure.md) for more information.
+
 ```php
 public function getSettingsFields($funnel)
 {

@@ -31,8 +31,8 @@ The custom section is added via the `addProfileSection` method of the FluentCRM 
   and `$subscriber` is an object representing the subscriber whose profile is being displayed.
 
 The `$contentArr` includes two elements: 
- - `heading`: a string containing the heading for the custom section. This heading will be displayed at the top of the section.
- - `content_html`: a string containing the HTML content of the custom section. This content will be displayed below the heading. 
+ - `heading`: A string containing the heading for the custom section. This heading will be displayed at the top of the section.
+ - `content_html`: A string containing the HTML content of the custom section. This content will be displayed below the heading. 
   You may use any html tags you wish. You will enjoy the flexibility of using any HTML tags to display your custom content.
 
 Finally, the modified `$contentArr` is returned.

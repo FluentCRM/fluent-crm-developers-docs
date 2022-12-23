@@ -1,10 +1,17 @@
 # Extend the REST API
-
-REST (representational state transfer) is a software architectural style that defines a set of constraints to be used for creating Web services. RESTful Web services allow the requesting systems to access and manipulate Web resources through a standardized interface.
-In the context of a WordPress plugin, a REST API allows you to create custom endpoints that can be accessed via HTTP requests. These endpoints can be used to perform various tasks, such as retrieving data from the WordPress database, creating new posts, updating user information, etc.
-For example, you might create a custom REST API endpoint that allows users to retrieve a list of posts from a specific category. To do this, you would create an endpoint URL (e.g. `/wp-json/my-plugin/v1/posts`) and define a callback function that retrieves the posts from the database and returns them in a format that can be easily consumed by other systems (e.g. JSON).
+<Badge type="tip" vertical="top" text="Fluent Framework" />
+REST (representational state transfer) is a software architectural style that defines a set of constraints to be used for creating Web services. 
+RESTful Web services allow the requesting systems to access and manipulate Web resources through a standardized interface.
+In the context of a WordPress plugin, a REST API allows you to create custom endpoints that can be accessed via HTTP requests. These endpoints can be used to perform various tasks, 
+such as retrieving data from the WordPress database, creating new posts, updating user information, etc.
+For example, you might create a custom REST API endpoint that allows users to retrieve a list of posts from a specific category. To do this, you would create an endpoint URL (e.g. `/wp-json/fluent-crm/v2/posts`) 
+and define a callback function that retrieves the posts from the database and returns them in a format 
+that can be easily consumed by other systems (e.g. JSON).
 
 ## Registering a Custom Endpoint
+FluentCRM uses WordPress REST API. So you can use any authorization method that supports WordPress. You may take a look at built-in
+[REST API Section](https://rest-api.fluentcrm.com/).
+
 FluentCRM enables you to add custom endpoints to its REST API from your plugin, by registering routes,
 policies, and controllers in an easy and convenient way. 
 Let's go through some examples of how you might set up a WordPress plugin to extend the FluentCRM plugin using routers and controllers along with policies.
@@ -19,11 +26,11 @@ add_action( 'fluentcrm_loaded', function( $app ) {
 });
 
 ```
-The above code registers a route that will be accessible at `https://yourdomain.com/wp-json/fluentcrm/v1/my-prefix/`.
+The above code registers a route that will be accessible at `https://yourdomain.com/wp-json/fluent-crm/2/my-prefix/`.
 - **API Base URL**: _`https://yourdomain.com/wp-json/fluent-crm/v2/`_
 
-**Note:** Make sure to autoload your classes. Otherwise, you will get an error like this:
-`Class \MyPlugin\Policies\MyPolicy does not exist`. You need to autoload your classes before the `fluentcrm_loaded` action is fired.
+**Note:** _Make sure to autoload your classes. Otherwise, you may get an error like this:
+`Class \MyPlugin\Policies\MyPolicy does not exist`. You need to autoload your classes before the `fluentcrm_loaded` action is fired._
 
 This code uses the `add_action` function to register a callback function that will be called when the fluentcrm_loaded action is triggered.
 The callback function sets up a route using the FluentCRM router, which is passed to the function as an argument.

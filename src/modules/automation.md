@@ -1,13 +1,12 @@
 # Automation
-
 The automation module is a powerful tool for creating and managing complex workflows. It allows you to create workflows 
 that can be triggered by different events and run some actions till the workflow reaches to a benchmark. FLuentCRM provides a set of predefined
 events that you can use to trigger 
 your workflows. You can also create your own custom action and trigger to reach a benchmark. Now, you can see there are three 
 different types of automation in FluentCRM. They are:
 - trigger, 
-- action,
-- & benchmark
+- action
+- benchmark
 
 We will go through each of them one by one.
 ## Trigger vs Action vs Benchmark

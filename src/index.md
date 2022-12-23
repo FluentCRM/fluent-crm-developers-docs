@@ -50,12 +50,12 @@ pageClass: docs-home
   </div>
   <div>
     <ul>
-      <li><a href="./automations/">Automations Funnels Basic</a></li>
-      <li><a href="./automations/new-trigger/">Build Custom Automation Trigger</a></li>
-      <li><a href="./automations/new-action/">Build Custom Automation Action</a></li>
-      <li><a href="./merge-tags/">Extend Contact SmartCodes</a></li>
+      <li><a href="./modules/automation/">Automations Funnels Basic</a></li>
+      <li><a href="./modules/trigger/">Build Custom Automation Trigger</a></li>
+      <li><a href="./modules/action/">Build Custom Automation Action</a></li>
+      <li><a href="./modules/smart-code/">Extend Contact SmartCodes</a></li>
       <li><a href="./contact-profile/">Extend Contact\'s Profile</a></li>
-      <li><a href="./global-navigation/">Extend Global Navigation menu</a></li>
+      <!-- ><li><a href="./global-navigation/">Extend Global Navigation menu</a></li> -->
       <li><a href="./extending-rest-api/">Extend REST API</a></li>
     </ul>
   </div>
