@@ -1,15 +1,15 @@
-## Extend the REST API
+# Extend the REST API
 
 REST (representational state transfer) is a software architectural style that defines a set of constraints to be used for creating Web services. RESTful Web services allow the requesting systems to access and manipulate Web resources through a standardized interface.
 In the context of a WordPress plugin, a REST API allows you to create custom endpoints that can be accessed via HTTP requests. These endpoints can be used to perform various tasks, such as retrieving data from the WordPress database, creating new posts, updating user information, etc.
 For example, you might create a custom REST API endpoint that allows users to retrieve a list of posts from a specific category. To do this, you would create an endpoint URL (e.g. `/wp-json/my-plugin/v1/posts`) and define a callback function that retrieves the posts from the database and returns them in a format that can be easily consumed by other systems (e.g. JSON).
 
-### Registering a Custom Endpoint
+## Registering a Custom Endpoint
 FluentCRM enables you to add custom endpoints to its REST API from your plugin, by registering routes,
 policies, and controllers in an easy and convenient way. 
 Let's go through some examples of how you might set up a WordPress plugin to extend the FluentCRM plugin using routers and controllers along with policies.
 
-### Routing
+## Routing
 ```php
 add_action( 'fluentcrm_loaded', function( $app ) {
     $app->router->prefix( 'my-prefix' )->withPolicy( 'MyPlugin\Policies\MyPolicy' )->group( function( $router ) {
@@ -36,7 +36,7 @@ Note that group and prefix methods are optional. You can also define routes with
 ```php
  $app->router->post( '/your-url-path/', 'MyPlugin\Controllers\MyController@create');
 ```
-#### Route Parameters
+### Route Parameters
 You can also define route parameters. For example, if you want to define a route that handles a GET request to the URL `/show/{id}`, 
 you can do it like this:
 ```php
@@ -58,7 +58,7 @@ public function show($id, $name)
 
 ```
 
-#### Available Router methods 
+### Available Router methods 
 The router allows you to define routes for the following HTTP verb:
 ```php
 $router->get( $uri, $callback);
@@ -69,7 +69,7 @@ $router->delete( $uri, $callback);
 $router->any( $uri, $callback); // responds to any HTTP verb
 ```
 
-### Controllers
+## Controllers
 FluentCRM provides a base controller class that can be extended to create your own controllers. 
 The base controller class provides a number of useful methods for working with the request and response objects.
 Let's look at an example of a controller class that extends the base controller class:
@@ -124,7 +124,7 @@ public function create()
 
 
 
-### Policies
+## Policies
 Policies are classes that are used to authorize requests to routes. 
 The `verifyRequest` method is used to check if the current user has permission to access a route or method.
 It returns a boolean value indicating whether the user has permission or not. To authorize it must return true.
@@ -161,7 +161,7 @@ class MyPolicy extends BasePolicy
 ```
 
 
-### Directory Structure
+## Directory Structure
 Your directory structure may look something like this:
 (Note that, the directory structure shown here is just an example. You can organize your files however you like.)
 

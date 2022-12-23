@@ -5,6 +5,7 @@ const globalFunctionsSidebar = require('./sidebars/global-functions');
 const hooksSidebar = require('./sidebars/hooks');
 const helpersSidebar = require('./sidebars/helpers');
 const modulesSidebar = require('./sidebars/modules');
+const extendRestApiSidebar = require('./sidebars/extendRestApiSidebar');
 
 module.exports = {
     /**
@@ -116,8 +117,8 @@ module.exports = {
                         link: '/modules/automation/',
                     },
                     {
-                        text: 'Contact Merge Tags',
-                        link: '/modules/contact-merge-tag/',
+                        text: 'Smart Codes',
+                        link: '/modules/smart-code/',
                     },
                     {
                         text: 'Contact\'s Profile',
@@ -145,6 +146,7 @@ module.exports = {
             '/hooks/': hooksSidebar,
             '/helpers/': helpersSidebar,
             '/modules/': modulesSidebar,
+            '/extending-rest-api/': extendRestApiSidebar,
 
         }
     },
