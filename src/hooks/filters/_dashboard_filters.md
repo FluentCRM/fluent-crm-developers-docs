@@ -1,4 +1,4 @@
-::: details fluent_crm/dashboard_stats
+<explain-block title="fluent_crm/dashboard_stats">
 If you want to add or remove dashboard stats cards then you can use this filter.
 
 **Parameters**
@@ -29,9 +29,9 @@ add_filter('fluent_crm/dashboard_stats', function($stats) {
    return $stats;
 });
 ```
-:::
+</explain-block>
 
-::: details fluent_crm/quick_links
+<explain-block title="fluent_crm/quick_links">
 if you want to customize quick links of FluentCRM Dashboard then use this hook.
 
 **Parameters**
@@ -61,9 +61,9 @@ add_filter('fluent_crm/quick_links', function($links) {
    return $links;
 });
 ```
-:::
+</explain-block>
 
-::: details fluent_crm/dashboard_notices
+<explain-block title="fluent_crm/dashboard_notices">
 If you want to show notices to FluentCRM admin panel then you may use this hook.
 
 **Parameters**
@@ -81,10 +81,9 @@ add_filter('fluent_crm/dashboard_notices', function($notices) {
    return $notices;
 });
 ```
-:::
+</explain-block>
 
-
-::: details fluent_crm/sales_stats
+<explain-block title="fluent_crm/sales_stats">
 If you want to add custom sales stats on FluentCRM Dashboard widget then use this hook.
 
 
@@ -107,4 +106,4 @@ add_filter('fluent_crm/sales_stats', function($stats) {
   return $stats;
 });
 ```
-:::
+</explain-block>

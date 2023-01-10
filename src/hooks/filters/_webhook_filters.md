@@ -1,4 +1,4 @@
-::: details fluent_crm/incoming_webhook_data
+<explain-block title="fluent_crm/incoming_webhook_data">
 If you want to intercept incoming Webhook before it's get validated and processed you can use this hook to format the data.
 
 **Parameters**
@@ -21,9 +21,9 @@ add_filter('fluent_crm/incoming_webhook_data', function($postedData, $webhook) {
     return $postedData;
 }, 10, 3);
 ```
-:::
+</explain-block>
 
-::: details fluent_crm/webhook_contact_data
+<explain-block title="fluent_crm/webhook_contact_data">
 FluentCRM Webhook data has been formatted at this point. If you want to alter the contact data and associated tags, lists, statuses, etc. You may use this hook
 
 **Parameters**
@@ -40,4 +40,4 @@ add_filter('fluent_crm/webhook_contact_data', function($data, $postedData, $webh
     return $data;
 }, 10, 3);
 ```
-:::
+</explain-block>

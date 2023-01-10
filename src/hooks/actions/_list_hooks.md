@@ -1,4 +1,4 @@
-::: details fluent_crm/list_created
+<explain-block title="fluent_crm/list_created">
 This action runs when a new list has been created
 
 **Parameters**
@@ -10,9 +10,9 @@ add_action('fluent_crm/list_created', function($listModel) {
    // Do you staffs here
 });
 ```
-:::
+</explain-block>
 
-::: details fluent_crm/list_updated
+<explain-block title="fluent_crm/list_updated">
 This action runs when a list has been updated
 
 **Parameters**
@@ -24,9 +24,9 @@ add_action('fluent_crm/list_updated', function($listModel) {
    // Do you staffs here
 });
 ```
-:::
+</explain-block>
 
-::: details fluent_crm/list_deleted
+<explain-block title="fluent_crm/list_deleted">
 This action runs when a list has been updated
 
 **Parameters**
@@ -38,4 +38,4 @@ add_action('fluent_crm/list_deleted', function($listId) {
    // Do you staffs here
 });
 ```
-:::
+</explain-block>

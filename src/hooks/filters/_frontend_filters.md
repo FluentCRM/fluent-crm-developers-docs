@@ -1,4 +1,4 @@
-::: details fluent_crm/unsubscribe_texts
+<explain-block title="fluent_crm/unsubscribe_texts">
 If you want to customize the labels on Unsubscribe page then you can use this filter hook.
 
 **Parameters**
@@ -28,9 +28,9 @@ add_filter('fluent_crm/unsubscribe_texts', function($texts, $subscriber) {
 }, 10, 2);
 ```
 
-:::
+</explain-block>
 
-::: details fluent_crm/unsub_response_message
+<explain-block title="fluent_crm/unsub_response_message">
 After a contact unsubscribe and if you want to change the response message programmatically you may use this hook.
 
 **Parameters**
@@ -49,9 +49,9 @@ add_filter('fluent_crm/unsubscribe_texts', function($message, $subscriber) {
 }, 10, 2);
 ```
 
-:::
+</explain-block>
 
-::: details fluent_crm/unsub_redirect_url
+<explain-block title="fluent_crm/unsub_redirect_url">
 After a contact unsubscribe and if you want to redirect the contact programmatically then you can use this hook
 
 **Parameters**
@@ -70,9 +70,9 @@ add_filter('fluent_crm/unsub_redirect_url', function($redirectUrl, $subscriber) 
 }, 10, 2);
 ```
 
-:::
+</explain-block>
 
-::: details fluent_crm/double_optin_options
+<explain-block title="fluent_crm/double_optin_options">
 After Double Optin Confirmation, if you want to change the default behavior (like redirect to a different URL or show
 different content) then you can use this filter hook
 
@@ -101,9 +101,9 @@ add_filter('fluent_crm/double_optin_options', function($config, $subscriber) {
    return $config;
 }, 10, 2);
 ```
-:::
+</explain-block>
 
-::: details fluent_crm/pref_labels
+<explain-block title="fluent_crm/pref_labels">
 Manage Subscription Page Labels Filter Hook
 
 **Parameters**
@@ -141,10 +141,10 @@ add_filter('fluent_crm/pref_labels', function($labels) {
     return $labels;
 });
 ```
-:::
+</explain-block>
 
+<explain-block title="fluent_crm/pref_form_fields">
 
-::: details fluent_crm/pref_form_fields
 Manage Subscription Shortcode Fields customization Hook
 
 **Parameters**
@@ -162,10 +162,9 @@ add_filter('fluent_crm/pref_form_fields', function($formFields, $subscriber) {
    return $formFields;
 }, 10, 2);
 ```
-:::
+</explain-block>
 
-
-::: details fluent_crm/show_unsubscribe_on_pref
+<explain-block title="fluent_crm/show_unsubscribe_on_pref">
 By Default FluentCRM does not show unsubscribe button on Manage Subscription Page
 
 **Parameters**
@@ -180,9 +179,9 @@ add_filter('fluent_crm/show_unsubscribe_on_pref', function($status) {
    return true;
 });
 ```
-:::
+</explain-block>
 
-::: details fluent_crm/double_optin_email_subject
+<explain-block title="fluent_crm/double_optin_email_subject">
 You can customize the double optin email subject from settings page but if you want to alter that then you can use this hook.
 
 **Parameters**
@@ -199,9 +198,9 @@ add_filter('fluent_crm/double_optin_email_subject', function($emailSubject, $sub
    return $emailSubject;
 }, 10, 2);
 ```
-:::
+</explain-block>
 
-::: details fluent_crm/double_optin_email_body
+<explain-block title="fluent_crm/double_optin_email_body">
 You can customize the double optin email body from settings page but if you want to alter that then you can use this hook.
 
 **Parameters**
@@ -218,4 +217,4 @@ add_filter('fluent_crm/double_optin_email_body', function($emailBody, $subscribe
    return $emailBody;
 }, 10, 2);
 ```
-:::
+</explain-block>

@@ -276,16 +276,38 @@ table.nowrap
 
 
 .hook_explain
-  margin-bottom 7px
-  .hook_header
-    cursor pointer
-    padding 5px 10px
-    font-weight bold
-    font-size 120%
-  .hook_body
-    background #9772d72b;
-    padding 5px 20px;
+  background white
+  border 1px solid #eee
+  padding-bottom 0
+  display block
+  overflow auto
+  margin 0 0 20px
 
+  .explain_header
+    margin: 0;
+    padding: 10px 15px;
+    display: block;
+    background: #eeeeee;
+    cursor: pointer;
+    font-size: 19px;
+    font-weight: 500;
+
+  .hook_body
+    background: #fff;
+    border: 1px solid #eee;
+    display: block;
+    overflow: auto;
+    margin: 0 0 20px;
+    position: relative;
+    border-radius: 2px;
+    padding: 1.6em 1.6em 0;
+    border-bottom: 0;
+
+  .hook_dir
+    float: right;
+    svg
+       width: 20px;
+       height: 20px;
 
 
 

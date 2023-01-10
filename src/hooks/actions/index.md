@@ -8,15 +8,14 @@ new functionality.
 ## What are Action Hooks
 
 Action hooks are used to run custom code when certain events occur.
-
+ 
 ## Available of Action Hooks in FluentCRM
-
-
+ 
 ### Contact / Subscriber Specific
 <hr />
 
 !!!include(./src/hooks/actions/_contact_hooks.md)!!!
-
+ 
 ### Contact Activity Specifics
 <hr />
 
