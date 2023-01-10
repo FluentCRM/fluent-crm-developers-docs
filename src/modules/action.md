@@ -1,4 +1,10 @@
-##  Action
+#  Action
+An action is a precise task that is carried out when a specific trigger occurs.
+In the context of an application, an action is a programmed response to an event or user interaction.
+For instance, when a user subscribes to a newsletter, an action could be sending a welcoming email.
+These actions can be custom-made and tailored to perform any desired task. Creating an action such as adding a tag to a user when they subscribe to your newsletter,
+is just one example of the flexibility actions provide in automating processes. It's the programmed response to a trigger that makes automation happen.
+## Creating an Action
 Creating an action is very much similar to creating a trigger with slight difference.
 You just need to extend the `FluentCrm\App\Services\Funnel\BaseAction` class and implement the required methods.
 Let's assume you want to apply a tag in your database when a user enroll a course. Please, note that FluentCRM already has a tag action.
@@ -187,7 +193,7 @@ class ApplyCustomTagAction extends BaseAction {
         
 }
 ```
-
+## Registering the Action
 All set! Your trigger is ready to use.
 Call the class to register the workflow.
 ```php

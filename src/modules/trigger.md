@@ -1,4 +1,9 @@
-## Trigger
+# Trigger
+An event or action that initiates a specific automated response, that is what we call a trigger.
+For example, when a user subscribes to a newsletter, this action is considered a trigger.
+A trigger is the foundation of any automation process, it starts the series of actions that follows. The trigger is the first step of automation.
+
+## Creating a Trigger
 Say, you are providing some courses on your plugin. You would like to trigger workflows when a user enrols to a course.
 You can use the `course-enrolled` trigger to do that.
 Create a class that extends `FluentCrm\App\Services\Funnel\BaseTrigger` class.
@@ -353,6 +358,7 @@ class CourseEnrolledTrigger extends BaseTrigger {
 
 }
 ```
+## Registering the Trigger
 All set! Your trigger is ready to use.
 Call the class to register the workflow.
 ```php
