@@ -64,9 +64,14 @@ module.exports = {
         logo: '/assets/img/icon.svg',
         displayAllHeaders: true,
         smoothScroll: true,
-        search: true,
+        search: false, // built in search disabled because of Algolia search
         searchPlaceholder: 'Search...',
-        searchMaxSuggestions: 10,
+        // searchMaxSuggestions: 10,
+        algolia: {
+            apiKey: 'a8cc2289a3fcf261f32db0b7199ee047',
+            indexName: 'developers-fluentcrm',
+            appId: '2PWH5XIPGO',
+        },
         nav: [
             {
                 text: 'Getting Started',
