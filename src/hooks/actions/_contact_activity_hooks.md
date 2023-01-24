@@ -1,4 +1,4 @@
-::: details fluencrm_benchmark_link_clicked
+<explain-block title="fluencrm_benchmark_link_clicked">
 This action runs when a contact created
 
 **Parameters**
@@ -11,9 +11,9 @@ add_action('fluencrm_benchmark_link_clicked', function($benchmarkLinkId, $subscr
    // Do you staffs here
 });
 ```
-:::
+</explain-block>
 
-::: details fluent_crm/smart_link_clicked_by_contact
+<explain-block title="fluent_crm/smart_link_clicked_by_contact">
 This action runs when a contact clicks a smartlink. This hook fires after the associate tags, lists actions fired.
 
 **Parameters**
@@ -26,9 +26,9 @@ add_action('fluent_crm/smart_link_clicked_by_contact', function($smartLink, $sub
    // Do you staffs here
 });
 ```
-:::
+</explain-block>
 
-::: details fluentcrm_email_url_clicked
+<explain-block title="fluentcrm_email_url_clicked">
 This action runs when a contact clicks a link from email.
 
 **Parameters**
@@ -41,9 +41,9 @@ add_action('fluentcrm_email_url_clicked', function($campaignEmail, $urlObject) {
    // Do you staffs here
 });
 ```
-:::
+</explain-block>
 
-::: details fluent_crm/track_activity_by_subscriber
+<explain-block title="fluent_crm/track_activity_by_subscriber">
 This action runs when a contact login to your site, click a link. This hook track the last_activity timestamp
 
 **Parameters**
@@ -59,9 +59,9 @@ add_action('fluent_crm/track_activity_by_subscriber', function($subscriber) {
    // Do you staffs
 });
 ```
-:::
+</explain-block>
 
-::: details fluent_crm/pref_form_self_contact_updated
+<explain-block title="fluent_crm/pref_form_self_contact_updated">
 This action runs when a contact update his/her information in the manage subscriptions page
 
 **Parameters**
@@ -74,4 +74,4 @@ add_action('fluent_crm/pref_form_self_contact_updated', function($subscriber, $p
    // Do you staffs
 }, 10, 2);
 ```
-:::
+</explain-block>

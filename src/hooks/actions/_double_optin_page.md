@@ -1,4 +1,4 @@
-::: details fluent_crm/confirmation_head
+<explain-block title="fluent_crm/confirmation_head">
 This hook fires on double optin confirmation head. If you want to add any custom css or head attributes then you can use this hook.
 Anything echo from this hook will be added to `<head> </head>` in the page
 
@@ -18,9 +18,9 @@ add_action('fluent_crm/confirmation_head', function($subscriber) {
    <?php
 });
 ```
-:::
+</explain-block>
 
-::: details fluent_crm/confirmation_footer
+<explain-block title="fluent_crm/confirmation_footer">
 This hook fires on double optin confirmation footer. If you want to add your own content in the double optin confirmation page then you may use this hook.
 
 **Parameters**
@@ -38,4 +38,4 @@ add_action('fluent_crm/confirmation_footer', function($subscriber) {
    echo 'Hello '.$subscriber->first_name;
 });
 ```
-:::
+</explain-block>

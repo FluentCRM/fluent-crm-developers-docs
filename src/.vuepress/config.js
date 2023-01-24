@@ -1,11 +1,12 @@
 const {description, base} = require('../../package');
-
 const dbSchemaSidebar = require('./sidebars/db-schema');
 const globalFunctionsSidebar = require('./sidebars/global-functions');
 const hooksSidebar = require('./sidebars/hooks');
 const helpersSidebar = require('./sidebars/helpers');
 const modulesSidebar = require('./sidebars/modules');
 const extendRestApiSidebar = require('./sidebars/extendRestApiSidebar');
+
+const path = require('path');
 
 module.exports = {
     /**
@@ -205,6 +206,12 @@ module.exports = {
                 publishedAt: $page => $page.frontmatter.date && new Date($page.frontmatter.date),
                 modifiedAt: $page => $page.lastUpdated && new Date($page.lastUpdated),
             }
+        ],
+        [
+            '@vuepress/register-components',
+            {
+                componentsDir: path.resolve(__dirname, './components'),
+            },
         ]
     ]
 }

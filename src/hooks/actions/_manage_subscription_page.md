@@ -1,4 +1,4 @@
-::: details fluent_crm/manage_subscription_head
+<explain-block title="fluent_crm/manage_subscription_head">
 This hook fires on manage subscription page's `head`. If you want to add any custom css or head attributes then you can use this hook.
 Anything echo from this hook will be added to `<head> </head>` in the page
 
@@ -18,9 +18,9 @@ add_action('fluent_crm/manage_subscription_head', function($subscriber) {
    <?php
 });
 ```
-:::
+</explain-block>
 
-::: details fluent_crm/manage_subscription_footer
+<explain-block title="fluent_crm/manage_subscription_footer">
 This hook fires on manage subscription footer. If you want to add your own content in the page then you may use this hook.
 
 **Parameters**
@@ -38,4 +38,4 @@ add_action('fluent_crm/manage_subscription_footer', function($subscriber) {
    echo 'Hello '.$subscriber->first_name;
 });
 ```
-:::
+</explain-block>

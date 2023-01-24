@@ -1,4 +1,4 @@
-::: details fluent_crm/tag_created
+<explain-block title="fluent_crm/tag_created">
 This action runs when a new tag has been created
 
 **Parameters**
@@ -10,9 +10,9 @@ add_action('fluent_crm/tag_created', function($tagModel) {
    // Do you staffs here
 });
 ```
-:::
+</explain-block>
 
-::: details fluent_crm/tag_updated
+<explain-block title="fluent_crm/tag_updated">
 This action runs when a tag has been updated
 
 **Parameters**
@@ -24,9 +24,9 @@ add_action('fluent_crm/tag_updated', function($tagModel) {
    // Do you staffs here
 });
 ```
-:::
+</explain-block>
 
-::: details fluent_crm/tag_deleted
+<explain-block title="fluent_crm/tag_deleted">
 This action runs when a tag has been updated
 
 **Parameters**
@@ -38,4 +38,4 @@ add_action('fluent_crm/tag_deleted', function($tagId) {
    // Do you staffs here
 });
 ```
-:::
+</explain-block>

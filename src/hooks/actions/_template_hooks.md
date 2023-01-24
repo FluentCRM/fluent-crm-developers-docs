@@ -1,4 +1,4 @@
-::: details fluent_crm/email_template_created
+<explain-block title="fluent_crm/email_template_created">
 This action runs after an email template has been created
 
 **Parameters**
@@ -11,9 +11,9 @@ add_action('fluent_crm/email_template_created', function($templateId, $templateD
    // Do you staffs here
 }, 10, 2);
 ```
-:::
+</explain-block>
 
-::: details fluent_crm/email_template_duplicated
+<explain-block title="fluent_crm/email_template_duplicated">
 This action runs after an email template has been duplicated
 
 **Parameters**
@@ -26,9 +26,9 @@ add_action('fluent_crm/email_template_duplicated', function($templateId, $oldTem
    // Do you staffs here
 }, 10, 2);
 ```
-:::
+</explain-block>
 
-::: details fluent_crm/email_template_updated
+<explain-block title="fluent_crm/email_template_updated">
 This action runs after an email template has been duplicated
 
 **Parameters**
@@ -41,4 +41,4 @@ add_action('fluent_crm/email_template_updated', function($templateData, $templat
    // Do you staffs here
 }, 10, 2);
 ```
-:::
+</explain-block>

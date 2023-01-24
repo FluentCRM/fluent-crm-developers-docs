@@ -1,4 +1,4 @@
-::: details fluent_crm/unsubscribe_head
+<explain-block title="fluent_crm/unsubscribe_head">
 This hook fires on Unsubscribe page's `head`. If you want to add any custom css or head attributes then you can use this hook.
 Anything echo from this hook will be added to `<head> </head>` in the page
 
@@ -19,9 +19,9 @@ add_action('fluent_crm/unsubscribe_head', function($subscriber, $campaignEmail) 
    <?php
 }, 10, 2);
 ```
-:::
+</explain-block>
 
-::: details fluent_crm/before_unsubscribe_form
+<explain-block title="fluent_crm/before_unsubscribe_form">
 This hook fires on Unsubscribe page's before header HTML. If you want to add own HTML at the starting of the page, then you may use this hook.
 
 **Parameters**
@@ -37,9 +37,9 @@ add_action('fluent_crm/before_unsubscribe_form', function($subscriber, $campaign
    // Add your own code here
 }, 10, 2);
 ```
-:::
+</explain-block>
 
-::: details fluent_crm/before_unsubscribe_form
+<explain-block title="fluent_crm/before_unsubscribe_form">
 This hook fires on Unsubscribe page's before header HTML. If you want to add own HTML at the starting of the page, then you may use this hook.
 
 **Parameters**
@@ -55,9 +55,9 @@ add_action('fluent_crm/before_unsubscribe_form', function($subscriber, $campaign
    // Add your own code here
 }, 10, 2);
 ```
-:::
+</explain-block>
 
-::: details fluent_crm/before_unsubscribe_submit
+<explain-block title="fluent_crm/before_unsubscribe_submit">
 This hook fires on Unsubscribe page's before submit HTML. If you want to add own HTML before the button, then you may use this hook.
 
 **Parameters**
@@ -73,9 +73,9 @@ add_action('fluent_crm/before_unsubscribe_submit', function($subscriber, $campai
    // Add your own code here
 }, 10, 2);
 ```
-:::
+</explain-block>
 
-::: details fluent_crm/after_unsubscribe_content
+<explain-block title="fluent_crm/after_unsubscribe_content">
 This hook fires on Unsubscribe page's after the form content.
 
 **Parameters**
@@ -91,9 +91,9 @@ add_action('fluent_crm/after_unsubscribe_content', function($subscriber, $campai
    // Add your own code here
 }, 10, 2);
 ```
-:::
+</explain-block>
 
-::: details fluent_crm/unsubscribe_footer
+<explain-block title="fluent_crm/unsubscribe_footer">
 This hook fires on Unsubscribe footer. If you want to add your own content in the page then you may use this hook.
 
 **Parameters**
@@ -112,4 +112,4 @@ add_action('fluent_crm/unsubscribe_footer', function($subscriber, $campaignEmail
    echo 'Hello '.$subscriber->first_name;
 }, 10, 2);
 ```
-:::
+</explain-block>
