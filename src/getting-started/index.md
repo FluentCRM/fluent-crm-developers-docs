@@ -12,7 +12,7 @@ FluentCRM comes in different versions:
 
 **FluentCRM Pro** is a paid version that adds a number of advanced features and options not found in the free version. It substantially increases and improves your marketing workflow and build advanced email sequences and automation funnels.
 
-## Folder Structure
+## Directory Structure
 
 ```yaml
 ├── app
