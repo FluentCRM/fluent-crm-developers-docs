@@ -41,7 +41,7 @@ if you want to customize quick links of FluentCRM Dashboard then use this hook.
 ```php
 $link = [
     'title' => 'Link Title',
-    'url'   => https://domain.com/path-to-link'',
+    'url'   => 'https://domain.com/path-to-link',
     'icon'  => 'el-icon-user' // optional
 ]; 
 ```
@@ -55,7 +55,7 @@ $link = [
 add_filter('fluent_crm/quick_links', function($links) {
    $links[] = [
         'title' => 'Link Title',
-        'url'   => https://domain.com/path-to-link'',
+        'url'   => 'https://domain.com/path-to-link',
         'icon'  => 'el-icon-user' // optional
    ];
    return $links;
