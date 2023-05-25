@@ -27,7 +27,7 @@ If you want to add custom email (mime) header you can use this hook
 /*
 * Add Custom Header to FluentCRM Email Mime
 */
-add_filter('fluent_crm/enable_unsub_header', function($headers, $data) {
+add_filter('fluent_crm/email_headers', function($headers, $data) {
    // Add or remove headers
    
    return $headers;
