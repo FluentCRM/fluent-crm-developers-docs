@@ -9,7 +9,7 @@ Anything echo from this hook will be added to `<head> </head>` in the page
 ```php 
 /*
 * Add Custom CSS for double ontin confirmation page
-/*
+*/
 add_action('fluent_crm/confirmation_head', function($subscriber) {
    ?>
    <style>
@@ -30,7 +30,7 @@ This hook fires on double optin confirmation footer. If you want to add your own
 ```php 
 /*
 * Add Custom Content for double ontin confirmation page
-/*
+*/
 add_action('fluent_crm/confirmation_footer', function($subscriber) {
     if(!$subscriber) {
         return;
