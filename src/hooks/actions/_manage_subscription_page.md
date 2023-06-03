@@ -9,7 +9,7 @@ Anything echo from this hook will be added to `<head> </head>` in the page
 ```php 
 /*
 * Add Custom CSS for manage subscription page
-/*
+*/
 add_action('fluent_crm/manage_subscription_head', function($subscriber) {
    ?>
    <style>
@@ -30,7 +30,7 @@ This hook fires on manage subscription footer. If you want to add your own conte
 ```php 
 /*
 * Add Custom content for manage subscription page
-/*
+*/
 add_action('fluent_crm/manage_subscription_footer', function($subscriber) {
     if(!$subscriber) {
         return;

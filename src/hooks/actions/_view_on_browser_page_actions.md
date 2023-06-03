@@ -9,7 +9,7 @@ Anything echo from this hook will be added to `<head> </head>` in the page
 ```php 
 /*
 * Add Custom CSS
-/*
+*/
 add_action('fluent_crm/unsubscribe_head', function($campaignEmail) {
    ?>
    <style>
@@ -31,7 +31,7 @@ This hook fires on View On Browser page's before header HTML. If you want to add
 ```php 
 /*
 * Add Custom Content for View On Browser page's before default content
-/*
+*/
 add_action('fluent_crm/view_on_browser_before_heading', function($campaignEmail) {
    // Add your own code here
 });
@@ -48,7 +48,7 @@ This hook fires on View On Browser page's before header HTML. If you want to add
 ```php 
 /*
 * Add Custom Content before email body
-/*
+*/
 add_action('fluent_crm/view_on_browser_before_email_body', function($campaignEmail) {
    // Add your own code here
 });
@@ -65,7 +65,7 @@ This hook fires on View On Browser page's after email body HTML.
 ```php 
 /*
 * Add Custom Content for after email body
-/*
+*/
 add_action('fluent_crm/view_on_browser_after_email_body', function($campaignEmail) {
    // Add your own code here
 });
@@ -82,7 +82,7 @@ This hook fires on Unsubscribe footer. If you want to add your own content in th
 ```php 
 /*
 * Add Custom content at the footer of the page 
-/*
+*/
 add_action('fluent_crm/view_on_browser_footer', function($campaignEmail) {
     // add your code here
 }, 10, 2);

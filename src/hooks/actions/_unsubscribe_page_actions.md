@@ -10,7 +10,7 @@ Anything echo from this hook will be added to `<head> </head>` in the page
 ```php 
 /*
 * Add Custom CSS for Unsubscribe page
-/*
+*/
 add_action('fluent_crm/unsubscribe_head', function($subscriber, $campaignEmail) {
    ?>
    <style>
@@ -32,7 +32,7 @@ This hook fires on Unsubscribe page's before header HTML. If you want to add own
 ```php 
 /*
 * Add Custom Content for Unsubscribe page's before default content
-/*
+*/
 add_action('fluent_crm/before_unsubscribe_form', function($subscriber, $campaignEmail) {
    // Add your own code here
 }, 10, 2);
@@ -50,7 +50,7 @@ This hook fires on Unsubscribe page's before header HTML. If you want to add own
 ```php 
 /*
 * Add Custom Content for Unsubscribe page's before default content
-/*
+*/
 add_action('fluent_crm/before_unsubscribe_form', function($subscriber, $campaignEmail) {
    // Add your own code here
 }, 10, 2);
@@ -68,7 +68,7 @@ This hook fires on Unsubscribe page's before submit HTML. If you want to add own
 ```php 
 /*
 * Add Custom Content for Unsubscribe page's before the button
-/*
+*/
 add_action('fluent_crm/before_unsubscribe_submit', function($subscriber, $campaignEmail) {
    // Add your own code here
 }, 10, 2);
@@ -86,7 +86,7 @@ This hook fires on Unsubscribe page's after the form content.
 ```php 
 /*
 * Add Custom Content for Unsubscribe page's before the button
-/*
+*/
 add_action('fluent_crm/after_unsubscribe_content', function($subscriber, $campaignEmail) {
    // Add your own code here
 }, 10, 2);
@@ -104,7 +104,7 @@ This hook fires on Unsubscribe footer. If you want to add your own content in th
 ```php 
 /*
 * Add Custom content in the unsubscribe page
-/*
+*/
 add_action('fluent_crm/unsubscribe_footer', function($subscriber, $campaignEmail) {
     if(!$subscriber) {
         return;
