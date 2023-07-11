@@ -103,7 +103,7 @@ add_filter('fluent_crm/contact_name_prefixes', function($namePrefixes) {
    $namePrefixes[] = 'Dr';
    $namePrefixes[] = 'Engg.';
    
-   rerturn $namePrefixes;
+   return $namePrefixes;
 });
 ```
 </explain-block>
