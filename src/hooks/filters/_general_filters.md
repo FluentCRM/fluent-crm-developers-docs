@@ -63,14 +63,14 @@ If you want to simulate all email sending from FluentCRM then you can use this h
 **Attention**
 If you use the code snippet, no email will be sent from FluentCRM
 
-    ```php 
+ ```php
     /*
     * Disable Email 
     */
     add_filter('fluent_crm/is_simulated_mail', function($status) {
        return true;
     });
-    ```
+```
 </explain-block>
 
 <explain-block title="fluent_crm/countries">

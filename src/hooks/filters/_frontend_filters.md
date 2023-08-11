@@ -44,8 +44,8 @@ After a contact unsubscribe and if you want to change the response message progr
 /*
 * Change Unsubscribe Response Text
 */
-add_filter('fluent_crm/unsubscribe_texts', function($message, $subscriber) {
-   rerurn 'You are unsubscribed and no further email will be sent';
+add_filter('fluent_crm/unsub_response_message', function($message, $subscriber) {
+   return 'You are unsubscribed and no further email will be sent';
 }, 10, 2);
 ```
 
@@ -66,7 +66,7 @@ After a contact unsubscribe and if you want to redirect the contact programmatic
 * Change Unsubscribe Redirect URL
 */
 add_filter('fluent_crm/unsub_redirect_url', function($redirectUrl, $subscriber) {
-   rerurn 'https://domain.com/path-to-my-custom-redirect';
+   return 'https://domain.com/path-to-my-custom-redirect';
 }, 10, 2);
 ```
 
