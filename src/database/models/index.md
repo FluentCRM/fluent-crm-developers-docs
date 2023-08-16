@@ -3,9 +3,10 @@
 ## Introduction
 FluentCRM ORM provides a beautiful, simple ActiveRecord implementation for working with database tables. Each database table has a corresponding "Model" which is used to interact with that table. Models allow you to query for data in db tables, as well as insert new records into the table.
 
-<p class="warning">
-NOTE: FluentCRM offers helper functions and methods to interact with FluentCRM's database so you may use those things instead of Models directly. We are documenting these for our internal usage and very-high level usage by 3rd-party develoeprs.
-</p>
+::: warning NOTE
+FluentCRM offers helper functions and methods to interact with FluentCRM's database so you may use those things instead of Models directly. We are documenting these for our internal usage and very-high level usage by 3rd-party developers.
+:::
+
 
 ## Built-in FluentCRM DB Models
 All the built-in database models are available at
