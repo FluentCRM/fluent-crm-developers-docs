@@ -78,7 +78,7 @@ $list = $listApi->first();
 ```
 
 ### paginate()
-FluentCRM's paginator is integrated with the [query builder](www.example.com) and [ORM](www.somelinks.com) and provides convenient,
+FluentCRM's paginator is integrated with the [query builder](/database/query-builder/) and [ORM](/database/orm/) and provides convenient,
 easy-to-use pagination of database results out of the box. The only argument that you need to pass is the number of items per page.
 In this example, let's assume that we want to display 15 contacts per page:
 ```php 

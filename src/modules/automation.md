@@ -14,7 +14,7 @@ We will go through each of them one by one.
 An event or action that initiates a specific automated response, that is what we call a trigger.
 For example, when a user subscribes to a newsletter, this action is considered a trigger.
 A trigger is the foundation of any automation process, it starts the series of actions that follows. The trigger is the first step of automation.
-For more go to [Trigger](trigger.md)
+For more go to [Trigger](/modules/trigger)
 ### Action
 An action is a precise task that is carried out when a specific trigger occurs.
 In the context of an application, an action is a programmed response to an event or user interaction.
