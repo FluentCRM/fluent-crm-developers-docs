@@ -13,6 +13,7 @@ module.exports = [
     sidebarDepth: -1,
     children: [
       'contact-api-function',
+      'company-api-function',
       'list-api-function',
       'tag-api-function',
     ]
