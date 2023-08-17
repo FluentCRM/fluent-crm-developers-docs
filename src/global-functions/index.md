@@ -1,12 +1,16 @@
+---
+pageClass: global-functions
+---
+
 ## Global Functions
 
 FluentCRM has few global functions which are located at `app/functions/helpers.php` file.
-In this article, we are documenting few useful functions that you may use. For full understanding, please check the app/functions/helpers.php file 
+In this article, we are documenting few useful functions that you may use. For full understanding, please check the `app/functions/helpers.php` file 
 
 [[toc]]
 
-### fluentcrm_get_option($optionName, $default = '') : mixed
-Get FluentCRM Option. This is similar to WordPress's `get_option()` function but it use it's own database table instead of `wp_options` table
+### fluentcrm\_get\_option
+Get FluentCRM Option. This is similar to WordPress's `get_option()` function, but it uses its own database table instead of `wp_options` table
 
 **Parameters**
 - $optionName `string` required
@@ -15,8 +19,8 @@ Get FluentCRM Option. This is similar to WordPress's `get_option()` function but
 **Return** `mixed`
 
 
-### fluentcrm_update_option($optionName, $default = '') : int
-Update FluentCRM Option. This is similar to WordPress's `update_option()` function but it use it's own database table instead of `wp_options` table
+### fluentcrm\_update\_option
+Update FluentCRM Option. This is similar to WordPress's `update_option()` function, but it uses its own database table instead of `wp_options` table
 
 **Parameters**
 - $optionName `string` required
@@ -24,8 +28,8 @@ Update FluentCRM Option. This is similar to WordPress's `update_option()` functi
 
 **Return** INT updated uption id
 
-### fluentcrm_delete_option($optionName) : boolean
-Delete FluentCRM Option. This is similar to WordPress's `delete_option()` function but it use it's own database table instead of `wp_options` table
+### fluentcrm\_delete\_option
+Delete FluentCRM Option. This is similar to WordPress's `delete_option()` function, but it uses its own database table instead of `wp_options` table
 
 **Parameters**
 - $optionName `string` required
@@ -33,7 +37,7 @@ Delete FluentCRM Option. This is similar to WordPress's `delete_option()` functi
 **Return** boolean
 
 
-### fluentcrm_get_campaign_meta($campaignId, $key, $returnValue = false) : mixed
+### fluentcrm\_get\_campaign\_meta
 Get Campaign Meta value or Model by campaign id and key
 
 **Parameters**
@@ -43,7 +47,7 @@ Get Campaign Meta value or Model by campaign id and key
 
 **Return** mixed
 
-### fluentcrm_update_campaign_meta($campaignId, $key, $value) : \FluentCrm\App\Models\Meta
+### fluentcrm\_update\_campaign\_meta
 Update Campaign Meta
 
 **Parameters**
@@ -53,7 +57,7 @@ Update Campaign Meta
 
 **Return** \FluentCrm\App\Models\Meta Model
 
-### fluentcrm_delete_campaign_meta($campaignId, $key) : Boolean
+### fluentcrm\_delete\_campaign\_meta
 Delete Campaign Meta
 
 **Parameters**
@@ -62,7 +66,7 @@ Delete Campaign Meta
 
 **Return** Boolean
 
-### fluentcrm_get_subscriber_meta($subscriberId, $key, $deafult = '') : mixed
+### fluentcrm\_get\_subscriber\_meta
 Get Contact's Meta Value
 
 **Parameters**
@@ -73,7 +77,7 @@ Get Contact's Meta Value
 **Return** mixed
 
 
-### fluentcrm_update_subscriber_meta($subscriberId, $key, $value) : \FluentCrm\App\Models\SubscriberMeta
+### fluentcrm\_update\_subscriber\_meta
 Update Contact's Meta Value
 
 **Parameters**
@@ -84,7 +88,7 @@ Update Contact's Meta Value
 **Return** \FluentCrm\App\Models\SubscriberMeta
 
 
-### fluentcrm_delete_subscriber_meta($subscriberId, $key) : Boolean
+### fluentcrm\_delete\_subscriber\_meta
 Delete Subscriber's Meta
 
 **Parameters**
@@ -94,7 +98,7 @@ Delete Subscriber's Meta
 **Return** Boolean
 
 
-### fluentcrm_subscriber_statuses($isOptions = false) : array
+### fluentcrm\_subscriber\_statuses
 Get Contact Statuses.
 
 **Parameters**
@@ -129,7 +133,7 @@ fluentcrm_subscriber_statuses(true);
 
 **Available Filter Hook:** `fluent_crm/contact_statuses`
 
-### fluentcrm_subscriber_editable_statuses($isOptions = false) : array
+### fluentcrm\_subscriber\_editable\_statuses
 Get Contact Statuses except `bounced` and `complained`
 
 **Parameters**
@@ -139,7 +143,7 @@ Get Contact Statuses except `bounced` and `complained`
 
 **Available Filter Hook:** `fluent_crm/contact_editable_statuses`
 
-### fluentcrm_contact_types($isOptions = false) : array
+### fluentcrm\_contact\_types
 Get Contact Types as array
 
 **Parameters**
@@ -172,7 +176,7 @@ fluentcrm_contact_types(true);
 **Available Filter Hook:** `fluentcrm_contact_types`
 
 
-### fluentcrm_activity_types() : array
+### fluentcrm\_activity\_types
 Get Contact Note Activity Types items as array
 
 **Return** array
@@ -202,12 +206,12 @@ function fluentcrm_activity_types()
 ```
 **Available Filter Hook:** `fluentcrm_contact_activity_types`
 
-### fluentcrm_get_current_contact(): null|object \FluentCrm\App\Models\Subscriber
+### fluentcrm\_get\_current\_contact
 Get Current Contact based on the current userID or contact from the cookie value
 
 **@return** `false|object` \FluentCrm\App\Models\Subscriber
 
-### fluentcrm_get_crm_profile_html($userIdOrEmail, $checkPermission = true, $withCss = true): string
+### fluentcrm\_get\_crm\_profile\_html
 Get FluentCRM's contact profile widget HTML
 
 **Parameters**
@@ -218,10 +222,10 @@ Get FluentCRM's contact profile widget HTML
 
 **@return** `false|string` HTML of the contact's profile widget
 
-### fluentcrm_get_custom_contact_fields() : array
+### fluentcrm\_get\_custom\_contact\_fields
 Get Custom Fields schema for contacts
 
 
-### fluentCrmGetContactSecureHash($subscriberId) : string
+### fluentCrmGetContactSecureHash
 Get unique long hash of a contact which can be used to identify the contact for various usage when is not logged in.
 
