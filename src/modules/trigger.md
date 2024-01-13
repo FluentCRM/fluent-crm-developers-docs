@@ -362,7 +362,7 @@ class CourseEnrolledTrigger extends BaseTrigger {
 All set! Your trigger is ready to use.
 Call the class to register the workflow.
 ```php
-add_action('fluentcrm_loaded', function () {
+add_action('fluent_crm/after_init', function () {
     new Your\Plugin\Name\Automation\CourseEnrolledTrigger();
 });
 ```

@@ -3,7 +3,7 @@
 Smart Code is a feature that allows you to create custom merge tags that can be used in your emails.
 Smart Code is available in the Pro and Enterprise plans. Let's look at the example given below:
 ```php
-add_action('fluentcrm_loaded', function () {
+add_action('fluent_crm/after_init', function () {
     $key = 'your_custom_smartcode_group_key';
     $title = 'Your Custom Smartcode Group Title';
     $shortCodes = [

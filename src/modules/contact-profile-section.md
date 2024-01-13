@@ -1,7 +1,7 @@
 ## Custom Profile Section for FluentCRM
 This code adds a custom profile section to the FluentCRM plugin.
 ```php
-add_action('fluentcrm_loaded',  function () {
+add_action('fluent_crm/after_init',  function () {
     $key = 'my_custom_section';
     $sectionTitle = 'My Custom Section';
     $callback = function($contentArr, $subscriber) {

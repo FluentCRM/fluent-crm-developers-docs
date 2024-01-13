@@ -274,7 +274,7 @@ class CourseEnrolledBenchmark extends BaseBenchmark {
 ### Registering the Benchmark
 Your benchmark is ready to use. Now, you need to register it with FluentCRM.
 ```php
-add_action('fluentcrm_loaded', function () {
+add_action('fluent_crm/after_init', function () {
     new Your\Plugin\Name\Automation\CourseEnrolledBenchmark();
 });
 ```
