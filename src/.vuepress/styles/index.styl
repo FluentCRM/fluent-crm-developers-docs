@@ -5,7 +5,7 @@
  */
 
 body
-  font-family  'Nunito', sans-serif
+  font-family 'Nunito', sans-serif
 
 h1
 h2
@@ -13,7 +13,7 @@ h3
 h4
 h5
 h6
-	font-family 'Nunito', sans-serif
+  font-family 'Nunito', sans-serif
 
 .page-edit
   clear both
@@ -35,6 +35,7 @@ a.sidebar-link.active
     .token
       &.deleted
         color #EC5975
+
       &.inserted
         color #4b4
 
@@ -42,7 +43,6 @@ a.sidebar-link.active
 
 #app .navbar .logo
   margin-right 5px
-
 
 
 // Navigation
@@ -72,9 +72,9 @@ a.sidebar-link.active
       padding-left 2.325rem
 
       .search-box
-          order 2
-          margin-right 0
-          margin-left 1rem
+        order 2
+        margin-right 0
+        margin-left 1rem
 
     .nav-item > a:not(.external):hover
     .nav-item > a:not(.external).router-link-active
@@ -145,7 +145,6 @@ a.sidebar-link.active
     .sidebar .nav-links .repo-link
       padding-top 8px
       padding-bottom 8px
-
 
 
 // Home
@@ -252,13 +251,14 @@ div.docs-home
 
 
 table.nowrap
-    text-align left
-    width 100% !important
-    display table
-    thead
-      font-weight bold
-      background #673ab7
-      color white
+  text-align left
+  width 100% !important
+  display table
+
+  thead
+    font-weight bold
+    background #673ab7
+    color white
 
 .warning
   padding 10px 15px
@@ -305,10 +305,10 @@ table.nowrap
 
   .hook_dir
     float: right;
-    svg
-       width: 20px;
-       height: 20px;
 
+    svg
+      width: 20px;
+      height: 20px;
 
 
 details.custom-block.details
@@ -327,20 +327,21 @@ details.custom-block.details
 
 .global-functions
   .table-of-contents
-     ul
+    ul
+      list-style: none
+
+      ul
+        display: flex
+        justify-content: space-between
+        flex-wrap: wrap
         list-style: none
-        ul
-          display: flex
-          justify-content: space-between
-          flex-wrap: wrap
-          list-style: none
-          margin-top: 14px
+        margin-top: 14px
 
-          li
-            flex: 50%
-            width: 100%
-            margin-bottom: 7px
+        li
+          flex: 50%
+          width: 100%
+          margin-bottom: 7px
 
-            a
-              color: #f27070
-              text-decoration: underline
+          a
+            color: #f27070
+            text-decoration: underline
