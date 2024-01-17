@@ -58,6 +58,7 @@ pageClass: docs-home
       <li><a href="./modules/contact-profile-section/">Extend Contact's Profile Section</a></li>
       <!-- ><li><a href="./global-navigation/">Extend Global Navigation menu</a></li> -->
       <li><a href="./extending-rest-api/">Extend REST API</a></li>
+      <li><a href="./modules/event-tracking/">Event Tracking</a></li>
     </ul>
   </div>
 </section>
