@@ -24,7 +24,7 @@ By Default FluentCRM ask the reason to unsubscribe but if you want to disable th
 **Usage:**
 ```php 
 /*
-* Disable FluentCRM search on admin bar
+* Automatically unsubscribe in one click 
 */
 add_filter('fluent_crm/will_auto_unsubscribe', function($status) {
    return 'yes';
