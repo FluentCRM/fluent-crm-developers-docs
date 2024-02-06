@@ -20,11 +20,13 @@ Each tag should be an array of key-value pairs. The following keys are required 
 $tags = [
            [
               'title' => 'Tag 1',
-              'slug'  => 'tag-1'
+              'slug'  => 'tag-1',
+              'description' => 'optional description'
            ],
            [
                'title' => 'Tag 2',
-               'slug'  => 'tag-2'
+               'slug'  => 'tag-2',
+               'description' => 'optional description'
            ]
       ];
 * @return: array of Tag Objects
