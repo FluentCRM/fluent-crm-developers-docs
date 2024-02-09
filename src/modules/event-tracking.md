@@ -33,7 +33,7 @@ $tracker = FluentCrmApi('event_tracker')->track([
 
 Also, you can use `subscriber_id` instead of `email`
 
-Remember one thing, if the `event_key` is the same, it will just count, don't create a new event.
+Remember one thing, if the `event_key` and `title` are the same, it only increments the count and doesn't create a new event.
 
 <hr/>
 
