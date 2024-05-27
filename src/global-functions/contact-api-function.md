@@ -76,8 +76,10 @@ $data = [
     'last_name' => 'Doe',
     'email' => 'jhon@doe.com', // requied
     'status' => 'pending',
-    'tags' => [1,2,3], // tag ids as an array
-    'lists' => [4] // list ids as an array,
+    'tags' => [1,2,3, 'Dynamic Tag'], // tag ids/slugs/title as an array
+    'lists' => [4, 'Dynamic List'] // list ids/slugs/title as an array,
+    'detach_tags' => [6, 'another_tag'] // tag ids/slugs/title as an array,
+    'detach_lists' => [10, 'list_slug'] // list ids/slugs/title as an array,
     'custom_values' => [
         'custom_field_slug_1' => 'custom_field_value_1',
         'custom_field_slug_2' => 'custom_field_value_2',
@@ -91,6 +93,41 @@ if($contact && $contact->status == 'pending') {
     $contact->sendDoubleOptinEmail();
 }
 ```
+
+For tags and lists parameter you can use tag ids, tag slugs or tag titles or mixed. Same for lists.
+
+If you provide string value for tags or lists then it will try to find the tag or list by title and if not found then it will create a new tag or list.
+
+**Avaiblable Fillable Main Fields**
+
+|Attribute|Data Type| Comment                                                        |
+|:----|:----|:---------------------------------------------------------------|
+|user_id|Integer| WordPress User ID                                              |
+|company_id|Integer| Primary Company ID                                             |
+|prefix|String| Name Prefix                                                    |
+|first_name|String| First Name                                                     |
+|last_name|String| Last Name                                                      |
+|email|String| Contact's Email Address                                        |
+|timezone|String| Timezoe String (ISO Format)                                    |
+|address_line_1|String| --                                                             |
+|address_line_2|String| --                                                             |
+|postal_code|String| --                                                             |
+|city|String| --                                                             |
+|state|String| --                                                             |
+|country|String| --                                                             |
+|ip|String| --                                                             |
+|latitude|Decimal| --                                                             |
+|longitude|Decimal| --                                                             |
+|phone|String| --                                                             |
+|status|String| Possible Values: pending / subscribed / bounced / unsubscribed |
+|contact_type|String| lead/customer                                                  |
+|source|String| --                                                             |
+|avatar|String / URL| Custom Contact Photo URL                                       |
+|date_of_birth|Date| Y-m-d format                                                   |
+|last_activity|Date Time| --                                                             |
+|updated_at|Date Time| --                                                             |
+
+
 
 ### getInstance()
 If you want to access raw `FluentCrm\App\Models\Subscriber` model then you use like this
@@ -145,12 +182,12 @@ $subscriber = $contactApi->getContact($emailOrContactId);
 Attach Lists to a Subscriber
 
 - Parameters
-    - $listIds array
+    - $listIds array or list ids / title / slugs
 - Returns FluentCrm\App\Models\Subscriber
 
 #### Usage
 ```php 
-$subscriber->attachLists([1,2,3]);
+$subscriber->attachLists([1,2,3, 'list_slug']);
 ```
 
 ### detachLists($listIds)
@@ -158,24 +195,24 @@ $subscriber->attachLists([1,2,3]);
 Remove Lists from a Subscriber
 
 - Parameters
-    - $listIds array
+    - $listIds array of list ids / title / slugs
 - Returns FluentCrm\App\Models\Subscriber
 
 #### Usage
 ```php 
-$subscriber->detachLists([1,2,3]);
+$subscriber->detachLists([1,2,3, 'list_slug_or_title']);
 ```
 
 ### attachTags($tagIds)
 Attach Tags to a Subscriber
 
 - Parameters
-    - $tagIds array
+    - $tagIds array of tag ids / title / slugs
 - Returns FluentCrm\App\Models\Subscriber
 
 #### Usage
 ```php 
-$subscriber->attachTags([1,2,3]);
+$subscriber->attachTags([1,2,3, 'title_or_slug']);
 ```
 
 ### detachTags($tagIds)
@@ -183,12 +220,12 @@ $subscriber->attachTags([1,2,3]);
 Remove tags from a Subscriber
 
 - Parameters
-    - $tagIds array
+    - $tagIds array or tag ids / title / slugs
 - Returns FluentCrm\App\Models\Subscriber
 
 #### Usage
 ```php 
-$subscriber->detachTags([1,2,3]);
+$subscriber->detachTags([1,2,3, 'title_or_slug']);
 ```
 
 
@@ -262,12 +299,12 @@ $sunsubscribeDate = $subscriber->unsubscribeReasonDate();
 Check if a contact is any of the provided tag
 
 - Parameters
-    - $tagIds array of tag ids
+    - $tagIds array of tag ids or tag slugs or tag titles
 - Returns `boolean`
 
 #### Usage
 ```php 
-$isInTags = $subscriber->hasAnyTagId([1,2,3]);
+$isInTags = $subscriber->hasAnyTagId([1,2,3, 'title_or_slug']);
 ```
 
 ### hasAnyListId()
@@ -275,12 +312,12 @@ $isInTags = $subscriber->hasAnyTagId([1,2,3]);
 Check if a contact is any of the provided list
 
 - Parameters
-    - $listIds array of list ids
+    - $listIds array of list ids or list slugs or list titles
 - Returns `boolean`
 
 #### Usage
 ```php 
-$isInLists = $subscriber->hasAnyListId([1,2,3]);
+$isInLists = $subscriber->hasAnyListId([1,2,3, 'title_or_slug']);
 ```
 
 ### getWpUser()
