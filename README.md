@@ -12,3 +12,11 @@ Check out our developer resources:
 
 * [FluentCRM Developers](https://developers.fluentcrm.com/)
 * [REST API Docs](https://rest-api.fluentcrm.com/)
+
+
+## How to build Locally
+
+1. Clone the repository
+2. Run `npm install`
+3. Run `npm run dev` to start the development server
+4. Run `npm run build` to build the static site

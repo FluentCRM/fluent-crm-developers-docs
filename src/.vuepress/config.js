@@ -185,7 +185,7 @@ module.exports = {
         [
             '@vuepress/pwa',
             {
-                serviceWorker: true,
+                serviceWorker: false,
                 updatePopup: {
                     message: 'New content is available.',
                     buttonText: 'Refresh'
