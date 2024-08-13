@@ -61,7 +61,7 @@ define `getDefaultSettings` method. This method returns the default settings of 
 
 Now, you need to define `getBlockFields` method which returns the settings of the benchmark.
 ```php
-    public function getBlockFields()
+    public function getBlockFields($funnel)
     {
         $yourCustomTags = [
             [
@@ -191,7 +191,7 @@ class CourseEnrolledBenchmark extends BaseBenchmark {
         ];
     }
     
-    public function getBlockFields()
+    public function getBlockFields($funnel)
     {
         $yourCustomTags = [
             [
@@ -274,9 +274,9 @@ class CourseEnrolledBenchmark extends BaseBenchmark {
 ### Registering the Benchmark
 Your benchmark is ready to use. Now, you need to register it with FluentCRM.
 ```php
-add_action('fluent_crm/after_init', function () {
+add_action('fluentcrm_addons_loaded', function () {
     new Your\Plugin\Name\Automation\CourseEnrolledBenchmark();
-});
+},99);
 ```
 
 
