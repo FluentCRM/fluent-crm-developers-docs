@@ -21,7 +21,7 @@ class CourseEnrolledBenchmark extends BaseBenchmark {
         
     public function __construct()
     {
-        $this->triggerName = 'course_enrolled_benchmark';
+        $this->triggerName = 'your_own_action_trigger_name'; // Change this with your action trigger that you are targeting
         $this->actionArgNum = 2;
         $this->priority = 20;
         parent::__construct();
@@ -160,7 +160,7 @@ class CourseEnrolledBenchmark extends BaseBenchmark {
         
     public function __construct()
     {
-        $this->triggerName = 'course_enrolled_benchmark';
+        $this->triggerName = 'your_own_action_trigger_name';
         $this->actionArgNum = 2;
         $this->priority = 20;
         parent::__construct();
