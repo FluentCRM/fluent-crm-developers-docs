@@ -20,7 +20,7 @@ FluentCRM comes in different versions:
 │   └── Functions   # contains global functions
 │   └── Hooks       # actions and filters handlers
 │   └── Http        # REST API routes, controllers, policies
-│   └── Models      # Database Molders
+│   └── Models      # Database Models
 │   └── Services    # Module Services
 │   └── views       # php view files
 │   └── App.php
