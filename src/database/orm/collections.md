@@ -1,3 +1,7 @@
+---
+description: "The Fluent ORM collection naturally inherits dozens of methods used to fluently work with the underlying array of Fluent ORM models."
+---
+
 # Fluent ORM: Collections
 
 <Badge type="tip" vertical="top" text="Fluent Framework" /> <Badge type="warning" vertical="top" text="ORM" />

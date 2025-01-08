@@ -1,3 +1,7 @@
+---
+description: "Fluent CRM offers an easy way to create forms without any knowledge of HTML or JavaScript by using its structural format for generating form fields."
+---
+
 # Form Field Code Structure
 
 Fluent CRM offers an easy way to create forms without any knowledge of HTML or JavaScript by using its structural format for generating form fields. The form fields are determined by this structure.

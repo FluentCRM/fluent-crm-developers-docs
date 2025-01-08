@@ -1,3 +1,7 @@
+---
+description: "An action is a precise task that is carried out when a specific trigger occurs. In the context of an application, an action is a programmed response to an event or user interaction."
+---
+
 #  Action
 An action is a precise task that is carried out when a specific trigger occurs.
 In the context of an application, an action is a programmed response to an event or user interaction.

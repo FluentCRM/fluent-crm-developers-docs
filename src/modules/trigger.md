@@ -1,3 +1,7 @@
+---
+description: "An event or action that initiates a specific automated response, that is what we call a trigger."
+---
+
 # Trigger
 An event or action that initiates a specific automated response, that is what we call a trigger.
 For example, when a user subscribes to a newsletter, this action is considered a trigger.

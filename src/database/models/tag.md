@@ -1,3 +1,7 @@
+---
+description: "Explore the Tag Model in FluentCRM, which allows you to categorize and segment your contacts with custom tags."
+---
+
 # Tag Model
 
 | DB Table Name | {wp_db_prefix}_fc_tags                                                   |

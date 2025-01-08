@@ -28,7 +28,7 @@ add_action('fluent_crm/smart_link_clicked_by_contact', function($smartLink, $sub
 ```
 </explain-block>
 
-<explain-block title="fluentcrm_email_url_clicked">
+<explain-block title="fluent_crm/email_url_clicked">
 This action runs when a contact clicks a link from email.
 
 **Parameters**
@@ -37,7 +37,7 @@ This action runs when a contact clicks a link from email.
 
 **Usage:**
 ```php 
-add_action('fluentcrm_email_url_clicked', function($campaignEmail, $urlObject) {
+add_action('fluent_crm/email_url_clicked', function($campaignEmail, $urlObject) {
    // Do you staffs here
 });
 ```

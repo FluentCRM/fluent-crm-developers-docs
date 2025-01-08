@@ -1,3 +1,7 @@
+---
+description: "Discover the SubscriberMeta Model in FluentCRM, which allows you to store and manage custom metadata for subscribers."
+---
+
 # SubscriberMeta Model
 
 | DB Table Name | {wp_db_prefix}_fc_subscriber_meta                                        |

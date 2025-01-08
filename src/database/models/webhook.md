@@ -1,3 +1,7 @@
+---
+description: "Discover the Webhook Model in FluentCRM, designed to integrate and automate external services."
+---
+
 # Webhook Model
 
 | DB Table Name | {wp_db_prefix}_fc_meta                                                   |

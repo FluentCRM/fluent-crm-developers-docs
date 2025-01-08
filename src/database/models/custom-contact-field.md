@@ -1,3 +1,7 @@
+---
+description: "Explore the CustomContactField Model in FluentCRM, which allows you to create and manage personalized fields for your contacts."
+---
+
 # CustomContactField Model
 
 | DB Table Name | {wp_db_prefix}_fc_meta                                   |

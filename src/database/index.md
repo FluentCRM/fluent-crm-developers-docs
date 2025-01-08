@@ -1,3 +1,7 @@
+---
+description: "FluentCRM use custom database tables to store all the CRM data. Here are the list of database tables and it's schema to understand overall database design and related data attributes of each model."
+---
+
 # FluentCRM Database Schema
 
 <Badge type="tip" vertical="top" text="FluentCRM Core" /> <Badge type="warning" vertical="top" text="Advanced" />

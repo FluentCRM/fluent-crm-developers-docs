@@ -1,3 +1,7 @@
+---
+description: "User model is used to interact with the WordPress user table. This model is used to interact with the WordPress user table."
+---
+
 # User Model
 
 | DB Table Name | {wp_db_prefix}_users                                                     |

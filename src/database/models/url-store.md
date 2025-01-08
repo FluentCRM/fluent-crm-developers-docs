@@ -1,3 +1,7 @@
+---
+description: "Learn about the Url Store Model in FluentCRM, which allows you to store and manage URLs for campaigns and automation"
+---
+
 # Url Store Model
 
 | DB Table Name | {wp_db_prefix}_fc_url_stores                                                   |

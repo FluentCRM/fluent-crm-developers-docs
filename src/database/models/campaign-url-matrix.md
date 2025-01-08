@@ -1,3 +1,7 @@
+---
+description: "Campaign URL Matrix Model"
+---
+
 # CampaignUrlMetric Model
 
 | DB Table Name | {wp_db_prefix}_fc_campaign_url_metrics                                   |

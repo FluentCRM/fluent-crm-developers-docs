@@ -1,3 +1,7 @@
+---
+description: "The Helper::getProfileSections method returns contact's profile section sub navigation items as keyed array"
+---
+
 # FluentCRM Core Helper Class
 
 - Class with Namespace: `\FluentCrm\App\Services\Helper`

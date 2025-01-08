@@ -1,3 +1,7 @@
+---
+description: "REST (representational state transfer) is a software architectural style that defines a set of constraints to be used for creating Web services. RESTful Web services allow the requesting systems to access and manipulate Web resources through a standardized interface."
+---
+
 # Extend the REST API
 <Badge type="tip" vertical="top" text="Fluent Framework" />
 REST (representational state transfer) is a software architectural style that defines a set of constraints to be used for creating Web services. 

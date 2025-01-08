@@ -1,3 +1,7 @@
+---
+description: "Contact API Function provides many utility methods that you can use to interact with contact related operations from your custom PHP Snippet or a custom plugin."
+---
+
 # Contact API Function
 
 Contact API Function provides many utility methods that you can use to interact with contact related operations from your custom PHP Snippet or a custom plugin.

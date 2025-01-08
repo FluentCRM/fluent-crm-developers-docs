@@ -1,3 +1,7 @@
+---
+description: "Understand the Meta Model in FluentCRM, which provides essential functionality for managing metadata and configurations."
+---
+
 # Meta Model
 
 | DB Table Name | {wp_db_prefix}_fc_meta                                                   |

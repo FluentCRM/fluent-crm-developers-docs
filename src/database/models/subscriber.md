@@ -1,3 +1,7 @@
+---
+description: "Explore the Subscriber Model in FluentCRM, designed to manage and organize your contacts effectively."
+---
+
 # Subscriber Model
 
 | DB Table Name | {wp_db_prefix}_fc_subscribers                                            |

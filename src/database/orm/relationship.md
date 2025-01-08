@@ -1,3 +1,7 @@
+---
+description: "Database tables are often related to one another. For example, a blog post may have many comments, or an order could be related to the user who placed it."
+---
+
 # Fluent ORM: Relationships
 
 <Badge type="tip" vertical="top" text="Fluent Framework" /> <Badge type="warning" vertical="top" text="ORM" />

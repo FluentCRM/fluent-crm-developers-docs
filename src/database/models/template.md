@@ -1,3 +1,7 @@
+---
+description: "Discover the Template Model in FluentCRM, designed to create and manage reusable templates for email campaigns and automations."
+---
+
 # Template Model
 
 | DB Table Name | {wp_db_prefix}_posts                                            |

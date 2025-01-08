@@ -1,3 +1,7 @@
+---
+description: "Funnel Model represents the Funnel data in the database. It has all the attributes and methods to do the CRUD operations."
+---
+
 # Funnel Model
 
 | DB Table Name | {wp_db_prefix}_fc_funnels                                      |

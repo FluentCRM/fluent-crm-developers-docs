@@ -1,3 +1,7 @@
+---
+description: "FunnelMetric Model is used to store the metrics of a funnel sequence"
+---
+
 # FunnelMetric Model
 
 | DB Table Name | {wp_db_prefix}_fc_funnel_metrics                                      |
