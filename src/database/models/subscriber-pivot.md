@@ -1,3 +1,7 @@
+---
+description: "Subscriber Pivot Model"
+---
+
 # Subscriber Pivot Model
 
 | DB Table Name | {wp_db_prefix}_fc_subscriber_pivot                                       |

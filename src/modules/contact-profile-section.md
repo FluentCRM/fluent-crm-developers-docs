@@ -1,3 +1,7 @@
+---
+description: "This code adds a custom profile section to the FluentCRM plugin."
+---
+
 ## Custom Profile Section for FluentCRM
 This code adds a custom profile section to the FluentCRM plugin.
 ```php

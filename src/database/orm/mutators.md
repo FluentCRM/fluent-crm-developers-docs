@@ -1,3 +1,7 @@
+---
+description: "Accessors and mutators allow you to format Fluent ORM attribute values when you retrieve or set them on model instances."
+---
+
 # Fluent ORM: Mutators
 
 <Badge type="tip" vertical="top" text="Fluent Framework" /> <Badge type="warning" vertical="top" text="ORM" />

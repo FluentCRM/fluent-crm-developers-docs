@@ -1,3 +1,7 @@
+---
+description: "Learn about the Subscriber Note Model in FluentCRM, designed to add, manage, and organize notes for individual subscribers."
+---
+
 # Subscriber Note Model
 
 | DB Table Name | {wp_db_prefix}_fc_subscriber_notes                                       |

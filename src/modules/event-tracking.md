@@ -1,3 +1,7 @@
+---
+description: "Event Tracking is a versatile feature designed to capture data on various contact behaviors. It allows you to programmatically create events for any activity or generate them from different automations."
+---
+
 ## Event Tracking
 
 Event Tracking is a versatile feature designed to capture data on various contact behaviors. It allows you to programmatically create events for any activity or generate them from different automations. These events can then be utilized to filter contacts or incorporated into automation conditional logics, offering flexibility in monitoring and responding to user interactions.

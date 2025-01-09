@@ -1,3 +1,7 @@
+---
+description: "The automation module is a powerful tool for creating and managing complex workflows. It allows you to create workflows that can be triggered by different events and run some actions till the workflow reaches to a benchmark."
+---
+
 # Automation
 The automation module is a powerful tool for creating and managing complex workflows. It allows you to create workflows 
 that can be triggered by different events and run some actions till the workflow reaches to a benchmark. FLuentCRM provides a set of predefined

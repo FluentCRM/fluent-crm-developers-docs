@@ -1,3 +1,7 @@
+---
+description: "Campaign Model is used to manage all the campaign related data."
+---
+
 # Campaign Model
 
 | DB Table Name | {wp_db_prefix}_fc_campaigns                                            |

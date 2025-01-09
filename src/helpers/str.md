@@ -1,3 +1,7 @@
+---
+description: "The Str::camel method converts the given string to camelCase:"
+---
+
 # String Helper aka Str
 
 - Class with Namespace: `\FluentCrm\Framework\Support\Str`

@@ -1,3 +1,7 @@
+---
+description: "Subject Model"
+---
+
 # Subject Model
 
 | DB Table Name | {wp_db_prefix}_fc_meta                                                   |

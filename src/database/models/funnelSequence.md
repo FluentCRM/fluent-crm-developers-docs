@@ -1,3 +1,7 @@
+---
+description: "Learn about the FunnelSequence Model in FluentCRM, designed to automate and optimize customer journeys."
+---
+
 # FunnelSequence Model
 
 | DB Table Name | {wp_db_prefix}_fc_funnel_sequences                                      |

@@ -1,3 +1,7 @@
+---
+description: "Funnel Subscriber Model"
+---
+
 # FunnelSubscriber Model
 
 | DB Table Name | {wp_db_prefix}_fc_funnel_subscribers                                      |

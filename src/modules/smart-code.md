@@ -1,3 +1,7 @@
+---
+description: "Smart Code is a feature that allows you to create custom merge tags that can be used in your emails. Smart Code is available in the Pro and Enterprise plans."
+---
+
 ## Smart Code
 
 Smart Code is a feature that allows you to create custom merge tags that can be used in your emails.

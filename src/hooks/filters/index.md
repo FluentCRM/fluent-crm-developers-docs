@@ -1,8 +1,12 @@
+---
+description: "FluentCRM has many interesting filter hooks that let developers change default settings and even extend FluentCRM with new functionality."
+---
+
 # FluentCRM Filter Hooks
 
 <Badge type="tip" vertical="top" text="FluentCRM Core" /> <Badge type="warning" vertical="top" text="Intermediate" />
 
-FluentCRM has many interesting filer hooks that let developers change default settings and even extend FluentCRM with new functionality.
+FluentCRM has many interesting filter hooks that let developers change default settings and even extend FluentCRM with new functionality.
 
 ## What are Filter Hooks
 

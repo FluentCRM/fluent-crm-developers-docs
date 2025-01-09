@@ -1,3 +1,7 @@
+---
+description: "The automation module is a powerful tool for creating and managing complex workflows."
+---
+
 # Automation
 
 The automation module is a powerful tool for creating and managing complex workflows. It allows you to create workflows

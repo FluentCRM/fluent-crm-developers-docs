@@ -1,3 +1,7 @@
+---
+description: "When building JSON APIs, you will often need to convert your models and relationships to arrays or JSON."
+---
+
 # Fluent ORM: Serialization
 
 <Badge type="tip" vertical="top" text="Fluent Framework" /> <Badge type="warning" vertical="top" text="ORM" />

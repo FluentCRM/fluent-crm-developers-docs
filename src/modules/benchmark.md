@@ -1,3 +1,7 @@
+---
+description: "Benchmark is a goal or target that you want to reach. For example, when a user clicks on a link in your email then it can be a benchmark."
+---
+
 # Benchmark
 
 Benchmark is a goal or target that you want to reach. For example, when a user clicks on a link in your email then it can be a benchmark.

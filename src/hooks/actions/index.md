@@ -1,8 +1,12 @@
+---
+description: "FluentCRM has many interesting action hooks that let developers change default settings and even extend FluentCRM with new functionality."
+---
+
 # FluentCRM Action Hooks
 
 <Badge type="tip" vertical="top" text="FluentCRM Core" /> <Badge type="warning" vertical="top" text="Intermediate" />
 
-FluentCRM has many interesting filter hooks that let developers change default settings and even extend FluentCRM with
+FluentCRM has many interesting action hooks that let developers change default settings and even extend FluentCRM with
 new functionality.
 
 ## What are Action Hooks

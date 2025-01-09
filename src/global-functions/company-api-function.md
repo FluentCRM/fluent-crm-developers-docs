@@ -1,3 +1,7 @@
+---
+description: "Company API Function provides many utility methods that you can use to get data as your requirement from your custom PHP Snippet or a custom plugin."
+---
+
 # Company API Function
 
 Company API Function provides many utility methods that you can use to get data as your requirement from your custom PHP Snippet or a custom plugin.

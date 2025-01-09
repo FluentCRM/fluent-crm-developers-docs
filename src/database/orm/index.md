@@ -1,3 +1,7 @@
+---
+description: "The Fluent ORM provides a beautiful, simple ActiveRecord implementation for working with your database."
+---
+
 # Fluent ORM: Getting Started
 
 <Badge type="tip" vertical="top" text="Fluent Framework" /> <Badge type="warning" vertical="top" text="ORM" />

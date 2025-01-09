@@ -1,3 +1,7 @@
+---
+description: "Campaign Email Model represents the campaign email data in the database."
+---
+
 # Campaign Model
 
 | DB Table Name | {wp_db_prefix}_fc_campaign_emails                                            |

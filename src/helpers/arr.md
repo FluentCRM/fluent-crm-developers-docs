@@ -1,3 +1,7 @@
+---
+description: "The Arr::add method adds a given key / value pair to an array if the given key doesn't already exist in the array:"
+---
+
 # Array Helper aka Arr
 
 - Class with Namespace: `\FluentCrm\Framework\Support\Arr`
