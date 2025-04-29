@@ -30,14 +30,16 @@ $tracker = FluentCrmApi('event_tracker')->track([
     'event_key' => 'fcrm_event_tested', // Required
     'title'     => 'Testing FluentCRM Event', // Required
     'value'     => 'This is my event value with plain Text',
-    'email'     => 'success+3000@simulator.amazonses.com',
+    'email'     => 'success+3000@simulator.amazonses.com', // check note
+    'user_id' => '', // check note
+    'subscriber_id' => '', // check note
     'provider'  => 'woocommerce' // If left empty, 'custom' will be added.
 ], true);
 ```
+Note: You may provide any of these values: email / subscriber_id / subscriber_id. If not values is given FluentCRM will try to find the the current contact.
 
-Also, you can use `subscriber_id` instead of `email`
 
-Remember one thing, if the `event_key` and `title` are the same, it only increments the count and doesn't create a new event.
+Remember one thing: if the `event_key` and `title` are the same, it only increments the count and doesn't create a new event.
 
 <hr/>
 
