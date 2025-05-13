@@ -20,11 +20,12 @@ module.exports = [
         ]
     },
     {
-        title: 'Contact Profile Section',
+        title: 'Profile Sections',
         collapsable: false,
         sidebarDepth: -1,
         children: [
             ['/modules/contact-profile-section', 'Contact Profile Section'],
+            ['/modules/company-profile-section', 'Company Profile Section'],
         ]
     }
 ];
