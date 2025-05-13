@@ -2,7 +2,7 @@
 This action runs just after a contact unsubscribes by clicking the unsubscribe link in an email or from the email header.
 
 **Parameters**
-- `$subscriber` Campaign Model
+- `$subscriber` Subscriber Model
 - `$campaignEmail` CampaignEmail Model or null
 - `$scope` string 'from_header' / 'web_ui'
 
