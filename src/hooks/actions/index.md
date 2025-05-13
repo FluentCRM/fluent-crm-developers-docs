@@ -144,6 +144,10 @@ add_action('fluent_crm/email_header', function($designName) {
 
 !!!include(./src/hooks/actions/_view_on_browser_page_actions.md)!!!
 
+### Self Unsubscribe Actions
+<hr />
+!!!include(./src/hooks/actions/_before_contact_unsubscribe_from_email.md)!!!
+
 ### Fluent Forms - Contact Specific
 <hr />
 
