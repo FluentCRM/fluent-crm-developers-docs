@@ -153,3 +153,24 @@ add_filter('fluent_crm/edd_purchase_sidebar_html', function($sidebarHtml, $subsc
 }, 20, 3);
 ```
 </explain-block>
+
+<explain-block title="fluent_crm/modify_custom_field_value">
+If you want to modify value of custom field before showing it in contact's profile section
+
+**Parameters**
+- `$values` Custom Field Value
+
+**Usage:**
+```php 
+/*
+* Modify Custom Field Data to show in contact's profile
+*/
+add_filter('fluent_crm/modify_custom_field_value', function ($values) {
+    if (is_array($values)) {
+        sort($values);
+    }
+
+    return $values;
+});
+```
+</explain-block>
