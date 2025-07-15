@@ -28,13 +28,13 @@ Constructor of the class should have the following body:
 
 public function __construct()
 {
-    $this->triggerName = 'course-enrolled';
+    $this->triggerName = 'my-plugin-course-enrolled';
     $this->priority = 20;
-    $this->actionArgNum = 1;
+    $this->actionArgNum = 3;
     parent::__construct();
 }
 ```
-The `triggerName` property is the name of the event that will trigger this workflow. For our case, let's name it `course-enrolled`.
+The `triggerName` property is the name of the event that will trigger this workflow. For our case, let's name it `my-plugin-course-enrolled`.
 The `priority` property is the priority of the action that will be added to the `add_action` function.
 The `actionArgNum` property is the number of arguments that will be passed to the callback.
 Finally, we need to call the parent constructor.
@@ -45,8 +45,8 @@ Now, we need to define getTrigger method. This method should return an array of 
 public function getTrigger()
 {
     return [
-        'category'    => __('Awesome Course', 'your-plugin'),
-        'label'       => __('User enroll in a course', 'your-plugin'),
+        'category'    => __('Awesome Course', 'my-plugin'),
+        'label'       => __('User enroll in a course', 'my-plugin'),
         'description' => __('The will start when a student enroll a course', 'your-plugin')
         'icon'        =>  'fc-icon-wp_new_user_signup',
     ];
@@ -71,15 +71,15 @@ You can customize settings as desired . Visit [Form Field Code Structure](/modul
 public function getSettingsFields($funnel)
 {
     return [
-        'title'     => __('User enroll in a course', 'your-plugin'),
+        'title'     => __('User enroll in a course', 'my-plugin'),
         'sub_title' => __('This will start when a student enroll a course', 'your-plugin'),
         'fields'    => [
             'subscription_status' => [
                 'type'        => 'option_selectors',
                 'option_key'  => 'editable_statuses',
                 'is_multiple' => false,
-                'label'       => __('Subscription Status', 'your-plugin'),
-                'placeholder' => __('Select Status', 'your-plugin')
+                'label'       => __('Subscription Status', 'my-plugin'),
+                'placeholder' => __('Select Status', 'my-plugin')
             ]
         ]
     ];
@@ -150,7 +150,7 @@ public function handle($funnel, $originalArgs)
     $settings = $funnel->settings;
     $conditions = $funnel->conditions;
     
-    // prepare the subscriber data
+    // prepare the subscriber data 
     $subscriberData = [
         'email' => '', // required
         'first_name' => '',
@@ -226,8 +226,8 @@ class CourseEnrolledTrigger extends BaseTrigger {
     public function getTrigger()
     {
         return [
-            'category'    => __('Awesome Course', 'your-plugin'),
-            'label'       => __('User enroll in a course', 'your-plugin'),
+            'category'    => __('Awesome Course', 'my-plugin'),
+            'label'       => __('User enroll in a course', 'my-plugin'),
             'description' => __('The will start when a student enroll a course', 'your-plugin')
             'icon'        =>  'fc-icon-wp_new_user_signup',
         ];
@@ -243,7 +243,7 @@ class CourseEnrolledTrigger extends BaseTrigger {
     public function getSettingsFields($funnel)
     {
         return [
-            'title'     => __('User enroll in a course', 'your-plugin'),
+            'title'     => __('User enroll in a course', 'my-plugin'),
             'sub_title' => __('This will start when a student enroll a course', 'your-plugin'),
             'fields'    => [
                 'subscription_status' => [
@@ -251,7 +251,7 @@ class CourseEnrolledTrigger extends BaseTrigger {
                     'option_key'  => 'editable_statuses',
                     'is_multiple' => false,
                     'label'       => __('Subscription Status', 'your-plugin'),
-                    'placeholder' => __('Select Status', 'your-plugin')
+                    'placeholder' => __('Select Status', 'my-plugin')
                 ]
             ]
         ];
