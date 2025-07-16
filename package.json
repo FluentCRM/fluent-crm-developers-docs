@@ -17,12 +17,10 @@
     "@vuepress/plugin-register-components": "^1.9.10",
     "vuepress": "^1.9.8",
     "vuepress-plugin-clean-urls": "^1.1.2",
-    "vuepress-plugin-mermaidjs": "^2.0.0-beta.2",
     "vuepress-plugin-seo": "^0.2.0"
   },
   "dependencies": {
     "@docsearch/js": "^3.5.2",
-    "markdown-it-include": "^2.0.0",
-    "markdown-it-mermaid": "^0.2.5"
+    "markdown-it-include": "^2.0.0"
   }
 }

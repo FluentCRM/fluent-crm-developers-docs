@@ -117,3 +117,4 @@ src/.vuepress/dist
 # Temp
 .github
 yarn.lock
+package-lock.json

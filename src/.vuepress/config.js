@@ -217,28 +217,6 @@ module.exports = {
             }
         ],
         [
-            'vuepress-plugin-mermaidjs',
-            {
-                sequenceDiagram: {
-                    theme: 'neutral',
-                    themeVariables: {
-                        primaryColor: '#7742e6',
-                        primaryTextColor: '#fff',
-                        primaryBorderColor: '#7742e6',
-                        lineColor: '#f9a8d4'
-                    }
-                },
-                flowchart: {
-                    theme: 'neutral',
-                    themeVariables: {
-                        primaryColor: '#7742e6',
-                        primaryTextColor: '#fff',
-                        primaryBorderColor: '#7742e6'
-                    }
-                }
-            }
-        ],
-        [
             '@vuepress/register-components',
             {
                 componentsDir: path.resolve(__dirname, './components'),
