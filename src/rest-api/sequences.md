@@ -236,8 +236,8 @@ Build relationships:
 
 ### 3. Personalization
 Use merge tags for personalization:
-- `{{contact.first_name}}`
-- `{{contact.company}}`
+- `\{\{contact.first_name\}\}`
+- `\{\{contact.company\}\}`
 - Custom field values
 
 ### 4. Performance Monitoring

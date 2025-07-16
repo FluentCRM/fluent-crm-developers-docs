@@ -345,3 +345,35 @@ details.custom-block.details
           a
             color: #f27070
             text-decoration: underline
+
+// Sidebar improvements for better navigation
+.sidebar
+  overflow-y auto
+  max-height calc(100vh - 60px)
+  
+  .sidebar-group
+    &.is-sub-group
+      margin-left 0.5em
+    
+    .sidebar-heading
+      cursor pointer
+      transition all 0.3s ease
+      
+      &:hover
+        background-color rgba(103, 58, 183, 0.05)
+        
+    &.is-collapsable .sidebar-heading:not(.clickable)
+      cursor auto
+      color #999
+      
+  .sidebar-link
+    transition all 0.2s ease
+    
+    &:hover
+      transform translateX(2px)
+
+// Improve sidebar responsiveness on smaller screens
+@media (max-width: 719px)
+  .sidebar
+    overflow-y auto
+    max-height calc(100vh - 110px)

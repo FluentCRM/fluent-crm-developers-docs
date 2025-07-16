@@ -64,7 +64,8 @@ module.exports = {
         editLinkText: 'Edit this page on GitHub',
         lastUpdated: true,
         logo: '/assets/img/icon.svg',
-        displayAllHeaders: true,
+        displayAllHeaders: false,
+        sidebarDepth: 2,
         smoothScroll: true,
         search: false, // built in search disabled because of Algolia search
         searchPlaceholder: 'Search...',

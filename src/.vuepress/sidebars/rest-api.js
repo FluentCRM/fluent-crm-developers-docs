@@ -1,7 +1,7 @@
 module.exports = [
   {
     title: 'Getting Started',
-    collapsable: false,
+    collapsable: true,
     children: [
       '',
       'authentication'
@@ -9,7 +9,7 @@ module.exports = [
   },
   {
     title: 'Core Resources',
-    collapsable: false,
+    collapsable: true,
     children: [
       'contacts',
       'lists',
@@ -20,7 +20,7 @@ module.exports = [
   },
   {
     title: 'Email & Campaigns',
-    collapsable: false,
+    collapsable: true,
     children: [
       'templates',
       'sequences',
@@ -29,7 +29,7 @@ module.exports = [
   },
   {
     title: 'Automation & Analytics',
-    collapsable: false,
+    collapsable: true,
     children: [
       'funnels',
       'reports',
