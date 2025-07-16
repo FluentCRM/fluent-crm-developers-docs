@@ -10,5 +10,6 @@ export default ({
   router, // the router instance for the app
   siteData // site metadata
 }) => {
-  // ...apply enhancements for the site.
+  
+  // add mermaid plugin
 }
