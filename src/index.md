@@ -1,6 +1,27 @@
 ---
 title: Developer Docs
-tagline: Resources and tutorials for FluentCRM developers
+tagline: Resources and tutorials for Flu  <div class="resource-grid">
+    <div class="resource-item">
+      <h3>🔗 WordPress Hooks</h3>
+      <p>100+ action and filter hooks for deep customization</p>
+      <a href="./hooks/">View All Hooks →</a>
+    </div>
+    <div class="resource-item">
+      <h3>📊 Database Models</h3>
+      <p>Complete reference for all FluentCRM data models</p>
+      <a href="./database/models/">Model Reference →</a>
+    </div>
+    <div class="resource-item">
+      <h3>🛠️ Helper Functions</h3>
+      <p>Utility functions to speed up your development</p>
+      <a href="./global-functions/">Function Reference →</a>
+    </div>
+    <div class="resource-item">
+      <h3>📝 Developer Changelog</h3>
+      <p>Latest updates, new features, and breaking changes</p>
+      <a href="./changelog/">View Changelog →</a>
+    </div>
+  </div>
 sidebar: false
 prev: false
 next: true

@@ -182,6 +182,7 @@ fluent-crm/
 - **[Official Documentation (User) ](https://fluentcrm.com/docs/)** - User guides and tutorials
 - **[Developer Hooks Reference](/hooks/)** - Complete hook documentation
 - **[REST API Documentation](/rest-api/)** - Comprehensive API guide
+- **[Developer Changelog](/changelog/)** - Latest updates and breaking changes
 
 ### 💬 **Community**
 - **[WPManageNinja Community](https://community.wpmanageninja.com/portal/space/fluent-crm/)** - Official community
