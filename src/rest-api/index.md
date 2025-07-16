@@ -74,12 +74,7 @@ The API uses standard HTTP status codes and returns detailed error messages:
 }
 ```
 
-## Rate Limiting
 
-API requests are subject to WordPress rate limiting. For high-volume integrations, consider:
-- Implementing proper retry logic
-- Batching requests when possible
-- Using webhooks for real-time data sync
 
 ## SDKs and Tools
 
@@ -88,13 +83,15 @@ While we don't provide official SDKs, the API works with any HTTP client library
 - **JavaScript**: Axios, Fetch API
 - **Python**: Requests
 - **Ruby**: HTTParty
-- **Postman**: [Import our collection](#)
+- Any language that supports HTTP requests
 
 ## Support
 
-- **Documentation Issues**: Submit a GitHub issue
-- **API Questions**: Contact support
-- **Feature Requests**: Community forum
+For support and assistance:
+
+- **Documentation Issues**: [Submit a GitHub issue](https://github.com/FluentCRM/fluent-crm-developers-docs/issues)
+- **API Questions**: [Contact support](https://wpmanageninja.com/support-tickets/)
+- **Feature Requests/Suggestions**: [Community forum](https://community.wpmanageninja.com/portal/space/fluent-crm/)
 
 ## What's Next?
 

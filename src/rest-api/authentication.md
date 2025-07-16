@@ -10,9 +10,12 @@ First, create a dedicated user account for API access:
 
 1. Navigate to `FluentCRM → Settings → Managers`
 2. Click "Add New Manager" 
-3. **Important**: Do NOT use an Administrator user role for API access
-4. Select the specific FluentCRM permissions you want to grant
-5. Save the manager account
+3. Select the specific FluentCRM permissions you want to grant
+4. Save the manager account
+
+::: warning Important
+Do NOT use an Administrator user role for API access. Create a dedicated manager account with only the necessary FluentCRM permissions for better security.
+:::
 
 ![Create Manager](https://rest-api.fluentcrm.com/images/create_manager-8a396fc8.png)
 
