@@ -378,6 +378,180 @@ curl "https://yourdomain.com/wp-json/fluent-crm/v2/subscribers/1?with[]=subscrib
   -H "Authorization: Basic API_USERNAME:API_PASSWORD"
 ```
 
+## Working with Notes
+
+FluentCRM also provides a feature to add custom notes for contacts. There are 15 types of Contact Notes available to be added.
+
+### Creating a new Note
+
+**HTTP Request**
+```
+POST /wp-json/fluent-crm/v2/subscribers/{id}/notes
+```
+
+**Parameters**
+
+| Parameter          | Type     | Required | Description      |
+|--------------------|----------|----------|------------------|
+| `note`             | object   | Yes      | note values      |
+| `note.title`       | String   | Yes      | note title       |
+| `note.description` | Text     | Yes      | note description |
+| `note.type`        | String   | Yes      | note type        |
+| `note.created_at`  | TimeDate | Yes      | note created_at  |
+
+**Type Values**
+
+- `note` - Note
+- `call` - Call
+- `email` - Email
+- `meeting` - Meeting
+- `quote_sent` - Quote Sent
+- `quote_accepted` - Quote Accepted
+- `quote_refused` - Quote Refused
+- `invoice_sent` - Invoice Sent
+- `invoice_part_paid` - Invoice Part Paid
+- `invoice_paid` - Invoice Paid
+- `invoice_refunded` - Invoice Refunded
+- `transaction` - Transaction
+- `feedback` - Feedback
+- `tweet` - Tweet
+- `facebook_post` - Facebook Post
+
+**Example Request**
+```bash
+curl "https://yourdomain.com/wp-json/fluent-crm/v2/subscribers/1/notes" \
+  -H "Authorization: Basic API_USERNAME:API_PASSWORD" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "note": {
+      "title": "New Note",
+      "description": "<p>very important note</p>",
+      "type": "note",
+      "created_at": "2025-08-10 12:00:00"
+    }
+  }'
+```
+
+**Example Response**
+```json
+{
+    "note": {
+        "id": 47,
+        "subscriber_id": "111",
+        "parent_id": null,
+        "created_by": "1",
+        "status": "open",
+        "type": "note",
+        "is_private": "1",
+        "title": "New Note",
+        "description": "<p>very important note<\/p>",
+        "created_at": "2025-08-10 12:00:00",
+        "updated_at": "2025-08-07 12:13:02"
+    },
+    "message": "Note successfully updated"
+}
+```
+
+### Updating a Note
+
+**HTTP Request**
+```
+PUT /wp-json/fluent-crm/v2/subscribers/{id}/notes/{id}
+```
+
+**Example Request**
+```bash
+curl "https://yourdomain.com/wp-json/fluent-crm/v2/subscribers/10/notes/11" \
+  -X PUT \
+  -H "Authorization: Basic API_USERNAME:API_PASSWORD" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "note": {
+      "title": "New Note updated",
+      "description": "<p>very important note</p>",
+      "type": "note",
+      "created_at": "2025-08-10 12:00:00"
+    }
+  }'
+```
+
+**Example Response**
+```json
+{
+    "note": {
+        "id": 11,
+        "subscriber_id": "10",
+        "parent_id": null,
+        "created_by": "1",
+        "status": "open",
+        "type": "note",
+        "is_private": "1",
+        "title": "New Note updated",
+        "description": "<p>very important note<\/p>",
+        "created_at": "2025-08-10 12:00:00",
+        "updated_at": "2025-08-07 12:13:02"
+    },
+    "message": "Note successfully updated"
+}
+```
+
+### Retrieving notes of a contact
+To retrieve all paginated notes for a specific contact, use the following endpoint:
+
+**Parameters**
+
+| Parameter | Type | Default | Description                |
+|-----------|------|---------|----------------------------|
+| `per_page` | integer | 10 | Number of notes per page   |
+| `page` | integer | 1 | Page number for pagination |
+| `search` | string | - | Search note by title       |
+
+**HTTP Request**
+```
+GET /wp-json/fluent-crm/v2/subscribers/{id}/notes
+```
+
+**Example Request**
+
+```bash
+curl "https://yourdomain.com/wp-json/fluent-crm/v2/subscribers/1/notes?per_page=10&page=1&search=" \
+-H "Authorization: Basic API_USERNAME:API_PASSWORD"
+```
+
+**Example Response**
+
+```json
+{
+    "notes": {
+        "current_page": 1,
+        "per_page": 10,
+        "total": 5,
+        "last_page": 1,
+        "data": [
+            {
+                "added_by": {
+                    "ID": 1,
+                    "display_name": "Sheikh Hasib",
+                    "first_name": "Sheikh",
+                    "last_name": "Hasib"
+                },
+                "id": 47,
+                "subscriber_id": "111",
+                "created_by": "1",
+                "status": "open",
+                "type": "note",
+                "title": "New Note",
+                "description": "<p>very important note</p>",
+                "is_private": "1",
+                "parent_id": null,
+                "created_at": "2025-08-10 12:00:00",
+                "updated_at": "2025-08-07 12:13:02"
+            }
+        ]
+    }
+}
+```
+
 ## Bulk Operations
 
 ### Bulk Update Example
