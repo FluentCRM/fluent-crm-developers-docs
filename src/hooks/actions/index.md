@@ -114,7 +114,7 @@ add_action('fluent_crm/email_header', function($designName) {
     ?>
     <style>
       h1 {
-        color: red;
+        color: red !important;
       }
     </style>
     <?php
