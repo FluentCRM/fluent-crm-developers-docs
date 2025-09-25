@@ -89,3 +89,20 @@ add_filter('fluent_crm/countries', function($countires) {
 }, 20); // priority need to be greated than 10
 ```
 </explain-block>
+
+<explain-block title="fluent_crm/unsubscribe_reasons">
+This filter allows modification of the reasons provided to users when they choose to unsubscribe from emails.
+
+**Parameters**
+- `$reasons` Array - List of unsubscribe reasons
+
+**Usage:**
+
+```php 
+add_filter('fluent_crm/unsubscribe_reasons', function($reasons) {
+  // Modify the reasons array as needed
+    return $reasons;
+}, 20); // priority need to be greated than 10
+```
+
+</explain-block>

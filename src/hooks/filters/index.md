@@ -40,7 +40,6 @@ Filter hooks are used to return modified values for certain parameters, based on
 
 ------
 
-
 ### Webhook Related Filters
 <hr />
 
