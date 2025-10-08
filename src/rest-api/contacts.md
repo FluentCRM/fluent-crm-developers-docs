@@ -39,8 +39,10 @@ A contact represents a subscriber in your FluentCRM database.
 - `subscribed` - Active subscriber
 - `unsubscribed` - Unsubscribed from emails  
 - `pending` - Pending confirmation
+- `transactional` - Transactional emails only
 - `bounced` - Email bounced
-- `complained` - Marked as spam
+- `complained` - Failed but not bounced or spammed
+- `spammed` - Marked as spam by user
 
 ## List All Contacts
 
@@ -53,18 +55,19 @@ GET /wp-json/fluent-crm/v2/subscribers
 
 ### Parameters
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `per_page` | integer | 10 | Number of contacts per page |
-| `page` | integer | 1 | Page number for pagination |
-| `search` | string | - | Search contacts by name/email |
-| `tags` | array | - | Filter by tag IDs |
-| `lists` | array | - | Filter by list IDs |
-| `statuses` | array | - | Filter by status values |
-| `order_by` | string | id | Sort field (id, email, created_at) |
-| `order_type` | string | DESC | Sort direction (ASC, DESC) |
-| `custom_fields` | boolean | false | Include custom field values |
-| `company_ids` | array | - | Filter by company IDs |
+| Parameter       | Type | Default | Description                              |
+|-----------------|------|---------|------------------------------------------|
+| `per_page`      | integer | 10      | Number of contacts per page              |
+| `page`          | integer | 1       | Page number for pagination               |
+| `search`        | string | -       | Search contacts by name/email            |
+| `filter_type`   | string | simple  | Filter by contact type (simple, advanced) |
+| `tags`          | array | -       | Filter by tag IDs                        |
+| `lists`         | array | -       | Filter by list IDs                       |
+| `statuses`      | array | -       | Filter by status values                  |
+| `sort_by`       | string | id      | Sort field (id, email, created_at)       |
+| `sort_type`     | string | DESC    | Sort direction (ASC, DESC)               |
+| `custom_fields` | boolean | false   | Include custom field values              |
+| `company_ids`   | array | -       | Filter by company IDs                    |
 
 ### Example Request
 
@@ -127,9 +130,9 @@ GET /wp-json/fluent-crm/v2/subscribers/0?get_by_email={email}
 
 ### Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `with` | array | Additional data to include |
+| Parameter | Type  | Default                                   | Description                 |
+|-----------|-------|-------------------------------------------|-----------------------------|
+| `with`    | array | tags, lists, companies(if module enabled) |  Additional data to include |
 
 **Available `with` options:**
 - `stats` - Email statistics (opens, clicks)
@@ -267,6 +270,7 @@ All create parameters are available, plus:
 | `detach_tags` | array | Tags to remove |
 | `attach_lists` | array | Lists to add |
 | `detach_lists` | array | Lists to remove |
+| `custom_values` | object | Custom field values to update |
 
 ### Example Request
 
@@ -279,7 +283,11 @@ curl "https://yourdomain.com/wp-json/fluent-crm/v2/subscribers/1" \
     "subscriber": {
       "first_name": "John Updated",
       "attach_tags": [3],
-      "detach_tags": [1]
+      "detach_tags": [1],
+      "custom_values": {
+        "custom_field_slug_1": "custom_field_value",
+        "custom_field_slug_2": "custom_field_value_2"
+      },
     }
   }'
 ```
@@ -558,16 +566,71 @@ curl "https://yourdomain.com/wp-json/fluent-crm/v2/subscribers/1/notes?per_page=
 
 To update multiple contacts, use individual PUT requests or create a batch script:
 
+### Parameters
+
+| Parameter        | Type   | Required | Description            |
+|------------------|--------|----------|------------------------|
+| `action_name`    | string | **Yes**  | Bulk action name       |
+| `subscriber_ids` | array  | **Yes**  | list of subscriber ids |
+| `new_status`     | string | No       | new status of contacts |
+
 ```bash
 # Update multiple contacts with the same data
-for id in 1 2 3 4 5; do
-  curl "https://yourdomain.com/wp-json/fluent-crm/v2/subscribers/$id" \
-    -X PUT \
-    -H "Authorization: Basic API_USERNAME:API_PASSWORD" \
-    -H "Content-Type: application/json" \
-    -d '{"subscriber": {"attach_tags": [10]}}'
-done
+curl "https://yourdomain.com/wp-json/fluent-crm/v2/subscribers/do-bulk-action" \
+-X PUT \
+-H "Authorization: Basic API_USERNAME:API_PASSWORD" \
+-H "Content-Type: application/json" \
+-d '{
+    "action_name": "add_to_tags",
+    "action_options": [9],
+    "subscriber_ids": [1, 2, 3, 4, 5]
+  }
+'
 ```
+
+**Available `action_name` options:**
+- `add_to_tags` - To add tags to contacts
+- `add_to_lists` - To add lists to contacts
+- `remove_from_tags` - To remove tags from contacts
+- `remove_from_lists` - To remove lists from contacts
+- `change_contact_status` - Change contact status
+- `change_contact_type` - Change contact type
+- `add_to_email_sequence` - Add contacts to email sequence
+- `add_to_automation` - Associate contacts to automation
+- `send_double_optin` - Send double opt-in email
+- `update_custom_fields` - Update custom fields of contacts
+- `delete_contacts` - Delete contacts
+- `add_to_company` - Add contacts to company
+- `remove_from_company` - Remove contacts from company
+
+**Available `new_status` options:**
+| action_name                  | Possible `new_status` value            |
+|----------------------------  |---------------------------|
+| `change_contact_status`      | `subscribed`, `unsubscribed`, `pending`, `transactional`, `bounced`, `complained`, `complained`, `spammed`|
+| `change_contact_type`        | `lead`, `customer`        |
+| `add_to_email_sequence`      | `sequence_id` (integer) - ID of the email sequence |
+| `add_to_automation`          | `automation_id` (integer) - ID of the automation |
+| `add_to_company`             | `company_id` (integer) - ID of the company |
+| `remove_from_company`        | `company_id` (integer) - ID of the company |
+
+**Other parameters when `action_name` is `update_custom_fields`**
+
+| Parameter            | Required  | Description        |
+|----------------------|-----------|--------------------|
+| `custom_field.key`   | **Yes**   | Custom field slug  |
+| `custom_field.type`  | **Yes**   | Custom field type  |
+| `custom_field.value` | **Yes**   | Custom field value |
+
+**Available `custom_field.type` options:**
+- `text`
+- `textarea`
+- `number`
+- `select-multi`
+- `radio`
+- `checkbox`
+- `date`
+- `date_time`
+
 
 ## Error Handling
 
