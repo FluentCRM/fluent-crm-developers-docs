@@ -44,7 +44,7 @@ that should be returned when the shortcodes are used. If the shortcode is code_4
 The callback function has four arguments:
     - `$code`: This is the shortcode that is used in the email. In our example, `$code` will be 
         ::: v-pre 
-        `{{your_custom_section_key.code_4}}` 
+        `{{your_custom_smartcode_group_key.code_4}}` 
         :::
     - `$valueKey`: This is the key of the shortcode. For example, if the shortcode is `code_4`, then the `$valueKey` will be `code_4`.
     - `$defaultValue`: This is the default value that will be returned if the `$valueKey` is invalid.
