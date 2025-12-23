@@ -560,6 +560,106 @@ curl "https://yourdomain.com/wp-json/fluent-crm/v2/subscribers/1/notes?per_page=
 }
 ```
 
+## Event Tracking Operations
+
+### Track a Custom Event
+
+Add custom events for a contact.
+
+**HTTP Request**
+```
+POST /wp-json/fluent-crm/v2/subscribers/track-event
+```
+$eventAtts = [
+'event_key'  => Arr::get($settings, 'event_key'),
+'title'      => $title,
+'value'      => $value,
+'subscriber' => $subscriber
+];
+Parameters
+
+| Parameter       | Type    | Required | Description                                   |
+|-----------------|---------|--------|--------------------------------------------------|
+| `event_key`     | string  | **Yes** | Event Tracking Key, ex: my_event_name_key       |
+| `title`         | string  | **Yes**  | Human readable event name                      |
+| `value`         | string  | No | Details about this event or numeric value            |
+| `subscriber_id` | integer | No | `subscriber_id` or `user_id` or `email`  is required |
+| `user_id`       | integer | No | `subscriber_id` or `user_id` or `email`  is required |
+| `email`         | string  | No | `subscriber_id` or `user_id` or `email`  is required |
+
+Example Request
+
+```bash
+curl "https://yourdomain.com/wp-json/fluent-crm/v2/subscribers/track-event" \
+  -H "Authorization: Basic API_USERNAME:API_PASSWORD" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "event_key": "your_event_key",
+    "title": "test event name", 
+    "value": "Details about this event or numeric value",
+    "subscriber_id": 111
+  }'
+```
+
+Example Response
+
+```json
+{
+  "message": "Event has been tracked",
+  "id": 111
+}
+```
+
+### Get Events for a Contact
+
+Retrieve a list of events for a specific contact.
+
+**Parameters**
+
+| Parameter | Type | Default | Description                |
+|-----------|------|---------|----------------------------|
+| `per_page` | integer | 10 | Number of notes per page   |
+| `page` | integer | 1 | Page number for pagination |
+
+**HTTP Request**
+```
+GET /wp-json/fluent-crm/v2/subscribers/{id}/tracking-events
+```
+
+**Example Request**
+
+```bash
+curl "https://yourdomain.com/wp-json/fluent-crm/v2/subscribers/1/tracking-events?per_page=10&page=1" \
+-H "Authorization: Basic API_USERNAME:API_PASSWORD"
+```
+
+**Example Response**
+
+```json
+{
+    "events": {
+        "current_page": 1,
+        "per_page": 10,
+        "total": 1,
+        "last_page": 1,
+        "data": [
+            {
+                "id": 47,
+                "subscriber_id": "111",
+                "counter": 1,
+                "created_by": 1,
+                "provider": "custom",
+                "event_key": "your_event_key",
+                "title": "test event name",
+                "value": "any description or numeric value",
+                "created_at": "2025-08-10 12:00:00",
+                "updated_at": "2025-08-07 12:13:02"
+            }
+        ]
+    }
+}
+```
+
 ## Bulk Operations
 
 ### Bulk Update Example
