@@ -155,7 +155,7 @@ add_filter('fluent_crm/edd_purchase_sidebar_html', function($sidebarHtml, $subsc
 </explain-block>
 
 <explain-block title="fluent_crm/bounced_email_store">
-This filter allows you to customize whether a bounced email should be stored in the system or not.
+This filter allows you to customize whether a bounced email should be stored in the system or not
 
 **Parameters**
 - `$store` boolean - Default true
@@ -169,3 +169,4 @@ add_filter('fluent_crm/bounced_email_store', function($store) {
     return false; // Prevent storing bounced emails
 }, 20, 3);
 ```
+</explain-block>
