@@ -48,6 +48,8 @@ module.exports = {
             rel: 'stylesheet',
             href: 'https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,500;0,700;1,300;1,500;1,700&display=auto'
         }],
+        ['script', { src: 'https://cdn.jsdelivr.net/gh/fluent-docai/fluent-bot-chat-widget-open@latest/fluent-bot-chat-widget.umd.js' }],
+        ['script', {}, 'FluentBotChatWidget.injectWidget("019b49b5-1345-70ba-aeb6-ead5a38e7b68");'],
     ],
 
     /**
