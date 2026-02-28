@@ -170,3 +170,80 @@ add_filter('fluent_crm/bounced_email_store', function($store) {
 }, 20, 3);
 ```
 </explain-block>
+
+<explain-block title="Throughput, Batch, and Time-Limit Filters">
+These filters control processing batch sizes and runtime windows for campaign, automation, mailer, and SMS queues.
+
+**Where to add overrides**
+- Create an MU plugin: `wp-content/mu-plugins/fluentcrm-throughput-overrides.php`
+
+**Current defaults (Core + Pro)**
+- `fluent_crm/funnel_processor_batch_limit` => `200`
+- `fluent_crm/funnel_processor_max_processing_seconds` => `55`
+- `fluent_crm/contact_bulk_action_limit` => `400`
+- `fluent_crm/five_minute_campaign_selection_limit` => `2`
+- `fluent_crm/five_minute_campaign_processing_chunk` => `20`
+- `fluent_crm/campaign_processing_stat_chunk` => `30`
+- `fluent_crm/campaign_processing_stat_runtime_seconds` => `10`
+- `fluent_crm/process_subscribers_per_request` => `30` (common), `100` in import/user contexts
+- `fluent_crm/mailer_handler_chunk_size` => `20`
+- `fluent_crm/mailer_handler_max_processing_seconds` => `50`
+- `fluent_crm/mailer_multi_thread_chunk_size` => `20`
+- `fluent_crm/mailer_multi_thread_max_processing_seconds` => `50`
+- `fluent_crm/mailer_multi_thread_offset` => `250`
+- `fluent_crm/email_limit_per_second` => derived from settings (`14` fallback)
+- `fluent_crm/max_run_time` => derived from PHP `max_execution_time` (safe-clamped)
+- `fluent_crm/sequence_tracker_batch_limit` (Pro) => `200`
+- `fluent_crm/recurring_campaign_batch_limit` (Pro) => `10`
+- `fluent_crm/sms_five_minute_campaign_selection_limit` (Pro) => `2`
+- `fluent_crm/sms_process_subscribers_per_request` (Pro) => `30`
+- `fluent_crm/sms_scheduler_chunk_size` (Pro) => `10`
+- `fluent_crm/sms_scheduler_max_processing_seconds` (Pro) => `30`
+- `fluent_crm/sms_campaign_action_limit` (Pro) => `50`
+
+**Usage:**
+```php
+<?php
+/**
+ * Plugin Name: FluentCRM Throughput Overrides
+ */
+
+// Core
+add_filter('fluent_crm/funnel_processor_batch_limit', function ($limit) {
+    return 600;
+});
+
+add_filter('fluent_crm/five_minute_campaign_selection_limit', function ($limit) {
+    return 4;
+});
+
+add_filter('fluent_crm/five_minute_campaign_processing_chunk', function ($chunk, $campaign) {
+    return 40;
+}, 10, 2);
+
+add_filter('fluent_crm/mailer_handler_chunk_size', function ($chunk) {
+    return 30;
+});
+
+add_filter('fluent_crm/mailer_handler_max_processing_seconds', function ($seconds) {
+    return 50;
+});
+
+// Pro
+add_filter('fluent_crm/sequence_tracker_batch_limit', function ($limit) {
+    return 500;
+});
+
+add_filter('fluent_crm/sms_five_minute_campaign_selection_limit', function ($limit) {
+    return 3;
+});
+
+add_filter('fluent_crm/sms_process_subscribers_per_request', function ($limit) {
+    return 120;
+});
+
+add_filter('fluent_crm/sms_scheduler_chunk_size', function ($chunk, $scheduler) {
+    return 25;
+}, 10, 2);
+```
+</explain-block>
