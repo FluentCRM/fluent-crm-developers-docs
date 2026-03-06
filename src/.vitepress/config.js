@@ -25,7 +25,7 @@ export default defineConfig({
     description: 'Resources and tutorials for FluentCRM developers',
 
     head: [
-        ['link', { rel: 'icon', href: '/favicon.png' }],
+        ['link', { rel: 'icon', href: '/assets/img/icon.svg', type: 'image/svg+xml' }],
         ['link', { rel: 'manifest', href: '/manifest.json' }],
         ['link', { rel: 'mask-icon', href: '/assets/img/logo.svg', color: '#7742e6' }],
         ['link', { rel: 'apple-touch-icon', href: '/assets/img/logo.svg' }],

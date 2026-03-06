@@ -1,4 +1,4 @@
-/* OpenAPI styles — only apply to pages with OpenAPI content */
+/* OpenAPI styles — only apply to pages with .oa-operation */
 
 /* Hide aside on OpenAPI pages */
 .VPDoc:has(.oa-operation) .aside,
@@ -10,83 +10,51 @@
   left: -9999px !important;
 }
 
-/* Remove has-aside class effects on OpenAPI pages */
+/* Full-width content on OpenAPI pages only */
 .VPDoc:has(.oa-operation).has-aside .container {
   display: block !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  padding-right: 0 !important;
 }
 
-/* Full-width content on all doc pages */
-.VPDoc.has-aside .container > .content {
+.VPDoc:has(.oa-operation).has-aside .container > .content {
   width: 100% !important;
   max-width: 100% !important;
   padding-right: 0 !important;
   margin-right: 0 !important;
 }
 
-.VPDoc.has-aside .content-container,
-.VPDoc .content-container,
-.content-container {
+.VPDoc:has(.oa-operation) .content-container {
   max-width: 100% !important;
   width: 100% !important;
   padding-right: 0 !important;
   margin-right: 0 !important;
 }
 
-.VPDoc.has-aside .container,
-.VPDoc .container {
+.VPDoc:has(.oa-operation) .content {
   max-width: 100% !important;
   width: 100% !important;
   padding-right: 0 !important;
 }
 
-.VPDoc .content,
-.VPDoc.has-aside .content {
-  max-width: 100% !important;
-  width: 100% !important;
-  padding-right: 0 !important;
-}
-
-.VPContent.has-sidebar .VPContent-main {
-  max-width: 100% !important;
-  width: 100% !important;
-  padding-right: 0 !important;
-}
-
-.VPDoc .container .content {
-  max-width: 100% !important;
-  width: 100% !important;
-  padding-right: 0 !important;
-}
-
-.VPDoc.has-aside {
+.VPDoc:has(.oa-operation).has-aside {
   padding-right: 0 !important;
   margin-right: 0 !important;
 }
 
-.VPContent.has-sidebar {
-  grid-template-columns: var(--vp-sidebar-width) 1fr !important;
+.VPDoc:has(.oa-operation) .container > .content-container {
+  max-width: 100% !important;
+  width: 100% !important;
 }
 
-.VPDoc .container > *:not(.aside) {
+.VPDoc:has(.oa-operation) .container > .content-container > .content {
   max-width: 100% !important;
-}
-
-main.VPContent {
-  max-width: 100% !important;
+  width: 100% !important;
 }
 
 .oa-operation,
 .oa-spec {
-  max-width: 100% !important;
-  width: 100% !important;
-}
-
-.VPDoc .container > .content-container {
-  max-width: 100% !important;
-  width: 100% !important;
-}
-
-.VPDoc.has-aside .container > .content-container > .content {
   max-width: 100% !important;
   width: 100% !important;
 }
