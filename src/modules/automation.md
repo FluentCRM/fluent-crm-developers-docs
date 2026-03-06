@@ -10,7 +10,7 @@ FluentCRM's automation system operates on a simple yet powerful concept: **Trigg
 
 The following diagram illustrates how automation components work together:
 
-<img width="400px" :src="$withBase('/assets/automation.png')" alt="Automation Flow" />
+<img width="400px" src="/assets/automation.png" alt="Automation Flow" />
 
 ## Core Components
 

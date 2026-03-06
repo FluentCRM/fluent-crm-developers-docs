@@ -6,7 +6,7 @@ description: "Understand the Meta Model in FluentCRM, which provides essential f
 
 | DB Table Name | {wp_db_prefix}_fc_meta                                                   |
 |---------------|--------------------------------------------------------------------------|
-| Schema        | <a :href="$withBase('/database/#fc-subscribers-table')">Check Schema</a> |
+| Schema        | <a href="/database/#fc-subscribers-table">Check Schema</a> |
 | Source File   | fluent-crm/app/Models/Meta.php                                           |
 | Name Space    | FluentCrm\App\Models                                                     |
 | Class         | FluentCrm\App\Models\Meta                                                |

@@ -223,7 +223,7 @@ The `type` value indicates that this form field is an `option_selectors` field, 
 
 #### The preview of the example block
 
-<img :src="$withBase('/assets/img/option-selectors.png')" alt="Option selectors" />
+<img src="/assets/img/option-selectors.png" alt="Option selectors" />
 
 
 ## Single or multi-select
@@ -255,7 +255,7 @@ This form field allows the user to select one or more products from a list of av
 
 #### The preview of the example block
 
-<img :src="$withBase('/assets/img/single-or-multi-select.png')" alt="Single or multi-select" />
+<img src="/assets/img/single-or-multi-select.png" alt="Single or multi-select" />
 
 #### Options possible sets:
 
@@ -329,7 +329,7 @@ This form field allows the user to select the type of purchase for which they wa
 
 #### The preview of the example block.
 
-<img :src="$withBase('/assets/img/radio.png')" alt="Radio" />
+<img src="/assets/img/radio.png" alt="Radio" />
 
 ## Number input
 
@@ -351,7 +351,7 @@ This form field allows the user to input a numerical value for the wait time. Th
 
 #### The preview of the example block.
 
-<img :src="$withBase('/assets/img/number-input.png')" alt="Number input" />
+<img src="/assets/img/number-input.png" alt="Number input" />
 
 
 ## Text input
@@ -376,7 +376,7 @@ This form field allows the user to input one or more email addresses to which th
 
 #### The preview of the example block.
 
-<img :src="$withBase('/assets/img/text-input.png')" alt="Text input" />
+<img src="/assets/img/text-input.png" alt="Text input" />
 
 
 ## Text input popper
@@ -401,7 +401,7 @@ This form field allows the user to input a note that will be added to the refere
 
 #### The preview of the example block.
 
-<img :src="$withBase('/assets/img/text-input-popper.png')" alt="Text input popper" />
+<img src="/assets/img/text-input-popper.png" alt="Text input popper" />
 
 
 ## Yes & no check
@@ -426,7 +426,7 @@ This form field allows the user to specify whether the automation should be rest
 
 #### The preview of the example block:
 
-<img :src="$withBase('/assets/img/yes-no-check.png')" alt="Yes & no check" />
+<img src="/assets/img/yes-no-check.png" alt="Yes & no check" />
 
 
 ## Grouped select
@@ -513,7 +513,7 @@ This form field allows the user to select one or more lessons from a list of ava
 
 #### The preview of the example block.
 
-<img :src="$withBase('/assets/img/grouped-select.png')" alt="Grouped select" />
+<img src="/assets/img/grouped-select.png" alt="Grouped select" />
 
 ## Multi text options
 
@@ -539,7 +539,7 @@ This form field allows the user to input multiple text options, each on a separa
 
 #### The preview of the example block.
 
-<img :src="$withBase('/assets/img/multi-text-options.png')" alt="Multi text options" />
+<img src="/assets/img/multi-text-options.png" alt="Multi text options" />
 
 
 ## Email campaign composer
@@ -561,7 +561,7 @@ This form field allows the user to get an email campaign template editor block b
 
 #### The preview of the example block.
 
-<img :src="$withBase('/assets/img/email-campaign-composer.png')" alt="Email campaign composer" />
+<img src="/assets/img/email-campaign-composer.png" alt="Email campaign composer" />
 
 
 ## Reload field selection
@@ -614,7 +614,7 @@ This form field allows the user to select a course from a list of available opti
 
 #### The preview of the example block.
 
-<img :src="$withBase('/assets/img/reload-field-selection.png')" alt="Reload field selection" />
+<img src="/assets/img/reload-field-selection.png" alt="Reload field selection" />
 
 
 ## Form group mapper
@@ -663,7 +663,7 @@ This form field allows the user to map data between two groups of fields. The fo
 
 #### The preview of the example block.
 
-<img :src="$withBase('/assets/img/form-group-mapper.png')" alt="Form group mapper" />
+<img src="/assets/img/form-group-mapper.png" alt="Form group mapper" />
 
 
 ## Form many dropdown mappers
@@ -716,7 +716,7 @@ This form field allows the user to map data between two groups of fields using d
 
 #### The preview of the example block.
 
-<img :src="$withBase('/assets/img/form-many-drop-down-mapper.png')" alt="Form many dropdown mappers" />
+<img src="/assets/img/form-many-drop-down-mapper.png" alt="Form many dropdown mappers" />
 
 
 ## Html
@@ -753,7 +753,7 @@ This form field allows the user to input a URL. The form field has a label and a
 
 #### The preview of the example block:
 
-<img :src="$withBase('/assets/img/url-selector.png')" alt="Url selector" />
+<img src="/assets/img/url-selector.png" alt="Url selector" />
 
 
 ## Input values pair properties
@@ -821,7 +821,7 @@ This form field allows the user to input key-value pairs for contact properties 
 
 #### The preview of the example block.
 
-<img :src="$withBase('/assets/img/input-value-pair-properties.png')" alt="Input values pair properties" />
+<img src="/assets/img/input-value-pair-properties.png" alt="Input values pair properties" />
 
 
 ## Text values multi properties
@@ -854,7 +854,7 @@ This form field allows the user to input multiple key-value pairs for user meta 
 
 #### The preview of the example block.
 
-<img :src="$withBase('/assets/img/text-value-multi-properties.png')" alt="Text values multi properties" />
+<img src="/assets/img/text-value-multi-properties.png" alt="Text values multi properties" />
 
 
 ## Html editor
@@ -876,7 +876,7 @@ This form field allows the user to input and edit HTML content. The form field h
 
 #### The preview of the example block.
 
-<img :src="$withBase('/assets/img/html-editor.png')" alt="Html editor" />
+<img src="/assets/img/html-editor.png" alt="Html editor" />
 
 
 ## Rest selector
@@ -905,7 +905,7 @@ This form field allows the user to select a course from a list of options that a
 
 #### The preview of the example block.
 
-<img :src="$withBase('/assets/img/rest-selector.png')" alt="Rest selector" />
+<img src="/assets/img/rest-selector.png" alt="Rest selector" />
 
 
 ## Condition block groups
@@ -957,8 +957,8 @@ The `groups` array includes groups of conditions that the user can specify. Each
 #### The preview of the example block.
 
 <div style="display: flex; align-items: center; justify-content: space-between">
-<img style="width: 75%" :src="$withBase('/assets/img/condition-block-groups-1.png')" alt="Condition block groups 1" />
-<img width="25%" :src="$withBase('/assets/img/condition-block-groups-2.png')" alt="Condition block groups 2" />
+<img style="width: 75%" src="/assets/img/condition-block-groups-1.png" alt="Condition block groups 1" />
+<img width="25%" src="/assets/img/condition-block-groups-2.png" alt="Condition block groups 2" />
 </div>
 
 
@@ -980,7 +980,7 @@ The `type` value indicates that this form field is a `custom_sender_config` fiel
 
 #### The preview of this example block
 
-<img :src="$withBase('/assets/img/custom-sender-config.png')" alt="Custom sender config" />
+<img src="/assets/img/custom-sender-config.png" alt="Custom sender config" />
 
 
 ## Radio buttons
@@ -1039,7 +1039,7 @@ The `options` value is an array of radio button options, where each option is an
 
 #### The preview of this example block.
 
-<img :src="$withBase('/assets/img/radio-buttons.png')" alt="Radio buttons" />
+<img src="/assets/img/radio-buttons.png" alt="Radio buttons" />
 
 
 ## Checkboxes
@@ -1092,7 +1092,7 @@ The `options` value is an array of checkbox options, where each option is an arr
 
 #### The preview of this example block.
 
-<img :src="$withBase('/assets/img/checkboxes.png')" alt="Checkboxes" />
+<img src="/assets/img/checkboxes.png" alt="Checkboxes" />
 
 
 ## Time selector
@@ -1115,4 +1115,4 @@ The `to_day_time` field is a time selector that allows the user to select a spec
 
 #### The preview of this example block.
 
-<img :src="$withBase('/assets/img/time-selector.png')" alt="Time selector" />
+<img src="/assets/img/time-selector.png" alt="Time selector" />

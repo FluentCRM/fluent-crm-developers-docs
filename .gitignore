@@ -92,6 +92,10 @@ typings/
 .vuepress/dist
 src/.vuepress/dist
 
+# vitepress build output & cache
+src/.vitepress/dist
+src/.vitepress/cache
+
 # Serverless directories
 .serverless/
 

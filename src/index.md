@@ -1,30 +1,9 @@
 ---
 title: Developer Docs
-tagline: Resources and tutorials for Flu  <div class="resource-grid">
-    <div class="resource-item">
-      <h3>🔗 WordPress Hooks</h3>
-      <p>100+ action and filter hooks for deep customization</p>
-      <a href="./hooks/">View All Hooks →</a>
-    </div>
-    <div class="resource-item">
-      <h3>📊 Database Models</h3>
-      <p>Complete reference for all FluentCRM data models</p>
-      <a href="./database/models/">Model Reference →</a>
-    </div>
-    <div class="resource-item">
-      <h3>🛠️ Helper Functions</h3>
-      <p>Utility functions to speed up your development</p>
-      <a href="./global-functions/">Function Reference →</a>
-    </div>
-    <div class="resource-item">
-      <h3>📝 Developer Changelog</h3>
-      <p>Latest updates, new features, and breaking changes</p>
-      <a href="./changelog/">View Changelog →</a>
-    </div>
-  </div>
+layout: page
 sidebar: false
 prev: false
-next: true
+next: false
 editLink: false
 pageClass: docs-home
 ---
@@ -34,9 +13,9 @@ pageClass: docs-home
   <p>Extend FluentCRM with powerful integrations, custom automations, and tailored functionality. Everything you need to build on WordPress's most flexible email marketing automation platform.</p>
   
   <div class="hero-actions">
-    <a href="./getting-started/" class="action-button primary">Get Started</a> |
-    <a href="./rest-api/" class="action-button secondary">REST API</a> |
-    <a href="./hooks/" class="action-button secondary">Hooks Reference</a>
+    <a href="./getting-started/" class="primary">Get Started</a>
+    <a href="./rest-api/" class="secondary">REST API</a>
+    <a href="./hooks/" class="secondary">Hooks Reference</a>
   </div>
 </section>
 
@@ -87,12 +66,12 @@ pageClass: docs-home
   </div>
   <div class="resource-grid">
     <div class="resource-item">
-      <h3>� WordPress Hooks</h3>
+      <h3>🔗 WordPress Hooks</h3>
       <p>100+ action and filter hooks for deep customization</p>
       <a href="./hooks/">View All Hooks →</a>
     </div>
     <div class="resource-item">
-      <h3>� Database Models</h3>
+      <h3>📊 Database Models</h3>
       <p>Complete reference for all FluentCRM data models</p>
       <a href="./database/models/">Model Reference →</a>
     </div>

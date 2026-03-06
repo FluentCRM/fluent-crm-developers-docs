@@ -2,11 +2,11 @@
 description: "Campaign Email Model represents the campaign email data in the database."
 ---
 
-# Campaign Model
+# Campaign Email Model
 
 | DB Table Name | {wp_db_prefix}_fc_campaign_emails                                            |
 |---------------|------------------------------------------------------------------------------|
-| Schema        | <a :href="$withBase('/database/#fc-campaign-emails-table')">Check Schema</a> |
+| Schema        | <a href="/database/#fc-campaign-emails-table">Check Schema</a> |
 | Source File   | fluent-crm/app/Models/CampaignEmail.php                                      |
 | Name Space    | FluentCrm\App\Models                                                         |
 | Class         | FluentCrm\App\Models\CampaignEmail                                           |

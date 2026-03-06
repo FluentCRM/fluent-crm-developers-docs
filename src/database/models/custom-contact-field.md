@@ -1,139 +1,102 @@
 ---
-description: "Explore the CustomContactField Model in FluentCRM, which allows you to create and manage personalized fields for your contacts."
+description: "CustomContactField is a utility class for managing custom contact field definitions in FluentCRM."
 ---
 
-# CustomContactField Model
+# CustomContactField
 
-| DB Table Name | {wp_db_prefix}_fc_meta                                   |
-|---------------|--------------------------------------------------------------------------|
-| Schema        | <a :href="$withBase('/database/#fc-subscribers-table')">Check Schema</a> |
-| Source File   | fluent-crm/app/Models/CustomContactField.php                                       |
-| Name Space    | FluentCrm\App\Models                                                     |
-| Class         | FluentCrm\App\Models\CustomContactField                                            |
+| Source File   | fluent-crm/app/Models/CustomContactField.php |
+|---------------|----------------------------------------------|
+| Name Space    | FluentCrm\App\Models                         |
+| Class         | FluentCrm\App\Models\CustomContactField      |
 
-## Attributes
-<table class="nowrap">
-   <thead>
-      <tr>
-         <th>Attribute</th>
-         <td>Data Type</td>
-         <td>Comment</td>
-      </tr>
-   </thead>
-   <tbody>
-      <tr>
-         <th>id</th>
-         <td>Integer</td>
-         <td></td>
-      </tr>
-      <tr>
-         <th>object_type</th>
-         <td>String</td>
-         <td></td>
-      </tr>
-      <tr>
-         <th>object_id</th>
-         <td>Integer</td>
-         <td></td>
-      </tr>
-      <tr>
-         <th>key</th>
-         <td>String</td>
-         <td>For Custom Contact Field Model, default key is contact_custom_fields</td>
-      </tr>
-      <tr>
-         <th>value</th>
-         <td>Text</td>
-         <td></td>
-      </tr>
-      <tr>
-         <th>created_at</th>
-         <td>Date Time</td>
-         <td></td>
-      </tr>
-      <tr>
-         <th>updated_at</th>
-         <td>Date Time</td>
-         <td></td>
-      </tr>
-   </tbody>
-</table>
+::: warning Not an Eloquent Model
+This is a plain PHP utility class — it does **not** extend Model and has no database table. Custom field definitions are stored in WordPress options via `fluentcrm_get_option('contact_custom_fields')`. The actual field **values** for each contact are stored in the `fc_subscriber_meta` table (see <a href="/database/models/subscriber-meta">SubscriberMeta</a>).
+:::
 
 ## Usage
-Please check <a href="/database/models/">Model Basic</a> for Common methods.
-
-
-### Accessing Attributes
-
-```php 
-
-$customContactField = FluentCrm\App\Models\CustomContactField::find(1);
-
-$customContactField->id; // returns id
-$customContactField->value; // returns Contact custom fields
-.......
-```
-
-
-## Fillable Attributes
 
 ```php
-
-'object_type',
-'object_id',
-'key',
-'value'
+$customFieldManager = new FluentCrm\App\Models\CustomContactField();
 ```
 
-
 ## Methods
-Along with Global Model methods, this model has few helper methods.
 
 ### getGlobalFields($with)
-Get all global custom fields 
+Get all registered custom field definitions
 
 - Parameters
-  - $with `array` optional
+  - $with `array` — optional, include `['field_types']` and/or `['field_groups']`
 - Returns `array`
 
 #### Usage
-```php 
-$customFields = $customContactField->getGlobalFields();
+```php
+$customFields = $customFieldManager->getGlobalFields();
+
+// With field type definitions included
+$customFields = $customFieldManager->getGlobalFields(['field_types', 'field_groups']);
 ```
 
 ### getFieldTypes()
-Get custom field types
+Get available custom field type definitions
 
 - Parameters
-  - none 
-- Returns `array`
+  - none
+- Returns `array` — field type definitions (text, textarea, number, select-one, select-multi, radio, checkbox, date, date_time)
 
 #### Usage
-```php 
-$fieldTypes = $customContactField->getFieldTypes();
+```php
+$fieldTypes = $customFieldManager->getFieldTypes();
 ```
 
 ### saveGlobalFields($fields)
-Save global custom fields 
+Save custom field definitions. Auto-generates slugs for new fields.
 
 - Parameters
   - $fields `array`
-- Returns `array`
+- Returns `array` — formatted field definitions with generated slugs
 
 #### Usage
-```php 
-$formattedFields = $customContactField->saveGlobalFields($fields);
+```php
+$fields = $customFieldManager->saveGlobalFields([
+    ['label' => 'Company Name', 'type' => 'text'],
+    ['label' => 'Role', 'type' => 'select-one', 'options' => ['Developer', 'Designer']]
+]);
 ```
 
-### formatCustomFieldValues($values, $fields = [])
-Format custom field values and return formatted values
+### formatCustomFieldValues($values, $fields)
+Coerce field values to correct types (e.g., comma-separated strings to arrays for multi-select/checkbox fields)
 
 - Parameters
-  - $values `array`
-  - $fields `array` optional
-- Returns `array`
+  - $values `array` — key-value map of field slugs to values
+  - $fields `array` — optional, field definitions
+- Returns `array` — formatted values
 
 #### Usage
-```php 
-$formattedData = $customContactField->formatCustomFieldValues($values);
+```php
+$formatted = $customFieldManager->formatCustomFieldValues($values);
+```
+
+### getFieldGroups()
+Get custom field group definitions
+
+- Parameters
+  - none
+- Returns `array` — group definitions, defaults to `[{slug: 'default', title: 'Custom Profile Data'}]`
+
+#### Usage
+```php
+$groups = $customFieldManager->getFieldGroups();
+```
+
+### updateGroupName($oldName, $newName)
+Rename a custom field group across all field definitions
+
+- Parameters
+  - $oldName `string`
+  - $newName `string`
+- Returns `void`
+
+#### Usage
+```php
+$customFieldManager->updateGroupName('Old Group', 'New Group');
 ```

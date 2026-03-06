@@ -127,7 +127,7 @@ class Customer extends Model
 ```
 
 ### Retrieving Models
-Once you have created a model and its associated database table, you are ready to start retrieving data from your database. Think of each Fluent ORM model as a powerful <a :href="$withBase('/database/query-builder')">query builder</a> allowing you to fluently query the database table associated with the model. For example:
+Once you have created a model and its associated database table, you are ready to start retrieving data from your database. Think of each Fluent ORM model as a powerful <a href="/database/query-builder">query builder</a> allowing you to fluently query the database table associated with the model. For example:
 ```php
 <?php
  
@@ -141,7 +141,7 @@ foreach ($customers as $customer) {
 ```
 
 ### Adding Additional Constraints
-The Fluent ORM `all` method will return all the results in the model's table. Since each Fluent ORM model serves as a <a :href="$withBase('/database/query-builder')">query builder</a>, you may also add constraints to queries, and then use the `get` method to retrieve the results:
+The Fluent ORM `all` method will return all the results in the model's table. Since each Fluent ORM model serves as a <a href="/database/query-builder">query builder</a>, you may also add constraints to queries, and then use the `get` method to retrieve the results:
 ```php
 $customers = FluentCrm\App\Models\Customer::where('active', 1)
                ->orderBy('name', 'desc')
@@ -202,7 +202,7 @@ $customer = FluentCrm\App\Models\Customer::where('age', '>', 21)->firstOrFail();
 
 
 ## Retrieving Aggregates
-You may also use the `count`, `sum`, `max`, and other <a :href="$withBase('/database/query-builder/#aggregates')">aggregate methods</a> provided by the <a :href="$withBase('/database/query-builder')">query builder</a>. These methods return the appropriate scalar value instead of a full model instance:
+You may also use the `count`, `sum`, `max`, and other <a href="/database/query-builder/#aggregates">aggregate methods</a> provided by the <a href="/database/query-builder">query builder</a>. These methods return the appropriate scalar value instead of a full model instance:
 ```php
 $count = FluentCrm\App\Models\Customer::where('active', 1)->count();
  

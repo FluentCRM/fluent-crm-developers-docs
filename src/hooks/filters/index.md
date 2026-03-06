@@ -11,37 +11,17 @@ FluentCRM has many interesting filter hooks that let developers change default s
 ## What are Filter Hooks
 
 A hook is a feature that allows developers to manipulate functionality without modifying core files. A hook can help developers inject some functions or edit default settings.
-  
+
 Filter hooks are used to return modified values for certain parameters, based on different factors.
 
 ## Available Filter Hooks
 
-### General Filters
-<hr />
-
-!!!include(./src/hooks/filters/_general_filters.md)!!!
-
-### Frontend Filters
-<hr />
-
-!!!include(./src/hooks/filters/_frontend_filters.md)!!!
-
-### Admin Dashboard Filters
-<hr />
-
-!!!include(./src/hooks/filters/_dashboard_filters.md)!!!
-
-------
-
-### Other Useful Filters
-<hr />
-
-!!!include(./src/hooks/filters/_other_filters.md)!!!
-
-------
-
-### Webhook Related Filters
-<hr />
-
-
-!!!include(./src/hooks/filters/_webhook_filters.md)!!!
+1. **[Contacts](/hooks/filters/contacts)** — Contact statuses, types, profile sections, custom fields, avatars, smart codes, bulk actions, CSV export
+2. **[Emails & Sending](/hooks/filters/emails-and-sending)** — Email headers, body processing, design templates, tracking, sending pipeline, rate limits, compliance
+3. **[Campaigns](/hooks/filters/campaigns)** — Campaign data, processing stats, scheduling
+4. **[Automations & Funnels](/hooks/filters/automations)** — Funnel triggers, blocks, processing limits, delays, trigger gates, sequence hooks
+5. **[Admin & Dashboard](/hooks/filters/admin-and-dashboard)** — Menus, permissions, dashboard stats, notices, admin vars, general settings
+6. **[Frontend Pages](/hooks/filters/frontend)** — Unsubscribe page, double optin, manage subscription, bounce handling
+7. **[Companies](/hooks/filters/companies)** — Company types, categories, profile sections, CSV export
+8. **[Block Email Editor](/hooks/filters/block-editor)** — Editor settings, patterns, capabilities, allowed blocks
+9. **[Webhooks & Integrations](/hooks/filters/webhooks-and-integrations)** — Webhook data, imports, migrations, commerce providers, form integrations

@@ -1,0 +1,18 @@
+:root {
+    --vp-c-brand-1: #673ab7;
+    --vp-c-brand-2: #5c34a4;
+    --vp-c-brand-3: #7e57c2;
+    --vp-c-brand-soft: rgba(103, 58, 183, 0.14);
+    --vp-c-text-1: #2c3e50;
+    --vp-c-border: #eaecef;
+    --vp-font-family-base: 'Nunito', sans-serif;
+}
+
+.dark {
+    --vp-c-brand-1: #9c7cd4;
+    --vp-c-brand-2: #b39ddb;
+    --vp-c-brand-3: #7e57c2;
+    --vp-c-brand-soft: rgba(156, 124, 212, 0.14);
+    --vp-c-text-1: rgba(255, 255, 245, 0.86);
+    --vp-c-border: #2e2e32;
+}

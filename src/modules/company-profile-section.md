@@ -44,4 +44,4 @@ Finally, the modified `$contentArr` is returned.
 
 The following Image shows the custom section added by the above code:
 
-<img :src="$withBase('/assets/img/modules/custom_company_section.png')" alt="My Custom Section"/>
+<img src="/assets/img/modules/custom_company_section.png" alt="My Custom Section"/>
