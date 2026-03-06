@@ -1,0 +1,186 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/sms/campaigns/{id}/tag-actions": {
+      "post": {
+        "operationId": "doSmsCampaignTagActions",
+        "summary": "POST Apply Tag Actions to SMS Campaign Recipients",
+        "description": "Add or remove tags for recipients of an archived SMS campaign. Processes recipients in batches (default 50 per page). Filter recipients by activity type (all recipients, sent, failed, delivered). Only subscribed contacts are affected. **PRO** (requires FluentCampaign Pro SMS module).",
+        "tags": [
+          "SMS"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "SMS campaign ID. Must be in `archived` status.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "action_type",
+                  "tags",
+                  "activity_type",
+                  "processing_page"
+                ],
+                "properties": {
+                  "action_type": {
+                    "type": "string",
+                    "description": "Whether to add or remove tags.",
+                    "enum": [
+                      "add_tags",
+                      "remove_tags"
+                    ]
+                  },
+                  "tags": {
+                    "type": "array",
+                    "description": "Array of tag IDs to add or remove.",
+                    "items": {
+                      "type": "integer"
+                    }
+                  },
+                  "activity_type": {
+                    "type": "string",
+                    "description": "Filter recipients by SMS activity type.",
+                    "enum": [
+                      "all_recipients",
+                      "sms_sent",
+                      "sms_failed",
+                      "sms_delivered"
+                    ]
+                  },
+                  "processing_page": {
+                    "type": "integer",
+                    "description": "Batch page number (1-based). On page 1, a total count is returned. Continue incrementing until `has_more` is false."
+                  }
+                }
+              },
+              "example": {
+                "action_type": "add_tags",
+                "tags": [
+                  3,
+                  7
+                ],
+                "activity_type": "sms_sent",
+                "processing_page": 1
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Batch processing result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "processed_page": {
+                      "type": "integer",
+                      "description": "The page number that was just processed."
+                    },
+                    "processed_contacts": {
+                      "type": "integer",
+                      "description": "Number of contacts processed in this batch."
+                    },
+                    "has_more": {
+                      "type": "boolean",
+                      "description": "Whether there are more batches to process."
+                    },
+                    "total_count": {
+                      "type": "integer",
+                      "nullable": true,
+                      "description": "Total number of matching recipients (only returned on page 1)."
+                    }
+                  }
+                },
+                "example": {
+                  "processed_page": 1,
+                  "processed_contacts": 50,
+                  "has_more": true,
+                  "total_count": 480
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Campaign not found."
+          },
+          "422": {
+            "description": "Campaign is not in `archived` status, or validation error."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

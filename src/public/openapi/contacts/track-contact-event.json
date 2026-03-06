@@ -1,0 +1,172 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/subscribers/track-event": {
+      "post": {
+        "operationId": "trackContactEvent",
+        "summary": "POST Track Contact Event",
+        "description": "Track a custom event for a contact. Requires the `event_tracking` experimental feature to be enabled. Events can be marked as repeatable or unique.",
+        "tags": [
+          "Contacts"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "event_key",
+                  "title"
+                ],
+                "properties": {
+                  "event_key": {
+                    "type": "string",
+                    "description": "Unique key for the event type."
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "Human-readable event title."
+                  },
+                  "value": {
+                    "type": "string",
+                    "description": "Optional event value."
+                  },
+                  "subscriber_id": {
+                    "type": "integer",
+                    "description": "Contact ID to track the event for."
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Alternatively, identify the contact by email."
+                  },
+                  "provider": {
+                    "type": "string",
+                    "description": "Event provider identifier."
+                  },
+                  "repeatable": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Whether the event can be tracked multiple times. If false, only the first occurrence is recorded."
+                  }
+                }
+              },
+              "example": {
+                "event_key": "page_visit",
+                "title": "Visited Pricing Page",
+                "value": "/pricing",
+                "subscriber_id": 1,
+                "repeatable": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Event tracked successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "id": {
+                      "type": "integer",
+                      "description": "The tracking event record ID."
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Event has been tracked",
+                  "id": 42
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error or event tracking not enabled.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "error_code": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

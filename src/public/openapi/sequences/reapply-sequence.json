@@ -1,0 +1,227 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/sequences/{id}/reapply": {
+      "post": {
+        "operationId": "reapplySequence",
+        "summary": "POST Reapply Sequence",
+        "description": "Re-apply an email sequence to subscribers who have completed it. This finds the next unsent email after the last completed one and reactivates completed subscribers to receive it. Only reactivates subscribers whose contact status is `subscribed`. Requires FluentCampaign Pro.",
+        "tags": [
+          "Sequences"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The sequence ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sequence re-applied successfully. Returns debug/calculation data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "result": {
+                      "type": "object",
+                      "description": "Debug data with calculation details.",
+                      "properties": {
+                        "next_email": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "description": "Next email ID."
+                            },
+                            "delay": {
+                              "type": "integer",
+                              "description": "Delay in seconds."
+                            },
+                            "title": {
+                              "type": "string",
+                              "description": "Email title."
+                            }
+                          }
+                        },
+                        "last_completed": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "description": "Last completed email ID."
+                            },
+                            "delay": {
+                              "type": "integer",
+                              "description": "Delay in seconds."
+                            },
+                            "title": {
+                              "type": "string",
+                              "description": "Email title."
+                            },
+                            "last_executed": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "When the last email was executed."
+                            }
+                          }
+                        },
+                        "calculations": {
+                          "type": "object",
+                          "properties": {
+                            "delay_offset": {
+                              "type": "integer",
+                              "description": "Delay offset in seconds between last and next email."
+                            },
+                            "sequence_start_time": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "next_time_from_last_execution": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "next_time_from_start": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "time_difference": {
+                              "type": "integer",
+                              "description": "Difference in seconds between the two calculation methods."
+                            }
+                          }
+                        },
+                        "update_result": {
+                          "type": "object",
+                          "properties": {
+                            "subscribers_updated": {
+                              "type": "integer",
+                              "description": "Number of subscribers reactivated."
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "result": {
+                    "next_email": {
+                      "id": 8,
+                      "delay": 259200,
+                      "title": "Day 3: Advanced Tips"
+                    },
+                    "last_completed": {
+                      "id": 7,
+                      "delay": 172800,
+                      "title": "Day 2: Getting Started",
+                      "last_executed": "2024-03-02 10:00:00"
+                    },
+                    "calculations": {
+                      "delay_offset": 86400,
+                      "sequence_start_time": "2024-02-29 10:00:00",
+                      "next_time_from_last_execution": "2024-03-03 10:00:00",
+                      "next_time_from_start": "2024-03-03 10:00:00",
+                      "time_difference": 0
+                    },
+                    "update_result": {
+                      "subscribers_updated": 25
+                    }
+                  },
+                  "message": "Sequences have been re-applied"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "No completed sequences found to re-apply.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "No sequences found to re-apply"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

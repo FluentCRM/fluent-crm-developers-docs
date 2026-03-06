@@ -1,0 +1,154 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/campaigns/email-preview-html": {
+      "post": {
+        "operationId": "previewCampaignEmailHtml",
+        "summary": "POST Preview Campaign Email HTML",
+        "description": "Generate a rendered HTML preview of a campaign email. Can preview either a saved campaign (by campaign_id) or unsaved campaign data passed in the request body. SmartCodes and template rendering are applied. Optionally preview as a specific contact.",
+        "tags": [
+          "Campaigns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "campaign_id": {
+                    "type": "integer",
+                    "description": "ID of a saved campaign to preview. If omitted, the `campaign` object is used instead."
+                  },
+                  "campaign": {
+                    "type": "object",
+                    "description": "Unsaved campaign data to preview. Used when `campaign_id` is not provided.",
+                    "properties": {
+                      "email_body": {
+                        "type": "string"
+                      },
+                      "email_pre_header": {
+                        "type": "string"
+                      },
+                      "design_template": {
+                        "type": "string"
+                      },
+                      "settings": {
+                        "type": "object"
+                      },
+                      "post_content": {
+                        "type": "string",
+                        "description": "Alternative field for email_body."
+                      },
+                      "post_excerpt": {
+                        "type": "string",
+                        "description": "Alternative field for email_pre_header."
+                      }
+                    }
+                  },
+                  "contact_id": {
+                    "type": "integer",
+                    "description": "Optional contact ID to use for SmartCode replacements in the preview."
+                  },
+                  "disable_subscriber": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "description": "Set to `yes` to disable subscriber-specific SmartCode parsing."
+                  }
+                }
+              },
+              "example": {
+                "campaign_id": 12
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email preview HTML generated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "preview_html": {
+                      "type": "string",
+                      "description": "Fully rendered HTML of the email."
+                    }
+                  }
+                },
+                "example": {
+                  "preview_html": "<html><body><p>Hello John, Welcome aboard!</p></body></html>"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

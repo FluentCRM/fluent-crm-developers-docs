@@ -1,0 +1,193 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/campaign-pro-settings/sms": {
+      "post": {
+        "operationId": "saveSmsSettings",
+        "summary": "POST Save SMS Settings",
+        "description": "Save SMS module settings including the provider selection and credentials. When enabling SMS, all required provider fields must be filled. If enabling for the first time, runs the SMS database migration. Saves credentials for all configured providers.",
+        "tags": [
+          "Pro Settings"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "settings"
+                ],
+                "properties": {
+                  "settings": {
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "type": "string",
+                        "enum": [
+                          "yes",
+                          "no"
+                        ],
+                        "description": "Whether to enable the SMS module."
+                      },
+                      "sms_provider": {
+                        "type": "string",
+                        "description": "The SMS provider slug to use (e.g., 'twilio')."
+                      }
+                    },
+                    "additionalProperties": true,
+                    "description": "Provider-specific settings are included as nested objects keyed by provider slug."
+                  }
+                }
+              },
+              "example": {
+                "settings": {
+                  "enabled": "yes",
+                  "sms_provider": "twilio",
+                  "twilio": {
+                    "account_sid": "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                    "auth_token": "your_auth_token",
+                    "from_number": "+15551234567"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "SMS settings saved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "reload": {
+                      "type": "boolean",
+                      "description": "Whether the UI should reload (true when enabled/disabled status changed)."
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Settings has been saved successfully",
+                  "reload": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error - missing provider or required credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "required_fields": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "List of missing required field labels."
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Please provide all required SMS provider credentials before enabling the SMS module",
+                  "required_fields": [
+                    "Account SID",
+                    "Auth Token"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Settings could not be saved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "SMS settings could not be saved completely. Please try again."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

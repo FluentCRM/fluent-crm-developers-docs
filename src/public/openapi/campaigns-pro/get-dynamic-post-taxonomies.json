@@ -1,0 +1,151 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/campaigns-pro/posts/taxonomies": {
+      "get": {
+        "operationId": "getDynamicPostTaxonomies",
+        "summary": "GET Dynamic Post Taxonomies",
+        "description": "Retrieve all public taxonomies and their terms for each registered public post type. Used by the email builder's dynamic post block to populate taxonomy filter options.",
+        "tags": [
+          "Campaigns Pro"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Taxonomies grouped by post type.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "taxonomies": {
+                      "type": "object",
+                      "description": "Keyed by post type slug. Each post type contains a 'terms' object keyed by taxonomy slug, with arrays of term options.",
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "terms": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "value": {
+                                    "type": [
+                                      "integer",
+                                      "string"
+                                    ]
+                                  },
+                                  "label": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "taxonomies": {
+                    "post": {
+                      "terms": {
+                        "category": [
+                          {
+                            "value": "all",
+                            "label": "all"
+                          },
+                          {
+                            "value": 1,
+                            "label": "Uncategorized"
+                          },
+                          {
+                            "value": 5,
+                            "label": "Tutorials"
+                          }
+                        ],
+                        "post_tag": [
+                          {
+                            "value": "all",
+                            "label": "all"
+                          },
+                          {
+                            "value": 10,
+                            "label": "WordPress"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

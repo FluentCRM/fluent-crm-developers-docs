@@ -1,0 +1,353 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/recurring-campaigns/{campaign_id}/emails": {
+      "get": {
+        "operationId": "getRecurringCampaignEmails",
+        "summary": "GET Get Recurring Campaign Emails",
+        "description": "Retrieve a paginated list of child email campaigns (recurring mails) for a recurring campaign. Non-draft emails are returned paginated. On the first page, draft emails are also included separately. Requires FluentCampaign Pro.",
+        "tags": [
+          "Recurring Campaigns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "description": "The recurring campaign ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of results per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 15
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination. When page is 1, draft emails are included in a separate `drafts` field.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of recurring campaign emails.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "emails": {
+                      "type": "object",
+                      "description": "Paginated non-draft emails.",
+                      "properties": {
+                        "total": {
+                          "type": "integer"
+                        },
+                        "per_page": {
+                          "type": "integer"
+                        },
+                        "current_page": {
+                          "type": "integer"
+                        },
+                        "last_page": {
+                          "type": "integer"
+                        },
+                        "next_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "prev_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "from": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
+                        },
+                        "to": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
+                        },
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/RecurringMail"
+                          }
+                        }
+                      }
+                    },
+                    "drafts": {
+                      "type": "array",
+                      "description": "Draft emails for this recurring campaign. Only included when `page` is 1.",
+                      "items": {
+                        "$ref": "#/components/schemas/RecurringMail"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "emails": {
+                    "total": 10,
+                    "per_page": 15,
+                    "current_page": 1,
+                    "last_page": 1,
+                    "next_page_url": null,
+                    "prev_page_url": null,
+                    "from": 1,
+                    "to": 10,
+                    "data": [
+                      {
+                        "id": 20,
+                        "parent_id": 5,
+                        "title": "Weekly Newsletter",
+                        "slug": "weekly-newsletter-20240325",
+                        "type": "recurring_mail",
+                        "status": "sent",
+                        "email_subject": "Your Weekly Update - March 25",
+                        "email_pre_header": "",
+                        "email_body": "<p>Hello {{contact.first_name}}</p>",
+                        "recipients_count": 150,
+                        "scheduled_at": "2024-03-25 09:00:00",
+                        "created_at": "2024-03-25 08:00:00",
+                        "updated_at": "2024-03-25 09:30:00"
+                      }
+                    ]
+                  },
+                  "drafts": [
+                    {
+                      "id": 22,
+                      "parent_id": 5,
+                      "title": "Weekly Newsletter",
+                      "slug": "weekly-newsletter-20240401",
+                      "type": "recurring_mail",
+                      "status": "draft",
+                      "email_subject": "Your Weekly Update - April 1",
+                      "email_pre_header": "",
+                      "email_body": "<p>Hello {{contact.first_name}}</p>",
+                      "recipients_count": 0,
+                      "scheduled_at": null,
+                      "created_at": "2024-03-28 08:00:00",
+                      "updated_at": "2024-03-28 08:00:00"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurring campaign not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "RecurringMail": {
+        "type": "object",
+        "description": "A child email campaign generated by a recurring campaign.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the recurring mail."
+          },
+          "parent_id": {
+            "type": "integer",
+            "description": "Parent recurring campaign ID."
+          },
+          "title": {
+            "type": "string",
+            "description": "Email title."
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL-friendly slug."
+          },
+          "type": {
+            "type": "string",
+            "description": "Record type (always `recurring_mail`).",
+            "enum": [
+              "recurring_mail"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "description": "Email status.",
+            "enum": [
+              "draft",
+              "scheduled",
+              "pending-scheduled",
+              "working",
+              "sent",
+              "cancelled"
+            ]
+          },
+          "template_id": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Template ID."
+          },
+          "email_subject": {
+            "type": "string",
+            "description": "Email subject line."
+          },
+          "email_pre_header": {
+            "type": "string",
+            "description": "Email pre-header text."
+          },
+          "email_body": {
+            "type": "string",
+            "description": "Email body content (HTML)."
+          },
+          "recipients_count": {
+            "type": "integer",
+            "description": "Number of recipients."
+          },
+          "design_template": {
+            "type": "string",
+            "description": "Design template used."
+          },
+          "scheduled_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Scheduled send time."
+          },
+          "settings": {
+            "type": "object",
+            "description": "Email settings including mailer configuration and subscriber targeting.",
+            "properties": {
+              "mailer_settings": {
+                "type": "object",
+                "properties": {
+                  "from_name": {
+                    "type": "string"
+                  },
+                  "from_email": {
+                    "type": "string"
+                  },
+                  "reply_to_name": {
+                    "type": "string"
+                  },
+                  "reply_to_email": {
+                    "type": "string"
+                  },
+                  "is_custom": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "created_by": {
+            "type": "integer",
+            "description": "WordPress user ID of the creator."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the email was created."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the email was last updated."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

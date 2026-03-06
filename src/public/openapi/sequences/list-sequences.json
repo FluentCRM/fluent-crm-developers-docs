@@ -1,0 +1,673 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/sequences": {
+      "get": {
+        "operationId": "listSequences",
+        "summary": "GET List Sequences",
+        "description": "Retrieve a paginated list of email sequences. Optionally include statistics (email count, subscriber count, revenue) for each sequence. Requires FluentCampaign Pro.",
+        "tags": [
+          "Sequences"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Sort direction.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "desc",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "description": "Column to sort by.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "id"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search sequences by title.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "with[]",
+            "in": "query",
+            "description": "Include additional data. Use `stats` to include email count, subscriber count, and revenue for each sequence.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "stats"
+                ]
+              }
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of sequences per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 15
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of sequences.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sequences": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of sequences."
+                        },
+                        "per_page": {
+                          "type": "integer",
+                          "description": "Number of sequences per page."
+                        },
+                        "current_page": {
+                          "type": "integer",
+                          "description": "Current page number."
+                        },
+                        "last_page": {
+                          "type": "integer",
+                          "description": "Last page number."
+                        },
+                        "next_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "URL for the next page, or null if on the last page."
+                        },
+                        "prev_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "URL for the previous page, or null if on the first page."
+                        },
+                        "from": {
+                          "type": "integer",
+                          "description": "Starting record index on this page."
+                        },
+                        "to": {
+                          "type": "integer",
+                          "description": "Ending record index on this page."
+                        },
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Sequence"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "sequences": {
+                    "total": 5,
+                    "per_page": 15,
+                    "current_page": 1,
+                    "last_page": 1,
+                    "next_page_url": null,
+                    "prev_page_url": null,
+                    "from": 1,
+                    "to": 5,
+                    "data": [
+                      {
+                        "id": 1,
+                        "title": "Welcome Sequence",
+                        "slug": "welcome-sequence",
+                        "status": "draft",
+                        "type": "email_sequence",
+                        "design_template": "simple",
+                        "settings": {
+                          "mailer_settings": {
+                            "from_name": "",
+                            "from_email": "",
+                            "reply_to_name": "",
+                            "reply_to_email": "",
+                            "is_custom": "no"
+                          }
+                        },
+                        "created_by": 1,
+                        "created_at": "2024-03-01 10:00:00",
+                        "updated_at": "2024-03-01 10:00:00",
+                        "stats": {
+                          "emails": 3,
+                          "subscribers": 150,
+                          "revenue": {
+                            "amount": "0",
+                            "currency": ""
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "Sequence": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the sequence."
+          },
+          "title": {
+            "type": "string",
+            "description": "Sequence title."
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL-friendly slug derived from the title."
+          },
+          "status": {
+            "type": "string",
+            "description": "Sequence status.",
+            "enum": [
+              "draft",
+              "working",
+              "archived"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "description": "Record type (always `email_sequence`).",
+            "enum": [
+              "email_sequence"
+            ]
+          },
+          "design_template": {
+            "type": "string",
+            "description": "Design template for the sequence."
+          },
+          "settings": {
+            "type": "object",
+            "description": "Sequence settings including mailer configuration.",
+            "properties": {
+              "mailer_settings": {
+                "type": "object",
+                "properties": {
+                  "from_name": {
+                    "type": "string",
+                    "description": "Sender name."
+                  },
+                  "from_email": {
+                    "type": "string",
+                    "description": "Sender email address."
+                  },
+                  "reply_to_name": {
+                    "type": "string",
+                    "description": "Reply-to name."
+                  },
+                  "reply_to_email": {
+                    "type": "string",
+                    "description": "Reply-to email address."
+                  },
+                  "is_custom": {
+                    "type": "string",
+                    "description": "Whether custom mailer settings are enabled.",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "created_by": {
+            "type": "integer",
+            "description": "WordPress user ID of the creator."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the sequence was created."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the sequence was last updated."
+          },
+          "stats": {
+            "type": "object",
+            "description": "Sequence statistics (only included when `with[]=stats`).",
+            "properties": {
+              "emails": {
+                "type": "integer",
+                "description": "Number of emails in the sequence."
+              },
+              "subscribers": {
+                "type": "integer",
+                "description": "Number of subscribers in the sequence."
+              },
+              "revenue": {
+                "type": "object",
+                "properties": {
+                  "amount": {
+                    "type": "string",
+                    "description": "Revenue amount."
+                  },
+                  "currency": {
+                    "type": "string",
+                    "description": "Currency code."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "SequenceEmail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the sequence email."
+          },
+          "parent_id": {
+            "type": "integer",
+            "description": "Parent sequence ID."
+          },
+          "title": {
+            "type": "string",
+            "description": "Email title (typically same as subject)."
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL-friendly slug."
+          },
+          "type": {
+            "type": "string",
+            "description": "Record type (always `sequence_mail`).",
+            "enum": [
+              "sequence_mail"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "description": "Email status.",
+            "enum": [
+              "draft",
+              "published"
+            ]
+          },
+          "design_template": {
+            "type": "string",
+            "description": "Design template used for the email (e.g., `simple`, `visual_builder`)."
+          },
+          "template_id": {
+            "type": "integer",
+            "description": "Template ID (0 if none)."
+          },
+          "email_subject": {
+            "type": "string",
+            "description": "Email subject line."
+          },
+          "email_pre_header": {
+            "type": "string",
+            "description": "Email pre-header text."
+          },
+          "email_body": {
+            "type": "string",
+            "description": "Email body content (HTML)."
+          },
+          "delay": {
+            "type": "integer",
+            "description": "Delay in seconds from sequence start before sending this email."
+          },
+          "settings": {
+            "type": "object",
+            "description": "Email settings including timing and mailer configuration.",
+            "properties": {
+              "action_triggers": {
+                "type": "array",
+                "description": "Action triggers for the email.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "timings": {
+                "type": "object",
+                "properties": {
+                  "delay_unit": {
+                    "type": "string",
+                    "description": "Unit for the delay value.",
+                    "enum": [
+                      "days",
+                      "hours",
+                      "minutes",
+                      "weeks"
+                    ]
+                  },
+                  "delay": {
+                    "type": [
+                      "string",
+                      "integer"
+                    ],
+                    "description": "Delay value in the specified unit."
+                  },
+                  "is_anytime": {
+                    "type": "string",
+                    "description": "Whether to send at any time.",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ]
+                  },
+                  "sending_time": {
+                    "description": "Sending time or time range.",
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "selected_days_only": {
+                    "type": "string",
+                    "description": "Whether to send only on selected days.",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ]
+                  },
+                  "allowed_days": {
+                    "type": "array",
+                    "description": "Allowed days of the week.",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "Mon",
+                        "Tue",
+                        "Wed",
+                        "Thu",
+                        "Fri",
+                        "Sat",
+                        "Sun"
+                      ]
+                    }
+                  }
+                }
+              },
+              "template_config": {
+                "type": "object",
+                "description": "Template configuration."
+              },
+              "mailer_settings": {
+                "type": "object",
+                "properties": {
+                  "from_name": {
+                    "type": "string"
+                  },
+                  "from_email": {
+                    "type": "string"
+                  },
+                  "reply_to_name": {
+                    "type": "string"
+                  },
+                  "reply_to_email": {
+                    "type": "string"
+                  },
+                  "is_custom": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "utm_status": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Whether UTM tracking is enabled (1 = enabled, 0 = disabled)."
+          },
+          "utm_source": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "UTM source parameter."
+          },
+          "utm_medium": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "UTM medium parameter."
+          },
+          "utm_campaign": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "UTM campaign parameter."
+          },
+          "utm_term": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "UTM term parameter."
+          },
+          "utm_content": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "UTM content parameter."
+          },
+          "created_by": {
+            "type": "integer",
+            "description": "WordPress user ID of the creator."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the email was created."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the email was last updated."
+          }
+        }
+      },
+      "SequenceTracker": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique tracker ID."
+          },
+          "campaign_id": {
+            "type": "integer",
+            "description": "Parent sequence ID."
+          },
+          "subscriber_id": {
+            "type": "integer",
+            "description": "Subscriber ID."
+          },
+          "last_sequence_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "ID of the last sent sequence email."
+          },
+          "next_sequence_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "ID of the next sequence email to send."
+          },
+          "status": {
+            "type": "string",
+            "description": "Tracker status.",
+            "enum": [
+              "active",
+              "completed",
+              "cancelled"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "description": "Record type.",
+            "enum": [
+              "sequence_tracker"
+            ]
+          },
+          "last_executed_time": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "When the last email was executed."
+          },
+          "next_execution_time": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "When the next email is scheduled."
+          },
+          "notes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "description": "Execution notes/history."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when tracking started."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when tracking was last updated."
+          },
+          "subscriber": {
+            "description": "The subscriber associated with this tracker (included when loaded with relations).",
+            "type": "object"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

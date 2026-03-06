@@ -1,0 +1,277 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/sms/campaigns/{id}/recipients": {
+      "get": {
+        "operationId": "getSmsCampaignRecipients",
+        "summary": "GET Get SMS Campaign Recipients",
+        "description": "Retrieve a paginated list of SMS message recipients for a specific campaign. Supports filtering by message status (sent, failed, delivered) and searching by subscriber details. **PRO** (requires FluentCampaign Pro SMS module).",
+        "tags": [
+          "SMS"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "SMS campaign ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "filter_type",
+            "in": "query",
+            "description": "Filter recipients by message status or activity.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "sent",
+                "failed",
+                "delivered",
+                "click"
+              ]
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search recipients by subscriber name, email, or other fields.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of results per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 15
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of campaign recipients.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "recipients": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer"
+                        },
+                        "per_page": {
+                          "type": "integer"
+                        },
+                        "current_page": {
+                          "type": "integer"
+                        },
+                        "last_page": {
+                          "type": "integer"
+                        },
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/SmsMessage"
+                          }
+                        }
+                      }
+                    },
+                    "failed_counts": {
+                      "type": "integer",
+                      "description": "Total number of failed messages for this campaign."
+                    }
+                  }
+                },
+                "example": {
+                  "recipients": {
+                    "total": 500,
+                    "per_page": 15,
+                    "current_page": 1,
+                    "last_page": 34,
+                    "data": [
+                      {
+                        "id": 101,
+                        "subscriber_id": 42,
+                        "campaign_id": 5,
+                        "mobile_number": "+1234567890",
+                        "message_content": "Don't miss our summer sale!",
+                        "status": "sent",
+                        "sms_type": "campaign",
+                        "sent_at": "2024-06-01 10:01:00",
+                        "created_at": "2024-06-01 10:00:00",
+                        "subscriber": {
+                          "id": 42,
+                          "first_name": "John",
+                          "last_name": "Doe",
+                          "email": "john@example.com"
+                        }
+                      }
+                    ]
+                  },
+                  "failed_counts": 5
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Campaign not found."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "SmsMessage": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "subscriber_id": {
+            "type": "integer"
+          },
+          "campaign_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "mobile_number": {
+            "type": "string"
+          },
+          "message_content": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "sent",
+              "delivered",
+              "failed",
+              "cancelled",
+              "paused",
+              "processing",
+              "scheduled",
+              "scheduling"
+            ]
+          },
+          "sms_type": {
+            "type": "string",
+            "enum": [
+              "campaign",
+              "automation",
+              "custom_sms"
+            ]
+          },
+          "delivery_status": {
+            "type": "string",
+            "nullable": true
+          },
+          "sent_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "scheduled_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "subscriber": {
+            "type": "object",
+            "description": "Related subscriber (contact) data."
+          },
+          "campaign": {
+            "type": "object",
+            "description": "Related SMS campaign data.",
+            "nullable": true
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

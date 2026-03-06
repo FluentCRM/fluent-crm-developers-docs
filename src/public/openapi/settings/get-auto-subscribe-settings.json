@@ -1,0 +1,163 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/setting/auto_subscribe_settings": {
+      "get": {
+        "operationId": "getAutoSubscribeSettings",
+        "summary": "GET Auto Subscribe Settings",
+        "description": "Retrieve auto-subscribe settings for user registration, comments, user syncing, and role-based tagging. Optionally includes form field definitions. When WooCommerce is active, also returns checkout form subscribe settings.",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "with[]",
+            "in": "query",
+            "description": "Include additional data. Use `fields` to include form field definitions for the settings UI.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "fields"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Auto-subscribe settings for all subscription sources.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "registration_setting": {
+                      "type": "object",
+                      "description": "Settings for auto-subscribing users on WordPress registration."
+                    },
+                    "comment_settings": {
+                      "type": "object",
+                      "description": "Settings for auto-subscribing users when they comment."
+                    },
+                    "user_syncing_settings": {
+                      "type": "object",
+                      "description": "Settings for syncing existing WordPress users."
+                    },
+                    "role_based_tagging_settings": {
+                      "type": "object",
+                      "description": "Settings for applying tags based on WordPress user roles."
+                    },
+                    "registration_fields": {
+                      "type": "object",
+                      "description": "Form field definitions for registration settings (only when `with[]=fields`)."
+                    },
+                    "comment_fields": {
+                      "type": "object",
+                      "description": "Form field definitions for comment settings (only when `with[]=fields`)."
+                    },
+                    "user_syncing_fields": {
+                      "type": "object",
+                      "description": "Form field definitions for user syncing settings (only when `with[]=fields`)."
+                    },
+                    "role_based_tagging_settings_fields": {
+                      "type": "object",
+                      "description": "Form field definitions for role-based tagging (only when `with[]=fields`)."
+                    },
+                    "woo_checkout_fields": {
+                      "type": "object",
+                      "description": "WooCommerce checkout subscribe form fields (only when WooCommerce is active)."
+                    },
+                    "woo_checkout_settings": {
+                      "type": "object",
+                      "description": "WooCommerce checkout subscribe settings (only when WooCommerce is active)."
+                    }
+                  }
+                },
+                "example": {
+                  "registration_setting": {
+                    "status": "no",
+                    "target_list": "",
+                    "target_tags": []
+                  },
+                  "comment_settings": {
+                    "status": "no",
+                    "target_list": "",
+                    "target_tags": []
+                  },
+                  "user_syncing_settings": {
+                    "status": "no"
+                  },
+                  "role_based_tagging_settings": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

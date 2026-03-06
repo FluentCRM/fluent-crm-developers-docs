@@ -1,0 +1,379 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/dynamic-segments/{slug}/subscribers/{id}": {
+      "get": {
+        "operationId": "getDynamicSegmentSubscribers",
+        "summary": "GET Get Dynamic Segment Subscribers",
+        "description": "Retrieve a paginated list of subscribers belonging to a specific dynamic segment. Supports sorting, searching, and optional custom field inclusion. Requires FluentCampaign Pro.",
+        "tags": [
+          "Dynamic Segments"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "description": "The slug of the dynamic segment type (e.g., `custom_segment`, `wordpress_users`).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the segment. Use `0` for built-in segments that have no specific ID.",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search subscribers by name or email.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "description": "Column to sort by.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort_type",
+            "in": "query",
+            "description": "Sort direction.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          },
+          {
+            "name": "custom_fields",
+            "in": "query",
+            "description": "Set to `true` to include custom field values for each subscriber.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            }
+          },
+          {
+            "name": "has_commerce",
+            "in": "query",
+            "description": "If truthy, includes commerce data for each subscriber (requires a commerce provider like WooCommerce).",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of subscribers per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 15
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Segment details and paginated list of subscribers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "segment": {
+                      "type": "object",
+                      "description": "The resolved segment data, including its model query result."
+                    },
+                    "subscribers": {
+                      "type": "object",
+                      "description": "Paginated list of subscribers in the segment.",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of subscribers in the segment."
+                        },
+                        "per_page": {
+                          "type": "integer",
+                          "description": "Number of subscribers per page."
+                        },
+                        "current_page": {
+                          "type": "integer",
+                          "description": "Current page number."
+                        },
+                        "last_page": {
+                          "type": "integer",
+                          "description": "Last page number."
+                        },
+                        "next_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "URL for the next page, or null if on the last page."
+                        },
+                        "prev_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "URL for the previous page, or null if on the first page."
+                        },
+                        "from": {
+                          "type": "integer",
+                          "description": "Starting record index on this page."
+                        },
+                        "to": {
+                          "type": "integer",
+                          "description": "Ending record index on this page."
+                        },
+                        "data": {
+                          "type": "array",
+                          "description": "Array of subscriber objects with related tags, lists, and optionally companies.",
+                          "items": {
+                            "$ref": "#/components/schemas/SegmentSubscriber"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "segment": {
+                    "slug": "custom_segment",
+                    "title": "Engaged Subscribers",
+                    "id": 12
+                  },
+                  "subscribers": {
+                    "total": 85,
+                    "per_page": 15,
+                    "current_page": 1,
+                    "last_page": 6,
+                    "next_page_url": "?page=2",
+                    "prev_page_url": null,
+                    "from": 1,
+                    "to": 15,
+                    "data": [
+                      {
+                        "id": 1,
+                        "first_name": "John",
+                        "last_name": "Doe",
+                        "email": "john@example.com",
+                        "status": "subscribed",
+                        "created_at": "2024-01-15 10:30:00",
+                        "tags": [],
+                        "lists": []
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "SegmentSubscriber": {
+        "type": "object",
+        "description": "A subscriber contact within a dynamic segment.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique subscriber ID."
+          },
+          "first_name": {
+            "type": "string",
+            "description": "First name."
+          },
+          "last_name": {
+            "type": "string",
+            "description": "Last name."
+          },
+          "full_name": {
+            "type": "string",
+            "description": "Full name."
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address."
+          },
+          "status": {
+            "type": "string",
+            "description": "Subscription status.",
+            "enum": [
+              "subscribed",
+              "unsubscribed",
+              "pending",
+              "bounced",
+              "complained"
+            ]
+          },
+          "contact_type": {
+            "type": "string",
+            "description": "Contact type (e.g., `subscriber`, `lead`)."
+          },
+          "city": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "City."
+          },
+          "state": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "State."
+          },
+          "country": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Country code."
+          },
+          "source": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Contact source."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the subscriber was created."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the subscriber was last updated."
+          },
+          "last_activity": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Timestamp of last activity."
+          },
+          "tags": {
+            "type": "array",
+            "description": "Tags assigned to this subscriber.",
+            "items": {
+              "type": "object"
+            }
+          },
+          "lists": {
+            "type": "array",
+            "description": "Lists this subscriber belongs to.",
+            "items": {
+              "type": "object"
+            }
+          },
+          "companies": {
+            "type": "array",
+            "description": "Companies associated with this subscriber (only included when companies feature is enabled).",
+            "items": {
+              "type": "object"
+            }
+          },
+          "custom_fields": {
+            "type": "object",
+            "description": "Custom field values (only included when `custom_fields=true` query parameter is set)."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

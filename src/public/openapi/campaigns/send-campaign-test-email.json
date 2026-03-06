@@ -1,0 +1,174 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/campaigns/send-test-email": {
+      "post": {
+        "operationId": "sendCampaignTestEmail",
+        "summary": "POST Send Campaign Test Email",
+        "description": "Send a test email for a campaign. Can send a test from either a saved campaign (by campaign_id) or from unsaved campaign data passed in the request body. The email subject is prefixed with 'TEST: '. If no email address is provided, it sends to the current user's email.",
+        "tags": [
+          "Campaigns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "test_campaign": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "description": "Set to `yes` to send test from unsaved campaign data passed in `campaign` field. Set to `no` or omit to use a saved campaign via `campaign_id`."
+                  },
+                  "campaign_id": {
+                    "type": "integer",
+                    "description": "ID of the saved campaign to send a test for. Used when `test_campaign` is not `yes`."
+                  },
+                  "campaign": {
+                    "type": "object",
+                    "description": "Unsaved campaign data. Used when `test_campaign` is `yes`.",
+                    "properties": {
+                      "email_subject": {
+                        "type": "string"
+                      },
+                      "email_pre_header": {
+                        "type": "string"
+                      },
+                      "email_body": {
+                        "type": "string"
+                      },
+                      "design_template": {
+                        "type": "string"
+                      },
+                      "settings": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Recipient email address for the test. Defaults to the current user's email if not provided."
+                  }
+                }
+              },
+              "example": {
+                "test_campaign": "no",
+                "campaign_id": 12,
+                "email": "test@example.com"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Test email sent successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "result": {
+                      "type": "object",
+                      "description": "Mailer send result."
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Test email successfully sent to test@example.com, The dynamic tags may not be replaced in the test email",
+                  "result": {}
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "No subscriber found to send test.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "No subscriber found to send test. Please add atleast one contact as subscribed status"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

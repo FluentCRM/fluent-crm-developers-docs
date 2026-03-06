@@ -1,0 +1,160 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/templates/built-in-templates": {
+      "get": {
+        "operationId": "getBuiltInTemplates",
+        "summary": "GET Get Built-In Templates",
+        "description": "Retrieve a collection of pre-designed email templates from the FluentCRM template library. Templates are fetched from a remote API and cached locally for 24 hours. Each template includes its design JSON, cover image, and metadata.",
+        "tags": [
+          "Templates"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of built-in email templates.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "templates": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/BuiltInTemplate"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "templates": [
+                    {
+                      "id": 101,
+                      "title": "Product Launch Announcement",
+                      "content": "{\"blocks\":[...]}",
+                      "short_description": "A professional template for announcing new product launches.",
+                      "link": "https://fluentcrm.com/templates/product-launch/",
+                      "media_url": "https://fluentcrm.com/wp-content/uploads/2024/01/product-launch-thumb.jpg",
+                      "status": "publish",
+                      "cover_image": "https://fluentcrm.com/wp-content/uploads/2024/01/product-launch-cover.jpg"
+                    },
+                    {
+                      "id": 102,
+                      "title": "Welcome Series - Day 1",
+                      "content": "{\"blocks\":[...]}",
+                      "short_description": "First email in a welcome series for new subscribers.",
+                      "link": "https://fluentcrm.com/templates/welcome-day-1/",
+                      "media_url": "https://fluentcrm.com/wp-content/uploads/2024/01/welcome-thumb.jpg",
+                      "status": "publish",
+                      "cover_image": "https://fluentcrm.com/wp-content/uploads/2024/01/welcome-cover.jpg"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "BuiltInTemplate": {
+        "type": "object",
+        "description": "A pre-designed email template from the FluentCRM template library.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Remote template ID."
+          },
+          "title": {
+            "type": "string",
+            "description": "Template title."
+          },
+          "content": {
+            "type": "string",
+            "description": "Template design JSON string containing the block structure."
+          },
+          "short_description": {
+            "type": "string",
+            "description": "Brief description of the template."
+          },
+          "link": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to the template page on the FluentCRM website."
+          },
+          "media_url": {
+            "type": "string",
+            "description": "URL of the template thumbnail/featured image. Empty string if no featured image."
+          },
+          "status": {
+            "type": "string",
+            "description": "Publication status of the remote template."
+          },
+          "cover_image": {
+            "type": "string",
+            "description": "URL of the template cover image."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

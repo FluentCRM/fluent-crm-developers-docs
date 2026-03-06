@@ -1,0 +1,230 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/import/csv-upload": {
+      "post": {
+        "operationId": "uploadCsvImport",
+        "summary": "POST Upload CSV for Import",
+        "description": "Upload a CSV file for contact or company import. Returns the parsed CSV headers, mappable subscriber/company fields, and auto-matched column mappings. The uploaded file is stored temporarily for the subsequent import step.",
+        "tags": [
+          "Import"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "The CSV file to upload. Must have a valid CSV MIME type."
+                  },
+                  "delimiter": {
+                    "type": "string",
+                    "enum": [
+                      "comma",
+                      "semicolon"
+                    ],
+                    "default": "comma",
+                    "description": "CSV delimiter type. `comma` uses `,`, `semicolon` uses `;`."
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "contact",
+                      "company"
+                    ],
+                    "description": "Type of import. If `company`, returns company-specific mappable fields."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "CSV parsed successfully. Returns headers, mappable fields, and auto-matched mappings.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "file": {
+                      "type": "string",
+                      "description": "Temporary file path for the uploaded CSV. Pass this to the import endpoint."
+                    },
+                    "headers": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Column headers extracted from the CSV file."
+                    },
+                    "fields": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Mappable subscriber/company fields as key-label pairs."
+                    },
+                    "columns": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "List of valid database column names."
+                    },
+                    "map": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "csv": {
+                            "type": "string",
+                            "description": "CSV header name."
+                          },
+                          "table": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "Auto-matched database column, or null if no match."
+                          }
+                        }
+                      },
+                      "description": "Auto-generated mapping between CSV headers and database columns."
+                    }
+                  }
+                },
+                "example": {
+                  "file": "/tmp/fluent-crm/import_abc123.csv",
+                  "headers": [
+                    "Email",
+                    "First Name",
+                    "Last Name",
+                    "Phone"
+                  ],
+                  "fields": {
+                    "email": "Email",
+                    "first_name": "First Name",
+                    "last_name": "Last Name",
+                    "phone": "Phone"
+                  },
+                  "columns": [
+                    "email",
+                    "first_name",
+                    "last_name",
+                    "phone",
+                    "status"
+                  ],
+                  "map": [
+                    {
+                      "csv": "Email",
+                      "table": "email"
+                    },
+                    {
+                      "csv": "First Name",
+                      "table": "first_name"
+                    },
+                    {
+                      "csv": "Last Name",
+                      "table": "last_name"
+                    },
+                    {
+                      "csv": "Phone",
+                      "table": "phone"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error (invalid file type or duplicate headers).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "The file must be a valid CSV."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

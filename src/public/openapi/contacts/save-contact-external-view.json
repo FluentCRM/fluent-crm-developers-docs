@@ -1,0 +1,151 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/subscribers/{id}/external_view": {
+      "post": {
+        "operationId": "saveContactExternalView",
+        "summary": "POST Save Contact External View",
+        "description": "Save data for an external profile section of a contact. The data handling is delegated to the registered section provider via the `fluencrm_profile_section_save_{section_provider}` filter hook.",
+        "tags": [
+          "Contacts"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The contact ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "section_provider"
+                ],
+                "properties": {
+                  "section_provider": {
+                    "type": "string",
+                    "description": "The section provider identifier."
+                  },
+                  "data": {
+                    "type": "object",
+                    "description": "Data to save. Structure depends on the section provider.",
+                    "additionalProperties": true
+                  }
+                }
+              },
+              "example": {
+                "section_provider": "custom_section",
+                "data": {
+                  "key": "value"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Data saved successfully. Response structure depends on the section provider.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                },
+                "example": {
+                  "message": "Data saved successfully"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Handler not found for the section provider.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Handled could not be found."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -1,0 +1,256 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/subscribers/prev-next-ids": {
+      "get": {
+        "operationId": "getContactPrevNextIds",
+        "summary": "GET Get Contact Prev/Next IDs",
+        "description": "Get the previous and next contact IDs relative to a given contact ID within the current filter context. Returns up to 10 IDs in each direction. Useful for implementing prev/next navigation on a contact profile page.",
+        "tags": [
+          "Contacts"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "current_id",
+            "in": "query",
+            "description": "The current contact ID to navigate from.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "filter_type",
+            "in": "query",
+            "description": "Type of filtering applied to the contact list.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "simple",
+                "advanced"
+              ]
+            }
+          },
+          {
+            "name": "sort_type",
+            "in": "query",
+            "description": "Sort direction of the contact list.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "DESC",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search term applied to the contact list.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tags[]",
+            "in": "query",
+            "description": "Tag IDs filter (simple mode).",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "name": "statuses[]",
+            "in": "query",
+            "description": "Status filter (simple mode).",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "lists[]",
+            "in": "query",
+            "description": "List IDs filter (simple mode).",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "name": "advanced_filters",
+            "in": "query",
+            "description": "JSON-encoded advanced filter groups (advanced mode).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Previous and next contact IDs.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "navigation": {
+                      "type": "object",
+                      "properties": {
+                        "next": {
+                          "type": "array",
+                          "items": {
+                            "type": "integer"
+                          },
+                          "description": "Up to 10 contact IDs after the current one."
+                        },
+                        "prev": {
+                          "type": "array",
+                          "items": {
+                            "type": "integer"
+                          },
+                          "description": "Up to 10 contact IDs before the current one."
+                        }
+                      }
+                    },
+                    "has_next": {
+                      "type": "boolean",
+                      "description": "Whether there are more contacts after the returned next IDs."
+                    },
+                    "has_prev": {
+                      "type": "boolean",
+                      "description": "Whether there are more contacts before the returned prev IDs."
+                    }
+                  }
+                },
+                "example": {
+                  "navigation": {
+                    "next": [
+                      9,
+                      8,
+                      7,
+                      6,
+                      5,
+                      4,
+                      3,
+                      2,
+                      1
+                    ],
+                    "prev": [
+                      11,
+                      12,
+                      13,
+                      14,
+                      15,
+                      16,
+                      17,
+                      18,
+                      19,
+                      20
+                    ]
+                  },
+                  "has_next": false,
+                  "has_prev": true
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Missing required parameters.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "filter_type and current_id are required"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

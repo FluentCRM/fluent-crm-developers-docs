@@ -1,0 +1,156 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/campaign-pro-settings/sms": {
+      "get": {
+        "operationId": "getSmsSettings",
+        "summary": "GET SMS Settings",
+        "description": "Retrieve the current SMS module settings, including the active SMS provider configuration and available provider options with their field definitions.",
+        "tags": [
+          "Pro Settings"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "SMS settings and provider options.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "settings": {
+                      "type": "object",
+                      "description": "Current SMS settings including enabled status and provider credentials.",
+                      "properties": {
+                        "enabled": {
+                          "type": "string",
+                          "enum": [
+                            "yes",
+                            "no"
+                          ],
+                          "description": "Whether the SMS module is enabled."
+                        },
+                        "sms_provider": {
+                          "type": "string",
+                          "description": "The active SMS provider slug."
+                        }
+                      }
+                    },
+                    "options": {
+                      "type": "object",
+                      "description": "Available SMS provider options with field definitions.",
+                      "properties": {
+                        "providers": {
+                          "type": "object",
+                          "description": "Available SMS providers keyed by provider slug.",
+                          "additionalProperties": {
+                            "type": "object",
+                            "properties": {
+                              "fields": {
+                                "type": "object",
+                                "description": "Provider configuration fields."
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "settings": {
+                    "enabled": "yes",
+                    "sms_provider": "twilio"
+                  },
+                  "options": {
+                    "providers": {
+                      "twilio": {
+                        "fields": {
+                          "account_sid": {
+                            "label": "Account SID",
+                            "required": true,
+                            "default": ""
+                          },
+                          "auth_token": {
+                            "label": "Auth Token",
+                            "required": true,
+                            "default": ""
+                          },
+                          "from_number": {
+                            "label": "From Number",
+                            "required": true,
+                            "default": ""
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

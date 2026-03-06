@@ -14,7 +14,8 @@
     "preview": "vitepress preview src"
   },
   "devDependencies": {
-    "vitepress": "^1.6.4"
+    "vitepress": "^1.6.4",
+    "vitepress-openapi": "^0.1.15"
   },
   "dependencies": {
     "@docsearch/js": "^3.5.2"

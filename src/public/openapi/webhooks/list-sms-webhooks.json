@@ -1,0 +1,154 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/webhooks/sms": {
+      "get": {
+        "operationId": "listSmsWebhooks",
+        "summary": "GET List SMS Webhooks",
+        "description": "Retrieve all SMS-type webhooks. Returns only webhooks with `object_type` starting with `webhook_` (i.e., SMS provider webhooks). Requires Fluent Campaign Pro with the SMS module enabled.",
+        "tags": [
+          "Webhooks"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of SMS webhooks.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sms_webhooks": {
+                      "type": "array",
+                      "description": "Array of SMS webhook objects.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "Unique identifier."
+                          },
+                          "key": {
+                            "type": "string",
+                            "description": "UUID key used in the webhook URL."
+                          },
+                          "object_type": {
+                            "type": "string",
+                            "description": "Type discriminator, e.g., `webhook_twilio`."
+                          },
+                          "value": {
+                            "type": "object",
+                            "description": "SMS webhook configuration data.",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "description": "Human-readable webhook name."
+                              },
+                              "sms_provider": {
+                                "type": "string",
+                                "description": "SMS provider identifier."
+                              },
+                              "object_type": {
+                                "type": "string",
+                                "description": "Echoed object_type from the parent record."
+                              },
+                              "url": {
+                                "type": "string",
+                                "description": "The SMS webhook endpoint URL."
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Success message."
+                    }
+                  }
+                },
+                "example": {
+                  "sms_webhooks": [
+                    {
+                      "id": 5,
+                      "key": "f1e2d3c4-b5a6-7890-abcd-ef1234567890",
+                      "object_type": "webhook_twilio",
+                      "value": {
+                        "name": "Twilio SMS Webhook",
+                        "sms_provider": "twilio",
+                        "object_type": "webhook_twilio",
+                        "url": "https://example.com/?fluentcrm=1&fc_s_webhook=twilio&hash=f1e2d3c4-b5a6-7890-abcd-ef1234567890"
+                      }
+                    }
+                  ],
+                  "message": "SMS webhooks retrieved successfully"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

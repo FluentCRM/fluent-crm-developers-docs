@@ -1,0 +1,155 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/templates/smartcodes": {
+      "get": {
+        "operationId": "getSmartCodes",
+        "summary": "GET Get Smart Codes",
+        "description": "Retrieve all available smartcodes grouped by category. Smartcodes are placeholder tokens (e.g., `{{contact.first_name}}`) that get replaced with actual values when emails are sent. Groups include contact fields, custom fields, and general codes like business name and unsubscribe URLs.",
+        "tags": [
+          "Templates"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Available smartcode groups.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "smartcodes": {
+                      "type": "array",
+                      "description": "Array of smartcode groups.",
+                      "items": {
+                        "type": "object",
+                        "description": "A group of related smartcodes.",
+                        "properties": {
+                          "key": {
+                            "type": "string",
+                            "description": "Group identifier (e.g., 'contact', 'general', 'contact_custom_fields')."
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "Human-readable group title."
+                          },
+                          "shortcodes": {
+                            "type": "object",
+                            "description": "Key-value pairs where keys are smartcode placeholders and values are human-readable labels.",
+                            "additionalProperties": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "smartcodes": [
+                    {
+                      "key": "contact",
+                      "title": "Contact",
+                      "shortcodes": {
+                        "{{contact.full_name}}": "Full Name",
+                        "{{contact.prefix}}": "Name Prefix",
+                        "{{contact.first_name}}": "First Name",
+                        "{{contact.last_name}}": "Last Name",
+                        "{{contact.email}}": "Contact Email",
+                        "{{contact.id}}": "Contact ID",
+                        "{{contact.user_id}}": "User ID",
+                        "{{contact.address_line_1}}": "Address Line 1",
+                        "{{contact.address_line_2}}": "Address Line 2",
+                        "{{contact.city}}": "City",
+                        "{{contact.state}}": "State",
+                        "{{contact.postal_code}}": "Postal Code",
+                        "{{contact.country}}": "Country",
+                        "{{contact.phone}}": "Phone Number",
+                        "{{contact.status}}": "Status",
+                        "{{contact.date_of_birth}}": "Date of Birth"
+                      }
+                    },
+                    {
+                      "key": "general",
+                      "title": "General",
+                      "shortcodes": {
+                        "{{crm.business_name}}": "Business Name",
+                        "{{crm.business_address}}": "Business Address",
+                        "{{wp.admin_email}}": "Admin Email",
+                        "##wp.url##": "Site URL",
+                        "##crm.unsubscribe_url##": "Unsubscribe URL",
+                        "##crm.manage_subscription_url##": "Manage Subscription URL",
+                        "##web_preview_url##": "View On Browser URL"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

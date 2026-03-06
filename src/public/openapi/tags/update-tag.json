@@ -1,0 +1,213 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/tags/{id}": {
+      "put": {
+        "operationId": "updateTag",
+        "summary": "PUT Update Tag",
+        "description": "Update an existing tag by its ID. The `title` field is required. If `slug` is omitted, it is auto-generated from the title. Alternatively, set `id` to `0` and pass `update_by=slug` to find the tag by its slug instead.",
+        "tags": [
+          "Tags"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the tag to update. Pass `0` with `update_by=slug` to look up by slug instead.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Display name of the tag."
+                  },
+                  "slug": {
+                    "type": "string",
+                    "description": "URL-friendly unique identifier. Auto-generated from title if omitted."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Optional description of the tag."
+                  },
+                  "update_by": {
+                    "type": "string",
+                    "description": "Set to `slug` to look up the tag by its slug instead of ID (only when `id` is `0`).",
+                    "enum": [
+                      "slug"
+                    ]
+                  }
+                }
+              },
+              "example": {
+                "title": "Premium Customer",
+                "slug": "premium-customer",
+                "description": "Updated description for premium customers"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tag updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "lists": {
+                      "type": "integer",
+                      "description": "Number of rows updated (legacy key name). Typically `1`."
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Success message."
+                    }
+                  }
+                },
+                "example": {
+                  "lists": 1,
+                  "message": "Successfully saved the tag."
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error or slug conflict.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "errors": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Provided slug already exists in another tag"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the tag."
+          },
+          "title": {
+            "type": "string",
+            "description": "Display name of the tag."
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL-friendly unique identifier."
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Optional description of the tag."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the tag was created (WordPress timezone)."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the tag was last updated (WordPress timezone)."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

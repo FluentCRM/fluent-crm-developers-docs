@@ -1,0 +1,223 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/funnels/{id}/email_reports": {
+      "get": {
+        "operationId": "getFunnelEmailReports",
+        "summary": "GET Get Funnel Email Reports",
+        "description": "Retrieve email performance reports for all email sequences within a specific funnel. Returns each email sequence with its associated campaign data including subject, stats, and tracking status.",
+        "tags": [
+          "Funnels"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The funnel ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email reports for the funnel.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email_sequences": {
+                      "type": "array",
+                      "description": "List of email sequences with campaign data.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "Sequence ID."
+                          },
+                          "funnel_id": {
+                            "type": "integer"
+                          },
+                          "action_name": {
+                            "type": "string",
+                            "description": "Always `send_custom_email` for email sequences."
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "sequence": {
+                            "type": "integer",
+                            "description": "Order position."
+                          },
+                          "settings": {
+                            "type": "object"
+                          },
+                          "campaign": {
+                            "type": "object",
+                            "description": "Associated campaign data with performance stats.",
+                            "properties": {
+                              "subject": {
+                                "type": "string",
+                                "description": "Email subject line."
+                              },
+                              "id": {
+                                "type": "integer",
+                                "description": "Campaign ID."
+                              },
+                              "stats": {
+                                "type": "object",
+                                "description": "Campaign performance statistics.",
+                                "properties": {
+                                  "total": {
+                                    "type": "integer",
+                                    "description": "Total emails sent."
+                                  },
+                                  "opens": {
+                                    "type": "integer",
+                                    "description": "Total opens."
+                                  },
+                                  "clicks": {
+                                    "type": "integer",
+                                    "description": "Total clicks."
+                                  },
+                                  "unsubscribes": {
+                                    "type": "integer",
+                                    "description": "Total unsubscribes."
+                                  },
+                                  "revenue": {
+                                    "type": "number",
+                                    "description": "Revenue generated."
+                                  }
+                                }
+                              },
+                              "status": {
+                                "type": "string",
+                                "description": "Campaign status."
+                              },
+                              "open_tracking_status": {
+                                "type": "string",
+                                "description": "Open tracking enabled status."
+                              },
+                              "click_tracking_status": {
+                                "type": "string",
+                                "description": "Click tracking enabled status."
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "email_sequences": [
+                    {
+                      "id": 5,
+                      "funnel_id": 1,
+                      "action_name": "send_custom_email",
+                      "title": "Send Welcome Email",
+                      "sequence": 2,
+                      "campaign": {
+                        "subject": "Welcome to Our Service!",
+                        "id": 10,
+                        "stats": {
+                          "total": 150,
+                          "opens": 89,
+                          "clicks": 32,
+                          "unsubscribes": 2,
+                          "revenue": 0
+                        },
+                        "status": "published",
+                        "open_tracking_status": "yes",
+                        "click_tracking_status": "yes"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Funnel not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

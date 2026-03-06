@@ -1,0 +1,192 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/campaigns": {
+      "post": {
+        "operationId": "createCampaign",
+        "summary": "POST Create Campaign",
+        "description": "Create a new email campaign. If no title is provided, an auto-generated unique title (e.g., 'Untitled', 'Untitled 2') is assigned. The campaign is created in draft status and returned with its template and subjects relations loaded.",
+        "tags": [
+          "Campaigns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Campaign title. Must be unique across all campaigns. If omitted or empty, an auto-generated title is assigned."
+                  }
+                }
+              },
+              "example": {
+                "title": "Spring Sale 2024"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Campaign created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "slug": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "template_id": {
+                      "type": "integer",
+                      "nullable": true
+                    },
+                    "email_subject": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "email_pre_header": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "email_body": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "settings": {
+                      "type": "object"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "template": {
+                      "type": "object",
+                      "nullable": true
+                    },
+                    "subjects": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "id": 12,
+                  "title": "Spring Sale 2024",
+                  "slug": null,
+                  "status": "draft",
+                  "template_id": null,
+                  "email_subject": null,
+                  "email_pre_header": null,
+                  "email_body": null,
+                  "settings": {},
+                  "created_at": "2024-03-01 10:00:00",
+                  "updated_at": "2024-03-01 10:00:00",
+                  "template": null,
+                  "subjects": []
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error (e.g., title is not unique).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "errors": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

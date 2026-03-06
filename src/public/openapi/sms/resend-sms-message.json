@@ -1,0 +1,121 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/sms/messages/{id}/resend": {
+      "post": {
+        "operationId": "resendSmsMessage",
+        "summary": "POST Resend SMS Message",
+        "description": "Resend a specific SMS message by creating a new message entry with the same content and queuing it for delivery via Action Scheduler. The subscriber must still have a valid phone number and the message content must not exceed 1600 characters. **PRO** (requires FluentCampaign Pro SMS module).",
+        "tags": [
+          "SMS"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Original SMS message ID to resend.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "SMS queued for resending.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "new_message_id": {
+                      "type": "integer",
+                      "description": "ID of the newly created message entry."
+                    }
+                  }
+                },
+                "example": {
+                  "message": "SMS message has been queued for resending",
+                  "new_message_id": 205
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Subscriber has no phone number or message exceeds 1600 characters."
+          },
+          "404": {
+            "description": "SMS message or subscriber not found."
+          },
+          "500": {
+            "description": "Failed to queue SMS for resending."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

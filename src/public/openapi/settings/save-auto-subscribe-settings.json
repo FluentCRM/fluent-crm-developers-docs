@@ -1,0 +1,144 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/setting/auto_subscribe_settings": {
+      "post": {
+        "operationId": "saveAutoSubscribeSettings",
+        "summary": "POST Save Auto Subscribe Settings",
+        "description": "Save auto-subscribe settings for user registration, comments, and user syncing. Saves role-based tagging settings when FluentCRM Pro is active. Saves WooCommerce checkout settings when both WooCommerce and FluentCRM Pro are active.",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "registration_setting": {
+                    "type": "object",
+                    "description": "Settings for auto-subscribing users on WordPress registration."
+                  },
+                  "comment_settings": {
+                    "type": "object",
+                    "description": "Settings for auto-subscribing users when they comment."
+                  },
+                  "user_syncing_settings": {
+                    "type": "object",
+                    "description": "Settings for syncing existing WordPress users."
+                  },
+                  "role_based_tagging_settings": {
+                    "type": "object",
+                    "description": "Settings for applying tags based on WordPress user roles (requires FluentCRM Pro)."
+                  },
+                  "woo_checkout_settings": {
+                    "type": "object",
+                    "description": "WooCommerce checkout subscribe settings (requires WooCommerce and FluentCRM Pro)."
+                  }
+                }
+              },
+              "example": {
+                "registration_setting": {
+                  "status": "yes",
+                  "target_list": "1",
+                  "target_tags": [
+                    1,
+                    2
+                  ]
+                },
+                "comment_settings": {
+                  "status": "no"
+                },
+                "user_syncing_settings": {
+                  "status": "no"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Auto-subscribe settings saved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Settings has been updated"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

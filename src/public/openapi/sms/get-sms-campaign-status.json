@@ -1,0 +1,224 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/sms/campaigns/{id}/status": {
+      "get": {
+        "operationId": "getSmsCampaignStatus",
+        "summary": "GET Get SMS Campaign Status",
+        "description": "Get the current sending status of an SMS campaign, including message statistics, sent count, and analytics. For `working` campaigns, this endpoint also performs housekeeping: resets stale processing messages, schedules recovery batch sends, and auto-archives completed campaigns. **PRO** (requires FluentCampaign Pro SMS module).",
+        "tags": [
+          "SMS"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "SMS campaign ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "request_counter",
+            "in": "query",
+            "description": "Poll counter used to trigger periodic cleanup of stale processing messages (runs every 4th request).",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campaign status with message statistics.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "current_timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Current server timestamp."
+                    },
+                    "stat": {
+                      "type": "array",
+                      "description": "Array of message status counts.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          },
+                          "total": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    },
+                    "campaign": {
+                      "$ref": "#/components/schemas/SmsCampaign"
+                    },
+                    "sent_count": {
+                      "type": "integer",
+                      "description": "Total number of successfully sent messages."
+                    },
+                    "analytics": {
+                      "type": "object",
+                      "description": "Campaign analytics (reserved for future use)."
+                    }
+                  }
+                },
+                "example": {
+                  "current_timestamp": "2024-06-01 14:00:00",
+                  "stat": [
+                    {
+                      "status": "sent",
+                      "total": 480
+                    },
+                    {
+                      "status": "failed",
+                      "total": 5
+                    },
+                    {
+                      "status": "pending",
+                      "total": 15
+                    }
+                  ],
+                  "campaign": {
+                    "id": 5,
+                    "title": "Summer Sale SMS",
+                    "status": "working",
+                    "type": "campaign",
+                    "recipients_count": 500,
+                    "sent_by": "Admin User (admin@example.com)"
+                  },
+                  "sent_count": 480,
+                  "analytics": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Campaign not found."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "SmsCampaign": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "message_content": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "processing",
+              "pending-scheduled",
+              "scheduled",
+              "working",
+              "paused",
+              "archived"
+            ]
+          },
+          "type": {
+            "type": "string"
+          },
+          "recipients_count": {
+            "type": "integer"
+          },
+          "scheduled_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "settings": {
+            "type": "object"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sent_by": {
+            "type": "string",
+            "nullable": true,
+            "description": "Display name and email of the user who sent the campaign."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

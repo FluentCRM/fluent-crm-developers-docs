@@ -1,0 +1,148 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/docs/{doc_id}": {
+      "get": {
+        "operationId": "getDoc",
+        "summary": "GET Get Doc",
+        "description": "Retrieve a single documentation article by its ID from the FluentCRM website.",
+        "tags": [
+          "Docs"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "doc_id",
+            "in": "path",
+            "description": "The documentation article ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Documentation article details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "description": "Sanitized title of the article."
+                    },
+                    "content": {
+                      "type": "string",
+                      "description": "Sanitized HTML content with target attributes added to links."
+                    },
+                    "link": {
+                      "type": "string",
+                      "format": "uri",
+                      "description": "URL to the article on the FluentCRM website."
+                    },
+                    "id": {
+                      "type": "integer",
+                      "description": "Article ID."
+                    }
+                  }
+                },
+                "example": {
+                  "title": "Getting Started with FluentCRM",
+                  "content": "<p>Welcome to FluentCRM. This guide will help you...</p>",
+                  "link": "https://fluentcrm.com/docs/getting-started/",
+                  "id": 123
+                }
+              }
+            }
+          },
+          "error": {
+            "description": "Returned when the remote doc fetch fails.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "type": "string",
+                      "description": "Error message."
+                    },
+                    "is_error": {
+                      "type": "boolean",
+                      "description": "Always true when an error occurs."
+                    }
+                  }
+                },
+                "example": {
+                  "content": "sorry, we could not fetch the doc at this moment. Please try again",
+                  "is_error": true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

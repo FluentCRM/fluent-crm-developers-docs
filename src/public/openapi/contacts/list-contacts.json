@@ -1,0 +1,639 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/subscribers": {
+      "get": {
+        "operationId": "listContacts",
+        "summary": "GET List Contacts",
+        "description": "Retrieve a paginated list of contacts. Supports both simple filtering (by tags, lists, statuses) and advanced filtering with complex filter groups. Optionally includes custom field values.",
+        "tags": [
+          "Contacts"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "filter_type",
+            "in": "query",
+            "description": "Type of filtering to apply.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "simple",
+              "enum": [
+                "simple",
+                "advanced"
+              ]
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search contacts by name, email, or other searchable fields.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "description": "Column to sort by.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "id"
+            }
+          },
+          {
+            "name": "sort_type",
+            "in": "query",
+            "description": "Sort direction.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "DESC",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          },
+          {
+            "name": "has_commerce",
+            "in": "query",
+            "description": "Filter by commerce integration availability.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "custom_fields",
+            "in": "query",
+            "description": "Set to `true` to include custom field values in the response.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ]
+            }
+          },
+          {
+            "name": "tags[]",
+            "in": "query",
+            "description": "Filter by tag IDs (simple filter mode only).",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "name": "statuses[]",
+            "in": "query",
+            "description": "Filter by contact statuses (simple filter mode only).",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "subscribed",
+                  "pending",
+                  "unsubscribed",
+                  "bounced",
+                  "complained"
+                ]
+              }
+            }
+          },
+          {
+            "name": "sms_statuses[]",
+            "in": "query",
+            "description": "Filter by SMS statuses (simple filter mode only).",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "sms_subscribed",
+                  "sms_unsubscribed",
+                  "sms_pending",
+                  "sms_bounced"
+                ]
+              }
+            }
+          },
+          {
+            "name": "lists[]",
+            "in": "query",
+            "description": "Filter by list IDs (simple filter mode only).",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "name": "company_ids[]",
+            "in": "query",
+            "description": "Filter by company IDs.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "name": "advanced_filters",
+            "in": "query",
+            "description": "JSON-encoded advanced filter groups (advanced filter mode only).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of contacts per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 15
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of contacts.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "subscribers": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of contacts matching the query."
+                        },
+                        "per_page": {
+                          "type": "integer",
+                          "description": "Number of contacts per page."
+                        },
+                        "current_page": {
+                          "type": "integer",
+                          "description": "Current page number."
+                        },
+                        "last_page": {
+                          "type": "integer",
+                          "description": "Last page number."
+                        },
+                        "next_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "URL for the next page, or null if on the last page."
+                        },
+                        "prev_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "URL for the previous page, or null if on the first page."
+                        },
+                        "from": {
+                          "type": "integer",
+                          "description": "Starting record index on this page."
+                        },
+                        "to": {
+                          "type": "integer",
+                          "description": "Ending record index on this page."
+                        },
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Contact"
+                          }
+                        }
+                      }
+                    },
+                    "custom": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Echoes back the `custom_fields` query parameter value."
+                    }
+                  }
+                },
+                "example": {
+                  "subscribers": {
+                    "total": 150,
+                    "per_page": 15,
+                    "current_page": 1,
+                    "last_page": 10,
+                    "next_page_url": "/wp-json/fluent-crm/v2/subscribers?page=2",
+                    "prev_page_url": null,
+                    "from": 1,
+                    "to": 15,
+                    "data": [
+                      {
+                        "id": 1,
+                        "user_id": "5",
+                        "hash": "a1b2c3d4e5f6",
+                        "contact_owner": null,
+                        "company_id": null,
+                        "prefix": "Mr",
+                        "first_name": "John",
+                        "last_name": "Doe",
+                        "full_name": "John Doe",
+                        "email": "john@example.com",
+                        "status": "subscribed",
+                        "contact_type": "customer",
+                        "address_line_1": "123 Main St",
+                        "address_line_2": "",
+                        "postal_code": "90210",
+                        "city": "Beverly Hills",
+                        "state": "CA",
+                        "country": "US",
+                        "phone": "+1234567890",
+                        "timezone": "America/New_York",
+                        "date_of_birth": "1990-05-15",
+                        "source": "web",
+                        "life_time_value": 0,
+                        "last_activity": "2024-03-01 14:30:00",
+                        "total_points": 0,
+                        "latitude": null,
+                        "longitude": null,
+                        "ip": "192.168.1.1",
+                        "created_at": "2024-01-15 10:30:00",
+                        "updated_at": "2024-03-01 14:30:00",
+                        "photo": "https://www.gravatar.com/avatar/abc123",
+                        "tags": [
+                          {
+                            "id": 1,
+                            "title": "VIP Customer",
+                            "slug": "vip-customer"
+                          }
+                        ],
+                        "lists": [
+                          {
+                            "id": 1,
+                            "title": "Newsletter",
+                            "slug": "newsletter"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "custom": null
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "Contact": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the contact."
+          },
+          "user_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Associated WordPress user ID."
+          },
+          "hash": {
+            "type": "string",
+            "description": "Unique hash for the contact."
+          },
+          "contact_owner": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "User ID of the contact owner."
+          },
+          "company_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Primary company ID."
+          },
+          "prefix": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Name prefix (e.g., Mr, Mrs, Ms)."
+          },
+          "first_name": {
+            "type": "string",
+            "description": "Contact first name."
+          },
+          "last_name": {
+            "type": "string",
+            "description": "Contact last name."
+          },
+          "full_name": {
+            "type": "string",
+            "description": "Full name (computed from first_name and last_name)."
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Contact email address."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "subscribed",
+              "pending",
+              "unsubscribed",
+              "bounced",
+              "complained"
+            ],
+            "description": "Contact subscription status."
+          },
+          "contact_type": {
+            "type": "string",
+            "enum": [
+              "lead",
+              "customer"
+            ],
+            "description": "Contact type."
+          },
+          "address_line_1": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Address line 1."
+          },
+          "address_line_2": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Address line 2."
+          },
+          "postal_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Postal/zip code."
+          },
+          "city": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "City."
+          },
+          "state": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "State or province."
+          },
+          "country": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Two-letter country code."
+          },
+          "ip": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "IP address."
+          },
+          "latitude": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Latitude coordinate."
+          },
+          "longitude": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Longitude coordinate."
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Phone number."
+          },
+          "timezone": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Timezone identifier."
+          },
+          "date_of_birth": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Date of birth (YYYY-MM-DD)."
+          },
+          "source": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Source of the contact."
+          },
+          "life_time_value": {
+            "type": "number",
+            "description": "Lifetime value of the contact."
+          },
+          "last_activity": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Timestamp of last activity."
+          },
+          "total_points": {
+            "type": "integer",
+            "description": "Total engagement points."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the contact was created."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the contact was last updated."
+          },
+          "photo": {
+            "type": "string",
+            "description": "Gravatar URL."
+          },
+          "tags": {
+            "type": "array",
+            "description": "Tags assigned to the contact.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "slug": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "lists": {
+            "type": "array",
+            "description": "Lists the contact belongs to.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "slug": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "stats": {
+            "type": "object",
+            "description": "Contact statistics (only included when requested via `with[]` parameter).",
+            "properties": {
+              "emails": {
+                "type": "integer"
+              },
+              "opens": {
+                "type": "integer"
+              },
+              "clicks": {
+                "type": "integer"
+              },
+              "total_points": {
+                "type": "integer"
+              },
+              "last_activity": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

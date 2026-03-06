@@ -1,0 +1,384 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/companies/{id}": {
+      "get": {
+        "operationId": "getCompany",
+        "summary": "GET Get Company",
+        "description": "Retrieve a single company by its ID, or by an alternate field (`name`, `email`, or `phone`) using the `find_by` and `find_by_value` query parameters. The response includes the eager-loaded `owner` relation (with stats if available) and the computed `contacts_count`.",
+        "tags": [
+          "Companies"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The company ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "find_by",
+            "in": "query",
+            "description": "Field to look up the company by instead of the path `id`. Supported values: `name`, `email`, `phone`.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "id",
+                "name",
+                "email",
+                "phone"
+              ],
+              "default": "id"
+            }
+          },
+          {
+            "name": "find_by_value",
+            "in": "query",
+            "description": "The value to search for when using `find_by`. Required when `find_by` is not `id`.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Company details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "company": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "description": "Unique identifier for the company."
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Company name."
+                        },
+                        "description": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Company description."
+                        },
+                        "email": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "email",
+                          "description": "Company email address."
+                        },
+                        "phone": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Phone number."
+                        },
+                        "address_line_1": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Address line 1."
+                        },
+                        "address_line_2": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Address line 2."
+                        },
+                        "city": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "City."
+                        },
+                        "state": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "State or province."
+                        },
+                        "postal_code": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Postal/zip code."
+                        },
+                        "country": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Two-letter country code."
+                        },
+                        "type": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Company type (e.g., partner, customer, vendor)."
+                        },
+                        "industry": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Industry category."
+                        },
+                        "logo": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "URL to the company logo image."
+                        },
+                        "website": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "uri",
+                          "description": "Company website URL."
+                        },
+                        "linkedin_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "uri",
+                          "description": "LinkedIn profile URL."
+                        },
+                        "facebook_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "uri",
+                          "description": "Facebook page URL."
+                        },
+                        "twitter_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "uri",
+                          "description": "Twitter/X profile URL."
+                        },
+                        "owner_user_id": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "description": "Subscriber ID of the company owner."
+                        },
+                        "employees_number": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "description": "Number of employees."
+                        },
+                        "status": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Company status."
+                        },
+                        "contacts_count": {
+                          "type": "integer",
+                          "description": "Number of contacts associated with this company."
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "Timestamp when the company was created."
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "Timestamp when the company was last updated."
+                        },
+                        "owner": {
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "description": "The contact who owns this company.",
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "first_name": {
+                              "type": "string"
+                            },
+                            "last_name": {
+                              "type": "string"
+                            },
+                            "email": {
+                              "type": "string",
+                              "format": "email"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "company": {
+                    "id": 1,
+                    "name": "Acme Corporation",
+                    "description": "A leading technology company",
+                    "email": "info@acme.com",
+                    "phone": "+1-555-0100",
+                    "address_line_1": "100 Innovation Drive",
+                    "address_line_2": "Suite 200",
+                    "city": "San Francisco",
+                    "state": "CA",
+                    "postal_code": "94105",
+                    "country": "US",
+                    "type": "customer",
+                    "industry": "Technology",
+                    "logo": "https://example.com/wp-content/uploads/fluentcrm/acme-logo.png",
+                    "website": "https://acme.com",
+                    "linkedin_url": "https://linkedin.com/company/acme",
+                    "facebook_url": null,
+                    "twitter_url": null,
+                    "owner_user_id": 5,
+                    "employees_number": 250,
+                    "status": "active",
+                    "contacts_count": 12,
+                    "created_at": "2024-01-15 10:30:00",
+                    "updated_at": "2024-03-01 14:30:00",
+                    "owner": {
+                      "id": 5,
+                      "first_name": "Jane",
+                      "last_name": "Smith",
+                      "email": "jane@example.com",
+                      "stats": {
+                        "emails": 45,
+                        "opens": 30,
+                        "clicks": 12,
+                        "total_points": 150,
+                        "last_activity": "2024-03-01 14:30:00"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Company not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Company not found when using custom find_by field.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

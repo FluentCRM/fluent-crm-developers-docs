@@ -1,0 +1,274 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/custom-fields/contacts": {
+      "get": {
+        "operationId": "getContactCustomFields",
+        "summary": "GET Get Contact Custom Fields",
+        "description": "Retrieve all globally defined custom contact fields. Optionally include field type definitions and field group information by passing the `with[]` parameter.",
+        "tags": [
+          "Custom Fields"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "with[]",
+            "in": "query",
+            "description": "Include additional data. Supported values: `field_types` (available field type definitions), `field_groups` (field group names).",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "field_types",
+                  "field_groups"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Custom fields retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "fields": {
+                      "type": "array",
+                      "description": "Array of custom field definitions.",
+                      "items": {
+                        "$ref": "#/components/schemas/CustomField"
+                      }
+                    },
+                    "field_types": {
+                      "type": "object",
+                      "description": "Available field type definitions (only included when `with[]=field_types`).",
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "description": "Internal field type identifier."
+                          },
+                          "label": {
+                            "type": "string",
+                            "description": "Human-readable type label."
+                          },
+                          "value_type": {
+                            "type": "string",
+                            "description": "Data type for the field value.",
+                            "enum": [
+                              "string",
+                              "numeric",
+                              "array",
+                              "date",
+                              "datetime"
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "field_groups": {
+                      "type": "array",
+                      "description": "Available field groups (only included when `with[]=field_groups`).",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "slug": {
+                            "type": "string",
+                            "description": "Group slug identifier."
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "Human-readable group title."
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "fields": [
+                    {
+                      "label": "Company Name",
+                      "slug": "company_name",
+                      "type": "text",
+                      "group": "default",
+                      "options": []
+                    },
+                    {
+                      "label": "Subscription Plan",
+                      "slug": "subscription_plan",
+                      "type": "select-one",
+                      "group": "default",
+                      "options": [
+                        "Free",
+                        "Pro",
+                        "Enterprise"
+                      ]
+                    }
+                  ],
+                  "field_types": {
+                    "text": {
+                      "type": "text",
+                      "label": "Single Line Text",
+                      "value_type": "string"
+                    },
+                    "textarea": {
+                      "type": "textarea",
+                      "label": "Multi Line Text",
+                      "value_type": "string"
+                    },
+                    "number": {
+                      "type": "number",
+                      "label": "Numeric Field",
+                      "value_type": "numeric"
+                    },
+                    "single-select": {
+                      "type": "select-one",
+                      "label": "Select choice",
+                      "value_type": "string"
+                    },
+                    "multi-select": {
+                      "type": "select-multi",
+                      "label": "Multiple Select choice",
+                      "value_type": "array"
+                    },
+                    "radio": {
+                      "type": "radio",
+                      "label": "Radio Choice",
+                      "value_type": "string"
+                    },
+                    "checkbox": {
+                      "type": "checkbox",
+                      "label": "Checkboxes",
+                      "value_type": "array"
+                    },
+                    "date": {
+                      "type": "date",
+                      "label": "Date",
+                      "value_type": "date"
+                    },
+                    "date_time": {
+                      "type": "date_time",
+                      "label": "Date and Time",
+                      "value_type": "datetime"
+                    }
+                  },
+                  "field_groups": [
+                    {
+                      "slug": "default",
+                      "title": "Custom Profile Data"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "CustomField": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "Human-readable field label."
+          },
+          "slug": {
+            "type": "string",
+            "description": "Unique field identifier/slug. Auto-generated from label if not provided."
+          },
+          "type": {
+            "type": "string",
+            "description": "Field type.",
+            "enum": [
+              "text",
+              "textarea",
+              "number",
+              "select-one",
+              "select-multi",
+              "radio",
+              "checkbox",
+              "date",
+              "date_time"
+            ]
+          },
+          "group": {
+            "type": "string",
+            "description": "Field group name for organizing fields into sections."
+          },
+          "options": {
+            "type": "array",
+            "description": "Available options for select, radio, and checkbox field types.",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

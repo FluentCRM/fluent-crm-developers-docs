@@ -1,0 +1,146 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/setting/complete-installation": {
+      "post": {
+        "operationId": "completeInstallation",
+        "summary": "POST Complete Installation Wizard",
+        "description": "Complete the initial FluentCRM setup wizard. Optionally installs Fluent Forms and FluentCart, shares an opt-in email, and enables essential data sharing.",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "install_fluentform": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "default": "no",
+                    "description": "Whether to install and activate Fluent Forms plugin."
+                  },
+                  "install_fluentcart": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "default": "no",
+                    "description": "Whether to install and activate FluentCart plugin."
+                  },
+                  "optin_email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Email address for opt-in communications. Must be a valid email."
+                  },
+                  "share_essentials": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "default": "no",
+                    "description": "Whether to share essential usage data."
+                  }
+                }
+              },
+              "example": {
+                "install_fluentform": "yes",
+                "install_fluentcart": "no",
+                "optin_email": "admin@example.com",
+                "share_essentials": "yes"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Installation wizard completed successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Installation has been completed"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/campaigns/estimated-contacts": {
+      "post": {
+        "operationId": "estimateCampaignContacts",
+        "summary": "POST Estimate Campaign Contacts",
+        "description": "Estimate the number of contacts that match the given segmentation settings. Supports filtering by list/tag, dynamic segment, or advanced filters. Useful for previewing audience size before sending a campaign.",
+        "tags": [
+          "Campaigns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sending_filter": {
+                    "type": "string",
+                    "enum": [
+                      "list_tag",
+                      "dynamic_segment",
+                      "advanced_filters"
+                    ],
+                    "default": "list_tag",
+                    "description": "Type of filter to apply."
+                  },
+                  "subscribers": {
+                    "type": "object",
+                    "description": "List and tag selection for `list_tag` filter type.",
+                    "properties": {
+                      "lists": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  },
+                  "excludedSubscribers": {
+                    "type": "object",
+                    "description": "Exclusion list and tag selection for `list_tag` filter type.",
+                    "properties": {
+                      "lists": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  },
+                  "dynamic_segment": {
+                    "type": "object",
+                    "description": "Dynamic segment configuration for `dynamic_segment` filter type.",
+                    "properties": {
+                      "slug": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "type": "integer"
+                      }
+                    }
+                  },
+                  "advanced_filters": {
+                    "type": "array",
+                    "description": "Advanced filter groups for `advanced_filters` filter type.",
+                    "items": {
+                      "type": "object"
+                    }
+                  }
+                }
+              },
+              "example": {
+                "sending_filter": "list_tag",
+                "subscribers": {
+                  "lists": [
+                    1,
+                    2
+                  ],
+                  "tags": [
+                    3
+                  ]
+                },
+                "excludedSubscribers": {
+                  "tags": [
+                    5
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Estimated contact count returned.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": {
+                      "type": "integer",
+                      "description": "Estimated number of matching contacts."
+                    },
+                    "execution_time": {
+                      "type": "number",
+                      "description": "Query execution time in seconds."
+                    }
+                  }
+                },
+                "example": {
+                  "count": 1250,
+                  "execution_time": 0.045
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

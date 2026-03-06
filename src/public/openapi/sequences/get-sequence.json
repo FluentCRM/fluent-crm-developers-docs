@@ -1,0 +1,511 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/sequences/{id}": {
+      "get": {
+        "operationId": "getSequence",
+        "summary": "GET Get Sequence",
+        "description": "Retrieve a single email sequence by ID. Optionally include the sequence emails and their individual statistics. Requires FluentCampaign Pro.",
+        "tags": [
+          "Sequences"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The sequence ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "with[]",
+            "in": "query",
+            "description": "Include additional data. Use `sequence_emails` to include the sequence's emails. Use `email_stats` (requires `sequence_emails`) to include per-email statistics.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "sequence_emails",
+                  "email_stats"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sequence details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sequence": {
+                      "$ref": "#/components/schemas/Sequence"
+                    },
+                    "sequence_emails": {
+                      "type": "array",
+                      "description": "Sequence emails ordered by delay (only included when `with[]=sequence_emails`).",
+                      "items": {
+                        "$ref": "#/components/schemas/SequenceEmail"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "sequence": {
+                    "id": 1,
+                    "title": "Welcome Sequence",
+                    "slug": "welcome-sequence",
+                    "status": "draft",
+                    "type": "email_sequence",
+                    "design_template": "simple",
+                    "settings": {
+                      "mailer_settings": {
+                        "from_name": "",
+                        "from_email": "",
+                        "reply_to_name": "",
+                        "reply_to_email": "",
+                        "is_custom": "no"
+                      }
+                    },
+                    "created_by": 1,
+                    "created_at": "2024-03-01 10:00:00",
+                    "updated_at": "2024-03-01 10:00:00"
+                  },
+                  "sequence_emails": [
+                    {
+                      "id": 5,
+                      "parent_id": 1,
+                      "title": "Welcome Email",
+                      "type": "sequence_mail",
+                      "status": "published",
+                      "email_subject": "Welcome Email",
+                      "email_pre_header": "Thanks for joining us",
+                      "email_body": "<p>Welcome!</p>",
+                      "delay": 0,
+                      "design_template": "simple",
+                      "created_at": "2024-03-01 10:00:00",
+                      "updated_at": "2024-03-01 10:00:00",
+                      "stats": {
+                        "total": 200,
+                        "sent": 150,
+                        "clicks": 45,
+                        "views": 120,
+                        "unsubscribers": 2,
+                        "revenue": false
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "Sequence": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the sequence."
+          },
+          "title": {
+            "type": "string",
+            "description": "Sequence title."
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL-friendly slug derived from the title."
+          },
+          "status": {
+            "type": "string",
+            "description": "Sequence status.",
+            "enum": [
+              "draft",
+              "working",
+              "archived"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "description": "Record type (always `email_sequence`).",
+            "enum": [
+              "email_sequence"
+            ]
+          },
+          "design_template": {
+            "type": "string",
+            "description": "Design template for the sequence."
+          },
+          "settings": {
+            "type": "object",
+            "description": "Sequence settings including mailer configuration.",
+            "properties": {
+              "mailer_settings": {
+                "type": "object",
+                "properties": {
+                  "from_name": {
+                    "type": "string",
+                    "description": "Sender name."
+                  },
+                  "from_email": {
+                    "type": "string",
+                    "description": "Sender email address."
+                  },
+                  "reply_to_name": {
+                    "type": "string",
+                    "description": "Reply-to name."
+                  },
+                  "reply_to_email": {
+                    "type": "string",
+                    "description": "Reply-to email address."
+                  },
+                  "is_custom": {
+                    "type": "string",
+                    "description": "Whether custom mailer settings are enabled.",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "created_by": {
+            "type": "integer",
+            "description": "WordPress user ID of the creator."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the sequence was created."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the sequence was last updated."
+          },
+          "stats": {
+            "type": "object",
+            "description": "Sequence statistics (only included when `with[]=stats`).",
+            "properties": {
+              "emails": {
+                "type": "integer",
+                "description": "Number of emails in the sequence."
+              },
+              "subscribers": {
+                "type": "integer",
+                "description": "Number of subscribers in the sequence."
+              },
+              "revenue": {
+                "type": "object",
+                "properties": {
+                  "amount": {
+                    "type": "string",
+                    "description": "Revenue amount."
+                  },
+                  "currency": {
+                    "type": "string",
+                    "description": "Currency code."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "SequenceEmail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the sequence email."
+          },
+          "parent_id": {
+            "type": "integer",
+            "description": "Parent sequence ID."
+          },
+          "title": {
+            "type": "string",
+            "description": "Email title (typically same as subject)."
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL-friendly slug."
+          },
+          "type": {
+            "type": "string",
+            "description": "Record type (always `sequence_mail`).",
+            "enum": [
+              "sequence_mail"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "description": "Email status.",
+            "enum": [
+              "draft",
+              "published"
+            ]
+          },
+          "design_template": {
+            "type": "string",
+            "description": "Design template used for the email (e.g., `simple`, `visual_builder`)."
+          },
+          "template_id": {
+            "type": "integer",
+            "description": "Template ID (0 if none)."
+          },
+          "email_subject": {
+            "type": "string",
+            "description": "Email subject line."
+          },
+          "email_pre_header": {
+            "type": "string",
+            "description": "Email pre-header text."
+          },
+          "email_body": {
+            "type": "string",
+            "description": "Email body content (HTML)."
+          },
+          "delay": {
+            "type": "integer",
+            "description": "Delay in seconds from sequence start before sending this email."
+          },
+          "settings": {
+            "type": "object",
+            "description": "Email settings including timing and mailer configuration.",
+            "properties": {
+              "action_triggers": {
+                "type": "array",
+                "description": "Action triggers for the email.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "timings": {
+                "type": "object",
+                "properties": {
+                  "delay_unit": {
+                    "type": "string",
+                    "description": "Unit for the delay value.",
+                    "enum": [
+                      "days",
+                      "hours",
+                      "minutes",
+                      "weeks"
+                    ]
+                  },
+                  "delay": {
+                    "type": [
+                      "string",
+                      "integer"
+                    ],
+                    "description": "Delay value in the specified unit."
+                  },
+                  "is_anytime": {
+                    "type": "string",
+                    "description": "Whether to send at any time.",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ]
+                  },
+                  "sending_time": {
+                    "description": "Sending time or time range.",
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "selected_days_only": {
+                    "type": "string",
+                    "description": "Whether to send only on selected days.",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ]
+                  },
+                  "allowed_days": {
+                    "type": "array",
+                    "description": "Allowed days of the week.",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "Mon",
+                        "Tue",
+                        "Wed",
+                        "Thu",
+                        "Fri",
+                        "Sat",
+                        "Sun"
+                      ]
+                    }
+                  }
+                }
+              },
+              "template_config": {
+                "type": "object",
+                "description": "Template configuration."
+              },
+              "mailer_settings": {
+                "type": "object",
+                "properties": {
+                  "from_name": {
+                    "type": "string"
+                  },
+                  "from_email": {
+                    "type": "string"
+                  },
+                  "reply_to_name": {
+                    "type": "string"
+                  },
+                  "reply_to_email": {
+                    "type": "string"
+                  },
+                  "is_custom": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "utm_status": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Whether UTM tracking is enabled (1 = enabled, 0 = disabled)."
+          },
+          "utm_source": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "UTM source parameter."
+          },
+          "utm_medium": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "UTM medium parameter."
+          },
+          "utm_campaign": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "UTM campaign parameter."
+          },
+          "utm_term": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "UTM term parameter."
+          },
+          "utm_content": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "UTM content parameter."
+          },
+          "created_by": {
+            "type": "integer",
+            "description": "WordPress user ID of the creator."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the email was created."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the email was last updated."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

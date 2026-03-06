@@ -1,0 +1,193 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/campaigns/{id}/revenues": {
+      "get": {
+        "operationId": "getCampaignRevenues",
+        "summary": "GET Get Campaign Revenues",
+        "description": "Get a paginated list of revenue (orders) attributed to a campaign. Supports WooCommerce and Easy Digital Downloads. Returns order details including buyer name, status, date, and formatted total. Returns an empty array if no e-commerce plugin is active.",
+        "tags": [
+          "Campaigns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The campaign ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of orders per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Revenue report retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "orders": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "Order ID."
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "Order title with buyer name (may contain HTML link)."
+                          },
+                          "status": {
+                            "type": "string",
+                            "description": "Order status label."
+                          },
+                          "date": {
+                            "type": "string",
+                            "description": "Formatted order date."
+                          },
+                          "total": {
+                            "type": "string",
+                            "description": "Formatted order total with currency."
+                          }
+                        }
+                      }
+                    },
+                    "labels": {
+                      "type": "object",
+                      "description": "Column labels for the orders table.",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string"
+                        },
+                        "date": {
+                          "type": "string"
+                        },
+                        "total": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "total": {
+                      "type": "integer",
+                      "description": "Total number of orders attributed to this campaign."
+                    }
+                  }
+                },
+                "example": {
+                  "orders": [
+                    {
+                      "id": 1234,
+                      "title": "<a href=\"/wp-admin/post.php?post=1234&action=edit\"><strong>#1234 John Doe</strong></a>",
+                      "status": "Completed",
+                      "date": "Mar 1, 2024",
+                      "total": "$99.00"
+                    }
+                  ],
+                  "labels": {
+                    "id": "ID",
+                    "title": "Title",
+                    "status": "Status",
+                    "date": "Date",
+                    "total": "Total"
+                  },
+                  "total": 15
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

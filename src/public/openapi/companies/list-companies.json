@@ -1,0 +1,451 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/companies": {
+      "get": {
+        "operationId": "listCompanies",
+        "summary": "GET List Companies",
+        "description": "Retrieve a paginated list of companies. Supports sorting, searching, and inline filtering by industry categories and company types. Each company in the response includes the computed `contacts_count` and the eager-loaded `owner` relation.",
+        "tags": [
+          "Companies"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search companies by name or other searchable fields.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "description": "Column to sort by.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "id"
+            }
+          },
+          {
+            "name": "sort_order",
+            "in": "query",
+            "description": "Sort direction.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "DESC",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          },
+          {
+            "name": "inline_filters[company_categories][]",
+            "in": "query",
+            "description": "Filter by industry categories.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "inline_filters[company_types][]",
+            "in": "query",
+            "description": "Filter by company types (e.g., partner, customer, vendor).",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of companies per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 15
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of companies.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "companies": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of companies matching the query."
+                        },
+                        "per_page": {
+                          "type": "integer",
+                          "description": "Number of companies per page."
+                        },
+                        "current_page": {
+                          "type": "integer",
+                          "description": "Current page number."
+                        },
+                        "last_page": {
+                          "type": "integer",
+                          "description": "Last page number."
+                        },
+                        "next_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "URL for the next page, or null if on the last page."
+                        },
+                        "prev_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "URL for the previous page, or null if on the first page."
+                        },
+                        "from": {
+                          "type": "integer",
+                          "description": "Starting record index on this page."
+                        },
+                        "to": {
+                          "type": "integer",
+                          "description": "Ending record index on this page."
+                        },
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Company"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "companies": {
+                    "total": 25,
+                    "per_page": 15,
+                    "current_page": 1,
+                    "last_page": 2,
+                    "next_page_url": "/wp-json/fluent-crm/v2/companies?page=2",
+                    "prev_page_url": null,
+                    "from": 1,
+                    "to": 15,
+                    "data": [
+                      {
+                        "id": 1,
+                        "name": "Acme Corporation",
+                        "description": "A leading technology company",
+                        "email": "info@acme.com",
+                        "phone": "+1-555-0100",
+                        "address_line_1": "100 Innovation Drive",
+                        "address_line_2": "Suite 200",
+                        "city": "San Francisco",
+                        "state": "CA",
+                        "postal_code": "94105",
+                        "country": "US",
+                        "type": "customer",
+                        "industry": "Technology",
+                        "logo": "https://example.com/wp-content/uploads/fluentcrm/acme-logo.png",
+                        "website": "https://acme.com",
+                        "linkedin_url": "https://linkedin.com/company/acme",
+                        "facebook_url": "https://facebook.com/acme",
+                        "twitter_url": "https://twitter.com/acme",
+                        "owner_user_id": 5,
+                        "employees_number": 250,
+                        "status": "active",
+                        "contacts_count": 12,
+                        "created_at": "2024-01-15 10:30:00",
+                        "updated_at": "2024-03-01 14:30:00",
+                        "owner": {
+                          "id": 5,
+                          "first_name": "Jane",
+                          "last_name": "Smith",
+                          "email": "jane@example.com"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "Company": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the company."
+          },
+          "name": {
+            "type": "string",
+            "description": "Company name."
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Company description."
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "email",
+            "description": "Company email address."
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Phone number."
+          },
+          "address_line_1": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Address line 1."
+          },
+          "address_line_2": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Address line 2."
+          },
+          "city": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "City."
+          },
+          "state": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "State or province."
+          },
+          "postal_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Postal/zip code."
+          },
+          "country": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Two-letter country code."
+          },
+          "type": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Company type (e.g., partner, customer, vendor)."
+          },
+          "industry": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Industry category."
+          },
+          "logo": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "URL to the company logo image."
+          },
+          "website": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri",
+            "description": "Company website URL."
+          },
+          "linkedin_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri",
+            "description": "LinkedIn profile URL."
+          },
+          "facebook_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri",
+            "description": "Facebook page URL."
+          },
+          "twitter_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri",
+            "description": "Twitter/X profile URL."
+          },
+          "owner_user_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Subscriber ID of the company owner."
+          },
+          "employees_number": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Number of employees."
+          },
+          "status": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Company status."
+          },
+          "contacts_count": {
+            "type": "integer",
+            "description": "Number of contacts associated with this company."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the company was created."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the company was last updated."
+          },
+          "owner": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "description": "The contact who owns this company.",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "first_name": {
+                "type": "string"
+              },
+              "last_name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string",
+                "format": "email"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

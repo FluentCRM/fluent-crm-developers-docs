@@ -1,0 +1,353 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/companies/attach-subscribers": {
+      "post": {
+        "operationId": "attachCompanySubscribers",
+        "summary": "POST Attach Subscribers to Companies",
+        "description": "Attach one or more contacts (subscribers) to one or more companies. Creates the many-to-many relationship between contacts and companies. Uses the `FluentCrmApi('companies')->attachContactsByIds()` method internally.",
+        "tags": [
+          "Companies"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "subscriber_ids",
+                  "company_ids"
+                ],
+                "properties": {
+                  "subscriber_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "description": "Array of contact/subscriber IDs to attach."
+                  },
+                  "company_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "description": "Array of company IDs to attach the contacts to."
+                  }
+                }
+              },
+              "example": {
+                "subscriber_ids": [
+                  1,
+                  5,
+                  12
+                ],
+                "company_ids": [
+                  3
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contacts attached successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "companies": {
+                      "type": "array",
+                      "description": "Updated list of companies with their associations.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "Unique identifier for the company."
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Company name."
+                          },
+                          "description": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "Company description."
+                          },
+                          "email": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "format": "email",
+                            "description": "Company email address."
+                          },
+                          "phone": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "Phone number."
+                          },
+                          "address_line_1": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "Address line 1."
+                          },
+                          "address_line_2": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "Address line 2."
+                          },
+                          "city": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "City."
+                          },
+                          "state": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "State or province."
+                          },
+                          "postal_code": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "Postal/zip code."
+                          },
+                          "country": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "Two-letter country code."
+                          },
+                          "type": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "Company type (e.g., partner, customer, vendor)."
+                          },
+                          "industry": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "Industry category."
+                          },
+                          "logo": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "URL to the company logo image."
+                          },
+                          "website": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "format": "uri",
+                            "description": "Company website URL."
+                          },
+                          "linkedin_url": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "format": "uri",
+                            "description": "LinkedIn profile URL."
+                          },
+                          "facebook_url": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "format": "uri",
+                            "description": "Facebook page URL."
+                          },
+                          "twitter_url": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "format": "uri",
+                            "description": "Twitter/X profile URL."
+                          },
+                          "owner_user_id": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Subscriber ID of the company owner."
+                          },
+                          "employees_number": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Number of employees."
+                          },
+                          "status": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "Company status."
+                          },
+                          "contacts_count": {
+                            "type": "integer",
+                            "description": "Number of contacts associated with this company."
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Timestamp when the company was created."
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Timestamp when the company was last updated."
+                          },
+                          "owner": {
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "description": "The contact who owns this company.",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "first_name": {
+                                "type": "string"
+                              },
+                              "last_name": {
+                                "type": "string"
+                              },
+                              "email": {
+                                "type": "string",
+                                "format": "email"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Selected Companies have been attached successfully",
+                  "companies": [
+                    {
+                      "id": 3,
+                      "name": "Acme Corporation",
+                      "email": "info@acme.com",
+                      "type": "customer"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid data provided.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Invalid data"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

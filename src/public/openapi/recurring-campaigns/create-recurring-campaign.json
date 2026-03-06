@@ -1,0 +1,262 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/recurring-campaigns": {
+      "post": {
+        "operationId": "createRecurringCampaign",
+        "summary": "POST Create Recurring Campaign",
+        "description": "Create a new recurring email campaign. The campaign object must include a title, scheduling settings (type and time), and optionally sending conditions and subscriber settings. The title must be unique. The campaign is created in draft status. Requires FluentCampaign Pro.",
+        "tags": [
+          "Recurring Campaigns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "campaign"
+                ],
+                "properties": {
+                  "campaign": {
+                    "type": "object",
+                    "required": [
+                      "title",
+                      "settings"
+                    ],
+                    "description": "The recurring campaign data. Can be a JSON object or a JSON-encoded string.",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "description": "Campaign title. Must be unique across all recurring campaigns."
+                      },
+                      "settings": {
+                        "type": "object",
+                        "required": [
+                          "scheduling_settings"
+                        ],
+                        "properties": {
+                          "scheduling_settings": {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "time"
+                            ],
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "description": "Schedule type.",
+                                "enum": [
+                                  "daily",
+                                  "weekly",
+                                  "monthly",
+                                  "yearly"
+                                ]
+                              },
+                              "day": {
+                                "type": "string",
+                                "description": "Day for weekly schedules (e.g., `mon`)."
+                              },
+                              "time": {
+                                "type": "string",
+                                "description": "Time of day (e.g., `09.00`)."
+                              },
+                              "send_automatically": {
+                                "type": "string",
+                                "description": "Whether to send automatically.",
+                                "enum": [
+                                  "yes",
+                                  "no"
+                                ]
+                              }
+                            }
+                          },
+                          "sending_conditions": {
+                            "type": "array",
+                            "description": "Conditions that must be met before sending.",
+                            "items": {
+                              "type": "object"
+                            }
+                          },
+                          "subscribers_settings": {
+                            "type": "object",
+                            "description": "Subscriber targeting settings.",
+                            "properties": {
+                              "subscribers": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object"
+                                }
+                              },
+                              "excludedSubscribers": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object"
+                                }
+                              },
+                              "sending_filter": {
+                                "type": "string"
+                              },
+                              "dynamic_segment": {
+                                "type": "object"
+                              },
+                              "advanced_filters": {
+                                "type": "array",
+                                "items": {
+                                  "type": "array"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "campaign": {
+                  "title": "Weekly Newsletter",
+                  "settings": {
+                    "scheduling_settings": {
+                      "type": "weekly",
+                      "day": "mon",
+                      "time": "09.00",
+                      "send_automatically": "yes"
+                    },
+                    "sending_conditions": [],
+                    "subscribers_settings": {
+                      "subscribers": [
+                        {
+                          "list": "all",
+                          "tag": "all"
+                        }
+                      ],
+                      "excludedSubscribers": [
+                        {
+                          "list": null,
+                          "tag": null
+                        }
+                      ],
+                      "sending_filter": "list_tag"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recurring campaign created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Success message."
+                    },
+                    "campaign_id": {
+                      "type": "integer",
+                      "description": "ID of the newly created recurring campaign."
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Recurring campaign has been created. Please setup the email contents now",
+                  "campaign_id": 5
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error (e.g., title already exists, missing required fields).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "errors": {
+                      "type": "object"
+                    },
+                    "go_to_step": {
+                      "type": "integer",
+                      "description": "Step index to navigate to in the UI."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

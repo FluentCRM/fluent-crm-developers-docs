@@ -1,0 +1,226 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/campaigns/{id}/schedule": {
+      "post": {
+        "operationId": "scheduleCampaign",
+        "summary": "POST Schedule Campaign",
+        "description": "Schedule a campaign for sending. Supports three modes: instant sending (omit `scheduled_at`), scheduled sending (single datetime), and range-scheduled sending (array of two datetimes for staggered delivery). The campaign must be in draft status. Clears any previously processed emails before scheduling.",
+        "tags": [
+          "Campaigns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The campaign ID to schedule.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "scheduled_at": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Single datetime for scheduled sending."
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "description": "Array of [start, end] datetimes for range-scheduled sending."
+                      }
+                    ],
+                    "description": "When to send the campaign. Omit for instant sending."
+                  },
+                  "sending_type": {
+                    "type": "string",
+                    "enum": [
+                      "schedule",
+                      "range_schedule"
+                    ],
+                    "default": "schedule",
+                    "description": "Sending type. Use `range_schedule` when `scheduled_at` is an array of two datetimes."
+                  }
+                }
+              },
+              "example": {
+                "scheduled_at": "2024-03-15 09:00:00",
+                "sending_type": "schedule"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Campaign scheduled or sending started.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "campaign": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "pending-scheduled",
+                            "processing"
+                          ],
+                          "description": "`pending-scheduled` for scheduled sends, `processing` for instant sends."
+                        },
+                        "scheduled_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "recipients_count": {
+                          "type": "integer"
+                        },
+                        "settings": {
+                          "type": "object"
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "current_timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                },
+                "example": {
+                  "campaign": {
+                    "id": 12,
+                    "title": "Spring Sale 2024",
+                    "status": "pending-scheduled",
+                    "scheduled_at": "2024-03-15 09:00:00",
+                    "recipients_count": 0,
+                    "settings": {
+                      "sending_type": "schedule",
+                      "click_tracker": "yes",
+                      "open_tracker": "yes"
+                    },
+                    "created_at": "2024-03-01 10:00:00",
+                    "updated_at": "2024-03-02 14:00:00"
+                  },
+                  "message": "Your campaign email has been scheduled",
+                  "current_timestamp": "2024-03-02 14:00:00"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Campaign is not in draft status or invalid schedule date.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Campaign status is not in draft status. Please reload the page"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

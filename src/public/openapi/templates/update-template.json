@@ -1,0 +1,245 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/templates/{id}": {
+      "put": {
+        "operationId": "updateTemplate",
+        "summary": "PUT Update Template",
+        "description": "Update an existing email template. The template data should be passed as a nested `template` object. If a custom footer is enabled, it must include `##crm.manage_subscription_url##` or `##crm.unsubscribe_url##` for compliance.",
+        "tags": [
+          "Templates"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The template ID to update.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "template": {
+                    "type": "object",
+                    "description": "Template data object.",
+                    "properties": {
+                      "post_title": {
+                        "type": "string",
+                        "description": "Template title. If empty, defaults to 'Email template created at {date}'."
+                      },
+                      "post_content": {
+                        "type": "string",
+                        "description": "Template HTML content."
+                      },
+                      "post_excerpt": {
+                        "type": "string",
+                        "description": "Template excerpt or email preview text."
+                      },
+                      "email_subject": {
+                        "type": "string",
+                        "description": "Email subject line. If empty, defaults to 'Email template created at {date}'."
+                      },
+                      "edit_type": {
+                        "type": "string",
+                        "description": "Editor type used for the template.",
+                        "enum": [
+                          "html",
+                          "visual"
+                        ]
+                      },
+                      "design_template": {
+                        "type": "string",
+                        "description": "Design template identifier (e.g., 'simple', 'plain', 'classic')."
+                      },
+                      "settings": {
+                        "type": "object",
+                        "description": "Template settings.",
+                        "properties": {
+                          "template_config": {
+                            "type": "object",
+                            "description": "Template configuration options.",
+                            "properties": {
+                              "content_padding": {
+                                "type": "integer",
+                                "description": "Content padding in pixels."
+                              }
+                            },
+                            "additionalProperties": true
+                          },
+                          "footer_settings": {
+                            "type": "object",
+                            "description": "Footer configuration. When custom_footer is 'yes', footer_content must include ##crm.manage_subscription_url## or ##crm.unsubscribe_url##.",
+                            "properties": {
+                              "custom_footer": {
+                                "type": "string",
+                                "enum": [
+                                  "yes",
+                                  "no"
+                                ],
+                                "description": "Whether to use a custom footer."
+                              },
+                              "footer_content": {
+                                "type": "string",
+                                "description": "Custom footer HTML content."
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "template": {
+                  "post_title": "Updated Newsletter",
+                  "post_content": "<h1>Newsletter v2</h1><p>Hello {{contact.first_name}},</p><p>Updated content here.</p>",
+                  "post_excerpt": "Updated newsletter preview text",
+                  "email_subject": "Updated Newsletter - {{crm.business_name}}",
+                  "edit_type": "html",
+                  "design_template": "simple",
+                  "settings": {
+                    "template_config": {
+                      "content_padding": 20
+                    },
+                    "footer_settings": {
+                      "custom_footer": "no",
+                      "footer_content": ""
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Template updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "template_id": {
+                      "type": "integer",
+                      "description": "ID of the updated template."
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Template successfully updated",
+                  "template_id": 42
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Template not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error (e.g., custom footer missing compliance URL).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "##crm.manage_subscription_url## or ##crm.unsubscribe_url## string is required for compliance. Please include unsubscription or manage subscription link"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

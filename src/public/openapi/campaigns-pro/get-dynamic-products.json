@@ -1,0 +1,194 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/campaigns-pro/products": {
+      "get": {
+        "operationId": "getDynamicProducts",
+        "summary": "GET Dynamic Products",
+        "description": "Retrieve WooCommerce products for use in dynamic email content blocks. Supports filtering by product category. Returns product data along with available product taxonomies. Requires WooCommerce to be active.",
+        "tags": [
+          "Campaigns Pro"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of products to return.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "taxType",
+            "in": "query",
+            "description": "Product category term ID to filter by. Use 'all' or omit for no filtering.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of products and available product taxonomies.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "products": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Product title."
+                          },
+                          "price_html": {
+                            "type": "string",
+                            "description": "Formatted price HTML."
+                          },
+                          "product_link": {
+                            "type": "string",
+                            "description": "Product permalink."
+                          },
+                          "short_description": {
+                            "type": "string",
+                            "description": "Product short description or trimmed description."
+                          },
+                          "image": {
+                            "type": [
+                              "string",
+                              "boolean"
+                            ],
+                            "description": "Product image URL, or false if none."
+                          }
+                        }
+                      }
+                    },
+                    "taxonomies": {
+                      "type": "object",
+                      "description": "Product taxonomies keyed by post type, containing terms grouped by taxonomy slug.",
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "terms": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "value": {
+                                    "type": "integer"
+                                  },
+                                  "label": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "products": [
+                    {
+                      "name": "Premium Plugin License",
+                      "price_html": "<span class=\"woocommerce-Price-amount\">$49.00</span>",
+                      "product_link": "https://example.com/product/premium-plugin/",
+                      "short_description": "<p>Get access to all premium features with a yearly license.</p>",
+                      "image": "https://example.com/wp-content/uploads/2024/03/plugin.jpg"
+                    }
+                  ],
+                  "taxonomies": {
+                    "product": {
+                      "terms": {
+                        "product_cat": [
+                          {
+                            "value": 15,
+                            "label": "Plugins"
+                          },
+                          {
+                            "value": 16,
+                            "label": "Themes"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

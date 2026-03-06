@@ -1,0 +1,368 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/funnels/{id}": {
+      "get": {
+        "operationId": "getFunnel",
+        "summary": "GET Get Funnel",
+        "description": "Retrieve a single automation funnel by ID. Optionally includes blocks, block fields, funnel sequences, and composer context smart codes via the `with[]` parameter.",
+        "tags": [
+          "Funnels"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The funnel ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "with[]",
+            "in": "query",
+            "description": "Include additional related data. Supported values: `blocks`, `block_fields`, `funnel_sequences`.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "blocks",
+                  "block_fields",
+                  "funnel_sequences"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Funnel details with optional related data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "funnel": {
+                      "allOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "description": "Unique identifier for the funnel."
+                            },
+                            "title": {
+                              "type": "string",
+                              "description": "Funnel title."
+                            },
+                            "trigger_name": {
+                              "type": "string",
+                              "description": "The trigger event name that starts this funnel."
+                            },
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "draft",
+                                "published"
+                              ],
+                              "description": "Funnel status."
+                            },
+                            "conditions": {
+                              "type": "array",
+                              "description": "Funnel-level conditions.",
+                              "items": {
+                                "type": "object"
+                              }
+                            },
+                            "settings": {
+                              "type": "object",
+                              "description": "Funnel settings."
+                            },
+                            "created_by": {
+                              "type": "integer",
+                              "description": "WordPress user ID of the creator."
+                            },
+                            "created_at": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "Timestamp when the funnel was created."
+                            },
+                            "updated_at": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "Timestamp when the funnel was last updated."
+                            },
+                            "subscribers_count": {
+                              "type": "integer",
+                              "description": "Number of subscribers in this funnel."
+                            },
+                            "description": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "Funnel description stored as meta."
+                            },
+                            "labels": {
+                              "type": "array",
+                              "description": "Labels assigned to the funnel.",
+                              "items": {
+                                "$ref": "#/components/schemas/FunnelLabel"
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "trigger": {
+                              "type": "object",
+                              "properties": {
+                                "label": {
+                                  "type": "string",
+                                  "description": "Human-readable trigger label."
+                                },
+                                "category": {
+                                  "type": "string",
+                                  "description": "Trigger category."
+                                },
+                                "description": {
+                                  "type": "string",
+                                  "description": "Trigger description."
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "blocks": {
+                      "type": "object",
+                      "description": "Available funnel action blocks. Only included when `with[]` contains `blocks`.",
+                      "additionalProperties": {
+                        "type": "object"
+                      }
+                    },
+                    "block_fields": {
+                      "type": "object",
+                      "description": "Field configurations for funnel blocks. Only included when `with[]` contains `block_fields`.",
+                      "additionalProperties": {
+                        "type": "object"
+                      }
+                    },
+                    "funnel_sequences": {
+                      "type": "array",
+                      "description": "Formatted funnel sequence tree. Only included when `with[]` contains `funnel_sequences`.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "Sequence ID."
+                          },
+                          "funnel_id": {
+                            "type": "integer",
+                            "description": "Associated funnel ID."
+                          },
+                          "action_name": {
+                            "type": "string",
+                            "description": "Action identifier."
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "Sequence title."
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "action",
+                              "conditional",
+                              "benchmark"
+                            ],
+                            "description": "Sequence type."
+                          },
+                          "settings": {
+                            "type": "object",
+                            "description": "Action-specific settings."
+                          },
+                          "conditions": {
+                            "type": "array",
+                            "description": "Step-level conditions.",
+                            "items": {
+                              "type": "object"
+                            }
+                          },
+                          "sequence": {
+                            "type": "integer",
+                            "description": "Order position."
+                          },
+                          "delay": {
+                            "type": "integer",
+                            "description": "Delay in seconds."
+                          },
+                          "c_delay": {
+                            "type": "integer",
+                            "description": "Cumulative delay in seconds."
+                          },
+                          "status": {
+                            "type": "string",
+                            "description": "Sequence status."
+                          },
+                          "parent_id": {
+                            "type": "integer",
+                            "description": "Parent sequence ID (0 for root)."
+                          },
+                          "condition_type": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "Branch type for conditional children."
+                          },
+                          "children": {
+                            "type": "object",
+                            "description": "Child sequences for conditional blocks.",
+                            "properties": {
+                              "yes": {
+                                "type": "array",
+                                "items": {
+                                  "$ref": "#/components/schemas/FunnelSequence"
+                                }
+                              },
+                              "no": {
+                                "type": "array",
+                                "items": {
+                                  "$ref": "#/components/schemas/FunnelSequence"
+                                }
+                              }
+                            }
+                          },
+                          "created_by": {
+                            "type": "integer"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        }
+                      }
+                    },
+                    "composer_context_codes": {
+                      "type": "array",
+                      "description": "Smart codes available in the funnel context. Only included when `with[]` contains `block_fields`.",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "funnel": {
+                    "id": 1,
+                    "title": "Welcome Email Sequence",
+                    "trigger_name": "fluent_crm/contact_created",
+                    "status": "published",
+                    "conditions": [],
+                    "settings": {},
+                    "created_by": 1,
+                    "description": "Sends welcome emails to new contacts",
+                    "trigger": {
+                      "label": "Contact Created",
+                      "category": "CRM",
+                      "description": "Triggered when a new contact is created"
+                    },
+                    "created_at": "2024-01-15 10:30:00",
+                    "updated_at": "2024-03-01 14:30:00"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Funnel not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

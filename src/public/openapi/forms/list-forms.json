@@ -1,0 +1,226 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/forms": {
+      "get": {
+        "operationId": "listForms",
+        "summary": "GET List Forms",
+        "description": "Retrieve a paginated list of Fluent Forms that are connected to FluentCRM (via integration feeds or automation funnels). Returns form details including associated tags, lists, shortcode, and links to edit/preview the form. Requires Fluent Forms to be installed.",
+        "tags": [
+          "Forms"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "description": "Page number for pagination.",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "required": false,
+            "description": "Number of forms per page.",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "description": "Search forms by title.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of connected forms.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "installed": {
+                      "type": "boolean",
+                      "description": "Whether Fluent Forms is installed and active."
+                    },
+                    "forms": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Form"
+                          }
+                        },
+                        "page": {
+                          "type": "integer",
+                          "description": "Current page number."
+                        },
+                        "per_page": {
+                          "type": "integer",
+                          "description": "Items per page."
+                        },
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of connected forms."
+                        },
+                        "last_page": {
+                          "type": "integer",
+                          "description": "Last page number."
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "installed": true,
+                  "forms": {
+                    "data": [
+                      {
+                        "id": 5,
+                        "title": "Newsletter Signup",
+                        "status": "published",
+                        "created_at": "2024-01-15 10:00:00",
+                        "funnel_url": "",
+                        "feed_url": "https://example.com/wp-admin/admin.php?page=fluent_forms&form_id=5&route=settings",
+                        "associate_tags": "Newsletter, VIP",
+                        "associate_lists": "Main List",
+                        "shortcode": "[fluentform id=\"5\"]",
+                        "edit_url": "https://example.com/wp-admin/admin.php?page=fluent_forms&route=editor&form_id=5",
+                        "preview_url": "https://example.com/?fluent_forms_pages=1&design_mode=1&preview_id=5"
+                      }
+                    ],
+                    "page": 1,
+                    "per_page": 10,
+                    "total": 3,
+                    "last_page": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "Form": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Form ID."
+          },
+          "title": {
+            "type": "string",
+            "description": "Form title."
+          },
+          "status": {
+            "type": "string",
+            "description": "Form status (e.g., `published`)."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Form creation date."
+          },
+          "funnel_url": {
+            "type": "string",
+            "description": "URL to the connected automation funnel, or empty string."
+          },
+          "feed_url": {
+            "type": "string",
+            "description": "URL to the FluentCRM integration feed settings, or empty string."
+          },
+          "associate_tags": {
+            "type": "string",
+            "description": "Comma-separated tag names associated via integration feed."
+          },
+          "associate_lists": {
+            "type": "string",
+            "description": "List name associated via integration feed, or empty string."
+          },
+          "shortcode": {
+            "type": "string",
+            "description": "WordPress shortcode to embed the form."
+          },
+          "edit_url": {
+            "type": "string",
+            "description": "URL to edit the form in Fluent Forms."
+          },
+          "preview_url": {
+            "type": "string",
+            "description": "URL to preview the form."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

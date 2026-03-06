@@ -1,0 +1,334 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/import/csv-import": {
+      "post": {
+        "operationId": "importCsvContacts",
+        "summary": "POST Import Contacts from CSV",
+        "description": "Import contacts from a previously uploaded CSV file. Processes records in batches (default 100 per request). Supports pagination for large files -- call repeatedly with incrementing `importing_page` until `has_more` is `false`. Assigns tags, lists, and status to imported contacts.",
+        "tags": [
+          "Import"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "map",
+                  "file",
+                  "new_status"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "description": "Temporary file path returned from the CSV upload endpoint."
+                  },
+                  "map": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "csv": {
+                          "type": "string",
+                          "description": "CSV column header name."
+                        },
+                        "table": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Target database field name, or null to skip."
+                        }
+                      }
+                    },
+                    "description": "Column mapping between CSV headers and database fields."
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "description": "Tag IDs to assign to all imported contacts."
+                  },
+                  "lists": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "description": "List IDs to assign to all imported contacts."
+                  },
+                  "update": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "description": "Whether to update existing contacts that match by email."
+                  },
+                  "new_status": {
+                    "type": "string",
+                    "enum": [
+                      "subscribed",
+                      "pending",
+                      "unsubscribed"
+                    ],
+                    "description": "Status to assign to new contacts."
+                  },
+                  "double_optin_email": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "description": "Whether to send a double opt-in confirmation email."
+                  },
+                  "import_silently": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "description": "If `yes`, disables tag/list assignment events during import."
+                  },
+                  "force_update_status": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "description": "If `yes`, forces status update on existing contacts."
+                  },
+                  "delimiter": {
+                    "type": "string",
+                    "enum": [
+                      "comma",
+                      "semicolon"
+                    ],
+                    "default": "comma",
+                    "description": "CSV delimiter type."
+                  },
+                  "importing_page": {
+                    "type": "integer",
+                    "default": 1,
+                    "description": "Current batch page number. Increment for each subsequent request."
+                  }
+                }
+              },
+              "example": {
+                "file": "/tmp/fluent-crm/import_abc123.csv",
+                "map": [
+                  {
+                    "csv": "Email",
+                    "table": "email"
+                  },
+                  {
+                    "csv": "First Name",
+                    "table": "first_name"
+                  }
+                ],
+                "tags": [
+                  1,
+                  3
+                ],
+                "lists": [
+                  2
+                ],
+                "update": "no",
+                "new_status": "subscribed",
+                "double_optin_email": "no",
+                "import_silently": "no",
+                "force_update_status": "no",
+                "delimiter": "comma",
+                "importing_page": 1
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Batch import result. Check `has_more` to determine if additional batches remain.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "total": {
+                      "type": "integer",
+                      "description": "Total number of records in the CSV."
+                    },
+                    "completed": {
+                      "type": "integer",
+                      "description": "Number of records processed so far."
+                    },
+                    "total_page": {
+                      "type": "integer",
+                      "description": "Total number of batch pages."
+                    },
+                    "skipped": {
+                      "type": "integer",
+                      "description": "Number of skipped records in this batch."
+                    },
+                    "invalid_contacts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      },
+                      "description": "Contacts skipped due to invalid email addresses."
+                    },
+                    "skipped_contacts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      },
+                      "description": "Contacts skipped (e.g., existing contacts when update is disabled)."
+                    },
+                    "invalid_email_counts": {
+                      "type": "integer",
+                      "description": "Number of records with invalid emails."
+                    },
+                    "inserted": {
+                      "type": "integer",
+                      "description": "Number of new contacts created in this batch."
+                    },
+                    "updated": {
+                      "type": "integer",
+                      "description": "Number of existing contacts updated in this batch."
+                    },
+                    "has_more": {
+                      "type": "boolean",
+                      "description": "`true` if more batches remain to be processed."
+                    },
+                    "last_page": {
+                      "type": "integer",
+                      "description": "The page number just processed."
+                    },
+                    "tags": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      },
+                      "description": "Tag IDs applied."
+                    },
+                    "lists": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      },
+                      "description": "List IDs applied."
+                    },
+                    "offset": {
+                      "type": "integer",
+                      "description": "Record offset for this batch."
+                    }
+                  }
+                },
+                "example": {
+                  "total": 250,
+                  "completed": 100,
+                  "total_page": 3,
+                  "skipped": 2,
+                  "invalid_contacts": [],
+                  "skipped_contacts": [],
+                  "invalid_email_counts": 0,
+                  "inserted": 95,
+                  "updated": 3,
+                  "has_more": true,
+                  "last_page": 1,
+                  "tags": [
+                    1,
+                    3
+                  ],
+                  "lists": [
+                    2
+                  ],
+                  "offset": 0
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error (e.g., email field not mapped).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "The email field is required."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

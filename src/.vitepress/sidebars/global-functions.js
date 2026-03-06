@@ -3,17 +3,19 @@ export default [
         text: 'Global Functions',
         collapsed: false,
         items: [
-            { text: 'Basic Functions', link: '/global-functions/' },
+            { text: 'Helper Functions', link: '/global-functions/' },
         ]
     },
     {
-        text: 'Utility Functions',
+        text: 'PHP API Classes',
         collapsed: false,
         items: [
-            { text: 'contact-api-function', link: '/global-functions/contact-api-function' },
-            { text: 'company-api-function', link: '/global-functions/company-api-function' },
-            { text: 'list-api-function', link: '/global-functions/list-api-function' },
-            { text: 'tag-api-function', link: '/global-functions/tag-api-function' },
+            { text: 'Contacts API', link: '/global-functions/contact-api-function' },
+            { text: 'Companies API', link: '/global-functions/company-api-function' },
+            { text: 'Tags API', link: '/global-functions/tag-api-function' },
+            { text: 'Lists API', link: '/global-functions/list-api-function' },
+            { text: 'Extender API', link: '/global-functions/extender-api-function' },
+            { text: 'Event Tracker API', link: '/global-functions/tracker-api-function' },
         ]
     }
 ]

@@ -1,0 +1,212 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/setting/double-optin": {
+      "put": {
+        "operationId": "saveDoubleOptinSettings",
+        "summary": "PUT Save Double Opt-in Settings",
+        "description": "Save the double opt-in email settings. Can save global settings or list-specific settings when a `list_id` is provided. The email body must contain an activation link (`#activate_link#` or `{{crm.activate_button}}`).",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "list_id": {
+                    "type": "integer",
+                    "description": "List ID for list-specific double opt-in settings. Omit for global settings."
+                  },
+                  "global_double_optin": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "description": "Whether to use global double opt-in for this list (only when list_id is provided)."
+                  },
+                  "settings": {
+                    "type": "object",
+                    "required": [
+                      "email_subject",
+                      "email_body",
+                      "after_confirm_message"
+                    ],
+                    "properties": {
+                      "design_template": {
+                        "type": "string",
+                        "description": "Email design template identifier."
+                      },
+                      "email_subject": {
+                        "type": "string",
+                        "description": "Double opt-in email subject line."
+                      },
+                      "email_pre_header": {
+                        "type": "string",
+                        "description": "Email pre-header text."
+                      },
+                      "email_body": {
+                        "type": "string",
+                        "description": "HTML email body. Must contain `#activate_link#` or `{{crm.activate_button}}`."
+                      },
+                      "after_confirmation_type": {
+                        "type": "string",
+                        "enum": [
+                          "message",
+                          "redirect"
+                        ]
+                      },
+                      "after_confirm_message": {
+                        "type": "string",
+                        "description": "Message shown after confirmation."
+                      },
+                      "after_conf_redirect_url": {
+                        "type": "string",
+                        "description": "Redirect URL after confirmation."
+                      },
+                      "tag_based_redirect": {
+                        "type": "string",
+                        "enum": [
+                          "yes",
+                          "no"
+                        ]
+                      },
+                      "tag_redirects": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "field_key": {
+                              "type": "array",
+                              "items": {
+                                "type": "integer"
+                              }
+                            },
+                            "field_value": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "settings": {
+                  "design_template": "simple",
+                  "email_subject": "Please Confirm Your Subscription",
+                  "email_body": "<h2>Confirm</h2>{{crm.activate_button|Confirm Subscription}}",
+                  "after_confirmation_type": "message",
+                  "after_confirm_message": "<h2>Thank you!</h2>"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Double opt-in settings saved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Double Opt-in settings has been updated"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error. Required fields missing or email body lacks activation link.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "errors": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

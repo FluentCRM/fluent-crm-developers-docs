@@ -1,0 +1,160 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/migrators/list-tag-mappings": {
+      "get": {
+        "operationId": "getMigratorListTagMappings",
+        "summary": "GET Migrator List/Tag Mappings",
+        "description": "Retrieve the available lists and tags from the external CRM for mapping to FluentCRM lists and tags during migration. Requires valid credentials to have been verified first.",
+        "tags": [
+          "Migrators"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "driver",
+            "in": "query",
+            "required": true,
+            "description": "Migrator driver identifier (e.g., `mailchimp`, `ConvertKit`).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "credential",
+            "in": "query",
+            "required": false,
+            "description": "Driver-specific credential fields.",
+            "schema": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Available list and tag mapping options from the external CRM.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "options": {
+                      "type": "object",
+                      "description": "Mapping options returned by the migrator driver. Structure varies by driver.",
+                      "additionalProperties": true
+                    }
+                  }
+                },
+                "example": {
+                  "options": {
+                    "lists": [
+                      {
+                        "id": "abc123",
+                        "name": "Main Newsletter"
+                      },
+                      {
+                        "id": "def456",
+                        "name": "Product Updates"
+                      }
+                    ],
+                    "tags": [
+                      {
+                        "id": 1,
+                        "name": "Customer"
+                      },
+                      {
+                        "id": 2,
+                        "name": "Lead"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Driver not found or credential error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Sorry no driver found for the selected CRM"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

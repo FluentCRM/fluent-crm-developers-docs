@@ -1,0 +1,371 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/smart-links": {
+      "get": {
+        "operationId": "listSmartLinks",
+        "summary": "GET List Smart Links",
+        "description": "Retrieve a paginated list of smart links. Smart links are trackable URLs that can automatically apply actions (add/remove tags, add/remove lists) when a contact clicks them. Supports search and sorting. Requires FluentCampaign Pro.",
+        "tags": [
+          "Smart Links"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search smart links by title, target URL, or notes.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "description": "Column to sort by.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "id"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Sort direction. Accepts `ascending` or `descending` (also `asc`/`desc`).",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "desc",
+              "enum": [
+                "ascending",
+                "descending",
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of smart links per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 15
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of smart links, or disabled status if the module is not activated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "action_links": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer",
+                              "description": "Total number of smart links."
+                            },
+                            "per_page": {
+                              "type": "integer",
+                              "description": "Number of smart links per page."
+                            },
+                            "current_page": {
+                              "type": "integer",
+                              "description": "Current page number."
+                            },
+                            "last_page": {
+                              "type": "integer",
+                              "description": "Last page number."
+                            },
+                            "next_page_url": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "URL for the next page, or null if on the last page."
+                            },
+                            "prev_page_url": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "URL for the previous page, or null if on the first page."
+                            },
+                            "from": {
+                              "type": "integer",
+                              "description": "Starting record index on this page."
+                            },
+                            "to": {
+                              "type": "integer",
+                              "description": "Ending record index on this page."
+                            },
+                            "data": {
+                              "type": "array",
+                              "items": {
+                                "$ref": "#/components/schemas/SmartLink"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "description": "Returned when the Smart Links module database table has not been created yet.",
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "disabled"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                },
+                "example": {
+                  "action_links": {
+                    "total": 3,
+                    "per_page": 15,
+                    "current_page": 1,
+                    "last_page": 1,
+                    "next_page_url": null,
+                    "prev_page_url": null,
+                    "from": 1,
+                    "to": 3,
+                    "data": [
+                      {
+                        "id": 1,
+                        "title": "Upgrade Interest Link",
+                        "short": "a1b2c3",
+                        "target_url": "https://example.com/upgrade",
+                        "actions": {
+                          "tags": [
+                            1,
+                            3
+                          ],
+                          "lists": [
+                            2
+                          ],
+                          "remove_tags": [],
+                          "remove_lists": [],
+                          "auto_login": "no"
+                        },
+                        "notes": "Track users interested in upgrading",
+                        "created_by": 1,
+                        "created_at": "2024-06-15 10:30:00",
+                        "updated_at": "2024-06-15 10:30:00",
+                        "short_url": "https://example.com/?fluentcrm=1&route=smart_url&slug=a1b2c3",
+                        "detach_actions": {
+                          "tags": [],
+                          "lists": []
+                        },
+                        "auto_login": "no"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "SmartLink": {
+        "type": "object",
+        "description": "A smart link that tracks clicks and applies actions to contacts.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the smart link."
+          },
+          "title": {
+            "type": "string",
+            "description": "Display title of the smart link."
+          },
+          "short": {
+            "type": "string",
+            "description": "Short slug used to generate the trackable URL."
+          },
+          "target_url": {
+            "type": "string",
+            "description": "The destination URL that contacts are redirected to after clicking."
+          },
+          "actions": {
+            "type": "object",
+            "description": "Actions to apply when a contact clicks the link.",
+            "properties": {
+              "tags": {
+                "type": "array",
+                "description": "Tag IDs to add to the contact.",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              "lists": {
+                "type": "array",
+                "description": "List IDs to add the contact to.",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              "remove_tags": {
+                "type": "array",
+                "description": "Tag IDs to remove from the contact.",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              "remove_lists": {
+                "type": "array",
+                "description": "List IDs to remove the contact from.",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              "auto_login": {
+                "type": "string",
+                "description": "Whether to auto-login the WordPress user when they click the link.",
+                "enum": [
+                  "yes",
+                  "no"
+                ]
+              }
+            }
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Optional notes about the smart link."
+          },
+          "created_by": {
+            "type": "integer",
+            "description": "WordPress user ID who created the link."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the link was created."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the link was last updated."
+          },
+          "short_url": {
+            "type": "string",
+            "description": "The full trackable URL generated from the short slug (appended attribute)."
+          },
+          "detach_actions": {
+            "type": "object",
+            "description": "Detach actions extracted from the actions object for UI convenience.",
+            "properties": {
+              "tags": {
+                "type": "array",
+                "description": "Tag IDs to remove.",
+                "items": {
+                  "type": "integer"
+                }
+              },
+              "lists": {
+                "type": "array",
+                "description": "List IDs to remove.",
+                "items": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "auto_login": {
+            "type": "string",
+            "description": "Whether auto-login is enabled (extracted from actions for UI convenience).",
+            "enum": [
+              "yes",
+              "no"
+            ]
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

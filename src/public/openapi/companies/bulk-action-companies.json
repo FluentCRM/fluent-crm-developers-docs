@@ -1,0 +1,205 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/companies/do-bulk-action": {
+      "post": {
+        "operationId": "bulkActionCompanies",
+        "summary": "POST Bulk Action on Companies",
+        "description": "Perform a bulk action on multiple companies. Supports deleting companies, changing status, changing type, and changing industry category. Companies can be selected by explicit IDs or by filter criteria (search + inline_filters). When using filter criteria, processes up to 50 companies per request in batches -- use `last_id` for pagination across multiple requests.",
+        "tags": [
+          "Companies"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "action_name"
+                ],
+                "properties": {
+                  "action_name": {
+                    "type": "string",
+                    "enum": [
+                      "delete_companies",
+                      "change_company_status",
+                      "change_company_type",
+                      "change_company_category"
+                    ],
+                    "description": "The bulk action to perform."
+                  },
+                  "company_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "description": "Explicit list of company IDs to act on. If empty, uses filter criteria instead."
+                  },
+                  "new_status": {
+                    "type": "string",
+                    "description": "New value for `change_company_status`, `change_company_type`, or `change_company_category` actions."
+                  },
+                  "search": {
+                    "type": "string",
+                    "description": "Search term for filter-based selection (used when `company_ids` is empty)."
+                  },
+                  "last_id": {
+                    "type": "integer",
+                    "description": "For paginated batch processing. Pass the `last_company_id` from the previous response to process the next batch.",
+                    "default": 0
+                  },
+                  "company_query": {
+                    "type": "object",
+                    "description": "Filter criteria for selecting companies (used when `company_ids` is empty).",
+                    "properties": {
+                      "inline_filters": {
+                        "type": "object",
+                        "properties": {
+                          "company_categories": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "Filter by industry categories."
+                          },
+                          "company_types": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "Filter by company types."
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "action_name": "change_company_type",
+                "company_ids": [
+                  1,
+                  2,
+                  5
+                ],
+                "new_status": "partner"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Bulk action completed or batch processed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Status message."
+                    },
+                    "last_company_id": {
+                      "type": "integer",
+                      "description": "Last processed company ID (for paginated batch processing)."
+                    },
+                    "completed_companies": {
+                      "type": "integer",
+                      "description": "Number of companies processed in this batch."
+                    },
+                    "is_completed": {
+                      "type": "boolean",
+                      "description": "Only present when all companies have been processed (filter-based mode)."
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Company Type has been updated for the selected companies",
+                  "last_company_id": 5,
+                  "completed_companies": 3
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error (e.g., missing new_status for status/type/category change).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

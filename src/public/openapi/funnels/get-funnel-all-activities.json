@@ -1,0 +1,371 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/funnels/all-activities": {
+      "get": {
+        "operationId": "getFunnelAllActivities",
+        "summary": "GET Get All Funnel Activities",
+        "description": "Retrieve a paginated list of all funnel subscriber activities across all funnels. Each activity includes the subscriber, funnel, sequences, and metrics. Supports filtering by search and status.",
+        "tags": [
+          "Funnels"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search activities by subscriber name or email.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filter by funnel subscriber status.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "active",
+                "completed",
+                "cancelled",
+                "pending",
+                "waiting"
+              ]
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of activities per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 15
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of funnel activities.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "activities": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer"
+                        },
+                        "per_page": {
+                          "type": "integer"
+                        },
+                        "current_page": {
+                          "type": "integer"
+                        },
+                        "last_page": {
+                          "type": "integer"
+                        },
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/FunnelActivity"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "activities": {
+                    "total": 50,
+                    "per_page": 15,
+                    "current_page": 1,
+                    "last_page": 4,
+                    "data": [
+                      {
+                        "id": 1,
+                        "funnel_id": 1,
+                        "subscriber_id": 42,
+                        "status": "active",
+                        "last_sequence_id": 3,
+                        "next_sequence_id": 4,
+                        "created_at": "2024-03-01 10:00:00",
+                        "updated_at": "2024-03-01 14:30:00"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "FunnelActivity": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Funnel subscriber ID."
+          },
+          "funnel_id": {
+            "type": "integer",
+            "description": "Associated funnel ID."
+          },
+          "subscriber_id": {
+            "type": "integer",
+            "description": "Associated subscriber/contact ID."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "completed",
+              "cancelled",
+              "pending",
+              "waiting"
+            ],
+            "description": "Current status in the funnel."
+          },
+          "last_sequence_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "ID of the last executed sequence."
+          },
+          "next_sequence_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "ID of the next sequence to execute."
+          },
+          "next_execution_time": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Scheduled time for next sequence execution."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "subscriber": {
+            "type": "object",
+            "description": "The associated contact object."
+          },
+          "last_sequence": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "description": "The last executed sequence object."
+          },
+          "next_sequence_item": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "description": "The next sequence item object."
+          },
+          "funnel": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "description": "Unique identifier for the funnel."
+              },
+              "title": {
+                "type": "string",
+                "description": "Funnel title."
+              },
+              "trigger_name": {
+                "type": "string",
+                "description": "The trigger event name that starts this funnel."
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "draft",
+                  "published"
+                ],
+                "description": "Funnel status."
+              },
+              "conditions": {
+                "type": "array",
+                "description": "Funnel-level conditions.",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "settings": {
+                "type": "object",
+                "description": "Funnel settings."
+              },
+              "created_by": {
+                "type": "integer",
+                "description": "WordPress user ID of the creator."
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Timestamp when the funnel was created."
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Timestamp when the funnel was last updated."
+              },
+              "subscribers_count": {
+                "type": "integer",
+                "description": "Number of subscribers in this funnel."
+              },
+              "description": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Funnel description stored as meta."
+              },
+              "labels": {
+                "type": "array",
+                "description": "Labels assigned to the funnel.",
+                "items": {
+                  "$ref": "#/components/schemas/FunnelLabel"
+                }
+              }
+            }
+          },
+          "metrics": {
+            "type": "array",
+            "description": "Funnel metrics for this subscriber.",
+            "items": {
+              "$ref": "#/components/schemas/FunnelMetric"
+            }
+          }
+        }
+      },
+      "FunnelMetric": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "funnel_id": {
+            "type": "integer"
+          },
+          "sequence_id": {
+            "type": "integer"
+          },
+          "subscriber_id": {
+            "type": "integer"
+          },
+          "benchmark_value": {
+            "type": "number"
+          },
+          "benchmark_currency": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

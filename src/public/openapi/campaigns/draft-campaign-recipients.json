@@ -1,0 +1,224 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/campaigns/{id}/draft-recipients": {
+      "post": {
+        "operationId": "draftCampaignRecipients",
+        "summary": "POST Draft Campaign Recipients",
+        "description": "Save recipient selection settings for a campaign and calculate the estimated recipient count. Supports filtering by list/tag, dynamic segment, or advanced filters. Clears any previously processed campaign emails and resets the campaign to draft status.",
+        "tags": [
+          "Campaigns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The campaign ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sending_filter": {
+                    "type": "string",
+                    "enum": [
+                      "list_tag",
+                      "dynamic_segment",
+                      "advanced_filters"
+                    ],
+                    "default": "list_tag",
+                    "description": "Type of recipient filter."
+                  },
+                  "subscribers": {
+                    "type": "object",
+                    "description": "Included lists and tags for `list_tag` filter.",
+                    "properties": {
+                      "lists": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  },
+                  "excludedSubscribers": {
+                    "type": "object",
+                    "description": "Excluded lists and tags for `list_tag` filter.",
+                    "properties": {
+                      "lists": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  },
+                  "dynamic_segment": {
+                    "type": "object",
+                    "description": "Dynamic segment configuration for `dynamic_segment` filter.",
+                    "properties": {
+                      "slug": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "type": "integer"
+                      }
+                    }
+                  },
+                  "advanced_filters": {
+                    "type": "array",
+                    "description": "Advanced filter groups for `advanced_filters` filter.",
+                    "items": {
+                      "type": "object"
+                    }
+                  }
+                }
+              },
+              "example": {
+                "sending_filter": "list_tag",
+                "subscribers": {
+                  "lists": [
+                    1,
+                    2
+                  ],
+                  "tags": [
+                    3
+                  ]
+                },
+                "excludedSubscribers": {
+                  "tags": [
+                    5
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recipient settings saved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "description": "Number of matching recipients."
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Recipient settings has been updated",
+                  "count": 850
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "No subscribers found matching the filter.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Sorry no subscribers found based on your selection"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

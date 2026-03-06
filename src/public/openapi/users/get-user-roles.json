@@ -1,0 +1,129 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/users/roles": {
+      "get": {
+        "operationId": "getUserRoles",
+        "summary": "GET WordPress User Roles",
+        "description": "Retrieve all editable WordPress user roles. Returns role keys and their capabilities. Useful for building role selection UIs for user import.",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Map of WordPress user roles.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "roles": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "description": "Human-readable role name."
+                          },
+                          "capabilities": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "boolean"
+                            },
+                            "description": "Map of capability names to their enabled state."
+                          }
+                        }
+                      },
+                      "description": "Map of role slugs to role details."
+                    }
+                  }
+                },
+                "example": {
+                  "roles": {
+                    "administrator": {
+                      "name": "Administrator",
+                      "capabilities": {
+                        "switch_themes": true,
+                        "edit_themes": true,
+                        "manage_options": true
+                      }
+                    },
+                    "subscriber": {
+                      "name": "Subscriber",
+                      "capabilities": {
+                        "read": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

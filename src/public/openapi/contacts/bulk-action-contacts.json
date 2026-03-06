@@ -1,0 +1,263 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/subscribers/do-bulk-action": {
+      "post": {
+        "operationId": "bulkActionContacts",
+        "summary": "POST Bulk Action Contacts",
+        "description": "Perform a bulk action on multiple contacts. Supports adding/removing tags and lists, changing status/type, deleting contacts, sending double opt-in, adding to email sequences/automation funnels/companies, removing from companies, and updating custom fields. When `is_all` is `yes`, processes contacts matching the filter query in chunks.",
+        "tags": [
+          "Contacts"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "action_name"
+                ],
+                "properties": {
+                  "action_name": {
+                    "type": "string",
+                    "enum": [
+                      "add_to_tags",
+                      "remove_from_tags",
+                      "add_to_lists",
+                      "remove_from_lists",
+                      "delete_contacts",
+                      "send_double_optin",
+                      "change_contact_status",
+                      "change_contact_type",
+                      "add_to_email_sequence",
+                      "add_to_automation",
+                      "add_to_company",
+                      "remove_from_company",
+                      "update_custom_fields"
+                    ],
+                    "description": "The bulk action to perform."
+                  },
+                  "subscriber_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "description": "Contact IDs to act on (used when `is_all` is not `yes`)."
+                  },
+                  "is_all": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "description": "If `yes`, applies the action to all contacts matching the `contact_query` filter. Processes in chunks."
+                  },
+                  "contact_query": {
+                    "type": "object",
+                    "description": "Filter query to select contacts when `is_all` is `yes`.",
+                    "properties": {
+                      "filter_type": {
+                        "type": "string",
+                        "enum": [
+                          "simple",
+                          "advanced"
+                        ]
+                      },
+                      "search": {
+                        "type": "string"
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      },
+                      "statuses": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "lists": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      },
+                      "company_ids": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      },
+                      "advanced_filters": {
+                        "type": "string",
+                        "description": "JSON-encoded advanced filter groups."
+                      }
+                    }
+                  },
+                  "last_id": {
+                    "type": "integer",
+                    "description": "Last processed contact ID for chunked processing (when `is_all` is `yes`).",
+                    "default": 0
+                  },
+                  "action_options": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "description": "Tag/list IDs for add/remove tag/list actions."
+                  },
+                  "new_status": {
+                    "type": "string",
+                    "description": "New status/type value for `change_contact_status`, `change_contact_type`, sequence/automation/company ID for respective actions."
+                  },
+                  "custom_field": {
+                    "type": "object",
+                    "description": "Custom field data for `update_custom_fields` action.",
+                    "properties": {
+                      "key": {
+                        "type": "string",
+                        "description": "Custom field key."
+                      },
+                      "value": {
+                        "type": "string",
+                        "description": "Custom field value."
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "action_name": "add_to_tags",
+                "subscriber_ids": [
+                  1,
+                  5,
+                  12
+                ],
+                "action_options": [
+                  3,
+                  7
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Bulk action completed successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "completed_contacts": {
+                      "type": "integer",
+                      "description": "Number of contacts processed in this chunk."
+                    },
+                    "last_contact_id": {
+                      "type": "integer",
+                      "description": "Last processed contact ID (for chunked processing)."
+                    },
+                    "is_completed": {
+                      "type": "boolean",
+                      "description": "Only present when all contacts have been processed in `is_all` mode."
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Selected bulk action has been successfully completed",
+                  "completed_contacts": 3,
+                  "last_contact_id": 12
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Subscribers selection is required"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

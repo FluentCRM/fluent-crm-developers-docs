@@ -1,0 +1,170 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/setting/cron_status": {
+      "get": {
+        "operationId": "getCronStatus",
+        "summary": "GET Cron Status",
+        "description": "Retrieve the status of FluentCRM scheduled cron events and server information. Shows the next run time, whether events are overdue, and server memory/execution limits.",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cron event statuses and server info.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "cron_events": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "hook": {
+                            "type": "string",
+                            "description": "WordPress cron hook name."
+                          },
+                          "is_overdue": {
+                            "type": "boolean",
+                            "description": "Whether the event has missed its scheduled run time."
+                          },
+                          "human_name": {
+                            "type": "string",
+                            "description": "Human-readable name for the cron task."
+                          },
+                          "next_run": {
+                            "type": "string",
+                            "description": "Human-readable time until next run (e.g., '2 mins')."
+                          },
+                          "interval": {
+                            "type": "integer",
+                            "description": "Interval in seconds between runs."
+                          }
+                        }
+                      }
+                    },
+                    "server": {
+                      "type": "object",
+                      "properties": {
+                        "memory_limit": {
+                          "type": "string",
+                          "description": "PHP memory limit (e.g., '256MB')."
+                        },
+                        "usage_percent": {
+                          "type": "number",
+                          "description": "Current memory usage as a percentage."
+                        },
+                        "max_execution_time": {
+                          "type": "string",
+                          "description": "PHP max execution time in seconds."
+                        },
+                        "has_server_cron": {
+                          "type": "boolean",
+                          "description": "Whether WP_CRON is disabled (indicating a server-side cron is configured)."
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "cron_events": [
+                    {
+                      "hook": "fluentcrm_scheduled_every_minute_tasks",
+                      "is_overdue": false,
+                      "human_name": "Scheduled Email Sending Tasks",
+                      "next_run": "30 secs",
+                      "interval": 60
+                    },
+                    {
+                      "hook": "fluentcrm_scheduled_hourly_tasks",
+                      "is_overdue": false,
+                      "human_name": "Scheduled Email Processing",
+                      "next_run": "3 mins",
+                      "interval": 300
+                    },
+                    {
+                      "hook": "fluentcrm_scheduled_hourly_tasks",
+                      "is_overdue": false,
+                      "human_name": "Scheduled Automation Tasks",
+                      "next_run": "45 mins",
+                      "interval": 3600
+                    }
+                  ],
+                  "server": {
+                    "memory_limit": "256MB",
+                    "usage_percent": 32.5,
+                    "max_execution_time": "60 seconds",
+                    "has_server_cron": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -1,0 +1,316 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/dynamic-segments": {
+      "post": {
+        "operationId": "createDynamicSegment",
+        "summary": "POST Create Dynamic Segment",
+        "description": "Create a new custom dynamic segment with filter conditions. The segment data is stored as a JSON-encoded string in the `segment` parameter. Requires FluentCampaign Pro.",
+        "tags": [
+          "Dynamic Segments"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "segment"
+                ],
+                "properties": {
+                  "segment": {
+                    "type": "string",
+                    "description": "JSON-encoded segment object containing the title, conditions, and filter settings."
+                  }
+                }
+              },
+              "example": {
+                "segment": "{\"title\":\"Engaged Subscribers\",\"conditions\":[{\"field\":\"status\",\"operator\":\"whereIn\",\"value\":[\"subscribed\"]}],\"condition_match\":\"match_all\",\"email_activities\":{\"status\":\"no\",\"last_email_open\":{\"value\":0,\"operator\":\">=\"},\"last_email_link_click\":{\"value\":0,\"operator\":\">=\"},\"last_email_activity_match\":\"match_any\"}}"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Segment created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Success message."
+                    },
+                    "segment": {
+                      "$ref": "#/components/schemas/CustomSegmentData"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Segment has been created",
+                  "segment": {
+                    "id": 12,
+                    "slug": "custom_segment",
+                    "title": "Engaged Subscribers",
+                    "conditions": [
+                      {
+                        "field": "status",
+                        "operator": "whereIn",
+                        "value": [
+                          "subscribed"
+                        ]
+                      }
+                    ],
+                    "condition_match": "match_all",
+                    "email_activities": {
+                      "status": "no",
+                      "last_email_open": {
+                        "value": 0,
+                        "operator": ">="
+                      },
+                      "last_email_link_click": {
+                        "value": 0,
+                        "operator": ">="
+                      },
+                      "last_email_activity_match": "match_any"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Please provide segment title"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "CustomSegmentData": {
+        "type": "object",
+        "description": "Custom segment data object.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier (Meta table ID)."
+          },
+          "slug": {
+            "type": "string",
+            "description": "Segment type slug (always `custom_segment` for custom segments)."
+          },
+          "title": {
+            "type": "string",
+            "description": "Display name of the segment."
+          },
+          "conditions": {
+            "type": "array",
+            "description": "Array of filter conditions.",
+            "items": {
+              "$ref": "#/components/schemas/SegmentCondition"
+            }
+          },
+          "condition_match": {
+            "type": "string",
+            "description": "How to combine conditions.",
+            "enum": [
+              "match_all",
+              "match_any"
+            ]
+          },
+          "email_activities": {
+            "$ref": "#/components/schemas/EmailActivityFilter"
+          }
+        }
+      },
+      "SegmentCondition": {
+        "type": "object",
+        "description": "A single filter condition for the segment.",
+        "properties": {
+          "field": {
+            "type": "string",
+            "description": "Field to filter on.",
+            "enum": [
+              "email",
+              "first_name",
+              "last_name",
+              "city",
+              "state",
+              "country",
+              "status",
+              "source",
+              "created_at",
+              "last_activity",
+              "tags",
+              "lists"
+            ]
+          },
+          "operator": {
+            "type": "string",
+            "description": "Comparison operator. Available operators depend on the field type.",
+            "enum": [
+              "=",
+              "!=",
+              "LIKE",
+              "NOT LIKE",
+              "whereIn",
+              "whereNotIn",
+              ">=",
+              "<="
+            ]
+          },
+          "value": {
+            "description": "Value to compare against. Can be a string for text fields, an array for select fields, or a number for date fields (days ago).",
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              {
+                "type": "integer"
+              }
+            ]
+          }
+        }
+      },
+      "EmailActivityFilter": {
+        "type": "object",
+        "description": "Email activity filter settings.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Whether email activity filtering is enabled.",
+            "enum": [
+              "yes",
+              "no"
+            ]
+          },
+          "last_email_open": {
+            "type": "object",
+            "description": "Last email open filter.",
+            "properties": {
+              "value": {
+                "type": "integer",
+                "description": "Number of days ago. 0 to disable."
+              },
+              "operator": {
+                "type": "string",
+                "description": "Date comparison operator.",
+                "enum": [
+                  ">=",
+                  "<="
+                ]
+              }
+            }
+          },
+          "last_email_link_click": {
+            "type": "object",
+            "description": "Last email link click filter.",
+            "properties": {
+              "value": {
+                "type": "integer",
+                "description": "Number of days ago. 0 to disable."
+              },
+              "operator": {
+                "type": "string",
+                "description": "Date comparison operator.",
+                "enum": [
+                  ">=",
+                  "<="
+                ]
+              }
+            }
+          },
+          "last_email_activity_match": {
+            "type": "string",
+            "description": "Whether to match all or any email activity conditions.",
+            "enum": [
+              "match_all",
+              "match_any"
+            ]
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

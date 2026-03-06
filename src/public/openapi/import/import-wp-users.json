@@ -1,0 +1,221 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/import/users": {
+      "post": {
+        "operationId": "importWpUsers",
+        "summary": "POST Import WordPress Users",
+        "description": "Import WordPress users as FluentCRM contacts. Processes users in batches (default 100 per request). Call repeatedly with incrementing `page` until `has_more` is `false`. Assigns tags, lists, and status to imported contacts.",
+        "tags": [
+          "Import"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "roles",
+                  "new_status"
+                ],
+                "properties": {
+                  "roles": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "WordPress user roles to import (e.g., `subscriber`, `customer`)."
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "description": "Tag IDs to assign to imported contacts."
+                  },
+                  "lists": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "description": "List IDs to assign to imported contacts."
+                  },
+                  "map": {
+                    "type": "object",
+                    "description": "Field mapping configuration.",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  "update": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "description": "Whether to update existing contacts."
+                  },
+                  "new_status": {
+                    "type": "string",
+                    "enum": [
+                      "subscribed",
+                      "pending",
+                      "unsubscribed"
+                    ],
+                    "description": "Status to assign to new contacts."
+                  },
+                  "double_optin_email": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "description": "Whether to send a double opt-in confirmation email."
+                  },
+                  "import_silently": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "description": "If `yes`, disables tag/list assignment events during import."
+                  },
+                  "page": {
+                    "type": "integer",
+                    "default": 1,
+                    "description": "Current batch page number."
+                  }
+                }
+              },
+              "example": {
+                "roles": [
+                  "subscriber",
+                  "customer"
+                ],
+                "tags": [
+                  1
+                ],
+                "lists": [
+                  2
+                ],
+                "update": "no",
+                "new_status": "subscribed",
+                "double_optin_email": "no",
+                "import_silently": "no",
+                "page": 1
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Batch import result. Check `has_more` to determine if additional batches remain.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Status message."
+                    },
+                    "page_total": {
+                      "type": "integer",
+                      "description": "Total number of batch pages."
+                    },
+                    "record_total": {
+                      "type": "integer",
+                      "description": "Total number of matching WordPress users."
+                    },
+                    "has_more": {
+                      "type": "boolean",
+                      "description": "`true` if more batches remain to be processed."
+                    },
+                    "current_page": {
+                      "type": "integer",
+                      "description": "The page number just processed."
+                    },
+                    "next_page": {
+                      "type": "integer",
+                      "description": "The next page number to request."
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Processing",
+                  "page_total": 5,
+                  "record_total": 450,
+                  "has_more": true,
+                  "current_page": 1,
+                  "next_page": 2
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

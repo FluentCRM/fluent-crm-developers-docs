@@ -1,0 +1,170 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/migrators/import": {
+      "post": {
+        "operationId": "handleMigratorImport",
+        "summary": "POST Execute Migrator Import",
+        "description": "Execute the actual import from the external CRM. Fetches contacts from the external service and creates/updates them in FluentCRM based on the configured mappings. The response structure depends on the migrator driver.",
+        "tags": [
+          "Migrators"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "driver"
+                ],
+                "properties": {
+                  "driver": {
+                    "type": "string",
+                    "description": "Migrator driver identifier (e.g., `mailchimp`, `ConvertKit`, `MailerLite`, `Drip`, `ActiveCampaign`)."
+                  },
+                  "credential": {
+                    "type": "object",
+                    "description": "Driver-specific credential fields.",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  "map_settings": {
+                    "type": "object",
+                    "description": "List/tag mapping settings.",
+                    "additionalProperties": true
+                  }
+                }
+              },
+              "example": {
+                "driver": "mailchimp",
+                "credential": {
+                  "api_key": "abc123def456-us10"
+                },
+                "map_settings": {
+                  "lists": [
+                    "abc123"
+                  ],
+                  "tags": [
+                    1,
+                    2
+                  ],
+                  "status": "subscribed",
+                  "update": "yes"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Import completed successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "import_info": {
+                      "type": "object",
+                      "description": "Import result data from the migrator driver. Structure varies by driver.",
+                      "additionalProperties": true
+                    }
+                  }
+                },
+                "example": {
+                  "import_info": {
+                    "inserted": 1200,
+                    "updated": 150,
+                    "skipped": 50,
+                    "total": 1400,
+                    "message": "Import completed successfully"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Driver not found or import error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Sorry no driver found for the selected CRM"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

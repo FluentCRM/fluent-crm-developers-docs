@@ -1,0 +1,185 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/funnels/funnel/save-email-action-fallback": {
+      "post": {
+        "operationId": "saveEmailActionFallback",
+        "summary": "POST Save Email Action (Fallback)",
+        "description": "Fallback endpoint to save a funnel email action when the funnel ID is provided in the request body instead of the URL path. Creates or updates a funnel email campaign associated with the funnel.",
+        "tags": [
+          "Funnels"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "funnel_id",
+                  "action_data"
+                ],
+                "properties": {
+                  "funnel_id": {
+                    "type": "integer",
+                    "description": "The funnel ID this email action belongs to."
+                  },
+                  "action_data": {
+                    "type": [
+                      "object",
+                      "string"
+                    ],
+                    "description": "Email action data object or JSON string. Must include `campaign` object with email details.",
+                    "properties": {
+                      "campaign": {
+                        "type": "object",
+                        "description": "Campaign data including email subject, body, settings.",
+                        "properties": {
+                          "id": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ],
+                            "description": "Existing campaign ID for updates, null for new."
+                          },
+                          "email_subject": {
+                            "type": "string"
+                          },
+                          "email_pre_header": {
+                            "type": "string"
+                          },
+                          "email_body": {
+                            "type": "string"
+                          },
+                          "design_template": {
+                            "type": "string"
+                          },
+                          "settings": {
+                            "type": "object"
+                          }
+                        }
+                      },
+                      "mailer_settings": {
+                        "type": "object",
+                        "description": "Email mailer settings."
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "funnel_id": 1,
+                "action_data": {
+                  "campaign": {
+                    "email_subject": "Welcome!",
+                    "email_body": "<p>Hello {{contact.first_name}}</p>",
+                    "design_template": "simple"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email action saved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "created",
+                        "updated"
+                      ],
+                      "description": "Whether the campaign was created or updated."
+                    },
+                    "reference_campaign": {
+                      "type": "integer",
+                      "description": "The funnel campaign ID."
+                    },
+                    "campaign": {
+                      "type": "object",
+                      "description": "The campaign data."
+                    }
+                  }
+                },
+                "example": {
+                  "type": "created",
+                  "reference_campaign": 10,
+                  "campaign": {
+                    "email_subject": "Welcome!",
+                    "email_body": "<p>Hello {{contact.first_name}}</p>"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

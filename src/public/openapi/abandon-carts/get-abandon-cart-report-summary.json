@@ -1,0 +1,182 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/abandon-carts/report-summary": {
+      "get": {
+        "operationId": "getAbandonCartReportSummary",
+        "summary": "GET Get Abandon Cart Report Summary",
+        "description": "Retrieve a summary of abandoned cart metrics including recovered, processing, lost, draft, and opt-out revenue with counts. Also includes the overall recovery rate.",
+        "tags": [
+          "Abandon Carts"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "date_range[]",
+            "in": "query",
+            "description": "Date range filter as an array of two date strings [start_date, end_date]. Defaults to the last 30 days if not provided or invalid.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "date"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Report summary with revenue and count widgets.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "widgets": {
+                      "type": "object",
+                      "description": "Map of widget keys to their data.",
+                      "properties": {
+                        "recovered_revenue": {
+                          "$ref": "#/components/schemas/ReportWidget"
+                        },
+                        "processing_revenue": {
+                          "$ref": "#/components/schemas/ReportWidget"
+                        },
+                        "lost_revenue": {
+                          "$ref": "#/components/schemas/ReportWidget"
+                        },
+                        "draft_revenue": {
+                          "$ref": "#/components/schemas/ReportWidget"
+                        },
+                        "optout_revenue": {
+                          "$ref": "#/components/schemas/ReportWidget"
+                        },
+                        "recovery_rate": {
+                          "$ref": "#/components/schemas/ReportWidget"
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "widgets": {
+                    "recovered_revenue": {
+                      "title": "Recovered Revenue",
+                      "value": "$1,250.00",
+                      "count": "15"
+                    },
+                    "processing_revenue": {
+                      "title": "Processing Revenue",
+                      "value": "$340.50",
+                      "count": "8"
+                    },
+                    "lost_revenue": {
+                      "title": "Lost Revenue",
+                      "value": "$890.00",
+                      "count": "22"
+                    },
+                    "draft_revenue": {
+                      "title": "Draft Revenue",
+                      "value": "$120.00",
+                      "count": "3"
+                    },
+                    "optout_revenue": {
+                      "title": "Optout Revenue",
+                      "value": "$50.00",
+                      "count": "1"
+                    },
+                    "recovery_rate": {
+                      "title": "Recovery Rate",
+                      "value": "40.54%",
+                      "count": ""
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "ReportWidget": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Human-readable widget title."
+          },
+          "value": {
+            "type": "string",
+            "description": "Formatted value (currency amount or percentage)."
+          },
+          "count": {
+            "type": "string",
+            "description": "Formatted count of carts in this status. Empty string for rate-based widgets."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

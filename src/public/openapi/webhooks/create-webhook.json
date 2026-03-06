@@ -1,0 +1,333 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/webhooks": {
+      "post": {
+        "operationId": "createWebhook",
+        "summary": "POST Create Webhook",
+        "description": "Create a new webhook for receiving contact data. Supports both standard contact webhooks and SMS webhooks (requires Fluent Campaign Pro). For standard webhooks, `name` and `status` are required. For SMS webhooks, set `type` to `sms_webhook` and provide `sms_provider`. A unique URL is generated automatically.",
+        "tags": [
+          "Webhooks"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Human-readable name for the webhook."
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "subscribed",
+                      "pending",
+                      "unsubscribed"
+                    ],
+                    "description": "Default subscription status for contacts created via this webhook. Required for standard webhooks."
+                  },
+                  "lists": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "description": "List IDs to assign to incoming contacts."
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "description": "Tag IDs to assign to incoming contacts."
+                  },
+                  "companies": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "description": "Company IDs to assign to incoming contacts."
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "sms_webhook"
+                    ],
+                    "description": "Set to `sms_webhook` to create an SMS webhook. Omit for a standard webhook."
+                  },
+                  "sms_provider": {
+                    "type": "string",
+                    "description": "SMS provider identifier (e.g., `twilio`). Required when `type` is `sms_webhook`."
+                  }
+                }
+              },
+              "example": {
+                "name": "Lead Capture Webhook",
+                "status": "subscribed",
+                "lists": [
+                  1
+                ],
+                "tags": [
+                  3,
+                  5
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "description": "The ID of the newly created webhook."
+                    },
+                    "webhook": {
+                      "type": "object",
+                      "description": "The webhook value/configuration data.",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string"
+                        },
+                        "lists": {
+                          "type": "array",
+                          "items": {
+                            "type": "integer"
+                          }
+                        },
+                        "tags": {
+                          "type": "array",
+                          "items": {
+                            "type": "integer"
+                          }
+                        },
+                        "url": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "webhooks": {
+                      "type": "array",
+                      "description": "Updated list of all webhooks.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "Unique identifier for the webhook."
+                          },
+                          "object_type": {
+                            "type": "string",
+                            "description": "Type discriminator. `webhook` for standard webhooks, `webhook_{provider}` for SMS webhooks."
+                          },
+                          "key": {
+                            "type": "string",
+                            "description": "UUID key used in the webhook URL."
+                          },
+                          "value": {
+                            "type": "object",
+                            "description": "Webhook configuration data.",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "description": "Human-readable webhook name."
+                              },
+                              "status": {
+                                "type": "string",
+                                "description": "Default subscription status for contacts created via this webhook.",
+                                "enum": [
+                                  "subscribed",
+                                  "pending",
+                                  "unsubscribed"
+                                ]
+                              },
+                              "lists": {
+                                "type": "array",
+                                "items": {
+                                  "type": "integer"
+                                },
+                                "description": "List IDs to assign to incoming contacts."
+                              },
+                              "tags": {
+                                "type": "array",
+                                "items": {
+                                  "type": "integer"
+                                },
+                                "description": "Tag IDs to assign to incoming contacts."
+                              },
+                              "companies": {
+                                "type": "array",
+                                "items": {
+                                  "type": "integer"
+                                },
+                                "description": "Company IDs to assign to incoming contacts."
+                              },
+                              "url": {
+                                "type": "string",
+                                "description": "The webhook endpoint URL."
+                              }
+                            }
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Timestamp when the webhook was created."
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Timestamp when the webhook was last updated."
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Success message."
+                    }
+                  }
+                },
+                "example": {
+                  "id": 2,
+                  "webhook": {
+                    "name": "Lead Capture Webhook",
+                    "status": "subscribed",
+                    "lists": [
+                      1
+                    ],
+                    "tags": [
+                      3,
+                      5
+                    ],
+                    "url": "https://example.com/?fluentcrm=1&route=contact&hash=b2c3d4e5-f6a7-8901-bcde-f12345678901"
+                  },
+                  "webhooks": [],
+                  "message": "Successfully created the WebHook"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "SMS webhooks require Fluent Campaign Pro.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "SMS webhooks are available in Fluent Campaign Pro version only."
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error (e.g., missing required fields, invalid SMS provider, or duplicate SMS webhook).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "errors": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "message": "A webhook already exists for twilio provider"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

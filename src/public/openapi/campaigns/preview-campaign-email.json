@@ -1,0 +1,214 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/campaigns/emails/{email_id}/preview": {
+      "get": {
+        "operationId": "previewCampaignEmail",
+        "summary": "GET Preview Campaign Email",
+        "description": "Preview a specific sent campaign email by its email ID. Returns the rendered email data including subject, body, and click tracking information.",
+        "tags": [
+          "Campaigns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "email_id",
+            "in": "path",
+            "description": "The campaign email ID to preview.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email preview data retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "info": {
+                      "type": "object",
+                      "description": "The CampaignEmail record.",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "campaign_id": {
+                          "type": "integer"
+                        },
+                        "subscriber_id": {
+                          "type": "integer"
+                        },
+                        "email_subject": {
+                          "type": "string"
+                        },
+                        "email_pre_header": {
+                          "type": "string"
+                        },
+                        "email_body": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string"
+                        },
+                        "is_open": {
+                          "type": "integer"
+                        },
+                        "click_counter": {
+                          "type": "integer",
+                          "nullable": true
+                        },
+                        "scheduled_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    },
+                    "email": {
+                      "type": "object",
+                      "description": "Rendered email preview data.",
+                      "properties": {
+                        "email_subject": {
+                          "type": "string"
+                        },
+                        "email_body": {
+                          "type": "string"
+                        },
+                        "clicks": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "url": {
+                                "type": "string"
+                              },
+                              "counter": {
+                                "type": "integer"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "info": {
+                    "id": 456,
+                    "campaign_id": 12,
+                    "subscriber_id": 42,
+                    "email_subject": "Welcome aboard!",
+                    "email_pre_header": "We are glad to have you",
+                    "status": "sent",
+                    "is_open": 3,
+                    "click_counter": 2,
+                    "scheduled_at": "2024-03-01 10:00:00",
+                    "created_at": "2024-03-01 10:00:00",
+                    "updated_at": "2024-03-01 12:30:00"
+                  },
+                  "email": {
+                    "email_subject": "Welcome aboard!",
+                    "email_body": "<html><body><p>Hello John!</p></body></html>",
+                    "clicks": [
+                      {
+                        "url": "https://example.com/offer",
+                        "counter": 2
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Campaign email not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

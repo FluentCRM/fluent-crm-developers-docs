@@ -1,0 +1,294 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/funnels/funnel/save-funnel-sequences": {
+      "post": {
+        "operationId": "saveFunnelSequencesFallback",
+        "summary": "POST Save Funnel Sequences (Fallback)",
+        "description": "Fallback endpoint to save funnel sequences when the funnel ID is provided in the request body instead of the URL path. Delegates to the same logic as the primary save sequences endpoint.",
+        "tags": [
+          "Funnels"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "funnel_id"
+                ],
+                "properties": {
+                  "funnel_id": {
+                    "type": "integer",
+                    "description": "The funnel ID to save sequences for."
+                  },
+                  "sequences": {
+                    "type": "array",
+                    "description": "Array of sequence objects to save.",
+                    "items": {
+                      "$ref": "#/components/schemas/FunnelSequenceInput"
+                    }
+                  },
+                  "conditions": {
+                    "type": "array",
+                    "description": "Funnel-level conditions.",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "settings": {
+                    "type": "object",
+                    "description": "Funnel settings."
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "draft",
+                      "published"
+                    ],
+                    "description": "Funnel status to set."
+                  }
+                }
+              },
+              "example": {
+                "funnel_id": 1,
+                "sequences": [],
+                "status": "published"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sequences saved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sequences": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/FunnelSequence"
+                      }
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "sequences": [],
+                  "message": "Sequence successfully updated"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "FunnelSequenceInput": {
+        "type": "object",
+        "properties": {
+          "action_name": {
+            "type": "string",
+            "description": "The action identifier for this sequence step."
+          },
+          "title": {
+            "type": "string",
+            "description": "Human-readable title for the sequence."
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "action",
+              "conditional",
+              "benchmark"
+            ],
+            "description": "Sequence type."
+          },
+          "settings": {
+            "type": "object",
+            "description": "Action-specific settings."
+          },
+          "delay": {
+            "type": "integer",
+            "description": "Delay in seconds before executing this step."
+          },
+          "parent_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Parent sequence ID for conditional branches."
+          },
+          "condition_type": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Branch type: `yes` or `no` for conditional children."
+          }
+        }
+      },
+      "FunnelSequence": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Sequence ID."
+          },
+          "funnel_id": {
+            "type": "integer",
+            "description": "Associated funnel ID."
+          },
+          "action_name": {
+            "type": "string",
+            "description": "Action identifier."
+          },
+          "title": {
+            "type": "string",
+            "description": "Sequence title."
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "action",
+              "conditional",
+              "benchmark"
+            ],
+            "description": "Sequence type."
+          },
+          "settings": {
+            "type": "object",
+            "description": "Action-specific settings."
+          },
+          "conditions": {
+            "type": "array",
+            "description": "Step-level conditions.",
+            "items": {
+              "type": "object"
+            }
+          },
+          "sequence": {
+            "type": "integer",
+            "description": "Order position."
+          },
+          "delay": {
+            "type": "integer",
+            "description": "Delay in seconds."
+          },
+          "c_delay": {
+            "type": "integer",
+            "description": "Cumulative delay in seconds."
+          },
+          "status": {
+            "type": "string",
+            "description": "Sequence status."
+          },
+          "parent_id": {
+            "type": "integer",
+            "description": "Parent sequence ID (0 for root)."
+          },
+          "condition_type": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Branch type for conditional children."
+          },
+          "children": {
+            "type": "object",
+            "description": "Child sequences for conditional blocks.",
+            "properties": {
+              "yes": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/FunnelSequence"
+                }
+              },
+              "no": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/FunnelSequence"
+                }
+              }
+            }
+          },
+          "created_by": {
+            "type": "integer"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

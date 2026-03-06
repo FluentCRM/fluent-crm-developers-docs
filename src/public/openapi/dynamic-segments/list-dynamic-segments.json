@@ -1,0 +1,141 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/dynamic-segments": {
+      "get": {
+        "operationId": "listDynamicSegments",
+        "summary": "GET List Dynamic Segments",
+        "description": "Retrieve all registered dynamic segments. Returns both built-in segments (e.g., WordPress Users, WooCommerce Customers) and custom segments created via the API. Requires FluentCampaign Pro.",
+        "tags": [
+          "Dynamic Segments"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all dynamic segments.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "dynamic_segments": {
+                      "type": "array",
+                      "description": "Array of dynamic segment objects.",
+                      "items": {
+                        "$ref": "#/components/schemas/DynamicSegment"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "dynamic_segments": [
+                    {
+                      "slug": "wordpress_users",
+                      "title": "WordPress Users",
+                      "subtitle": "All WordPress Users",
+                      "id": 0,
+                      "count": 150
+                    },
+                    {
+                      "slug": "custom_segment",
+                      "title": "Engaged Subscribers",
+                      "subtitle": "Custom Segment",
+                      "id": 12,
+                      "count": 85
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "DynamicSegment": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "description": "Unique slug identifier for the segment type (e.g., `wordpress_users`, `custom_segment`)."
+          },
+          "title": {
+            "type": "string",
+            "description": "Display name of the segment."
+          },
+          "subtitle": {
+            "type": "string",
+            "description": "Short description or type label for the segment."
+          },
+          "id": {
+            "type": "integer",
+            "description": "Segment ID. For custom segments, this is the Meta table ID. For built-in segments, this is typically 0."
+          },
+          "count": {
+            "type": "integer",
+            "description": "Number of contacts matching this segment."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

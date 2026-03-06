@@ -1,0 +1,158 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/recurring-campaigns/{campaign_id}/emails/{email_id}": {
+      "put": {
+        "operationId": "patchRecurringCampaignEmail",
+        "summary": "PUT Patch Recurring Campaign Email Status",
+        "description": "Update the status of a specific child email in a recurring campaign. Only allows status transitions between `draft` and `cancelled`. The email's current status must be either `draft` or `cancelled`, and the target status must also be one of those two values. Requires FluentCampaign Pro.",
+        "tags": [
+          "Recurring Campaigns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "description": "The parent recurring campaign ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "email_id",
+            "in": "path",
+            "description": "The child email ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "status"
+                ],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "description": "The new status. Only `draft` and `cancelled` transitions are allowed.",
+                    "enum": [
+                      "draft",
+                      "cancelled"
+                    ]
+                  }
+                }
+              },
+              "example": {
+                "status": "cancelled"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email status changed successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Success message including the new status."
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Email status has been changed to cancelled"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurring campaign or email not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

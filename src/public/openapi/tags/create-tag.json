@@ -1,0 +1,222 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/tags": {
+      "post": {
+        "operationId": "createTag",
+        "summary": "POST Create Tag",
+        "description": "Create a new tag. The `title` field is required. If `slug` is omitted, it is auto-generated from the title. The slug must be unique across all tags.",
+        "tags": [
+          "Tags"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Display name of the tag."
+                  },
+                  "slug": {
+                    "type": "string",
+                    "description": "URL-friendly unique identifier. Auto-generated from title if omitted."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Optional description of the tag."
+                  }
+                }
+              },
+              "example": {
+                "title": "VIP Customer",
+                "slug": "vip-customer",
+                "description": "High-value customers with priority support"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tag created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "lists": {
+                      "$ref": "#/components/schemas/Tag",
+                      "description": "The created tag (legacy key name)."
+                    },
+                    "item": {
+                      "$ref": "#/components/schemas/Tag",
+                      "description": "The created tag."
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Success message."
+                    }
+                  }
+                },
+                "example": {
+                  "lists": {
+                    "id": 5,
+                    "title": "VIP Customer",
+                    "slug": "vip-customer",
+                    "description": "High-value customers with priority support",
+                    "created_at": "2024-03-01 14:20:00",
+                    "updated_at": "2024-03-01 14:20:00"
+                  },
+                  "item": {
+                    "id": 5,
+                    "title": "VIP Customer",
+                    "slug": "vip-customer",
+                    "description": "High-value customers with priority support",
+                    "created_at": "2024-03-01 14:20:00",
+                    "updated_at": "2024-03-01 14:20:00"
+                  },
+                  "message": "Successfully saved the tag."
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error. Returned when required fields are missing or the slug already exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "errors": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Unprocessable Entity!",
+                  "errors": {
+                    "title": [
+                      "The title field is required."
+                    ],
+                    "slug": [
+                      "The slug has already been taken."
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the tag."
+          },
+          "title": {
+            "type": "string",
+            "description": "Display name of the tag."
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL-friendly unique identifier."
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Optional description of the tag."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the tag was created (WordPress timezone)."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the tag was last updated (WordPress timezone)."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

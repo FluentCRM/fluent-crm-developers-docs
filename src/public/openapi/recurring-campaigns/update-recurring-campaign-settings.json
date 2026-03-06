@@ -1,0 +1,535 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/recurring-campaigns/{campaign_id}/update-settings": {
+      "post": {
+        "operationId": "updateRecurringCampaignSettings",
+        "summary": "POST Update Recurring Campaign Settings",
+        "description": "Update the title and settings (scheduling, sending conditions, subscriber targeting) for a recurring campaign. The title must be unique across all recurring campaigns. The next scheduled send time is recalculated based on the new scheduling settings. Requires FluentCampaign Pro.",
+        "tags": [
+          "Recurring Campaigns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "description": "The recurring campaign ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "campaign"
+                ],
+                "properties": {
+                  "campaign": {
+                    "type": "object",
+                    "required": [
+                      "title",
+                      "settings"
+                    ],
+                    "description": "Campaign settings data. Can be a JSON object or a JSON-encoded string.",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "description": "Campaign title. Must be unique across all recurring campaigns."
+                      },
+                      "settings": {
+                        "type": "object",
+                        "required": [
+                          "scheduling_settings"
+                        ],
+                        "properties": {
+                          "scheduling_settings": {
+                            "type": "object",
+                            "required": [
+                              "type",
+                              "time"
+                            ],
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "description": "Schedule type.",
+                                "enum": [
+                                  "daily",
+                                  "weekly",
+                                  "monthly",
+                                  "yearly"
+                                ]
+                              },
+                              "day": {
+                                "type": "string",
+                                "description": "Day for weekly schedules (e.g., `mon`)."
+                              },
+                              "time": {
+                                "type": "string",
+                                "description": "Time of day (e.g., `09.00`)."
+                              },
+                              "send_automatically": {
+                                "type": "string",
+                                "description": "Whether to send automatically.",
+                                "enum": [
+                                  "yes",
+                                  "no"
+                                ]
+                              }
+                            }
+                          },
+                          "sending_conditions": {
+                            "type": "array",
+                            "description": "Conditions that must be met before sending.",
+                            "items": {
+                              "type": "object"
+                            }
+                          },
+                          "subscribers_settings": {
+                            "type": "object",
+                            "description": "Subscriber targeting settings.",
+                            "properties": {
+                              "subscribers": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object"
+                                }
+                              },
+                              "excludedSubscribers": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object"
+                                }
+                              },
+                              "sending_filter": {
+                                "type": "string"
+                              },
+                              "dynamic_segment": {
+                                "type": "object"
+                              },
+                              "advanced_filters": {
+                                "type": "array",
+                                "items": {
+                                  "type": "array"
+                                }
+                              }
+                            }
+                          },
+                          "mailer_settings": {
+                            "type": "object",
+                            "properties": {
+                              "from_name": {
+                                "type": "string"
+                              },
+                              "from_email": {
+                                "type": "string"
+                              },
+                              "reply_to_name": {
+                                "type": "string"
+                              },
+                              "reply_to_email": {
+                                "type": "string"
+                              },
+                              "is_custom": {
+                                "type": "string",
+                                "enum": [
+                                  "yes",
+                                  "no"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "campaign": {
+                  "title": "Weekly Newsletter - Updated",
+                  "settings": {
+                    "scheduling_settings": {
+                      "type": "weekly",
+                      "day": "tue",
+                      "time": "10.00",
+                      "send_automatically": "yes"
+                    },
+                    "sending_conditions": [],
+                    "subscribers_settings": {
+                      "subscribers": [
+                        {
+                          "list": "1",
+                          "tag": "all"
+                        }
+                      ],
+                      "excludedSubscribers": [
+                        {
+                          "list": null,
+                          "tag": null
+                        }
+                      ],
+                      "sending_filter": "list_tag"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Settings updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Success message."
+                    },
+                    "campaign": {
+                      "$ref": "#/components/schemas/RecurringCampaign"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Settings has been updated",
+                  "campaign": {
+                    "id": 5,
+                    "title": "Weekly Newsletter - Updated",
+                    "status": "active",
+                    "scheduled_at": "2024-04-02 10:00:00",
+                    "settings": {
+                      "scheduling_settings": {
+                        "type": "weekly",
+                        "day": "tue",
+                        "time": "10.00",
+                        "send_automatically": "yes"
+                      }
+                    },
+                    "created_at": "2024-03-01 10:00:00",
+                    "updated_at": "2024-03-25 11:00:00"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurring campaign not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error (e.g., duplicate title, missing required scheduling fields).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "errors": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "RecurringCampaign": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the recurring campaign."
+          },
+          "title": {
+            "type": "string",
+            "description": "Campaign title."
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL-friendly slug derived from the title."
+          },
+          "status": {
+            "type": "string",
+            "description": "Campaign status.",
+            "enum": [
+              "draft",
+              "active"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "description": "Record type (always `recurring_campaign`).",
+            "enum": [
+              "recurring_campaign"
+            ]
+          },
+          "template_id": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Associated email template ID."
+          },
+          "email_subject": {
+            "type": "string",
+            "description": "Email subject line."
+          },
+          "email_pre_header": {
+            "type": "string",
+            "description": "Email pre-header text."
+          },
+          "email_body": {
+            "type": "string",
+            "description": "Email body content (HTML)."
+          },
+          "recipients_count": {
+            "type": "integer",
+            "description": "Number of recipients."
+          },
+          "utm_status": {
+            "type": "integer",
+            "description": "Whether UTM tracking is enabled (1 = enabled, 0 = disabled)."
+          },
+          "utm_source": {
+            "type": "string",
+            "description": "UTM source parameter."
+          },
+          "utm_medium": {
+            "type": "string",
+            "description": "UTM medium parameter."
+          },
+          "utm_campaign": {
+            "type": "string",
+            "description": "UTM campaign parameter."
+          },
+          "utm_term": {
+            "type": "string",
+            "description": "UTM term parameter."
+          },
+          "utm_content": {
+            "type": "string",
+            "description": "UTM content parameter."
+          },
+          "design_template": {
+            "type": "string",
+            "description": "Design template for the campaign (e.g., `simple`, `visual_builder`)."
+          },
+          "scheduled_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Next scheduled send date/time."
+          },
+          "settings": {
+            "type": "object",
+            "description": "Campaign settings including scheduling, sending conditions, subscriber targeting, and mailer configuration.",
+            "properties": {
+              "mailer_settings": {
+                "type": "object",
+                "properties": {
+                  "from_name": {
+                    "type": "string",
+                    "description": "Sender name."
+                  },
+                  "from_email": {
+                    "type": "string",
+                    "description": "Sender email address."
+                  },
+                  "reply_to_name": {
+                    "type": "string",
+                    "description": "Reply-to name."
+                  },
+                  "reply_to_email": {
+                    "type": "string",
+                    "description": "Reply-to email address."
+                  },
+                  "is_custom": {
+                    "type": "string",
+                    "description": "Whether custom mailer settings are enabled.",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ]
+                  }
+                }
+              },
+              "scheduling_settings": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Schedule type.",
+                    "enum": [
+                      "daily",
+                      "weekly",
+                      "monthly",
+                      "yearly"
+                    ]
+                  },
+                  "day": {
+                    "type": "string",
+                    "description": "Day for weekly schedules (e.g., `mon`, `tue`)."
+                  },
+                  "time": {
+                    "type": "string",
+                    "description": "Time of day (e.g., `09.00`)."
+                  },
+                  "send_automatically": {
+                    "type": "string",
+                    "description": "Whether to send automatically or create drafts for review.",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ]
+                  }
+                }
+              },
+              "sending_conditions": {
+                "type": "array",
+                "description": "Conditions that must be met before sending.",
+                "items": {
+                  "type": "object"
+                }
+              },
+              "subscribers_settings": {
+                "type": "object",
+                "description": "Subscriber targeting settings.",
+                "properties": {
+                  "subscribers": {
+                    "type": "array",
+                    "description": "Included subscriber segments.",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "excludedSubscribers": {
+                    "type": "array",
+                    "description": "Excluded subscriber segments.",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "sending_filter": {
+                    "type": "string",
+                    "description": "Filter type for subscriber selection."
+                  },
+                  "dynamic_segment": {
+                    "type": "object",
+                    "description": "Dynamic segment configuration."
+                  },
+                  "advanced_filters": {
+                    "type": "array",
+                    "description": "Advanced filter conditions.",
+                    "items": {
+                      "type": "array"
+                    }
+                  }
+                }
+              },
+              "template_config": {
+                "type": "object",
+                "description": "Template configuration."
+              }
+            }
+          },
+          "created_by": {
+            "type": "integer",
+            "description": "WordPress user ID of the creator."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the campaign was created."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the campaign was last updated."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -1,0 +1,301 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/abandon-carts": {
+      "get": {
+        "operationId": "listAbandonedCarts",
+        "summary": "GET List Abandoned Carts",
+        "description": "Retrieve a paginated list of abandoned carts with subscriber and automation data. Includes information about enabled cart-recovery drivers and whether automation funnels are configured.",
+        "tags": [
+          "Abandon Carts"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "query[status]",
+            "in": "query",
+            "description": "Filter carts by status.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "processing",
+                "recovered",
+                "lost",
+                "draft",
+                "opt_out"
+              ]
+            }
+          },
+          {
+            "name": "query[search]",
+            "in": "query",
+            "description": "Search carts by keyword.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "date_range[]",
+            "in": "query",
+            "description": "Date range filter as an array of two date strings [start_date, end_date]. Defaults to the last 30 days if not provided or invalid.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "date"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of carts per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 15
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of abandoned carts.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "carts": {
+                      "type": "object",
+                      "description": "Paginated cart results.",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of carts matching the query."
+                        },
+                        "per_page": {
+                          "type": "integer",
+                          "description": "Number of carts per page."
+                        },
+                        "current_page": {
+                          "type": "integer",
+                          "description": "Current page number."
+                        },
+                        "last_page": {
+                          "type": "integer",
+                          "description": "Last page number."
+                        },
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/AbandonCart"
+                          }
+                        }
+                      }
+                    },
+                    "haveAutomation": {
+                      "type": "boolean",
+                      "description": "Whether all enabled drivers have corresponding published automation funnels."
+                    },
+                    "missingAutomations": {
+                      "type": "array",
+                      "description": "List of driver labels that do not have published automation funnels.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "drivers": {
+                      "type": "object",
+                      "description": "Map of enabled cart-recovery driver slugs to their details.",
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string",
+                            "description": "Display name of the driver."
+                          },
+                          "logo": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "URL to the driver logo."
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "carts": {
+                    "total": 45,
+                    "per_page": 15,
+                    "current_page": 1,
+                    "last_page": 3,
+                    "data": [
+                      {
+                        "id": 12,
+                        "email": "john@example.com",
+                        "full_name": "John Doe",
+                        "status": "processing",
+                        "provider": "woocommerce",
+                        "cart_total": "89.99",
+                        "currency": "USD",
+                        "created_at": "2024-03-01 14:30:00",
+                        "updated_at": "2024-03-01 15:00:00",
+                        "recovery_url": "https://example.com/checkout?recover=abc123",
+                        "customer_avatar": "https://www.gravatar.com/avatar/abc123"
+                      }
+                    ]
+                  },
+                  "haveAutomation": true,
+                  "missingAutomations": [],
+                  "drivers": {
+                    "woocommerce": {
+                      "label": "WooCommerce",
+                      "logo": "https://example.com/woo-logo.png"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "AbandonCart": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the abandoned cart."
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Customer email address."
+          },
+          "full_name": {
+            "type": "string",
+            "description": "Customer full name."
+          },
+          "status": {
+            "type": "string",
+            "description": "Cart status.",
+            "enum": [
+              "processing",
+              "recovered",
+              "lost",
+              "draft",
+              "opt_out"
+            ]
+          },
+          "provider": {
+            "type": "string",
+            "description": "E-commerce provider slug (e.g., woocommerce, edd)."
+          },
+          "cart_total": {
+            "type": "string",
+            "description": "Total cart value as a decimal string."
+          },
+          "currency": {
+            "type": "string",
+            "description": "Currency code."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the cart was created."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the cart was last updated."
+          },
+          "recovery_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Cart recovery URL. Only present when status is 'processing'."
+          },
+          "customer_avatar": {
+            "type": "string",
+            "format": "uri",
+            "description": "Customer avatar URL from subscriber photo or Gravatar."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

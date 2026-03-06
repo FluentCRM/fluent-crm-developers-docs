@@ -1,0 +1,385 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/dynamic-segments/custom-fields": {
+      "get": {
+        "operationId": "getDynamicSegmentCustomFields",
+        "summary": "GET Get Dynamic Segment Custom Fields",
+        "description": "Retrieve the available filter field definitions and default settings for building custom dynamic segment conditions. Returns field types, operators, and options for constructing segment filters. Requires FluentCampaign Pro.",
+        "tags": [
+          "Dynamic Segments"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Filter field definitions and default settings.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "fields": {
+                      "type": "array",
+                      "description": "Array of field group definitions. Each group contains a set of filterable fields with their types, operators, and options.",
+                      "items": {
+                        "$ref": "#/components/schemas/FieldGroup"
+                      }
+                    },
+                    "settings_defaults": {
+                      "type": "object",
+                      "description": "Default settings object for initializing a new custom segment.",
+                      "properties": {
+                        "conditions": {
+                          "type": "array",
+                          "description": "Default empty conditions array.",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field": {
+                                "type": "string"
+                              },
+                              "operator": {
+                                "type": "string"
+                              },
+                              "value": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "condition_match": {
+                          "type": "string",
+                          "description": "Default condition match type.",
+                          "enum": [
+                            "match_all",
+                            "match_any"
+                          ]
+                        },
+                        "email_activities": {
+                          "type": "object",
+                          "description": "Default email activity filter settings.",
+                          "properties": {
+                            "status": {
+                              "type": "string",
+                              "enum": [
+                                "yes",
+                                "no"
+                              ]
+                            },
+                            "last_email_open": {
+                              "type": "object",
+                              "properties": {
+                                "value": {
+                                  "type": "integer"
+                                },
+                                "operator": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "last_email_link_click": {
+                              "type": "object",
+                              "properties": {
+                                "value": {
+                                  "type": "integer"
+                                },
+                                "operator": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "last_email_activity_match": {
+                              "type": "string",
+                              "enum": [
+                                "match_all",
+                                "match_any"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "fields": [
+                    {
+                      "type": "condition_blocks",
+                      "key": "conditions",
+                      "heading": "Conditions",
+                      "label": "Select conditions which will define this segment. All Conditions will be applied to filter",
+                      "fields": {
+                        "email": {
+                          "type": "text",
+                          "label": "Contact Email",
+                          "operators": {
+                            "=": "Equal",
+                            "!=": "Not Equal",
+                            "LIKE": "Contains",
+                            "NOT LIKE": "Not Contains"
+                          },
+                          "value": ""
+                        },
+                        "first_name": {
+                          "type": "text",
+                          "label": "First Name",
+                          "operators": {
+                            "=": "Equal",
+                            "!=": "Not Equal",
+                            "LIKE": "Contains",
+                            "NOT LIKE": "Not Contains"
+                          },
+                          "value": ""
+                        },
+                        "status": {
+                          "type": "select",
+                          "is_multiple": true,
+                          "label": "Subscription Status",
+                          "operators": {
+                            "whereIn": "In",
+                            "whereNotIn": "Not In"
+                          },
+                          "value": [],
+                          "options": {
+                            "subscribed": "Subscribed",
+                            "unsubscribed": "Unsubscribed",
+                            "pending": "Pending",
+                            "bounced": "Bounced",
+                            "complained": "Complained"
+                          }
+                        },
+                        "tags": {
+                          "type": "select",
+                          "is_multiple": true,
+                          "label": "Tags",
+                          "operators": {
+                            "whereIn": "In",
+                            "whereNotIn": "Not In"
+                          },
+                          "value": [],
+                          "options": {
+                            "1": "VIP Customer",
+                            "2": "Newsletter"
+                          }
+                        },
+                        "lists": {
+                          "type": "select",
+                          "is_multiple": true,
+                          "label": "Lists",
+                          "operators": {
+                            "whereIn": "In",
+                            "whereNotIn": "Not In"
+                          },
+                          "value": [],
+                          "options": {
+                            "1": "Main List",
+                            "2": "Promotions"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "activities_blocks",
+                      "key": "email_activities",
+                      "heading": "Filter By Email Activities",
+                      "label": "Filter your contacts by from email open or email link click metrics. Leave the values blank for not applying",
+                      "fields": {
+                        "status": {
+                          "type": "yes_no_check",
+                          "label": "Enable Last Email Activity Filter"
+                        },
+                        "last_email_open": {
+                          "type": "days_ago_with_operator",
+                          "label": "Last Email Open",
+                          "options": {
+                            ">=": "Within",
+                            "<=": "Before"
+                          },
+                          "inline_help": "Keep days 0/Blank for disable"
+                        },
+                        "last_email_link_click": {
+                          "type": "days_ago_with_operator",
+                          "label": "Last Email Link Clicked",
+                          "options": {
+                            ">=": "Within",
+                            "<=": "Before"
+                          },
+                          "inline_help": "Keep days 0/Blank for disable"
+                        },
+                        "last_email_activity_match": {
+                          "heading": "Match Type",
+                          "label": "Should Match Both Open & Click Condition?",
+                          "options": {
+                            "match_all": "Match Both Open and Click Condition",
+                            "match_any": "Match Any One Condition"
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "settings_defaults": {
+                    "conditions": [
+                      {
+                        "field": "",
+                        "operator": "",
+                        "value": ""
+                      }
+                    ],
+                    "condition_match": "match_all",
+                    "email_activities": {
+                      "status": "no",
+                      "last_email_open": {
+                        "value": 0,
+                        "operator": ">="
+                      },
+                      "last_email_link_click": {
+                        "value": 0,
+                        "operator": ">="
+                      },
+                      "last_email_activity_match": "match_any"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "FieldGroup": {
+        "type": "object",
+        "description": "A group of filter fields with a common type and heading.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Group type identifier.",
+            "enum": [
+              "condition_blocks",
+              "activities_blocks"
+            ]
+          },
+          "key": {
+            "type": "string",
+            "description": "Key used to store the group's values in segment settings."
+          },
+          "heading": {
+            "type": "string",
+            "description": "Display heading for the field group."
+          },
+          "label": {
+            "type": "string",
+            "description": "Description text for the field group."
+          },
+          "fields": {
+            "type": "object",
+            "description": "Map of field keys to their definitions. Each field specifies its type, label, operators, and options.",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "description": "Field input type.",
+                  "enum": [
+                    "text",
+                    "select",
+                    "option-selector",
+                    "days_ago",
+                    "days_ago_with_operator",
+                    "yes_no_check"
+                  ]
+                },
+                "label": {
+                  "type": "string",
+                  "description": "Display label for the field."
+                },
+                "operators": {
+                  "type": "object",
+                  "description": "Map of operator keys to display labels."
+                },
+                "options": {
+                  "type": "object",
+                  "description": "Map of option values to display labels (for select/option-selector types)."
+                },
+                "value": {
+                  "description": "Default value for the field."
+                },
+                "is_multiple": {
+                  "type": "boolean",
+                  "description": "Whether multiple values can be selected."
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Additional description text for the field."
+                },
+                "inline_help": {
+                  "type": "string",
+                  "description": "Inline help text."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

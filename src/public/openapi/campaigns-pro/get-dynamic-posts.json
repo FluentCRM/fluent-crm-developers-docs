@@ -1,0 +1,250 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/campaigns-pro/posts": {
+      "get": {
+        "operationId": "getDynamicPosts",
+        "summary": "GET Dynamic Posts",
+        "description": "Retrieve WordPress posts for use in dynamic email content blocks. Supports filtering by post type, taxonomy terms, date range, and custom ordering. Returns post data along with available post types. Used by the email builder's dynamic post block.",
+        "tags": [
+          "Campaigns Pro"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "post_type",
+            "in": "query",
+            "description": "WordPress post type to query (e.g., 'post', 'page', or any custom post type).",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "post"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of posts to return.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "description": "Field to order posts by (e.g., 'date', 'title', 'modified').",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Sort direction.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "description": "Only include posts from the last N days. Use '0' or omit for no date restriction.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "excerptLength",
+            "in": "query",
+            "description": "Number of words for the post excerpt.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "55"
+            }
+          },
+          {
+            "name": "taxTypes",
+            "in": "query",
+            "description": "Taxonomy filter. Nested array where each entry maps taxonomy slugs to arrays of term names.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            }
+          },
+          {
+            "name": "operator",
+            "in": "query",
+            "description": "Logical operator for combining taxonomy queries.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "OR",
+                "AND"
+              ],
+              "default": "OR"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of posts and available post types.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "posts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "post_title": {
+                            "type": "string"
+                          },
+                          "post_excerpt": {
+                            "type": "string"
+                          },
+                          "comment_count": {
+                            "type": "integer"
+                          },
+                          "date": {
+                            "type": "string"
+                          },
+                          "thumbnail": {
+                            "type": [
+                              "string",
+                              "boolean"
+                            ],
+                            "description": "Post thumbnail URL, or false if none."
+                          },
+                          "author_avatar": {
+                            "type": "string",
+                            "description": "Author avatar URL."
+                          },
+                          "author": {
+                            "type": "string",
+                            "description": "Author display name."
+                          }
+                        }
+                      }
+                    },
+                    "post_types": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "value": {
+                            "type": "string"
+                          },
+                          "label": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "posts": [
+                    {
+                      "post_title": "Getting Started Guide",
+                      "post_excerpt": "Learn how to set up your account and get started with our platform...",
+                      "comment_count": 12,
+                      "date": "March 1, 2024",
+                      "thumbnail": "https://example.com/wp-content/uploads/2024/03/guide.jpg",
+                      "author_avatar": "https://secure.gravatar.com/avatar/abc123",
+                      "author": "John Doe"
+                    }
+                  ],
+                  "post_types": [
+                    {
+                      "value": "post",
+                      "label": "Posts"
+                    },
+                    {
+                      "value": "page",
+                      "label": "Pages"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

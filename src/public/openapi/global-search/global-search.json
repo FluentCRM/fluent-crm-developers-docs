@@ -1,0 +1,261 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/global-search": {
+      "get": {
+        "operationId": "globalSearch",
+        "summary": "GET Global Search",
+        "description": "Search across subscribers, campaigns, funnels, and companies simultaneously. Results are permission-scoped: only entities the current user has access to are returned. Returns up to 100 results per category by default (filterable via hook).",
+        "tags": [
+          "Global Search"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search term. If empty, returns empty arrays for all categories.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "description": "Limit search to a specific category. Defaults to `all`.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "all",
+              "enum": [
+                "all",
+                "subscribers",
+                "campaigns",
+                "funnels",
+                "companies"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results grouped by category.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "subscribers": {
+                      "type": "array",
+                      "description": "Matching subscribers. Only present if user has `fcrm_read_contacts` permission.",
+                      "items": {
+                        "$ref": "#/components/schemas/SearchSubscriber"
+                      }
+                    },
+                    "campaigns": {
+                      "type": "array",
+                      "description": "Matching campaigns. Only present if user has `fcrm_read_emails` permission.",
+                      "items": {
+                        "$ref": "#/components/schemas/SearchCampaign"
+                      }
+                    },
+                    "funnels": {
+                      "type": "array",
+                      "description": "Matching automation funnels. Only present if user has `fcrm_read_funnels` permission.",
+                      "items": {
+                        "$ref": "#/components/schemas/SearchFunnel"
+                      }
+                    },
+                    "companies": {
+                      "type": "array",
+                      "description": "Matching companies. Only present when the companies feature is enabled and user has `fcrm_manage_contact_cats` permission.",
+                      "items": {
+                        "$ref": "#/components/schemas/SearchCompany"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "subscribers": [
+                    {
+                      "id": 42,
+                      "email": "john@example.com",
+                      "first_name": "John",
+                      "last_name": "Doe",
+                      "full_name": "John Doe",
+                      "photo": "https://www.gravatar.com/avatar/abc123"
+                    }
+                  ],
+                  "campaigns": [
+                    {
+                      "id": 5,
+                      "title": "Welcome Campaign",
+                      "status": "published"
+                    }
+                  ],
+                  "funnels": [
+                    {
+                      "id": 3,
+                      "title": "New User Onboarding",
+                      "status": "published"
+                    }
+                  ],
+                  "companies": [
+                    {
+                      "id": 1,
+                      "name": "Acme Corp",
+                      "logo": "https://example.com/logo.png"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "SearchSubscriber": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Subscriber ID."
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Subscriber email address."
+          },
+          "first_name": {
+            "type": "string",
+            "description": "First name."
+          },
+          "last_name": {
+            "type": "string",
+            "description": "Last name."
+          },
+          "full_name": {
+            "type": "string",
+            "description": "Full name (computed)."
+          },
+          "photo": {
+            "type": "string",
+            "format": "uri",
+            "description": "Avatar/photo URL."
+          }
+        }
+      },
+      "SearchCampaign": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Campaign ID."
+          },
+          "title": {
+            "type": "string",
+            "description": "Campaign title."
+          },
+          "status": {
+            "type": "string",
+            "description": "Campaign status."
+          }
+        }
+      },
+      "SearchFunnel": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Funnel ID."
+          },
+          "title": {
+            "type": "string",
+            "description": "Funnel title."
+          },
+          "status": {
+            "type": "string",
+            "description": "Funnel status."
+          }
+        }
+      },
+      "SearchCompany": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Company ID."
+          },
+          "name": {
+            "type": "string",
+            "description": "Company name."
+          },
+          "logo": {
+            "type": "string",
+            "description": "Company logo URL. Empty string if not set."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

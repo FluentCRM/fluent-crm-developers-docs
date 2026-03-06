@@ -1,0 +1,307 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/tags": {
+      "get": {
+        "operationId": "listTags",
+        "summary": "GET List Tags",
+        "description": "Retrieve a paginated list of tags. Optionally includes subscriber counts and a separate array of all tags for dropdown/select usage.",
+        "tags": [
+          "Tags"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search tags by title, slug, or description.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "description": "Column to sort by.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "id",
+              "enum": [
+                "id",
+                "title",
+                "slug",
+                "created_at"
+              ]
+            }
+          },
+          {
+            "name": "sort_order",
+            "in": "query",
+            "description": "Sort direction.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "DESC",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of tags per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 15
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "exclude_counts",
+            "in": "query",
+            "description": "If set to any truthy value, subscriber counts will not be included for each tag.",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "all_tags",
+            "in": "query",
+            "description": "If set to any truthy value, includes a flat `all_tags` array with id, title, and slug of every tag (useful for dropdowns).",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of tags.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tags": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of tags matching the query."
+                        },
+                        "per_page": {
+                          "type": "integer",
+                          "description": "Number of tags per page."
+                        },
+                        "current_page": {
+                          "type": "integer",
+                          "description": "Current page number."
+                        },
+                        "last_page": {
+                          "type": "integer",
+                          "description": "Last page number."
+                        },
+                        "next_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "URL for the next page, or null if on the last page."
+                        },
+                        "prev_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "URL for the previous page, or null if on the first page."
+                        },
+                        "from": {
+                          "type": "integer",
+                          "description": "Starting record index on this page."
+                        },
+                        "to": {
+                          "type": "integer",
+                          "description": "Ending record index on this page."
+                        },
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Tag"
+                          }
+                        }
+                      }
+                    },
+                    "all_tags": {
+                      "type": "array",
+                      "description": "Only present when `all_tags` query parameter is truthy. A flat array of all tags.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Tag ID as a string."
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "slug": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "tags": {
+                    "total": 12,
+                    "per_page": 15,
+                    "current_page": 1,
+                    "last_page": 1,
+                    "next_page_url": null,
+                    "prev_page_url": null,
+                    "from": 1,
+                    "to": 12,
+                    "data": [
+                      {
+                        "id": 1,
+                        "title": "VIP Customer",
+                        "slug": "vip-customer",
+                        "description": "High-value customers with priority support",
+                        "created_at": "2024-01-15 10:30:00",
+                        "updated_at": "2024-01-15 10:30:00",
+                        "subscribersCount": 245
+                      },
+                      {
+                        "id": 2,
+                        "title": "Newsletter Subscriber",
+                        "slug": "newsletter-subscriber",
+                        "description": null,
+                        "created_at": "2024-01-16 08:00:00",
+                        "updated_at": "2024-01-16 08:00:00",
+                        "subscribersCount": 1830
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "Tag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the tag."
+          },
+          "title": {
+            "type": "string",
+            "description": "Display name of the tag."
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL-friendly unique identifier."
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Optional description of the tag."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the tag was created (WordPress timezone)."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the tag was last updated (WordPress timezone)."
+          },
+          "subscribersCount": {
+            "type": "integer",
+            "description": "Number of subscribed contacts with this tag. Only included when `exclude_counts` is not set."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

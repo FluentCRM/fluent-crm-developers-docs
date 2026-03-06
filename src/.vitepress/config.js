@@ -13,6 +13,7 @@ export default defineConfig({
     ignoreDeadLinks: true,
 
     vite: {
+        assetsInclude: ['**/*.json'],
         resolve: {
             alias: {
                 '/assets': fileURLToPath(new URL('./public/assets', import.meta.url))
@@ -29,7 +30,7 @@ export default defineConfig({
         ['link', { rel: 'mask-icon', href: '/assets/img/logo.svg', color: '#7742e6' }],
         ['link', { rel: 'apple-touch-icon', href: '/assets/img/logo.svg' }],
         ['meta', { name: 'theme-color', content: '#7742e6' }],
-        ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
+        ['meta', { name: 'mobile-web-app-capable', content: 'yes' }],
         ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }],
         ['meta', { name: 'msapplication-TileImage', content: '/assets/img/icon.svg' }],
         ['meta', { name: 'msapplication-TileColor', content: '#000000' }],
@@ -157,5 +158,6 @@ export default defineConfig({
                 indexName: 'crawler_FluentCRM Developers Docs'
             }
         }
-    }
+    },
+
 })

@@ -1,0 +1,344 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/smart-links/{id}": {
+      "put": {
+        "operationId": "updateSmartLink",
+        "summary": "PUT Update Smart Link",
+        "description": "Update an existing smart link's title, target URL, actions, and notes. Requires FluentCampaign Pro.",
+        "tags": [
+          "Smart Links"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the smart link to update.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "link"
+                ],
+                "properties": {
+                  "link": {
+                    "type": "object",
+                    "required": [
+                      "title",
+                      "target_url"
+                    ],
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "description": "Updated display title."
+                      },
+                      "target_url": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "Updated destination URL."
+                      },
+                      "actions": {
+                        "type": "object",
+                        "description": "Updated actions to apply on click.",
+                        "properties": {
+                          "tags": {
+                            "type": "array",
+                            "description": "Tag IDs to add.",
+                            "items": {
+                              "type": "integer"
+                            }
+                          },
+                          "lists": {
+                            "type": "array",
+                            "description": "List IDs to add.",
+                            "items": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      },
+                      "detach_actions": {
+                        "type": "object",
+                        "description": "Updated actions to remove on click.",
+                        "properties": {
+                          "tags": {
+                            "type": "array",
+                            "description": "Tag IDs to remove.",
+                            "items": {
+                              "type": "integer"
+                            }
+                          },
+                          "lists": {
+                            "type": "array",
+                            "description": "List IDs to remove.",
+                            "items": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      },
+                      "auto_login": {
+                        "type": "string",
+                        "description": "Whether to auto-login the WordPress user.",
+                        "enum": [
+                          "yes",
+                          "no"
+                        ]
+                      },
+                      "notes": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "description": "Updated notes."
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "link": {
+                  "title": "Updated Upgrade Link",
+                  "target_url": "https://example.com/upgrade-v2",
+                  "actions": {
+                    "tags": [
+                      1,
+                      3,
+                      7
+                    ],
+                    "lists": [
+                      2
+                    ]
+                  },
+                  "detach_actions": {
+                    "tags": [],
+                    "lists": [
+                      4
+                    ]
+                  },
+                  "auto_login": "yes",
+                  "notes": "Updated tracking link for v2 upgrade page"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Smart link updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "link": {
+                      "type": "object",
+                      "description": "The updated smart link object.",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "description": "Unique identifier."
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "Updated title."
+                        },
+                        "short": {
+                          "type": "string",
+                          "description": "Short slug (unchanged)."
+                        },
+                        "target_url": {
+                          "type": "string",
+                          "description": "Updated destination URL."
+                        },
+                        "actions": {
+                          "type": "object",
+                          "description": "Updated actions configuration."
+                        },
+                        "notes": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Updated notes."
+                        },
+                        "created_by": {
+                          "type": "integer",
+                          "description": "Creator's WordPress user ID."
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "short_url": {
+                          "type": "string",
+                          "description": "Full trackable URL."
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Success message."
+                    }
+                  }
+                },
+                "example": {
+                  "link": {
+                    "id": 4,
+                    "title": "Updated Upgrade Link",
+                    "short": "x7y8z9",
+                    "target_url": "https://example.com/upgrade-v2",
+                    "actions": {
+                      "tags": [
+                        1,
+                        3,
+                        7
+                      ],
+                      "lists": [
+                        2
+                      ],
+                      "remove_tags": [],
+                      "remove_lists": [
+                        4
+                      ],
+                      "auto_login": "yes"
+                    },
+                    "notes": "Updated tracking link for v2 upgrade page",
+                    "created_by": 1,
+                    "created_at": "2024-06-20 14:00:00",
+                    "updated_at": "2024-06-21 09:15:00",
+                    "short_url": "https://example.com/?fluentcrm=1&route=smart_url&slug=x7y8z9"
+                  },
+                  "message": "SmartLink has be updated"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Smart link not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "No query results for model [SmartLink]."
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "errors": {
+                    "title": [
+                      "The title field is required."
+                    ],
+                    "target_url": [
+                      "The target url format is invalid."
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

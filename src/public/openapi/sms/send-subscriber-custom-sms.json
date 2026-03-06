@@ -1,0 +1,143 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/sms/subscribers/{id}/send": {
+      "post": {
+        "operationId": "sendSubscriberCustomSms",
+        "summary": "POST Send Custom SMS to Subscriber",
+        "description": "Send a custom (one-off) SMS message to a specific subscriber/contact. The SMS module must be active and the subscriber must have a phone number. Maximum message length is 1600 characters (up to 10 SMS segments). The message is queued via Action Scheduler for near-immediate delivery. **PRO** (requires FluentCampaign Pro SMS module).",
+        "tags": [
+          "SMS"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Subscriber (contact) ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "message"
+                ],
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "SMS message body. Maximum 1600 characters.",
+                    "maxLength": 1600
+                  },
+                  "from_number": {
+                    "type": "string",
+                    "description": "Optional sender phone number/ID."
+                  }
+                }
+              },
+              "example": {
+                "message": "Hi John, your order #1234 has been shipped! Track it at https://example.com/track/1234"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "SMS queued for sending.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Custom SMS will be sent shortly"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "SMS module not active, message is required, subscriber has no phone number, or message exceeds 1600 characters."
+          },
+          "404": {
+            "description": "Subscriber not found."
+          },
+          "500": {
+            "description": "Internal error while preparing SMS."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

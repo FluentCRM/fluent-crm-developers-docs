@@ -1,0 +1,172 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/users": {
+      "get": {
+        "operationId": "listUsers",
+        "summary": "GET List WordPress Users",
+        "description": "Retrieve a list of WordPress users filtered by role. Returns user ID, display name, and email by default. Useful for previewing users before importing them as contacts.",
+        "tags": [
+          "Users"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "roles[]",
+            "in": "query",
+            "required": false,
+            "description": "WordPress user roles to filter by.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Maximum number of users to return.",
+            "schema": {
+              "type": "integer",
+              "default": 5
+            }
+          },
+          {
+            "name": "fields[]",
+            "in": "query",
+            "required": false,
+            "description": "User fields to include in the response.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": [
+                "ID",
+                "display_name",
+                "user_email"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of WordPress users.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "users": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "ID": {
+                            "type": "integer",
+                            "description": "WordPress user ID."
+                          },
+                          "display_name": {
+                            "type": "string",
+                            "description": "User display name."
+                          },
+                          "user_email": {
+                            "type": "string",
+                            "format": "email",
+                            "description": "User email address."
+                          }
+                        }
+                      },
+                      "description": "Array of WordPress user objects."
+                    },
+                    "total": {
+                      "type": "integer",
+                      "description": "Total number of matching users."
+                    }
+                  }
+                },
+                "example": {
+                  "users": [
+                    {
+                      "ID": 1,
+                      "display_name": "John Doe",
+                      "user_email": "john@example.com"
+                    },
+                    {
+                      "ID": 2,
+                      "display_name": "Jane Smith",
+                      "user_email": "jane@example.com"
+                    }
+                  ],
+                  "total": 45
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

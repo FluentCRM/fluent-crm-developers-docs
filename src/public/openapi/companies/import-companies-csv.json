@@ -1,0 +1,253 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/companies/csv-import": {
+      "post": {
+        "operationId": "importCompaniesCSV",
+        "summary": "POST Import Companies from CSV",
+        "description": "Import companies from a previously uploaded CSV file. Processes up to 100 records per request for batch importing. Use the `importing_page` parameter to paginate through large files. Supports field mapping via the `map` parameter, optional updating of existing companies (matched by name), and automatic owner creation from the CSV data.",
+        "tags": [
+          "Companies"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "map",
+                  "file"
+                ],
+                "properties": {
+                  "map": {
+                    "type": "array",
+                    "description": "Array of field mappings from CSV columns to company table columns.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "csv": {
+                          "type": "string",
+                          "description": "The CSV column header name."
+                        },
+                        "table": {
+                          "type": "string",
+                          "description": "The target company table column (e.g., name, email, phone, type, industry). Use `_custom_` prefix for custom fields."
+                        }
+                      }
+                    }
+                  },
+                  "file": {
+                    "type": "string",
+                    "description": "Server-side file path of the uploaded CSV file."
+                  },
+                  "update": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "description": "Whether to update existing companies matched by name.",
+                    "default": "no"
+                  },
+                  "create_owner": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "description": "Whether to automatically create a contact as owner if the owner_email doesn't match an existing contact.",
+                    "default": "no"
+                  },
+                  "delimiter": {
+                    "type": "string",
+                    "enum": [
+                      "comma",
+                      "semicolon"
+                    ],
+                    "description": "CSV delimiter character.",
+                    "default": "comma"
+                  },
+                  "importing_page": {
+                    "type": "integer",
+                    "description": "Page number for batch processing (100 records per page).",
+                    "default": 1
+                  }
+                }
+              },
+              "example": {
+                "map": [
+                  {
+                    "csv": "Company Name",
+                    "table": "name"
+                  },
+                  {
+                    "csv": "Email",
+                    "table": "email"
+                  },
+                  {
+                    "csv": "Phone",
+                    "table": "phone"
+                  },
+                  {
+                    "csv": "Type",
+                    "table": "type"
+                  },
+                  {
+                    "csv": "Industry",
+                    "table": "industry"
+                  },
+                  {
+                    "csv": "Website",
+                    "table": "website"
+                  }
+                ],
+                "file": "/path/to/uploaded/companies.csv",
+                "update": "yes",
+                "create_owner": "no",
+                "delimiter": "comma",
+                "importing_page": 1
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Batch import completed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "total": {
+                      "type": "integer",
+                      "description": "Total number of records in the CSV file."
+                    },
+                    "completed": {
+                      "type": "integer",
+                      "description": "Number of companies processed in this batch."
+                    },
+                    "total_page": {
+                      "type": "integer",
+                      "description": "Total number of pages needed."
+                    },
+                    "skipped": {
+                      "type": "integer",
+                      "description": "Number of companies skipped (already exist and update=no)."
+                    },
+                    "has_more": {
+                      "type": "boolean",
+                      "description": "Whether more pages remain to be processed."
+                    },
+                    "last_page": {
+                      "type": "integer",
+                      "description": "The page number that was just processed."
+                    },
+                    "offset": {
+                      "type": "integer",
+                      "description": "Record offset for this batch."
+                    }
+                  }
+                },
+                "example": {
+                  "total": 250,
+                  "completed": 100,
+                  "total_page": 3,
+                  "skipped": 5,
+                  "has_more": true,
+                  "last_page": 1,
+                  "offset": 0
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error (e.g., missing company name in CSV row).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "errors": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

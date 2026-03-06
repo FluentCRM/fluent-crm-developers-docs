@@ -1,0 +1,183 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/labels": {
+      "get": {
+        "operationId": "listLabels",
+        "summary": "GET List Labels",
+        "description": "Retrieve all global labels ordered by their position. Labels are used to categorize and organize automation funnels and other objects within FluentCRM.",
+        "tags": [
+          "Labels"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all labels.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "labels": {
+                      "type": "array",
+                      "description": "Array of label objects ordered by position.",
+                      "items": {
+                        "$ref": "#/components/schemas/Label"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "labels": [
+                    {
+                      "id": 1,
+                      "parent_id": null,
+                      "slug": "high-priority",
+                      "title": "High Priority",
+                      "description": null,
+                      "position": 0,
+                      "settings": {
+                        "color": "#ff4444"
+                      },
+                      "created_at": "2024-03-01 10:00:00",
+                      "updated_at": "2024-03-01 10:00:00"
+                    },
+                    {
+                      "id": 2,
+                      "parent_id": null,
+                      "slug": "onboarding",
+                      "title": "Onboarding",
+                      "description": null,
+                      "position": 1,
+                      "settings": {
+                        "color": "#44bb44"
+                      },
+                      "created_at": "2024-03-01 11:00:00",
+                      "updated_at": "2024-03-01 11:00:00"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "Label": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the label."
+          },
+          "parent_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Parent label ID for hierarchical labels."
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL-friendly unique identifier."
+          },
+          "title": {
+            "type": "string",
+            "description": "Display name of the label."
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Optional description."
+          },
+          "position": {
+            "type": "integer",
+            "description": "Sort order position."
+          },
+          "settings": {
+            "type": "object",
+            "description": "Label settings including visual properties.",
+            "properties": {
+              "color": {
+                "type": "string",
+                "description": "Hex color code for the label."
+              }
+            }
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the label was created."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the label was last updated."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

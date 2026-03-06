@@ -1,0 +1,210 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/labels": {
+      "post": {
+        "operationId": "createLabel",
+        "summary": "POST Create Label",
+        "description": "Create a new global label. Labels are stored in the `fc_terms` table with `taxonomy_name` of `global_label`. The `slug`, `title`, and `color` fields are sanitized server-side.",
+        "tags": [
+          "Labels"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "label"
+                ],
+                "properties": {
+                  "label": {
+                    "type": "object",
+                    "required": [
+                      "slug",
+                      "title",
+                      "color"
+                    ],
+                    "description": "The label data to create.",
+                    "properties": {
+                      "slug": {
+                        "type": "string",
+                        "description": "URL-friendly unique identifier for the label."
+                      },
+                      "title": {
+                        "type": "string",
+                        "description": "Display name of the label."
+                      },
+                      "color": {
+                        "type": "string",
+                        "description": "Hex color code (e.g., `#ff4444`)."
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "label": {
+                  "slug": "high-priority",
+                  "title": "High Priority",
+                  "color": "#ff4444"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Label created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "description": "Unique identifier for the label."
+                        },
+                        "parent_id": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "description": "Parent label ID for hierarchical labels."
+                        },
+                        "slug": {
+                          "type": "string",
+                          "description": "URL-friendly unique identifier."
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "Display name of the label."
+                        },
+                        "description": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Optional description."
+                        },
+                        "position": {
+                          "type": "integer",
+                          "description": "Sort order position."
+                        },
+                        "settings": {
+                          "type": "object",
+                          "description": "Label settings including visual properties.",
+                          "properties": {
+                            "color": {
+                              "type": "string",
+                              "description": "Hex color code for the label."
+                            }
+                          }
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "Timestamp when the label was created."
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "Timestamp when the label was last updated."
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Success message."
+                    }
+                  }
+                },
+                "example": {
+                  "label": {
+                    "id": 3,
+                    "parent_id": null,
+                    "slug": "high-priority",
+                    "title": "High Priority",
+                    "description": null,
+                    "position": null,
+                    "settings": {
+                      "color": "#ff4444"
+                    },
+                    "created_at": "2024-03-01 10:00:00",
+                    "updated_at": "2024-03-01 10:00:00"
+                  },
+                  "message": "Label has been created successfully"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}
