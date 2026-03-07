@@ -465,6 +465,28 @@ add_action('fluent_crm/note_delete', function($noteId, $subscriber) {
 
 ---
 
+## Birthday
+
+### `fluentcrm_contact_birthday`
+
+<Badge type="danger" vertical="middle" text="Pro" />
+
+Fires when a contact's birthday occurs. Processed in batch during scheduled birthday checks. Used for triggering birthday automations.
+
+**Parameters**
+- `$subscriber` [Subscriber Model](/database/models/subscriber)
+
+**Usage:**
+```php
+add_action('fluentcrm_contact_birthday', function($subscriber) {
+    // Send birthday greeting, apply tags, etc.
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Hooks/Handlers/IntegrationHandler.php`
+
+---
+
 ## Bulk Deletion
 
 ### `fluentcrm_before_subscribers_deleted`

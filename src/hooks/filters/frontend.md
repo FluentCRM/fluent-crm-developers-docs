@@ -283,6 +283,166 @@ add_filter('fluent_crm/show_unsubscribe_on_pref', function($show) {
 
 ---
 
+## Newsletter Archive
+
+<Badge type="danger" vertical="middle" text="Pro" />
+
+### `fluent_crm/newsletter_archive_template`
+
+Replace the newsletter archive list template file with a custom one.
+
+**Parameters**
+- `$templateFile` String - path to the template file
+
+**Usage:**
+```php
+add_filter('fluent_crm/newsletter_archive_template', function($templateFile) {
+    return plugin_dir_path(__FILE__) . 'templates/my-archive.php';
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Hooks/Handlers/CampaignArchiveFront.php`
+
+---
+
+### `fluent_crm/newsletter_single_template`
+
+Replace the single newsletter display template file with a custom one.
+
+**Parameters**
+- `$templateFile` String - path to the template file
+
+**Usage:**
+```php
+add_filter('fluent_crm/newsletter_single_template', function($templateFile) {
+    return plugin_dir_path(__FILE__) . 'templates/my-newsletter.php';
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Hooks/Handlers/CampaignArchiveFront.php`
+
+---
+
+### `fluent_crm/newsletter_single_permalink_base`
+
+Customize the base URL for newsletter archive links.
+
+**Parameters**
+- `$basePermalink` String - default uses `get_the_permalink()`
+
+**Usage:**
+```php
+add_filter('fluent_crm/newsletter_single_permalink_base', function($basePermalink) {
+    return home_url('/newsletters/');
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Hooks/Handlers/CampaignArchiveFront.php`
+
+---
+
+### `fluent_crm/newsletter_list_title_single`
+
+Filter individual newsletter titles in the archive list view.
+
+**Parameters**
+- `$subject` String - newsletter subject/title
+- `$campaign` Campaign Model
+
+**Usage:**
+```php
+add_filter('fluent_crm/newsletter_list_title_single', function($subject, $campaign) {
+    return '[Newsletter] ' . $subject;
+}, 10, 2);
+```
+
+**Source:** `fluentcampaign-pro/app/Hooks/Handlers/CampaignArchiveFront.php`
+
+---
+
+### `fluent_crm/newsletter_preview_data`
+
+Filter newsletter data before rendering the single newsletter view.
+
+**Parameters**
+- `$newsletter` Array - newsletter display data
+- `$campaign` Campaign Model
+
+**Usage:**
+```php
+add_filter('fluent_crm/newsletter_preview_data', function($newsletter, $campaign) {
+    // Modify newsletter before rendering
+    return $newsletter;
+}, 10, 2);
+```
+
+**Source:** `fluentcampaign-pro/app/Hooks/Handlers/CampaignArchiveFront.php`
+
+---
+
+### `fluent_crm/disable_newsletter_archive_css`
+
+Disable the default CSS styling on newsletter archive pages.
+
+**Parameters**
+- `$shouldDisable` Boolean - Default `false`
+
+**Usage:**
+```php
+add_filter('fluent_crm/disable_newsletter_archive_css', function($shouldDisable) {
+    return true; // Use your own styles
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Views/single_newsletter.php`, `fluentcampaign-pro/app/Views/all_newsletters.php`
+
+---
+
+## Smart Link Auto-Login
+
+<Badge type="danger" vertical="middle" text="Pro" />
+
+### `fluent_crm/will_make_auto_login`
+
+Control whether a contact is automatically logged in to WordPress when accessing a smart link.
+
+**Parameters**
+- `$willMakeLogin` Boolean - default is based on whether `fluent_crm/smart_link_verified` has fired
+- `$contact` [Subscriber Model](/database/models/subscriber)
+
+**Usage:**
+```php
+add_filter('fluent_crm/will_make_auto_login', function($willMakeLogin, $contact) {
+    // Disable auto-login for certain contacts
+    if ($contact->status !== 'subscribed') {
+        return false;
+    }
+    return $willMakeLogin;
+}, 10, 2);
+```
+
+**Source:** `fluentcampaign-pro/app/Hooks/Handlers/SmartLinkHandler.php`
+
+---
+
+### `fluent_crm/enable_high_level_auto_login`
+
+Control whether admin or editor-level users can be auto-logged in via smart links. Disabled by default for security.
+
+**Parameters**
+- `$shouldEnable` Boolean - Default `false`
+
+**Usage:**
+```php
+add_filter('fluent_crm/enable_high_level_auto_login', function($shouldEnable) {
+    return false; // Keep disabled for safety
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Hooks/Handlers/SmartLinkHandler.php`
+
+---
+
 ## Bounce Handling
 
 ### `fluent_crm/bounced_email_store`

@@ -251,6 +251,88 @@ add_action('fluentcrm_sending_emails_done', function($campaignEmails) {
 
 ---
 
+## Newsletter Archive
+
+<Badge type="danger" vertical="middle" text="Pro" />
+
+These hooks fire when rendering the public newsletter archive pages.
+
+### `fluent_crm/before_newsletter_archive`
+
+Fires before rendering the newsletter archive listing page.
+
+**Parameters**
+- `$newsletters` Array - newsletter items
+- `$campaigns` Collection - campaign models
+
+**Usage:**
+```php
+add_action('fluent_crm/before_newsletter_archive', function($newsletters, $campaigns) {
+    // Add custom content before the archive list
+}, 10, 2);
+```
+
+**Source:** `fluentcampaign-pro/app/Views/all_newsletters.php`
+
+---
+
+### `fluent_crm/after_newsletter_archive`
+
+Fires after rendering the newsletter archive listing page.
+
+**Parameters**
+- `$newsletters` Array - newsletter items
+- `$campaigns` Collection - campaign models
+
+**Usage:**
+```php
+add_action('fluent_crm/after_newsletter_archive', function($newsletters, $campaigns) {
+    // Add custom content after the archive list
+}, 10, 2);
+```
+
+**Source:** `fluentcampaign-pro/app/Views/all_newsletters.php`
+
+---
+
+### `fluent_crm/before_newsletter_single`
+
+Fires before rendering a single newsletter page.
+
+**Parameters**
+- `$newsletter` Array - newsletter data
+- `$campaign` Campaign Model
+
+**Usage:**
+```php
+add_action('fluent_crm/before_newsletter_single', function($newsletter, $campaign) {
+    // Add custom content before the newsletter
+}, 10, 2);
+```
+
+**Source:** `fluentcampaign-pro/app/Views/single_newsletter.php`
+
+---
+
+### `fluent_crm/after_newsletter_single`
+
+Fires after rendering a single newsletter page.
+
+**Parameters**
+- `$newsletter` Array - newsletter data
+- `$campaign` Campaign Model
+
+**Usage:**
+```php
+add_action('fluent_crm/after_newsletter_single', function($newsletter, $campaign) {
+    // Add custom scripts or content after the newsletter
+}, 10, 2);
+```
+
+**Source:** `fluentcampaign-pro/app/Views/single_newsletter.php`
+
+---
+
 ## Email Template Design
 
 ### `fluent_crm/email_header`

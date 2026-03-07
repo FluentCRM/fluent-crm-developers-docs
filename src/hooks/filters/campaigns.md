@@ -82,3 +82,100 @@ add_filter('fluent_crm/five_minute_campaign_processing_chunk', function($chunk, 
 ```
 
 **Source:** `app/Hooks/Handlers/Scheduler.php`
+
+---
+
+## Sequences & Recurring Campaigns
+
+<Badge type="danger" vertical="middle" text="Pro" />
+
+### `fluent_crm/sequence_tracker_batch_limit`
+
+Filter the batch size for processing email sequence tracking records.
+
+**Parameters**
+- `$limit` INT - Default `200`
+
+**Usage:**
+```php
+add_filter('fluent_crm/sequence_tracker_batch_limit', function($limit) {
+    return 500;
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Hooks/Handlers/EmailScheduleHandler.php`
+
+---
+
+### `fluent_crm/recurring_campaign_batch_limit`
+
+Filter how many recurring campaigns are processed in a single scheduled batch.
+
+**Parameters**
+- `$limit` INT - Default `10`
+
+**Usage:**
+```php
+add_filter('fluent_crm/recurring_campaign_batch_limit', function($limit) {
+    return 20;
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Hooks/Handlers/RecurringCampaignHandler.php`
+
+---
+
+### `fluent_crm/campaign_action_limit`
+
+Filter the number of subscribers processed per request during email campaign processing.
+
+**Parameters**
+- `$limit` INT - Default `50`
+
+**Usage:**
+```php
+add_filter('fluent_crm/campaign_action_limit', function($limit) {
+    return 100;
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Http/Controllers/CampaignsProController.php`
+
+---
+
+### `fluent_crm/email_campaign_export_data`
+
+Filter email campaign data during export operations.
+
+**Parameters**
+- `$campaignData` Array - exported campaign data
+- `$campaign` Campaign Model
+
+**Usage:**
+```php
+add_filter('fluent_crm/email_campaign_export_data', function($campaignData, $campaign) {
+    // Modify export data
+    return $campaignData;
+}, 10, 2);
+```
+
+**Source:** `fluentcampaign-pro/app/Hooks/Handlers/DataExporter.php`
+
+---
+
+### `fluent_crm/sms_campaign_export_data`
+
+Filter SMS campaign data during export operations.
+
+**Parameters**
+- `$campaignData` Array - exported SMS campaign data
+- `$campaign` Campaign Model
+
+**Usage:**
+```php
+add_filter('fluent_crm/sms_campaign_export_data', function($campaignData, $campaign) {
+    return $campaignData;
+}, 10, 2);
+```
+
+**Source:** `fluentcampaign-pro/app/Hooks/Handlers/DataExporter.php`

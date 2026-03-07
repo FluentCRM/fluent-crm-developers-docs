@@ -310,3 +310,286 @@ add_filter('fluent_crm/advanced_report_providers', function($providers) {
 ```
 
 **Source:** `app/Http/Controllers/ReportingController.php`
+
+---
+
+## Dynamic Segments
+
+<Badge type="danger" vertical="middle" text="Pro" />
+
+### `fluentcrm_dynamic_segments`
+
+Filter the list of registered dynamic segments. Use this to add custom segment types (e.g., "VIP Customers", "Users with Pending Orders").
+
+**Parameters**
+- `$segments` Array - registered segment definitions
+
+**Usage:**
+```php
+add_filter('fluentcrm_dynamic_segments', function($segments) {
+    $segments[] = [
+        'slug'        => 'high_value_customers',
+        'label'       => 'High Value Customers',
+        'description' => 'Customers with total orders > $1000'
+    ];
+    return $segments;
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Http/Controllers/DynamicSegmentController.php`
+
+---
+
+### `fluentcrm_dynamic_segment_{$slug}`
+
+Filter subscriber data for a specific dynamic segment type. Implement this for each custom segment slug registered via `fluentcrm_dynamic_segments`.
+
+**Parameters**
+- `$segmentData` Mixed - segment query results
+- `$segmentId` INT - segment ID
+- `$options` Array - contains `subscribers` (bool) and `paginate` (bool)
+
+**Usage:**
+```php
+add_filter('fluentcrm_dynamic_segment_high_value_customers', function($data, $segmentId, $options) {
+    // Return subscribers matching segment criteria
+    if ($options['subscribers']) {
+        // Return actual subscriber data
+    }
+    return ['total' => 150];
+}, 10, 3);
+```
+
+**Source:** `fluentcampaign-pro/app/Http/Controllers/DynamicSegmentController.php`
+
+---
+
+## WooCommerce
+
+<Badge type="danger" vertical="middle" text="Pro" />
+
+### `fluent_crm/woo_checkout_fields`
+
+Filter WooCommerce checkout form fields available for newsletter signup integration.
+
+**Parameters**
+- `$fields` Array - checkout field definitions
+
+**Usage:**
+```php
+add_filter('fluent_crm/woo_checkout_fields', function($fields) {
+    // Customize checkout fields for CRM
+    return $fields;
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Services/Integrations/WooCommerce/WooInit.php`
+
+---
+
+### `fluent_crm/woo_block_checkout_consent_position`
+
+Control the position of the newsletter consent checkbox in WooCommerce block-based checkout.
+
+**Parameters**
+- `$position` String - Default `'order'`
+
+**Usage:**
+```php
+add_filter('fluent_crm/woo_block_checkout_consent_position', function($position) {
+    return 'contact'; // Move to contact section
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Services/Integrations/WooCommerce/WooInit.php`
+
+---
+
+### `fluent_crm/woo_checkout_auto_subscribe_data`
+
+Filter subscriber data created during WooCommerce checkout auto-subscription.
+
+**Parameters**
+- `$subscriberData` Array - contact data to create/update
+- `$order` WC_Order - the WooCommerce order
+
+**Usage:**
+```php
+add_filter('fluent_crm/woo_checkout_auto_subscribe_data', function($subscriberData, $order) {
+    $subscriberData['source'] = 'woo_checkout';
+    return $subscriberData;
+}, 10, 2);
+```
+
+**Source:** `fluentcampaign-pro/app/Services/Integrations/WooCommerce/WooInit.php`
+
+---
+
+### `fluent_crm/woo_order_conditions`
+
+Filter available WooCommerce order-based automation conditions.
+
+**Parameters**
+- `$orderProps` Array - condition property definitions
+
+**Usage:**
+```php
+add_filter('fluent_crm/woo_order_conditions', function($orderProps) {
+    $orderProps[] = [
+        'value' => 'custom_order_field',
+        'label' => 'Custom Order Field'
+    ];
+    return $orderProps;
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Services/Integrations/WooCommerce/AutomationConditions.php`
+
+---
+
+### `fluent_crm/user_can_view_woo_report`
+
+Control whether a user can access WooCommerce integration reports in FluentCRM.
+
+**Parameters**
+- `$canView` Boolean - default checks `view_woocommerce_reports` capability
+
+**Usage:**
+```php
+add_filter('fluent_crm/user_can_view_woo_report', function($canView) {
+    return current_user_can('manage_options');
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Services/Integrations/WooCommerce/DeepIntegration.php`
+
+---
+
+### `fluent_crm/disable_woo_subscriptions_widget`
+
+Disable the WooCommerce subscriptions widget for specific subscribers.
+
+**Parameters**
+- `$shouldDisable` Boolean - Default `false`
+- `$subscriber` [Subscriber Model](/database/models/subscriber)
+
+**Usage:**
+```php
+add_filter('fluent_crm/disable_woo_subscriptions_widget', function($shouldDisable, $subscriber) {
+    return $shouldDisable;
+}, 10, 2);
+```
+
+**Source:** `fluentcampaign-pro/app/Services/Integrations/WooCommerce/WooInit.php`
+
+---
+
+## WooCommerce Abandoned Cart
+
+<Badge type="danger" vertical="middle" text="Pro" />
+
+### `fluent_crm/ab_cart_cookie_validity`
+
+Filter how long the abandon cart tracking cookie is valid (in days).
+
+**Parameters**
+- `$days` INT - Default `30`
+
+**Usage:**
+```php
+add_filter('fluent_crm/ab_cart_cookie_validity', function($days) {
+    return 14; // Track for 14 days
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Modules/AbandonCart/Woo/WooCartTrackingInit.php`
+
+---
+
+### `fluent_crm/ab_cart_opt_out_cookie_validity`
+
+Filter how long the abandon cart opt-out cookie persists (in days).
+
+**Parameters**
+- `$days` INT - Default `7`
+
+**Usage:**
+```php
+add_filter('fluent_crm/ab_cart_opt_out_cookie_validity', function($days) {
+    return 30;
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Modules/AbandonCart/Woo/WooCartTrackingInit.php`
+
+---
+
+### `fluent_crm/ab_cart_is_win_status`
+
+Determine whether a WooCommerce order status should be considered a "win" (recovered cart).
+
+**Parameters**
+- `$isWon` Boolean - whether the status counts as recovery
+- `$orderStatus` String - WooCommerce order status
+- `$driver` Object - cart driver instance
+
+**Usage:**
+```php
+add_filter('fluent_crm/ab_cart_is_win_status', function($isWon, $orderStatus, $driver) {
+    // Custom statuses that count as cart recovery
+    if ($orderStatus === 'wc-on-hold') {
+        return true;
+    }
+    return $isWon;
+}, 10, 3);
+```
+
+**Source:** `fluentcampaign-pro/app/Modules/AbandonCart/Woo/WooDriver.php`
+
+---
+
+## EDD
+
+<Badge type="danger" vertical="middle" text="Pro" />
+
+### `fluent_crm/user_can_view_edd_report`
+
+Control whether a user can access EDD integration reports in FluentCRM.
+
+**Parameters**
+- `$canView` Boolean - default checks `view_shop_sensitive_data` capability
+
+**Usage:**
+```php
+add_filter('fluent_crm/user_can_view_edd_report', function($canView) {
+    return current_user_can('manage_options');
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Services/Integrations/Edd/DeepIntegration.php`
+
+---
+
+## Integration Metaboxes
+
+<Badge type="danger" vertical="middle" text="Pro" />
+
+### `fluentcrm_disable_integration_metaboxes`
+
+Disable FluentCRM metaboxes within specific third-party plugin admin pages (WooCommerce, EDD, LearnDash, etc.).
+
+**Parameters**
+- `$shouldDisable` Boolean - Default `false`
+- `$integrationName` String - integration slug (e.g., `woocommerce`, `edd`, `learndash`, `lifterlms`, `learnpress`, `tutorlms`)
+
+**Usage:**
+```php
+add_filter('fluentcrm_disable_integration_metaboxes', function($shouldDisable, $integrationName) {
+    if ($integrationName === 'woocommerce') {
+        return true; // Disable metabox on WooCommerce product pages
+    }
+    return $shouldDisable;
+}, 10, 2);
+```
+
+**Source:** `fluentcampaign-pro/app/Services/Integrations/` (multiple integration init files)

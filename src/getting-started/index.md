@@ -1,4 +1,5 @@
 ---
+title: Getting Started
 description: "Developer guide for FluentCRM — architecture overview, directory structure, key concepts, and links to detailed documentation."
 ---
 
@@ -111,7 +112,7 @@ See the full [REST API Reference](/rest-api/).
 | Add a tab to the contact profile | [Profile Section Module](/modules/contact-profile-section) |
 | Add custom smart codes for emails | [Smart Code Module](/modules/smart-code) |
 | Track custom events on contacts | [Event Tracking Module](/modules/event-tracking) |
-| Add custom REST API endpoints | [Extending the REST API](/extending-rest-api/) |
+| Add custom REST API endpoints | [Extending the REST API](/modules/extending-rest-api) |
 | Customize the admin dashboard | [Dashboard Filters](/hooks/filters/admin-and-dashboard) |
 | Modify frontend pages (unsubscribe, DOI) | [Frontend Filters](/hooks/filters/frontend) |
 

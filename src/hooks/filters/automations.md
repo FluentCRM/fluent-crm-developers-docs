@@ -311,3 +311,138 @@ add_filter('fluent_crm/webhook_ssl_verify', function($verify) {
 ```
 
 **Source:** `app/Http/Controllers/FunnelController.php`
+
+---
+
+## Conditions & A/B Testing
+
+<Badge type="danger" vertical="middle" text="Pro" />
+
+### `fluentcrm_automation_condition_groups`
+
+Filter the available condition groups for automation rules.
+
+**Parameters**
+- `$groups` Array - condition group definitions
+- `$funnel` [Funnel Model](/database/models/funnel)
+
+**Usage:**
+```php
+add_filter('fluentcrm_automation_condition_groups', function($groups, $funnel) {
+    $groups[] = [
+        'value' => 'my_custom_group',
+        'label' => 'My Custom Conditions'
+    ];
+    return $groups;
+}, 10, 2);
+```
+
+**Source:** `fluentcampaign-pro/app/Services/Funnel/Conditions/FunnelCondition.php`
+
+---
+
+### `fluentcrm_automation_custom_conditions`
+
+Filter custom condition options for automation rules.
+
+**Parameters**
+- `$conditions` Array - condition definitions
+- `$funnel` [Funnel Model](/database/models/funnel)
+
+**Usage:**
+```php
+add_filter('fluentcrm_automation_custom_conditions', function($conditions, $funnel) {
+    $conditions['has_membership'] = [
+        'label'    => 'Has Active Membership',
+        'type'     => 'yes_no_check'
+    ];
+    return $conditions;
+}, 10, 2);
+```
+
+**Source:** `fluentcampaign-pro/app/Services/Funnel/Conditions/FunnelCondition.php`
+
+---
+
+### `fluentcrm_automation_custom_condition_assert_{$propertyName}`
+
+Dynamic filter to evaluate a custom automation condition. Return `true` or `false` to pass or fail the condition.
+
+**Parameters**
+- `$result` Boolean - default condition result
+- `$condition` Array - condition config
+- `$subscriber` [Subscriber Model](/database/models/subscriber)
+- `$sequence` Object - sequence data
+- `$funnelSubscriberId` INT - funnel subscriber ID
+
+**Usage:**
+```php
+add_filter('fluentcrm_automation_custom_condition_assert_has_membership', function($result, $condition, $subscriber) {
+    return user_has_membership($subscriber->user_id);
+}, 10, 3);
+```
+
+**Source:** `fluentcampaign-pro/app/Services/Funnel/Conditions/FunnelCondition.php`
+
+---
+
+### `fluent_crm/funnel_ab_test_is_b`
+
+Determines whether a subscriber falls into the B variant of an automation A/B test.
+
+**Parameters**
+- `$isB` Boolean - whether this subscriber gets variant B
+- `$sequence` Object - sequence step data
+- `$funnelSub` Object - funnel subscriber data
+
+**Usage:**
+```php
+add_filter('fluent_crm/funnel_ab_test_is_b', function($isB, $sequence, $funnelSub) {
+    return $isB;
+}, 10, 3);
+```
+
+**Source:** `fluentcampaign-pro/app/Services/Funnel/Conditions/FunnelABTesting.php`
+
+---
+
+### `fluent_crm/event_tracking_condition_groups`
+
+Filter condition groups available for event tracking automation triggers.
+
+**Parameters**
+- `$groups` Array - condition groups
+
+**Usage:**
+```php
+add_filter('fluent_crm/event_tracking_condition_groups', function($groups) {
+    $groups[] = [
+        'value' => 'event_custom',
+        'label' => 'Custom Event Conditions'
+    ];
+    return $groups;
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Services/Funnel/Triggers/TrackingEventRecordedTrigger.php`
+
+---
+
+### `fluent_crm/http_webhook_body`
+
+Filter the request body sent to external webhooks in HTTP webhook automation actions.
+
+**Parameters**
+- `$body` Array - request body
+- `$sequence` Object - sequence step data
+- `$subscriber` [Subscriber Model](/database/models/subscriber)
+
+**Usage:**
+```php
+add_filter('fluent_crm/http_webhook_body', function($body, $sequence, $subscriber) {
+    $body['custom_field'] = $subscriber->custom_values['my_field'] ?? '';
+    return $body;
+}, 10, 3);
+```
+
+**Source:** `fluentcampaign-pro/app/Services/Funnel/Actions/HTTPSendDataAction.php`

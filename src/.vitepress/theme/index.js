@@ -1,13 +1,20 @@
 import DefaultTheme from 'vitepress/theme'
 import ExplainBlock from '../components/ExplainBlock.vue'
+import LlmBar from '../components/LlmBar.vue'
 import { theme, useOpenapi } from 'vitepress-openapi/client'
 import 'vitepress-openapi/dist/style.css'
 import './vars.css'
 import './custom.css'
 import './openapi.css'
+import { h } from 'vue'
 
 export default {
     extends: DefaultTheme,
+    Layout() {
+        return h(DefaultTheme.Layout, null, {
+            'doc-before': () => h(LlmBar)
+        })
+    },
     enhanceApp({ app, router, siteData }) {
         app.component('ExplainBlock', ExplainBlock)
 

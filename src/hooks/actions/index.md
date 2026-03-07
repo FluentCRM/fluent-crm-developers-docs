@@ -22,4 +22,6 @@ Action hooks are used to run custom code when certain events occur.
 6. **[Automations, Admin & Init](/hooks/actions/automations)** — Plugin init, automation funnels, admin views, block editor
 7. **[Companies](/hooks/actions/companies)** — Company CRUD, status/type/category changes, notes
 8. **[Frontend Pages](/hooks/actions/frontend-pages)** — Double optin, manage subscription, unsubscribe, view-on-browser pages
-9. **[Integrations](/hooks/actions/integrations)** — Fluent Forms, WooCommerce, and third-party integration hooks
+9. **[Integrations](/hooks/actions/integrations)** — Fluent Forms, WooCommerce, SureCart, abandoned cart, and third-party integration hooks
+10. **[Sequences & Recurring](/hooks/actions/sequences)** <Badge type="danger" vertical="middle" text="Pro" /> — Email sequence completion, deletion, recurring campaign generation
+11. **[SMS Campaigns](/hooks/actions/sms)** <Badge type="danger" vertical="middle" text="Pro" /> — SMS campaign lifecycle, sending, delivery, opt-in/out, provider webhooks

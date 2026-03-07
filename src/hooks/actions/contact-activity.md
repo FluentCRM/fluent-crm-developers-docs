@@ -167,6 +167,27 @@ add_action('fluent_crm/smart_link_verified', function($subscriber) {
 
 ---
 
+### `fluent_crm/smart_link_clicked_by_contact`
+
+<Badge type="danger" vertical="middle" text="Pro" />
+
+Fires when a smart link is clicked by a known contact. This hook fires before the contact is redirected to the target URL.
+
+**Parameters**
+- `$smartLink` Object - Smart link data
+- `$contact` [Subscriber Model](/database/models/subscriber)
+
+**Usage:**
+```php
+add_action('fluent_crm/smart_link_clicked_by_contact', function($smartLink, $contact) {
+    // Track smart link engagement
+}, 10, 2);
+```
+
+**Source:** `fluentcampaign-pro/app/Hooks/Handlers/SmartLinkHandler.php`
+
+---
+
 ## Activity & Event Tracking
 
 ### `fluent_crm/track_activity_by_subscriber`

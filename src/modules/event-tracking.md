@@ -1,87 +1,87 @@
 ---
-description: "Event Tracking is a versatile feature designed to capture data on various contact behaviors. It allows you to programmatically create events for any activity or generate them from different automations."
+title: Event Tracking
+description: "Learn how to track custom contact events and activities in FluentCRM using the PHP API, REST API, or action hooks."
 ---
 
-## Event Tracking
+# Event Tracking
 
-Event Tracking is a versatile feature designed to capture data on various contact behaviors. It allows you to programmatically create events for any activity or generate them from different automations. These events can then be utilized to filter contacts or incorporated into automation conditional logics, offering flexibility in monitoring and responding to user interactions.
+<Badge type="tip" vertical="top" text="FluentCRM Core" /> <Badge type="warning" vertical="top" text="Intermediate" />
 
-There are various methods to create it. Let's go through the process step by step. Initially, we will explore how to create it using the PHP API.
+Event Tracking captures data on contact behaviors. You can programmatically create events for any activity or generate them from automations. Events can be used to filter contacts or as conditions in automation logic.
 
+There are three methods to create events: PHP API, REST API, and Action Hook.
 
-<table cellspacing="0" class="nowrap">
-<thead><tr><th>Key</th><td>Type</td><td>Description</td><td>Default</td></tr></thead>
-<tbody>
-<tr><th>title</th><td>String</td><td>title is required</td><td></td></tr>
-<tr><th>event_key</th><td>String</td><td>event_key is required</td><td></td></tr>
-<tr><th>email</th><td>String</td><td></td><td></td></tr>
-<tr><th>subscriber_id</th><td>String / Number</td><td></td><td></td></tr>
-<tr><th>value</th><td>String</td><td>optional field</td><td></td></tr>
-<tr><th>provider</th><td>String</td><td>optional field</td><td>custom</td></tr>
-</tbody>
-</table>
+## Event Data
 
-<hr/>
+| Key | Type | Required | Description | Default |
+|-----|------|----------|-------------|---------|
+| `title` | String | Yes | Event display title | — |
+| `event_key` | String | Yes | Unique event identifier | — |
+| `email` | String | No | Contact email (used to find the contact) | — |
+| `user_id` | String/Number | No | WordPress user ID | — |
+| `subscriber_id` | String/Number | No | FluentCRM subscriber ID | — |
+| `value` | String | No | Additional event data | — |
+| `provider` | String | No | Source identifier | `custom` |
 
-**Example of PHP API**
+You must provide at least one of `email`, `user_id`, or `subscriber_id` to identify the contact. If none is provided, FluentCRM will try to find the current logged-in contact.
+
+::: tip
+If the `event_key` and `title` combination already exists for a contact, FluentCRM increments the counter instead of creating a new event record.
+:::
+
+## PHP API
 
 ```php
 $tracker = FluentCrmApi('event_tracker')->track([
-    'event_key' => 'fcrm_event_tested', // Required
-    'title'     => 'Testing FluentCRM Event', // Required
+    'event_key' => 'fcrm_event_tested',
+    'title'     => 'Testing FluentCRM Event',
     'value'     => 'This is my event value with plain Text',
-    'email'     => 'success+3000@simulator.amazonses.com', // check note
-    'user_id' => '', // check note
-    'subscriber_id' => '', // check note
-    'provider'  => 'woocommerce' // If left empty, 'custom' will be added.
+    'email'     => 'john@example.com',
+    'provider'  => 'woocommerce',
 ], true);
 ```
-Note: You may provide any of these values: email / subscriber_id / subscriber_id. If not values is given FluentCRM will try to find the the current contact.
 
+The second parameter (`true`) triggers the `fluent_crm/track_event_activity_done` action after the event is recorded.
 
-Remember one thing: if the `event_key` and `title` are the same, it only increments the count and doesn't create a new event.
+---
 
-<hr/>
+## REST API
 
-### Now let's see how to create with Rest API.
+**Endpoint:** `POST /wp-json/fluent-crm/v2/subscribers/track-event`
 
-API: `https://your-domain.com/wp-json/fluent-crm/v2/subscribers/track-event`
-
-***Body JSON***
-```JSON
+```json
 {
-    "event_key": "testing_from_rest_API",
+    "event_key": "testing_from_rest_api",
     "title": "Testing From REST API",
-    "email": "success+3000@simulator.amazonses.com",
-    "value": "This is my event value with plain Text",
+    "email": "john@example.com",
+    "value": "This is my event value with plain text",
     "provider": "woocommerce"
 }
 ```
-<hr/>
 
-### Now let's see how to create with Action Hook.
+---
 
-**Example of Action Hook**
+## Action Hook
 
 ```php
 do_action('fluent_crm/track_event_activity', [
     'event_key' => 'fcrm_event_tested',
     'title'     => 'Testing FluentCRM Event',
     'value'     => 'This is my event value with plain Text',
-    'email'     => 'success+3000@simulator.amazonses.com',
-    'provider'  => 'woocommerce'
+    'email'     => 'john@example.com',
+    'provider'  => 'woocommerce',
 ], true);
 ```
 
-<hr />
+---
 
-### Get events of a single contact
+## Retrieving Events
 
-If you want to see the event tracking of a single contact, let's see how you can do that.
+Get all tracked events for a specific contact:
 
-API: `https://your-domain.com/wp-json/fluent-crm/v2/subscribers/{ID}/tracking-events`
+**Endpoint:** `GET /wp-json/fluent-crm/v2/subscribers/{ID}/tracking-events`
 
-Then You will get response like this:
+**Response:**
 ```JSON
 {
     "events": {

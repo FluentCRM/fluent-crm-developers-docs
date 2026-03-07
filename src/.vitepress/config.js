@@ -3,7 +3,6 @@ import globalFunctionsSidebar from './sidebars/global-functions.js'
 import hooksSidebar from './sidebars/hooks.js'
 import helpersSidebar from './sidebars/helpers.js'
 import modulesSidebar from './sidebars/modules.js'
-import extendRestApiSidebar from './sidebars/extendRestApiSidebar.js'
 import restApiSidebar from './sidebars/rest-api.js'
 
 import { defineConfig } from 'vitepress'
@@ -92,8 +91,8 @@ export default defineConfig({
                 text: 'Modules',
                 items: [
                     {
-                        text: 'Automation',
-                        link: '/modules/automation',
+                        text: 'Extending FluentCRM',
+                        link: '/modules/',
                     },
                     {
                         text: 'Smart Codes',
@@ -105,7 +104,7 @@ export default defineConfig({
                     },
                     {
                         text: 'Extending REST API',
-                        link: '/extending-rest-api/',
+                        link: '/modules/extending-rest-api',
                     },
                     {
                         text: 'Event Tracking',
@@ -129,7 +128,6 @@ export default defineConfig({
             '/hooks/': hooksSidebar,
             '/helpers/': helpersSidebar,
             '/modules/': modulesSidebar,
-            '/extending-rest-api/': extendRestApiSidebar,
             '/rest-api/': restApiSidebar,
         },
 

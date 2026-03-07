@@ -24,4 +24,5 @@ Filter hooks are used to return modified values for certain parameters, based on
 6. **[Frontend Pages](/hooks/filters/frontend)** — Unsubscribe page, double optin, manage subscription, bounce handling
 7. **[Companies](/hooks/filters/companies)** — Company types, categories, profile sections, CSV export
 8. **[Block Email Editor](/hooks/filters/block-editor)** — Editor settings, patterns, capabilities, allowed blocks
-9. **[Webhooks & Integrations](/hooks/filters/webhooks-and-integrations)** — Webhook data, imports, migrations, commerce providers, form integrations
+9. **[Webhooks & Integrations](/hooks/filters/webhooks-and-integrations)** — Webhook data, imports, migrations, commerce providers, WooCommerce, EDD, dynamic segments
+10. **[SMS Campaigns](/hooks/filters/sms)** <Badge type="danger" vertical="middle" text="Pro" /> — SMS providers, processing limits, scheduling, message content

@@ -1,207 +1,241 @@
 ---
-description: "An action is a precise task that is carried out when a specific trigger occurs. In the context of an application, an action is a programmed response to an event or user interaction."
+title: Custom Automation Action
+description: "Learn how to create a custom automation action for FluentCRM by extending the BaseAction class."
 ---
 
-#  Action
-An action is a precise task that is carried out when a specific trigger occurs.
-In the context of an application, an action is a programmed response to an event or user interaction.
-For instance, when a user subscribes to a newsletter, an action could be sending a welcoming email.
-These actions can be custom-made and tailored to perform any desired task. Creating an action such as adding a tag to a user when they subscribe to your newsletter,
-is just one example of the flexibility actions provide in automating processes. It's the programmed response to a trigger that makes automation happen.
-## Creating an Action
-Creating an action is very much similar to creating a trigger with slight difference.
-You just need to extend the `FluentCrm\App\Services\Funnel\BaseAction` class and implement the required methods.
-Let's assume you want to apply a tag in your database when a user enroll a course. Please, note that FluentCRM already has a tag action.
-But, we are creating a custom action for the sake of example.
+# Custom Action
 
-Create a new class and extend the `FluentCrm\App\Services\Funnel\BaseAction` class. Constructor of the class has the following body:
-```php
-<?php
-namespace Your\Plugin\Name\Automation;
+<Badge type="tip" vertical="top" text="FluentCRM Core" /> <Badge type="warning" vertical="top" text="Intermediate" />
 
-use FluentCrm\App\Services\Funnel\BaseAction;
+An action is a task executed during an automation funnel. For example, adding a note to a contact, enrolling a user in a group, or sending data to an external API. Actions run sequentially after a trigger fires.
 
-class AddToGroupAction extends BaseAction {
-        
-    public function __construct()
-    {
-        $this->actionName = 'add_to_custom_group_action';
-        $this->priority = 20;
-        parent::__construct();
-    }
-}
- ```
-Define the `getBlock` method. This method  actually returns the block of the action. The block is the UI of the action.
-```php
-    public function getBlock()
-    {
-        return [
-            'category'    => __('Awesome Course', 'your-plugin'),
-            'title'       => __('Enroll to Group', 'your-plugin'),
-            'description' => __('Add to a group for particular course', 'your-plugin'),
-            'icon'        => 'fc-icon-apply_list', // use any icon you like 
-        ];
-    }
-```
-The following segment is the code for when UI block is clicked. This method returns the settings of the action.
-```php
+## Base Class
 
-    public function getBlockFields()
-       {
-        $groupOptions = [
-            [
-                'id' => '1',
-                'title' => 'Test'
-            ],
-            [
-                'id' => '2',
-                'title' => 'Test 2'
-            ]
-            //...
-        ];
-        return [
-            'title'     => __('Enroll To a Group', 'fluent-crm'),
-            'sub_title' => __('Enroll the subscriber to particular group related to the course', 'fluent-crm'),
-            'fields'    => [
-                'group_id'        => [
-                    'type'        => 'select',
-                    'options'     => $groupOptions,
-                    'is_multiple' => false,
-                    'clearable'   => true,
-                    'label'       => __('Select Group to Enroll', 'fluent-crm'),
-                    'placeholder' => __('Select Group', 'fluent-crm')
-                ]
-            ]
-        ];
-    }      
-}
-```
+Extend `FluentCrm\App\Services\Funnel\BaseAction` and implement the required abstract methods.
 
-Define the `handle` method. This method is called when the action is executed. This method has the following body:
-```php
-    public function handle($subscriber, $sequence, $funnelSubscriberId, $funnelMetric)
-    {
-        $settings = $sequence->settings;
-        $userId = $subscriber->getWpUserId();
+**Properties:**
 
-        $groupId = Arr::get($settings, 'group_id');
+| Property | Type | Description |
+|----------|------|-------------|
+| `$actionName` | String | Unique identifier for this action |
+| `$priority` | Int | Priority for filter/action registration. Default `10` |
 
-        // if no group found 
-        if (!$groupId) {
-            $funnelMetric->notes = __('Funnel Skipped because no group found', 'your-plugin');
-            $funnelMetric->save();
-            FunnelHelper::changeFunnelSubSequenceStatus($funnelSubscriberId, $sequence->id, 'skipped');
-            return false;
-        }
+**Abstract methods you must implement:**
 
-        if (!$userId) {
-            // If no user found then implement your logic here
-           return false;
-        }
-        // you may also check if the user is already enrolled to the group
-        if (already_enrolled_function()) { 
-           // implement your logic here
-            return false;
-        }
-        
-        // here after all your checks you can enroll the user to the group in the below line
-        
-    }
-```
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `getBlock()` | Array | Block metadata (category, title, description, icon, default settings) |
+| `getBlockFields()` | Array | Settings fields displayed when configuring this action in the editor |
+| `handle($subscriber, $sequence, $funnelSubscriberId, $funnelMetric)` | void | Called when the action executes — performs the actual task |
 
-Let's have a look at the full code of the action class:
+## Step-by-Step Example
+
+Let's create an action that adds a contact to a custom group in your plugin.
+
+### 1. Constructor
+
+Set your action name and call the parent constructor:
+
 ```php
 <?php
 
-namespace Your\Plugin\Name\Automation;
+namespace YourPlugin\Automation;
 
 use FluentCrm\App\Services\Funnel\BaseAction;
 use FluentCrm\App\Services\Funnel\FunnelHelper;
 use FluentCrm\Framework\Support\Arr;
 
-class ApplyCustomTagAction extends BaseAction {
-        
+class AddToGroupAction extends BaseAction
+{
     public function __construct()
     {
-        $this->actionName = 'add_to_custom_group_action';
+        $this->actionName = 'your_plugin_add_to_group';
         $this->priority = 20;
         parent::__construct();
     }
-    
+}
+```
+
+The parent constructor calls `register()`, which:
+- Adds your block to the `fluentcrm_funnel_blocks` filter
+- Adds your fields to the `fluentcrm_funnel_block_fields` filter
+- Registers `handle()` on the `fluentcrm_funnel_sequence_handle_{actionName}` action
+
+### 2. getBlock()
+
+Return metadata for how this action appears in the automation builder:
+
+```php
+public function getBlock()
+{
+    return [
+        'category'    => __('My Plugin', 'your-plugin'),
+        'title'       => __('Add to Group', 'your-plugin'),
+        'description' => __('Add the contact to a group in My Plugin', 'your-plugin'),
+        'icon'        => 'fc-icon-apply_list',
+        'settings'    => [
+            'group_id' => '',
+        ],
+    ];
+}
+```
+
+The `settings` key provides default values for the action's configuration fields.
+
+### 3. getBlockFields()
+
+Define the settings UI that appears when a user configures this action:
+
+```php
+public function getBlockFields()
+{
+    return [
+        'title'     => __('Add to Group', 'your-plugin'),
+        'sub_title' => __('Add the contact to a specific group', 'your-plugin'),
+        'fields'    => [
+            'group_id' => [
+                'type'        => 'select',
+                'options'     => $this->getGroupOptions(),
+                'is_multiple' => false,
+                'clearable'   => true,
+                'label'       => __('Select Group', 'your-plugin'),
+                'placeholder' => __('Choose a group', 'your-plugin'),
+            ],
+        ],
+    ];
+}
+```
+
+See [Form Field Types](/modules/form-field-code-structure) for all available field types.
+
+### 4. handle()
+
+This is the core method — called when the action executes for a contact. The four parameters are:
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$subscriber` | [Subscriber](/database/models/subscriber) | The contact being processed |
+| `$sequence` | Object | The sequence step data (contains `settings` with the configured values) |
+| `$funnelSubscriberId` | Int | The funnel-subscriber pivot record ID |
+| `$funnelMetric` | Object | Metric record for logging notes and status |
+
+```php
+public function handle($subscriber, $sequence, $funnelSubscriberId, $funnelMetric)
+{
+    $settings = $sequence->settings;
+    $groupId = Arr::get($settings, 'group_id');
+
+    // Skip if no group selected
+    if (!$groupId) {
+        $funnelMetric->notes = __('Skipped: no group selected', 'your-plugin');
+        $funnelMetric->save();
+        FunnelHelper::changeFunnelSubSequenceStatus($funnelSubscriberId, $sequence->id, 'skipped');
+        return false;
+    }
+
+    $userId = $subscriber->getWpUserId();
+    if (!$userId) {
+        FunnelHelper::changeFunnelSubSequenceStatus($funnelSubscriberId, $sequence->id, 'skipped');
+        return false;
+    }
+
+    // Your plugin's enrollment logic
+    your_plugin_add_user_to_group($userId, $groupId);
+}
+```
+
+When skipping an action, use `FunnelHelper::changeFunnelSubSequenceStatus()` to mark the step as `'skipped'` so the automation can continue to the next step.
+
+### 5. Register
+
+```php
+add_action('fluent_crm/after_init', function () {
+    new YourPlugin\Automation\AddToGroupAction();
+});
+```
+
+## Complete Code
+
+```php
+<?php
+
+namespace YourPlugin\Automation;
+
+use FluentCrm\App\Services\Funnel\BaseAction;
+use FluentCrm\App\Services\Funnel\FunnelHelper;
+use FluentCrm\Framework\Support\Arr;
+
+class AddToGroupAction extends BaseAction
+{
+    public function __construct()
+    {
+        $this->actionName = 'your_plugin_add_to_group';
+        $this->priority = 20;
+        parent::__construct();
+    }
+
     public function getBlock()
     {
         return [
-            'category'    => __('Awesome Course', 'your-plugin'),
-            'title'       => __('Enroll to Group', 'your-plugin'),
-            'description' => __('Add to a group for particular course', 'your-plugin'),
-            'icon'        => 'fc-icon-apply_list', // use any icon you like 
+            'category'    => __('My Plugin', 'your-plugin'),
+            'title'       => __('Add to Group', 'your-plugin'),
+            'description' => __('Add the contact to a group in My Plugin', 'your-plugin'),
+            'icon'        => 'fc-icon-apply_list',
+            'settings'    => [
+                'group_id' => '',
+            ],
         ];
     }
-    
+
     public function getBlockFields()
     {
-        $groupOptions = [
-            [
-                'id' => '1',
-                'title' => 'Test'
-            ],
-            [
-                'id' => '2',
-                'title' => 'Test 2'
-            ]
-            //...
-        ];
         return [
-            'title'     => __('Enroll To a Group', 'your-plugin'),
-            'sub_title' => __('Enroll the subscriber to particular group related to the course', 'your-plugin'),
+            'title'     => __('Add to Group', 'your-plugin'),
+            'sub_title' => __('Add the contact to a specific group', 'your-plugin'),
             'fields'    => [
-                'group_ids'           => [
+                'group_id' => [
                     'type'        => 'select',
-                    'options' => $groupOptions,
+                    'options'     => $this->getGroupOptions(),
                     'is_multiple' => false,
                     'clearable'   => true,
-                    'label'       => __('Select Group to Enroll', 'your-plugin'),
-                    'placeholder' => __('Select Group', 'your-plugin')
-                ]
-            ]
+                    'label'       => __('Select Group', 'your-plugin'),
+                    'placeholder' => __('Choose a group', 'your-plugin'),
+                ],
+            ],
         ];
     }
-    
+
     public function handle($subscriber, $sequence, $funnelSubscriberId, $funnelMetric)
     {
         $settings = $sequence->settings;
-        $userId = $subscriber->getWpUserId();
-
         $groupId = Arr::get($settings, 'group_id');
 
-        // if no group found 
         if (!$groupId) {
-            $funnelMetric->notes = __('Funnel Skipped because no group found', 'your-plugin');
+            $funnelMetric->notes = __('Skipped: no group selected', 'your-plugin');
             $funnelMetric->save();
             FunnelHelper::changeFunnelSubSequenceStatus($funnelSubscriberId, $sequence->id, 'skipped');
             return false;
         }
 
+        $userId = $subscriber->getWpUserId();
         if (!$userId) {
-            // If no user found then implement your logic here
-           return false;
-        }
-        // you may also check if the user is already enrolled to the group
-        if (already_enrolled_function()) { 
-           // implement your logic here
+            FunnelHelper::changeFunnelSubSequenceStatus($funnelSubscriberId, $sequence->id, 'skipped');
             return false;
         }
-        // here after all your checks you can enroll the user to the group in the below line
-       
+
+        // Your plugin's enrollment logic
+        your_plugin_add_user_to_group($userId, $groupId);
     }
-        
+
+    private function getGroupOptions()
+    {
+        // Replace with your plugin's group query
+        return [
+            ['id' => '1', 'title' => 'Basic Group'],
+            ['id' => '2', 'title' => 'Premium Group'],
+        ];
+    }
 }
 ```
-## Registering the Action
-All set! Your trigger is ready to use.
-Call the class to register the workflow.
-```php
-add_action('fluent_crm/after_init', function () {
-    new Your\Plugin\Name\Automation\AddToGroupAction();
-});
-```
+
+**Source:** `app/Services/Funnel/BaseAction.php`

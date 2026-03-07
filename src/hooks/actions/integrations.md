@@ -66,3 +66,128 @@ add_action('fluent_crm/woo_dynamic_coupon_created', function($createdCoupon, $fu
    // Do your stuff here
 });
 ```
+
+**Source:** `fluentcampaign-pro/app/Services/Integrations/WooCommerce/WooSmartCodeParse.php`
+
+---
+
+### `fluent_crm/before_woo_checkout_check`
+
+<Badge type="danger" vertical="middle" text="Pro" />
+
+Fires before processing the WooCommerce checkout subscription checkbox. Useful for custom validation.
+
+**Parameters**
+- `$isChecked` Boolean - whether the checkbox is checked
+- `$orderId` INT - WooCommerce order ID
+
+**Usage:**
+```php
+add_action('fluent_crm/before_woo_checkout_check', function($isChecked, $orderId) {
+    // Custom pre-subscription validation
+}, 10, 2);
+```
+
+**Source:** `fluentcampaign-pro/app/Services/Integrations/WooCommerce/WooInit.php`
+
+---
+
+## WooCommerce Abandoned Cart
+
+<Badge type="danger" vertical="middle" text="Pro" />
+
+### `fluent_crm/ab_cart_woo_recovered`
+
+Fires when an abandoned cart is recovered (customer returns and completes the purchase).
+
+**Parameters**
+- `$abandonCart` Object - abandoned cart data
+- `$order` WC_Order - the completed order
+- `$oldStatus` String - previous cart status
+
+**Usage:**
+```php
+add_action('fluent_crm/ab_cart_woo_recovered', function($abandonCart, $order, $oldStatus) {
+    // Track cart recovery metrics
+}, 10, 3);
+```
+
+**Source:** `fluentcampaign-pro/app/Modules/AbandonCart/Woo/WooCartTrackingInit.php`
+
+---
+
+### `fluent_crm/ab_cart_woo_lost`
+
+Fires when an abandoned cart is marked as lost (expired, no recovery).
+
+**Parameters**
+- `$abandonCart` Object - abandoned cart data
+- `$order` WC_Order - the associated order
+- `$oldStatus` String - previous cart status
+
+**Usage:**
+```php
+add_action('fluent_crm/ab_cart_woo_lost', function($abandonCart, $order, $oldStatus) {
+    // Handle lost cart
+}, 10, 3);
+```
+
+**Source:** `fluentcampaign-pro/app/Modules/AbandonCart/Woo/WooCartTrackingInit.php`
+
+---
+
+### `fluentcrm/ab_cart_restore_failed`
+
+Fires when an abandoned cart restore attempt fails.
+
+**Parameters**
+- `$abandonCart` Object|null - abandoned cart data (null if not found)
+
+**Usage:**
+```php
+add_action('fluentcrm/ab_cart_restore_failed', function($abandonCart) {
+    // Log the failed cart restore attempt
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Modules/AbandonCart/Woo/WooCartTrackingInit.php`
+
+---
+
+## SureCart
+
+<Badge type="danger" vertical="middle" text="Pro" />
+
+### `fluent_surecart_purchase_created_wrap`
+
+Fires when a SureCart purchase is created. Contains formatted order data.
+
+**Parameters**
+- `$orderData` Array - formatted order data
+
+**Usage:**
+```php
+add_action('fluent_surecart_purchase_created_wrap', function($orderData) {
+    // Handle SureCart purchase
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Services/Integrations/SureCart/SureCartInit.php`
+
+---
+
+### `fluent_surecart_purchase_refund_wrap`
+
+Fires when a SureCart purchase is refunded or revoked.
+
+**Parameters**
+- `$orderData` Array - formatted order data
+
+**Usage:**
+```php
+add_action('fluent_surecart_purchase_refund_wrap', function($orderData) {
+    // Handle SureCart refund
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Services/Integrations/SureCart/SureCartInit.php`

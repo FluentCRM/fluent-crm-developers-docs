@@ -121,9 +121,8 @@ details.custom-block.details summary {
 /* Hero section */
 #home-hero {
     background-color: #faf8fc;
-    color: #000;
     text-align: center;
-    padding: 80px 1.5rem;
+    padding: 100px 1.5rem 80px;
 }
 
 #home-hero h1 {
@@ -271,6 +270,56 @@ details.custom-block.details summary {
     text-decoration: underline;
 }
 
+/* Popular guides grid — 4 columns */
+.popular-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.popular-item {
+    display: block;
+    background: #faf8fc;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 1.25rem;
+    text-decoration: none !important;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.popular-item:hover {
+    border-color: var(--vp-c-brand-1);
+    box-shadow: 0 2px 12px rgba(119, 66, 230, 0.08);
+}
+
+.popular-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(119, 66, 230, 0.1);
+    color: var(--vp-c-brand-1);
+    margin-bottom: 0.5rem;
+}
+
+.popular-item h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 0.35rem;
+    color: var(--vp-c-text-1);
+    border: 0;
+}
+
+.popular-item p {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+    margin: 0;
+}
+
 /* Resource grid — 3 cards */
 .resource-grid {
     display: grid;
@@ -312,7 +361,7 @@ details.custom-block.details summary {
 /* Responsive */
 @media (max-width: 768px) {
     #home-hero {
-        padding: 48px 1.5rem;
+        padding: 72px 1.5rem 48px;
     }
 
     #home-hero h1 {
@@ -321,6 +370,10 @@ details.custom-block.details summary {
 
     .home-content.featured {
         grid-template-columns: 1fr;
+    }
+
+    .popular-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .path-grid {
@@ -340,6 +393,156 @@ details.custom-block.details summary {
     .home-content h2 {
         font-size: 24px;
     }
+
+    .popular-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* LLM bar */
+.llm-bar {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 10px 0;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--vp-c-divider);
+}
+
+.llm-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--vp-c-text-2);
+    background: none;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none !important;
+    transition: color 0.15s, background-color 0.15s;
+    white-space: nowrap;
+    font-family: inherit;
+    line-height: 1.4;
+}
+
+.llm-btn:hover {
+    color: var(--vp-c-brand-1);
+    background-color: var(--vp-c-bg-soft);
+}
+
+.llm-btn.copied {
+    color: var(--vp-c-green-1, #10b981);
+}
+
+.llm-btn svg {
+    flex-shrink: 0;
+}
+
+.llm-sep {
+    width: 1px;
+    height: 16px;
+    background: var(--vp-c-divider);
+    margin: 0 2px;
+    flex-shrink: 0;
+}
+
+/* Ask AI dropdown */
+.llm-dropdown-wrap {
+    position: relative;
+}
+
+.llm-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    background: var(--vp-c-bg);
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 8px;
+    padding: 4px;
+    min-width: 160px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+}
+
+.llm-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--vp-c-text-1);
+    text-decoration: none !important;
+    border-radius: 6px;
+    transition: background-color 0.15s;
+    cursor: pointer;
+}
+
+.llm-dropdown-item:hover {
+    background: var(--vp-c-bg-soft);
+}
+
+.llm-dropdown-item img {
+    flex-shrink: 0;
+    border-radius: 3px;
+}
+
+@media (max-width: 640px) {
+    .llm-bar {
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    .llm-sep {
+        display: none;
+    }
+}
+
+/* Markdown view mode */
+.md-view {
+    margin-bottom: 1rem;
+}
+
+.md-view-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--vp-c-divider);
+}
+
+.md-view-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--vp-c-brand-1);
+    text-decoration: none !important;
+    cursor: pointer;
+}
+
+.md-view-back:hover {
+    text-decoration: underline !important;
+}
+
+.md-view-content {
+    background: var(--vp-c-bg-soft);
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 8px;
+    padding: 1.5rem;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-x: auto;
+    font-family: var(--vp-font-family-mono);
+    color: var(--vp-c-text-1);
+    max-height: none;
 }
 
 /* Badge — make all types look consistent */
@@ -409,13 +612,17 @@ details.custom-block.details summary {
     background-color: var(--vp-c-bg-soft);
 }
 
+.dark #home-hero h1 {
+    color: var(--vp-c-text-1);
+}
+
 .dark #home-hero p {
     color: var(--vp-c-text-2);
 }
 
 /* Hero buttons */
 .dark .hero-actions a.secondary {
-    background-color: var(--vp-c-bg-elv);
+    background-color: rgba(255, 255, 255, 0.1);
     color: var(--vp-c-brand-2);
 }
 
@@ -424,15 +631,31 @@ details.custom-block.details summary {
     color: var(--vp-c-text-2);
 }
 
-/* Cards: intro-highlight, path items, resource items */
+/* Cards: intro-highlight, path items, resource items, popular items */
 .dark .intro-highlight,
 .dark .path-item,
-.dark .resource-item {
+.dark .resource-item,
+.dark .popular-item {
     background: var(--vp-c-bg-soft);
 }
 
 .dark .intro-highlight p,
 .dark .path-item p,
-.dark .resource-item p {
+.dark .resource-item p,
+.dark .popular-item p {
     color: var(--vp-c-text-2);
+}
+
+.dark .popular-item h3 {
+    color: var(--vp-c-text-1);
+}
+
+.dark .popular-tag {
+    background: rgba(119, 66, 230, 0.2);
+    color: var(--vp-c-brand-2);
+}
+
+.dark .popular-item:hover {
+    border-color: var(--vp-c-brand-2);
+    box-shadow: 0 2px 12px rgba(119, 66, 230, 0.15);
 }

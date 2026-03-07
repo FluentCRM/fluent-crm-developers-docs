@@ -1,47 +1,97 @@
 ---
-description: "This code adds a custom company section to the FluentCRM plugin."
+title: Company Profile Section
+description: "Learn how to add a custom profile section tab to the FluentCRM company profile page."
 ---
 
-## Custom Company Section for FluentCRM
-This code integrates a custom company section into the FluentCRM plugin.
+# Company Profile Section
+
+<Badge type="tip" vertical="top" text="FluentCRM Core" /> <Badge type="warning" vertical="top" text="Intermediate" />
+
+You can add custom tabs to the FluentCRM company profile page using the Extender API. This works the same way as [contact profile sections](/modules/contact-profile-section), but for company profiles.
+
+## Basic Example
+
 ```php
-add_action('fluent_crm/after_init',  function () {
-    $key = 'my_custom_section';
-    $sectionTitle = __('My Custom Section', 'fluent-crm');
-    $callback = function($contentArr, $company) {
-        $contentArr['heading'] = 'Content Heading';
-        $contentArr['content_html'] = "
-                       <div>
-                            <h4>My Content</h4>
-                            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard 
-                            dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled ...</p>
-                       </div>
-               " .$company->name;
-        return $contentArr;
-    };
-    FluentCrmApi('extender')->addCompanyProfileSection( $key, $sectionTitle, $callback);
+add_action('fluent_crm/after_init', function () {
+    FluentCrmApi('extender')->addCompanyProfileSection(
+        'my_company_section',
+        __('My Custom Section', 'your-plugin'),
+        function ($contentArr, $company) {
+            $contentArr['heading'] = 'Company Details';
+            $contentArr['content_html'] = '<div>
+                <p>Company: ' . esc_html($company->name) . '</p>
+                <p>Industry: ' . esc_html($company->industry) . '</p>
+            </div>';
+            return $contentArr;
+        }
+    );
 });
 ```
-### How it works
-The custom section is added via the `addCompanyProfileSection` method of the FluentCRM Extender API. This method takes three arguments:
 
-- `$key`: The key of the custom section which will be used to identify the section.
-  It is recommended to have your own plugin prefix.
-  For example, if your plugin prefix is `fbs`, then you can use `fbs_my_custom_section` as the key so that it will not conflict with Profile sections.
+## API Reference
 
-- `$sectionTitle`: This is the title of the new section within fluent crm company profile sections.
+### `FluentCrmApi('extender')->addCompanyProfileSection($key, $sectionTitle, $callback, $saveCallback)`
 
-- `callback`: Third argument is a callback function that will be called when the custom section is displayed.
-  The function takes two arguments: `$contentArr` and `$company`. `$contentArr` is an array containing the content of the custom section,
-  and `$company` is the object that holds the data for the company which is currently shown.
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `$key` | String | Yes | Unique section identifier. Use your plugin prefix to avoid conflicts. |
+| `$sectionTitle` | String | Yes | Tab title displayed in the company profile sidebar |
+| `$callback` | Callable | Yes | Renders the section content |
+| `$saveCallback` | Callable | No | Handles save requests from the section |
 
-The `$contentArr` includes two elements:
-- `heading`: A string containing the heading for the custom section. This heading will be displayed at the top of the section.
-- `content_html`: A string containing the HTML content of the custom section. This content will be displayed below the heading.
-  You may use any html tags you wish. You will enjoy the flexibility of using any HTML tags to display your custom content.
+### Render Callback
 
-Finally, the modified `$contentArr` is returned.
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$contentArr` | Array | Contains `heading` and `content_html` keys to populate |
+| `$company` | [Company](/database/models/company) | The company model with all properties |
 
-The following Image shows the custom section added by the above code:
+The `$contentArr` you return must include:
+- `heading` — Section heading displayed at the top
+- `content_html` — HTML content rendered in the section body
 
-<img src="/assets/img/modules/custom_company_section.png" alt="My Custom Section"/>
+### Save Callback (Optional)
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `$response` | Array | Response array to return |
+| `$data` | Array | Posted form data |
+| `$company` | [Company](/database/models/company) | The company model |
+
+```php
+FluentCrmApi('extender')->addCompanyProfileSection(
+    'my_company_section',
+    __('Company Notes', 'your-plugin'),
+    function ($contentArr, $company) {
+        $notes = get_option('my_plugin_company_notes_' . $company->id, '');
+        $contentArr['heading'] = 'Internal Notes';
+        $contentArr['content_html'] = '<textarea name="notes">' . esc_textarea($notes) . '</textarea>';
+        return $contentArr;
+    },
+    function ($response, $data, $company) {
+        if (isset($data['notes'])) {
+            update_option('my_plugin_company_notes_' . $company->id, sanitize_textarea_field($data['notes']));
+        }
+        $response['message'] = __('Notes saved', 'your-plugin');
+        return $response;
+    }
+);
+```
+
+## Available Company Properties
+
+The `$company` model provides access to:
+
+- `$company->name` — Company name
+- `$company->industry` — Industry
+- `$company->email` — Company email
+- `$company->phone` — Phone number
+- `$company->address_line_1`, `$company->city`, `$company->state`, `$company->postal_code`, `$company->country` — Address fields
+- `$company->website` — Website URL
+- `$company->description` — Company description
+- `$company->type` — Company type
+- `$company->owner_user_id` — WordPress user ID of the company owner
+
+<img src="/assets/img/modules/custom_company_section.png" alt="Custom Company Profile Section" />
+
+**Source:** `app/Api/Classes/Extender.php`

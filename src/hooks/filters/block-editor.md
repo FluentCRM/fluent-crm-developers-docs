@@ -176,3 +176,67 @@ add_filter('fluent_crm/theme_pref', function($prefs) {
 ```
 
 **Source:** `app/Services/Helper.php`
+
+---
+
+## Dynamic Content Blocks
+
+<Badge type="danger" vertical="middle" text="Pro" />
+
+### `fluentcrm/latest_post_blocks_post_types`
+
+Filter available post types for the "Latest Posts" email block.
+
+**Parameters**
+- `$postTypes` Array - post type configuration array
+
+**Usage:**
+```php
+add_filter('fluentcrm/latest_post_blocks_post_types', function($postTypes) {
+    $postTypes[] = [
+        'value' => 'tutorial',
+        'label' => 'Tutorials'
+    ];
+    return $postTypes;
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Http/Controllers/DynamicPostDataController.php`
+
+---
+
+### `fluentcrm/latest_post_blocks_taxonomies`
+
+Filter available taxonomies for the "Latest Posts" email block filtering.
+
+**Parameters**
+- `$taxonomies` Array - taxonomy definitions
+
+**Usage:**
+```php
+add_filter('fluentcrm/latest_post_blocks_taxonomies', function($taxonomies) {
+    // Add or remove taxonomies for post block filtering
+    return $taxonomies;
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Http/Controllers/DynamicPostDataController.php`
+
+---
+
+### `fluent-crm/woo_product_blocks_taxonomies`
+
+Filter available taxonomies for the "WooCommerce Products" email block.
+
+**Parameters**
+- `$taxonomies` Array - taxonomy definitions
+
+**Usage:**
+```php
+add_filter('fluent-crm/woo_product_blocks_taxonomies', function($taxonomies) {
+    // Customize product block taxonomy options
+    return $taxonomies;
+});
+```
+
+**Source:** `fluentcampaign-pro/app/Http/Controllers/DynamicPostDataController.php`
