@@ -7,11 +7,69 @@ import restApiSidebar from './sidebars/rest-api.js'
 
 import { defineConfig } from 'vitepress'
 import { fileURLToPath, URL } from 'node:url'
+import fs from 'node:fs'
+import path from 'node:path'
+
+const srcDir = fileURLToPath(new URL('..', import.meta.url))
+
+function stripFrontmatter(content) {
+    return content.replace(/^---[\s\S]*?---\s*/, '').trim()
+}
+
+// Vite plugin: serve /raw/*.md as plain text in dev mode
+function rawMarkdownPlugin() {
+    return {
+        name: 'raw-markdown-serve',
+        configureServer(server) {
+            server.middlewares.use((req, res, next) => {
+                if (req.url?.startsWith('/raw/') && req.url.endsWith('.md')) {
+                    const relativePath = req.url.slice(5)
+                    const filePath = path.resolve(srcDir, relativePath)
+                    try {
+                        const content = stripFrontmatter(fs.readFileSync(filePath, 'utf-8'))
+                        res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+                        res.end(content)
+                    } catch {
+                        next()
+                    }
+                    return
+                }
+                next()
+            })
+        }
+    }
+}
 
 export default defineConfig({
     ignoreDeadLinks: true,
 
+    // Keep base64 for client-side "Copy for LLM"
+    transformPageData(pageData) {
+        try {
+            const filePath = path.resolve(srcDir, pageData.relativePath)
+            const content = fs.readFileSync(filePath, 'utf-8')
+            pageData.rawMarkdownB64 = Buffer.from(content).toString('base64')
+        } catch {
+            pageData.rawMarkdownB64 = ''
+        }
+    },
+
+    // Generate /raw/*.md plain text files on build
+    async buildEnd(siteConfig) {
+        const outDir = siteConfig.outDir
+        for (const page of siteConfig.pages) {
+            const srcPath = path.resolve(srcDir, page)
+            const outPath = path.resolve(outDir, 'raw', page)
+            try {
+                const content = stripFrontmatter(fs.readFileSync(srcPath, 'utf-8'))
+                fs.mkdirSync(path.dirname(outPath), { recursive: true })
+                fs.writeFileSync(outPath, content, 'utf-8')
+            } catch {}
+        }
+    },
+
     vite: {
+        plugins: [rawMarkdownPlugin()],
         assetsInclude: ['**/*.json'],
         resolve: {
             alias: {

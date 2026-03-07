@@ -1,27 +1,12 @@
 <template>
-  <!-- Markdown view mode -->
-  <div v-if="isMdMode && show" class="md-view">
-    <div class="md-view-toolbar">
-      <a :href="pageUrl" class="md-view-back" @click.prevent="exitMdMode">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-        Back to page
-      </a>
-      <button class="llm-btn" @click="copyMdContent" :class="{ copied: mdCopied }">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-        {{ mdCopied ? 'Copied!' : 'Copy' }}
-      </button>
-    </div>
-    <pre class="md-view-content">{{ markdownContent }}</pre>
-  </div>
-
-  <!-- Normal bar -->
-  <div v-else-if="show" class="llm-bar">
+  <div v-if="show" class="llm-bar">
     <button class="llm-btn" @click="copyForLlm" :class="{ copied }">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      <svg v-if="!copied" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
       {{ copied ? 'Copied!' : 'Copy for LLM' }}
     </button>
     <span class="llm-sep"></span>
-    <a class="llm-btn" :href="mdViewUrl" @click.prevent="enterMdMode">
+    <a class="llm-btn" :href="rawMdUrl" target="_blank">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
       View as Markdown
     </a>
@@ -43,70 +28,46 @@
 </template>
 
 <script>
-import { useRoute } from 'vitepress'
+import { useRoute, useData } from 'vitepress'
 
 export default {
+  setup() {
+    const route = useRoute()
+    const { page } = useData()
+    return { route, page }
+  },
   data() {
     return {
       copied: false,
-      mdCopied: false,
-      isMdMode: false,
-      markdownContent: '',
       aiMenuOpen: false,
       aiProviders: [
-        {
-          key: 'claude',
-          name: 'Claude',
-          icon: '/assets/img/ai/claude.svg'
-        },
-        {
-          key: 'chatgpt',
-          name: 'ChatGPT',
-          icon: '/assets/img/ai/chatgpt.svg'
-        },
-        {
-          key: 'gemini',
-          name: 'Gemini',
-          icon: '/assets/img/ai/gemini.svg'
-        }
+        { key: 'claude', name: 'Claude', icon: '/assets/img/ai/claude.svg' },
+        { key: 'chatgpt', name: 'ChatGPT', icon: '/assets/img/ai/chatgpt.svg' },
+        { key: 'gemini', name: 'Gemini', icon: '/assets/img/ai/gemini.svg' }
       ]
     }
   },
   mounted() {
-    this.checkMdMode()
-    window.addEventListener('popstate', this.checkMdMode)
     document.addEventListener('click', this.closeAiMenu)
   },
   beforeUnmount() {
-    window.removeEventListener('popstate', this.checkMdMode)
     document.removeEventListener('click', this.closeAiMenu)
-  },
-  watch: {
-    '$route.path'() {
-      this.isMdMode = false
-      this.markdownContent = ''
-      this.aiMenuOpen = false
-      this.toggleDocContent(true)
-    }
   },
   computed: {
     show() {
-      const route = useRoute()
-      const path = route.path
-      if (path === '/' || path === '/index.html') return false
-      return true
+      const p = this.route.path
+      return p !== '/' && p !== '/index.html'
     },
-    pageUrl() {
-      if (typeof window === 'undefined') return ''
-      return window.location.pathname
+    rawMdUrl() {
+      return '/raw/' + this.page.relativePath
     },
-    mdViewUrl() {
-      if (typeof window === 'undefined') return '?md'
-      return window.location.pathname + '?md'
+    rawMarkdown() {
+      const b64 = this.page.rawMarkdownB64 || ''
+      if (!b64) return ''
+      return decodeURIComponent(escape(atob(b64))).replace(/^---[\s\S]*?---\s*/, '').trim()
     },
     aiPrompt() {
-      const route = useRoute()
-      const pageUrl = `https://developers.fluentcrm.com${route.path}`
+      const pageUrl = `https://developers.fluentcrm.com${this.route.path}`
       return `Summarize this FluentCRM developer documentation page and explain the key concepts: ${pageUrl}`
     }
   },
@@ -133,50 +94,10 @@ export default {
           return '#'
       }
     },
-    checkMdMode() {
-      if (typeof window === 'undefined') return
-      const params = new URLSearchParams(window.location.search)
-      if (params.has('md')) {
-        this.enterMdMode()
-      }
-    },
-    enterMdMode() {
-      if (typeof window === 'undefined') return
-      this.markdownContent = this.getPageContent()
-      this.isMdMode = true
-      this.toggleDocContent(false)
-      const url = window.location.pathname + '?md'
-      window.history.pushState({}, '', url)
-    },
-    exitMdMode() {
-      this.isMdMode = false
-      this.markdownContent = ''
-      this.toggleDocContent(true)
-      window.history.pushState({}, '', window.location.pathname)
-    },
-    toggleDocContent(visible) {
-      if (typeof document === 'undefined') return
-      const doc = document.querySelector('.vp-doc')
-      if (!doc) return
-      const children = doc.children
-      for (let i = 0; i < children.length; i++) {
-        const el = children[i]
-        if (el.classList.contains('llm-bar') || el.classList.contains('md-view')) continue
-        el.style.display = visible ? '' : 'none'
-      }
-    },
-    async copyMdContent() {
-      try {
-        await navigator.clipboard.writeText(this.markdownContent)
-        this.mdCopied = true
-        setTimeout(() => { this.mdCopied = false }, 2000)
-      } catch (e) {
-        // fallback
-      }
-    },
     async copyForLlm() {
       if (typeof document === 'undefined') return
-      const content = this.getPageContent()
+      const content = this.rawMarkdown
+      if (!content) return
       try {
         await navigator.clipboard.writeText(content)
         this.copied = true
@@ -191,78 +112,6 @@ export default {
         this.copied = true
         setTimeout(() => { this.copied = false }, 2000)
       }
-    },
-    getPageContent() {
-      const el = document.querySelector('.vp-doc')
-      if (!el) return ''
-
-      const clone = el.cloneNode(true)
-
-      clone.querySelectorAll('.llm-bar, .md-view, .header-anchor, style, script').forEach(n => n.remove())
-
-      clone.querySelectorAll('div[class*="language-"]').forEach(block => {
-        const lang = (block.className.match(/language-(\S+)/) || [])[1] || ''
-        const code = block.querySelector('code')?.textContent || ''
-        const replacement = document.createElement('pre')
-        replacement.textContent = '```' + lang + '\n' + code.trimEnd() + '\n```'
-        block.replaceWith(replacement)
-      })
-
-      clone.querySelectorAll('table').forEach(table => {
-        const rows = []
-        table.querySelectorAll('tr').forEach((tr, i) => {
-          const cells = Array.from(tr.querySelectorAll('th, td')).map(c => c.textContent.trim())
-          rows.push('| ' + cells.join(' | ') + ' |')
-          if (i === 0) {
-            rows.push('| ' + cells.map(() => '---').join(' | ') + ' |')
-          }
-        })
-        const replacement = document.createElement('pre')
-        replacement.textContent = rows.join('\n')
-        table.replaceWith(replacement)
-      })
-
-      let text = ''
-      const walk = (node) => {
-        if (node.nodeType === 3) {
-          text += node.textContent
-          return
-        }
-        if (node.nodeType !== 1) return
-
-        const tag = node.tagName
-        if (tag === 'H1') { text += '\n# ' }
-        else if (tag === 'H2') { text += '\n## ' }
-        else if (tag === 'H3') { text += '\n### ' }
-        else if (tag === 'H4') { text += '\n#### ' }
-        else if (tag === 'PRE') {
-          text += '\n' + node.textContent + '\n'
-          return
-        }
-        else if (tag === 'LI') { text += '\n- ' }
-        else if (tag === 'P') { text += '\n' }
-        else if (tag === 'BR') { text += '\n' }
-        else if (tag === 'CODE' && node.parentElement?.tagName !== 'PRE') {
-          text += '`' + node.textContent + '`'
-          return
-        }
-        else if (tag === 'STRONG' || tag === 'B') {
-          text += '**'
-          for (const child of node.childNodes) walk(child)
-          text += '**'
-          return
-        }
-
-        for (const child of node.childNodes) walk(child)
-
-        if (['H1','H2','H3','H4','P','LI','DIV','BLOCKQUOTE'].includes(tag)) {
-          text += '\n'
-        }
-      }
-
-      walk(clone)
-
-      return text.replace(/\n{3,}/g, '\n\n').trim()
     }
   }
 }

@@ -435,6 +435,7 @@ details.custom-block.details summary {
 
 .llm-btn.copied {
     color: var(--vp-c-green-1, #10b981);
+    background-color: rgba(16, 185, 129, 0.1);
 }
 
 .llm-btn svg {
@@ -501,49 +502,6 @@ details.custom-block.details summary {
     }
 }
 
-/* Markdown view mode */
-.md-view {
-    margin-bottom: 1rem;
-}
-
-.md-view-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 0;
-    margin-bottom: 12px;
-    border-bottom: 1px solid var(--vp-c-divider);
-}
-
-.md-view-back {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--vp-c-brand-1);
-    text-decoration: none !important;
-    cursor: pointer;
-}
-
-.md-view-back:hover {
-    text-decoration: underline !important;
-}
-
-.md-view-content {
-    background: var(--vp-c-bg-soft);
-    border: 1px solid var(--vp-c-divider);
-    border-radius: 8px;
-    padding: 1.5rem;
-    font-size: 13px;
-    line-height: 1.6;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    overflow-x: auto;
-    font-family: var(--vp-font-family-mono);
-    color: var(--vp-c-text-1);
-    max-height: none;
-}
 
 /* Badge — make all types look consistent */
 .vp-doc .VPBadge {
