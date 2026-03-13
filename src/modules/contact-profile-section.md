@@ -94,6 +94,6 @@ The `$subscriber` model provides access to all contact data:
 - `$subscriber->lists` — Collection of assigned lists
 - `$subscriber->custom_fields()` — Custom field values
 
-<img src="/assets/img/modules/custom_profile_section.jpg" alt="Custom Contact Profile Section" />
+![Custom Contact Profile Section](/assets/img/modules/custom_profile_section.jpg)
 
 **Source:** `app/Api/Classes/Extender.php`

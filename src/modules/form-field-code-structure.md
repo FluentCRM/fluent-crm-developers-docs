@@ -137,7 +137,7 @@ Integration plugins (WooCommerce, LearnDash, etc.) register additional `option_k
 | `product_selector_rcp` | Restrict Content Pro | Memberships |
 | `product_selector_wishlist` | WishList Member | Memberships |
 
-<img src="/assets/img/option-selectors.png" alt="Option selectors" />
+![Option selectors](/assets/img/option-selectors.png)
 
 ---
 
@@ -165,7 +165,7 @@ Standard dropdown with static options. Use `select` for single selection and `mu
 | `options` | Array | **Required.** Array of `['id' => String, 'title' => String]` items |
 | `is_multiple` | Boolean | For `select` type only — overrides to allow multiple. `multi-select` is always multiple |
 
-<img src="/assets/img/single-or-multi-select.png" alt="Select / multi-select" />
+![Select / multi-select](/assets/img/single-or-multi-select.png)
 
 ---
 
@@ -191,7 +191,7 @@ Radio button group for mutually exclusive choices.
 |----------|------|-------------|
 | `options` | Array | **Required.** Array of `['id' => String, 'title' => String]` items |
 
-<img src="/assets/img/radio.png" alt="Radio" />
+![Radio](/assets/img/radio.png)
 
 ---
 
@@ -211,7 +211,7 @@ Styled radio buttons rendered as a button group. Same options format as `radio`.
 ],
 ```
 
-<img src="/assets/img/radio-buttons.png" alt="Radio buttons" />
+![Radio buttons](/assets/img/radio-buttons.png)
 
 ---
 
@@ -236,7 +236,7 @@ Checkbox group for selecting multiple options. Returns an array of selected `id`
 ],
 ```
 
-<img src="/assets/img/checkboxes.png" alt="Checkboxes" />
+![Checkboxes](/assets/img/checkboxes.png)
 
 ---
 
@@ -273,7 +273,7 @@ Select dropdown with options organized into groups (uses Element Plus `el-option
 
 **Group structure:** `['title' => String, 'slug' => String, 'options' => [['id' => String, 'title' => String], ...]]`
 
-<img src="/assets/img/grouped-select.png" alt="Grouped select" />
+![Grouped select](/assets/img/grouped-select.png)
 
 ---
 
@@ -293,7 +293,7 @@ Single-line text input.
 ],
 ```
 
-<img src="/assets/img/text-input.png" alt="Text input" />
+![Text input](/assets/img/text-input.png)
 
 ---
 
@@ -339,7 +339,7 @@ Text input with a SmartCode picker popover. Useful for fields where users need t
 | `context_codes` | String | Set to `'yes'` to include funnel context codes |
 | `field_type` | String | Set to `'textarea'` for multi-line mode |
 
-<img src="/assets/img/text-input-popper.png" alt="Text input popper" />
+![Text input popper](/assets/img/text-input-popper.png)
 
 ---
 
@@ -355,7 +355,7 @@ Numeric input with increment/decrement controls.
 ],
 ```
 
-<img src="/assets/img/number-input.png" alt="Number input" />
+![Number input](/assets/img/number-input.png)
 
 ---
 
@@ -380,7 +380,7 @@ Boolean checkbox that stores `'yes'` or `'no'` as a string value.
 |----------|------|-------------|
 | `check_label` | String | Label displayed next to the checkbox |
 
-<img src="/assets/img/yes-no-check.png" alt="Yes/No check" />
+![Yes/No check](/assets/img/yes-no-check.png)
 
 ---
 
@@ -397,7 +397,7 @@ URL input field with link-picking capabilities.
 ],
 ```
 
-<img src="/assets/img/url-selector.png" alt="URL selector" />
+![URL selector](/assets/img/url-selector.png)
 
 ---
 
@@ -439,7 +439,7 @@ Time-only picker with configurable range and step interval.
 |----------|------|-------------|
 | `picker_options` | Array | `start` (start time), `step` (interval), `end` (end time) |
 
-<img src="/assets/img/time-selector.png" alt="Time selector" />
+![Time selector](/assets/img/time-selector.png)
 
 ---
 
@@ -458,7 +458,7 @@ WordPress-style rich text editor (TinyMCE). Supports SmartCode insertion.
 ],
 ```
 
-<img src="/assets/img/html-editor.png" alt="HTML editor" />
+![HTML editor](/assets/img/html-editor.png)
 
 ---
 
@@ -475,7 +475,7 @@ Full email campaign editor with subject line, body editor, design templates, and
 
 The composer provides its own save mechanism. It emits a `save` event when the user clicks save.
 
-<img src="/assets/img/email-campaign-composer.png" alt="Email campaign composer" />
+![Email campaign composer](/assets/img/email-campaign-composer.png)
 
 ---
 
@@ -530,7 +530,7 @@ Select dropdown that loads options from FluentCRM's AJAX endpoint (`reports/ajax
 | `cacheable` | Boolean | Cache results in browser |
 | `creatable` | Boolean | Allow creating new items |
 
-<img src="/assets/img/rest-selector.png" alt="REST selector" />
+![REST selector](/assets/img/rest-selector.png)
 
 ---
 
@@ -567,7 +567,7 @@ Static select dropdown that triggers a save-and-reload when the selection change
 ],
 ```
 
-<img src="/assets/img/reload-field-selection.png" alt="Reload field selection" />
+![Reload field selection](/assets/img/reload-field-selection.png)
 
 ---
 
@@ -626,7 +626,7 @@ Two-column table for mapping contact fields to external data sources (e.g., form
 | `remote_label` | String | Right column header |
 | `fields` | Array | Local (CRM) fields to map |
 
-<img src="/assets/img/form-group-mapper.png" alt="Form group mapper" />
+![Form group mapper](/assets/img/form-group-mapper.png)
 
 ---
 
@@ -654,7 +654,7 @@ Dynamic two-column mapper where users can add multiple field-to-field mappings. 
 ],
 ```
 
-<img src="/assets/img/form-many-drop-down-mapper.png" alt="Form many dropdown mapper" />
+![Form many dropdown mapper](/assets/img/form-many-drop-down-mapper.png)
 
 ---
 
@@ -699,7 +699,7 @@ Key-value pair editor for updating contact properties. Each row lets the user se
 | `support_operations` | String | Set to `'yes'` to show add/subtract operations for numeric fields |
 | `property_options` | Array | Keyed array of property definitions with `label`, `type` (`text`, `textarea`, `date`, `date_time`, `number`, `select`), and `options` (for select type) |
 
-<img src="/assets/img/input-value-pair-properties.png" alt="Input value pair properties" />
+![Input value pair properties](/assets/img/input-value-pair-properties.png)
 
 ---
 
@@ -730,7 +730,7 @@ Dynamic multi-row key-value editor where users can add arbitrary key-value pairs
 | `data_value_placeholder` | String | Placeholder for value inputs |
 | `value_input_type` | String | Value input type: `'text-popper'` (with SmartCode support) or `'input-text'` |
 
-<img src="/assets/img/text-value-multi-properties.png" alt="Text value multi properties" />
+![Text value multi properties](/assets/img/text-value-multi-properties.png)
 
 ---
 
@@ -822,7 +822,7 @@ Email sender configuration panel for customizing From Name, From Email, and Repl
 ],
 ```
 
-<img src="/assets/img/custom-sender-config.png" alt="Custom sender config" />
+![Custom sender config](/assets/img/custom-sender-config.png)
 
 ---
 
@@ -846,7 +846,7 @@ Dynamic array of text inputs. Users can add and remove rows. Returns an array of
 |----------|------|-------------|
 | `input_type` | String | Input type for each row (e.g., `'text'`, `'url'`) |
 
-<img src="/assets/img/multi-text-options.png" alt="Multi text options" />
+![Multi text options](/assets/img/multi-text-options.png)
 
 ---
 

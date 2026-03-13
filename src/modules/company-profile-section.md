@@ -92,6 +92,6 @@ The `$company` model provides access to:
 - `$company->type` — Company type
 - `$company->owner_user_id` — WordPress user ID of the company owner
 
-<img src="/assets/img/modules/custom_company_section.png" alt="Custom Company Profile Section" />
+![Custom Company Profile Section](/assets/img/modules/custom_company_section.png)
 
 **Source:** `app/Api/Classes/Extender.php`
