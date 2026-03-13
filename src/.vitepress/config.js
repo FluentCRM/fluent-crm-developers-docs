@@ -12,6 +12,25 @@ import path from 'node:path'
 
 const srcDir = fileURLToPath(new URL('..', import.meta.url))
 
+// Patch globalThis.fetch so that relative URLs (e.g. "/openapi/…")
+// resolve from the public directory during SSR / build.
+// vitepress-openapi's OAOperation component fetches specUrl at setup
+// time, which fails in Node.js because relative URLs have no host.
+const _originalFetch = globalThis.fetch
+globalThis.fetch = function (input, init) {
+    if (typeof input === 'string' && input.startsWith('/') && !input.startsWith('//')) {
+        const localPath = path.join(srcDir, 'public', input)
+        if (fs.existsSync(localPath)) {
+            const content = fs.readFileSync(localPath, 'utf-8')
+            return Promise.resolve(new Response(content, {
+                status: 200,
+                headers: { 'Content-Type': 'application/json' },
+            }))
+        }
+    }
+    return _originalFetch.call(this, input, init)
+}
+
 function stripFrontmatter(content) {
     return content.replace(/^---[\s\S]*?---\s*/, '').trim()
 }
