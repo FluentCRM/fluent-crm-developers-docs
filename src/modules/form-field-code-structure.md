@@ -805,8 +805,8 @@ Advanced rich filter UI for defining conditional branching (yes/no paths) in aut
 ```
 
 <div style="display: flex; align-items: center; justify-content: space-between">
-<img style="width: 75%" src="/assets/img/condition-block-groups-1.png" alt="Condition block groups" />
-<img width="25%" src="/assets/img/condition-block-groups-2.png" alt="Condition block groups sidebar" />
+<img style="width: 75%" src="../.vitepress/public/assets/img/condition-block-groups-1.png" alt="Condition block groups" />
+<img width="25%" src="../.vitepress/public/assets/img/condition-block-groups-2.png" alt="Condition block groups sidebar" />
 </div>
 
 ---
