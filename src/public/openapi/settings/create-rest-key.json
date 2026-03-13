@@ -1,0 +1,193 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/setting/rest-keys": {
+      "post": {
+        "operationId": "createRestKey",
+        "summary": "POST Create REST API Key",
+        "description": "Create a new WordPress application password for REST API access. The target user must have FluentCRM access, and the requesting user must have the `manage_options` capability. The generated password is returned only once in the response.",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "api_name",
+                  "api_user_id"
+                ],
+                "properties": {
+                  "api_name": {
+                    "type": "string",
+                    "description": "A descriptive name for the API key."
+                  },
+                  "api_user_id": {
+                    "type": "integer",
+                    "description": "WordPress user ID to create the API key for. User must have FluentCRM access."
+                  }
+                }
+              },
+              "example": {
+                "api_name": "FluentCRM Integration",
+                "api_user_id": 5
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "API key created successfully. The password is returned only once.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "item": {
+                      "type": "object",
+                      "properties": {
+                        "uuid": {
+                          "type": "string",
+                          "description": "Application password UUID."
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "API key name."
+                        },
+                        "created": {
+                          "type": "integer",
+                          "description": "Unix timestamp of creation."
+                        },
+                        "info": {
+                          "type": "object",
+                          "properties": {
+                            "api_password": {
+                              "type": "string",
+                              "description": "The generated application password (shown only once, in chunked format)."
+                            },
+                            "api_username": {
+                              "type": "string",
+                              "description": "WordPress username for authentication."
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "item": {
+                    "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                    "name": "FluentCRM Integration",
+                    "created": 1705312200,
+                    "info": {
+                      "api_password": "ABCD efgh 1234 IJKL mnop 5678",
+                      "api_username": "jane_smith"
+                    }
+                  },
+                  "message": "API Key has been successfully created"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User lacks permission or target user does not have FluentCRM access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

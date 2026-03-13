@@ -1,0 +1,206 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/sms/campaigns/{id}/schedule": {
+      "post": {
+        "operationId": "scheduleSmsCampaign",
+        "summary": "POST Schedule SMS Campaign",
+        "description": "Schedule an SMS campaign for sending. The campaign must be in `draft` status. If `scheduled_at` is provided, the campaign is scheduled for that time. If omitted, the campaign starts sending within 5 minutes (instant send with admin cancel window). Accepts Unix timestamps, MySQL datetime strings, and ISO-8601 strings. **PRO** (requires FluentCampaign Pro SMS module).",
+        "tags": [
+          "SMS"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "SMS campaign ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "scheduled_at": {
+                    "type": "string",
+                    "description": "Schedule date/time. Accepts MySQL datetime (e.g. `2024-06-01 10:00:00`), Unix timestamp, or ISO-8601 string. Omit for instant sending.",
+                    "nullable": true
+                  },
+                  "sending_type": {
+                    "type": "string",
+                    "description": "Sending type. Currently only `schedule` is supported.",
+                    "default": "schedule",
+                    "enum": [
+                      "schedule"
+                    ]
+                  }
+                }
+              },
+              "example": {
+                "scheduled_at": "2024-06-01 10:00:00",
+                "sending_type": "schedule"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Campaign scheduled successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "campaign": {
+                      "$ref": "#/components/schemas/SmsCampaign"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "current_timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Current server timestamp."
+                    }
+                  }
+                },
+                "example": {
+                  "campaign": {
+                    "id": 5,
+                    "title": "Summer Sale SMS",
+                    "status": "pending-scheduled",
+                    "scheduled_at": "2024-06-01 10:00:00",
+                    "recipients_count": 0
+                  },
+                  "message": "Your sms campaign has been scheduled",
+                  "current_timestamp": "2024-05-30 14:00:00"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Campaign not found."
+          },
+          "422": {
+            "description": "Campaign is not in draft status or invalid schedule date."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "SmsCampaign": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "message_content": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "processing",
+              "pending-scheduled",
+              "scheduled",
+              "working",
+              "paused",
+              "archived"
+            ]
+          },
+          "type": {
+            "type": "string"
+          },
+          "recipients_count": {
+            "type": "integer"
+          },
+          "scheduled_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "settings": {
+            "type": "object"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -6,7 +6,7 @@ description: "Campaign URL Matrix Model"
 
 | DB Table Name | {wp_db_prefix}_fc_campaign_url_metrics                                   |
 |---------------|--------------------------------------------------------------------------|
-| Schema        | <a :href="$withBase('/database/#fc-subscribers-table')">Check Schema</a> |
+| Schema        | <a href="/database/#fc-subscribers-table">Check Schema</a> |
 | Source File   | fluent-crm/app/Models/CampaignUrlMetric.php                                       |
 | Name Space    | FluentCrm\App\Models                                                     |
 | Class         | FluentCrm\App\Models\CampaignUrlMetric                                            |
@@ -114,50 +114,46 @@ This model has the following relationships that you can use
 ### campaign
 Access the associated campaign of a model
 
-- return `FluentCrm\App\Models\Campaign` Model Collection
+- return `FluentCrm\App\Models\Campaign` Model
 
 #### Example:
-```php 
+```php
 // Accessing Campaign
-$campaignUrlMatric = $campaignUrlMatric->campaign;
-
-// For Filtering by campaign relationship
+$campaign = $metric->campaign;
 
 // Get CampaignUrlMetrics which has type: funnel_email_campaign
-$campaignUrlMatrics = FluentCrm\App\Models\CampaignUrlMetric::whereHas('campaign', function($query) {
+$metrics = FluentCrm\App\Models\CampaignUrlMetric::whereHas('campaign', function($query) {
     $query->where('type', 'funnel_email_campaign');
 })->get();
-
-// Get CampaignUrlMetrics which does not have type: funnel_email_campaign
-$campaignUrlMatrics = FluentCrm\App\Models\CampaignUrlMetric::whereDoesntHave('campaign', function($query) {
-    $query->where('type', 'funnel_email_campaign');
-})->get();
-
 ```
 
 
 ### subscriber
 Access the associated subscriber of a model
 
-- return `FluentCrm\App\Models\Subscriber` Model Collection
+- return `FluentCrm\App\Models\Subscriber` Model
 
 #### Example:
-```php 
+```php
 // Accessing Subscriber
-$campaignUrlMatric = $campaignUrlMatric->subscriber;
+$subscriber = $metric->subscriber;
 
-// For Filtering by subscriber relationship
-
-// Get CampaignUrlMetrics which has first_name: Demo
-$campaignUrlMatrics = FluentCrm\App\Models\CampaignUrlMetric::whereHas('subscriber', function($query) {
+// Get CampaignUrlMetrics for a specific subscriber
+$metrics = FluentCrm\App\Models\CampaignUrlMetric::whereHas('subscriber', function($query) {
     $query->where('first_name', 'Demo');
 })->get();
+```
 
-// Get CampaignUrlMetrics which does not have first_name: Demo
-$campaignUrlMatrics = FluentCrm\App\Models\CampaignUrlMetric::whereDoesntHave('subscriber', function($query) {
-    $query->where('first_name', 'Demo');
-})->get();
+### url_stores
+Access the associated URL store record
 
+- return `FluentCrm\App\Models\UrlStores` Model
+
+#### Example:
+```php
+// Accessing the original URL
+$urlStore = $metric->url_stores;
+$originalUrl = $urlStore->url;
 ```
 
 
@@ -176,38 +172,38 @@ Store or update campaign url matrix data
 $campaignUrlMatric = CampaignUrlMatric::maybeInsert($data);
 ```
 
-### getLinksReport($campaignId)
-Get Links report by campaign id
+### getLinksReport($campaign)
+Get click-count-per-URL report for a campaign. Handles both standard and anonymous tracking modes.
 
 - Parameters
-  - $campaignId `int`
+  - $campaign `FluentCrm\App\Models\Campaign`
 - Returns `array`
 
 #### Usage
-```php 
-$linksReport = $campaignUrlMatric->getLinksReport(1);
+```php
+$linksReport = $metric->getLinksReport($campaign);
 ```
 
-### getCampaignAnalytics($campaignId)
-Get campaign analytics from this model by campaign ID
+### getCampaignAnalytics($campaign)
+Get formatted campaign stats: opens, clicks, CTOR, unsubscribes, revenue
 
 - Parameters
-  - $campaignId `int`
+  - $campaign `FluentCrm\App\Models\Campaign`
 - Returns `array`
 
 #### Usage
-```php 
-$analytics = $campaignUrlMatric->getCampaignAnalytics(1);
+```php
+$analytics = $metric->getCampaignAnalytics($campaign);
 ```
 
 ### getSubjectStats($campaign)
-Get subject stats from this model by campaign
+Get per-subject A/B test analytics
 
 - Parameters
-  - $campaign `\FluentCrm\App\Models\Campaign`
+  - $campaign `FluentCrm\App\Models\Campaign`
 - Returns `array`
 
 #### Usage
-```php 
-$stats = $campaignUrlMatric->getSubjectStats($campaign);
+```php
+$stats = $metric->getSubjectStats($campaign);
 ```

@@ -1,0 +1,152 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/subscribers/{id}/emails/template-mock": {
+      "get": {
+        "operationId": "getContactTemplateMock",
+        "summary": "GET Get Contact Template Mock",
+        "description": "Get a template mock/scaffold for composing a custom email to a contact. Returns default email campaign structure with empty fields ready to be filled.",
+        "tags": [
+          "Contacts"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The contact ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email template mock data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email_mock": {
+                      "type": "object",
+                      "description": "Template scaffold for a custom email campaign.",
+                      "properties": {
+                        "title": {
+                          "type": "string",
+                          "description": "Default title for the email."
+                        },
+                        "email_subject": {
+                          "type": "string",
+                          "description": "Default email subject."
+                        },
+                        "email_pre_header": {
+                          "type": "string",
+                          "description": "Email pre-header text."
+                        },
+                        "email_body": {
+                          "type": "string",
+                          "description": "Default email body HTML."
+                        },
+                        "settings": {
+                          "type": "object",
+                          "description": "Email settings.",
+                          "properties": {
+                            "template_config": {
+                              "type": "object"
+                            },
+                            "mailer_settings": {
+                              "type": "object"
+                            }
+                          }
+                        },
+                        "design_template": {
+                          "type": "string",
+                          "description": "Template design type."
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "email_mock": {
+                    "title": "Custom Email to Contact",
+                    "email_subject": "",
+                    "email_pre_header": "",
+                    "email_body": "",
+                    "settings": {
+                      "template_config": {},
+                      "mailer_settings": {}
+                    },
+                    "design_template": "simple"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/subscribers/{id}/info-widgets": {
+      "get": {
+        "operationId": "getContactInfoWidgets",
+        "summary": "GET Get Contact Info Widgets",
+        "description": "Retrieve info widgets for a contact's profile page. Returns top widgets (like commerce stats) and other widgets registered by plugins. Optionally fetches a single specific widget when `by_widget` is provided.",
+        "tags": [
+          "Contacts"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The contact ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "by_widget",
+            "in": "query",
+            "description": "If provided, returns only the specified widget type instead of all widgets.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Widget data. Shape varies based on whether `by_widget` is provided.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "description": "All widgets (when `by_widget` is not set).",
+                      "properties": {
+                        "widgets": {
+                          "type": "object",
+                          "properties": {
+                            "top_widgets": {
+                              "type": "array",
+                              "description": "Top-level widgets (e.g., commerce stats).",
+                              "items": {
+                                "type": "object"
+                              }
+                            },
+                            "other_widgets": {
+                              "type": "array",
+                              "description": "Additional widgets registered by plugins.",
+                              "items": {
+                                "type": "object"
+                              }
+                            },
+                            "widgets_count": {
+                              "type": "integer",
+                              "description": "Total number of widgets."
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "description": "Single widget (when `by_widget` is set).",
+                      "properties": {
+                        "widget": {
+                          "type": "object",
+                          "properties": {
+                            "content": {
+                              "type": "string",
+                              "description": "Widget HTML content."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "all_widgets": {
+                    "summary": "All widgets response",
+                    "value": {
+                      "widgets": {
+                        "top_widgets": [
+                          {
+                            "title": "Commerce Stats",
+                            "content": "<div>Total Orders: 5, Revenue: $299</div>"
+                          }
+                        ],
+                        "other_widgets": [],
+                        "widgets_count": 1
+                      }
+                    }
+                  },
+                  "single_widget": {
+                    "summary": "Single widget response",
+                    "value": {
+                      "widget": {
+                        "content": "<div>Widget content here</div>"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

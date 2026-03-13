@@ -1,0 +1,321 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/webhooks": {
+      "get": {
+        "operationId": "listWebhooks",
+        "summary": "GET List Webhooks",
+        "description": "Retrieve all webhooks along with available contact fields, custom fields, lists, and tags. Optionally filter webhooks by name using a search query. If the Companies module is enabled, company data is also included.",
+        "tags": [
+          "Webhooks"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Filter webhooks by name (case-insensitive partial match).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of webhooks with related metadata.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "webhooks": {
+                      "type": "array",
+                      "description": "Array of webhook objects.",
+                      "items": {
+                        "$ref": "#/components/schemas/Webhook"
+                      }
+                    },
+                    "fields": {
+                      "type": "array",
+                      "description": "Available contact fields for webhook mapping.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "key": {
+                            "type": "string",
+                            "description": "Field key/slug."
+                          },
+                          "field": {
+                            "type": "string",
+                            "description": "Human-readable field label."
+                          }
+                        }
+                      }
+                    },
+                    "custom_fields": {
+                      "type": "array",
+                      "description": "Available custom contact fields for webhook mapping.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "key": {
+                            "type": "string",
+                            "description": "Custom field slug."
+                          },
+                          "field": {
+                            "type": "string",
+                            "description": "Human-readable custom field label."
+                          }
+                        }
+                      }
+                    },
+                    "lists": {
+                      "type": "array",
+                      "description": "All available lists.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "slug": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "tags": {
+                      "type": "array",
+                      "description": "All available tags.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "slug": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "companies": {
+                      "type": "array",
+                      "description": "All available companies (only present when Companies module is enabled).",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "webhooks": [
+                    {
+                      "id": 1,
+                      "object_type": "webhook",
+                      "key": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                      "value": {
+                        "name": "Lead Capture Webhook",
+                        "status": "subscribed",
+                        "lists": [
+                          1,
+                          2
+                        ],
+                        "tags": [
+                          3
+                        ],
+                        "url": "https://example.com/?fluentcrm=1&route=contact&hash=a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                      },
+                      "created_at": "2024-03-01 10:00:00",
+                      "updated_at": "2024-03-01 10:00:00"
+                    }
+                  ],
+                  "fields": [
+                    {
+                      "key": "first_name",
+                      "field": "First Name"
+                    },
+                    {
+                      "key": "last_name",
+                      "field": "Last Name"
+                    },
+                    {
+                      "key": "email",
+                      "field": "Email"
+                    }
+                  ],
+                  "custom_fields": [
+                    {
+                      "key": "company_name",
+                      "field": "Company Name"
+                    }
+                  ],
+                  "lists": [
+                    {
+                      "id": 1,
+                      "title": "Newsletter",
+                      "slug": "newsletter"
+                    }
+                  ],
+                  "tags": [
+                    {
+                      "id": 3,
+                      "title": "VIP",
+                      "slug": "vip"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "Webhook": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the webhook."
+          },
+          "object_type": {
+            "type": "string",
+            "description": "Type discriminator. `webhook` for standard webhooks, `webhook_{provider}` for SMS webhooks."
+          },
+          "key": {
+            "type": "string",
+            "description": "UUID key used in the webhook URL."
+          },
+          "value": {
+            "type": "object",
+            "description": "Webhook configuration data.",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Human-readable webhook name."
+              },
+              "status": {
+                "type": "string",
+                "description": "Default subscription status for contacts created via this webhook.",
+                "enum": [
+                  "subscribed",
+                  "pending",
+                  "unsubscribed"
+                ]
+              },
+              "lists": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "description": "List IDs to assign to incoming contacts."
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "description": "Tag IDs to assign to incoming contacts."
+              },
+              "companies": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "description": "Company IDs to assign to incoming contacts."
+              },
+              "url": {
+                "type": "string",
+                "description": "The webhook endpoint URL."
+              }
+            }
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the webhook was created."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the webhook was last updated."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

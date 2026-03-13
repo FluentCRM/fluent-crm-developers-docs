@@ -1,0 +1,161 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/campaigns/{id}/link-report": {
+      "get": {
+        "operationId": "getCampaignLinkReport",
+        "summary": "GET Get Campaign Link Report",
+        "description": "Get a report of all tracked links in a campaign, including click counts for each URL. Also returns the click and open tracking status for the campaign.",
+        "tags": [
+          "Campaigns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The campaign ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Link report retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "links": {
+                      "type": "array",
+                      "description": "Array of tracked links with click statistics.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "total": {
+                            "type": "integer",
+                            "description": "Total number of clicks."
+                          },
+                          "unique": {
+                            "type": "integer",
+                            "description": "Number of unique clickers."
+                          }
+                        }
+                      }
+                    },
+                    "click_status": {
+                      "type": "string",
+                      "description": "Whether click tracking was enabled for this campaign (e.g., `yes`, `no`)."
+                    },
+                    "open_status": {
+                      "type": "string",
+                      "description": "Whether open tracking was enabled for this campaign (e.g., `yes`, `no`)."
+                    }
+                  }
+                },
+                "example": {
+                  "links": [
+                    {
+                      "url": "https://example.com/sale",
+                      "total": 245,
+                      "unique": 198
+                    },
+                    {
+                      "url": "https://example.com/blog",
+                      "total": 89,
+                      "unique": 72
+                    }
+                  ],
+                  "click_status": "yes",
+                  "open_status": "yes"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Campaign not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

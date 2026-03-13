@@ -1,0 +1,162 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/subscribers/{id}/purchase-history": {
+      "get": {
+        "operationId": "getContactPurchaseHistory",
+        "summary": "GET Get Contact Purchase History",
+        "description": "Retrieve purchase/order history for a contact from a specific commerce provider. The data is fetched via the `fluent_crm/purchase_history_{provider}` filter hook, so the response structure depends on the active commerce integration (e.g., WooCommerce, EDD).",
+        "tags": [
+          "Contacts"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The contact ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "provider",
+            "in": "query",
+            "description": "The commerce provider identifier (e.g., `woocommerce`, `edd`, `learndash`, `lifterlms`).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Purchase history data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "orders": {
+                      "type": "object",
+                      "properties": {
+                        "orders": {
+                          "type": "array",
+                          "description": "List of orders from the provider.",
+                          "items": {
+                            "type": "object",
+                            "description": "Order structure varies by provider."
+                          }
+                        },
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of orders."
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "orders": {
+                    "orders": [
+                      {
+                        "id": 1234,
+                        "status": "completed",
+                        "total": "59.99",
+                        "date": "2024-02-15 10:30:00",
+                        "items": [
+                          {
+                            "name": "Pro Plan Subscription",
+                            "quantity": 1,
+                            "total": "59.99"
+                          }
+                        ]
+                      }
+                    ],
+                    "total": 1
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Contact not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -1,0 +1,186 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/docs/addons": {
+      "get": {
+        "operationId": "getDocAddons",
+        "summary": "GET Get Addons",
+        "description": "Retrieve the list of recommended companion plugins (Fluent Forms, Fluent SMTP, Fluent Support) with their installation status. Optionally includes experimental feature settings.",
+        "tags": [
+          "Docs"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "with[]",
+            "in": "query",
+            "description": "Include additional data. Pass `experimental_features` to include experimental settings.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "experimental_features"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Addons list with installation status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "addons": {
+                      "type": "object",
+                      "description": "Map of addon slugs to addon details.",
+                      "additionalProperties": {
+                        "$ref": "#/components/schemas/Addon"
+                      }
+                    },
+                    "experimental_features": {
+                      "type": "object",
+                      "description": "Only present when `with[]=experimental_features` is passed. Contains experimental feature settings.",
+                      "additionalProperties": true
+                    }
+                  }
+                },
+                "example": {
+                  "addons": {
+                    "fluentform": {
+                      "title": "Fluent Forms",
+                      "logo": "https://example.com/wp-content/plugins/fluent-crm/assets/images/fluentform.png",
+                      "is_installed": true,
+                      "learn_more_url": "https://wordpress.org/plugins/fluentform/",
+                      "settings_url": "https://example.com/wp-admin/admin.php?page=fluent_forms",
+                      "action_text": "Active Fluent Forms",
+                      "description": "Collect leads and build any type of forms..."
+                    },
+                    "fluentsmtp": {
+                      "title": "Fluent SMTP",
+                      "logo": "https://example.com/wp-content/plugins/fluent-crm/assets/images/fluent-smtp.svg",
+                      "is_installed": false,
+                      "learn_more_url": "https://wordpress.org/plugins/fluent-smtp/",
+                      "settings_url": "https://example.com/wp-admin/options-general.php?page=fluent-mail#/",
+                      "action_text": "Install Fluent SMTP",
+                      "description": "The Ultimate SMTP and SES Plugin for WordPress..."
+                    },
+                    "fluent-support": {
+                      "title": "Fluent Support",
+                      "logo": "https://example.com/wp-content/plugins/fluent-crm/assets/images/fluent-support.svg",
+                      "is_installed": false,
+                      "learn_more_url": "https://wordpress.org/plugins/fluent-support/",
+                      "settings_url": "https://example.com/wp-admin/admin.php?page=fluent-support#/",
+                      "action_text": "Install Fluent Support",
+                      "description": "WordPress Helpdesk and Customer Support Ticket Plugin..."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "Addon": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Display name of the addon."
+          },
+          "logo": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to the addon logo image."
+          },
+          "is_installed": {
+            "type": "boolean",
+            "description": "Whether the addon plugin is currently active."
+          },
+          "learn_more_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to the addon's WordPress.org page or website."
+          },
+          "settings_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "WordPress admin URL to the addon's settings page."
+          },
+          "action_text": {
+            "type": "string",
+            "description": "Call-to-action text, either 'Active {name}' or 'Install {name}' based on installation status."
+          },
+          "description": {
+            "type": "string",
+            "description": "Short description of the addon."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

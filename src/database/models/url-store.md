@@ -1,15 +1,15 @@
 ---
-description: "Learn about the Url Store Model in FluentCRM, which allows you to store and manage URLs for campaigns and automation"
+description: "Learn about the Url Store Model in FluentCRM, which stores shortened URLs for email click tracking."
 ---
 
 # Url Store Model
 
-| DB Table Name | {wp_db_prefix}_fc_url_stores                                                   |
-|---------------|--------------------------------------------------------------------------|
-| Schema        | <a :href="$withBase('/database/#fc-subscribers-table')">Check Schema</a> |
-| Source File   | fluent-crm/app/Models/UrlStores.php                                      |
-| Name Space    | FluentCrm\App\Models                                                     |
-| Class         | FluentCrm\App\Models\UrlStores                                           |
+| DB Table Name | {wp_db_prefix}_fc_url_stores                                              |
+|---------------|---------------------------------------------------------------------------|
+| Schema        | <a href="/database/#fc-url-stores-table">Check Schema</a>   |
+| Source File   | fluent-crm/app/Models/UrlStores.php                                       |
+| Name Space    | FluentCrm\App\Models                                                      |
+| Class         | FluentCrm\App\Models\UrlStores                                            |
 
 ## Attributes
 <table class="nowrap">
@@ -29,12 +29,12 @@ description: "Learn about the Url Store Model in FluentCRM, which allows you to 
       <tr>
          <th>url</th>
          <td>Text</td>
-         <td></td>
+         <td>The original full URL</td>
       </tr>
       <tr>
          <th>short</th>
          <td>String</td>
-         <td></td>
+         <td>Short encoded slug for tracking</td>
       </tr>
       <tr>
          <th>created_at</th>
@@ -55,48 +55,51 @@ Please check <a href="/database/models/">Model Basic</a> for Common methods.
 
 ### Accessing Attributes
 
-```php 
+```php
 
 $urlStore = FluentCrm\App\Models\UrlStores::find(1);
 
 $urlStore->id; // returns id
-$urlStore->url; // returns url
-.......
-```
-
-
-## Fillable Attributes
-
-```php
-
-'url',
-'short'
+$urlStore->url; // returns the full URL
+$urlStore->short; // returns the short slug
 ```
 
 
 ## Methods
-Along with Global Model methods, this model has few helper methods.
+All methods are static.
 
-### getUrlSlug($longUrl)
-Create short url from long url
+### getUrlSlug($longUrl) <Badge type="tip" text="static" />
+Look up or create a short slug for a URL. Normalizes the URL (strips zero-width spaces, decodes HTML entities) and uses an in-memory cache.
 
 - Parameters
     - $longUrl `string`
+- Returns `string` — the short slug
+
+#### Usage
+```php
+$short = FluentCrm\App\Models\UrlStores::getUrlSlug('https://www.example.com/page');
+```
+
+### getNextShortUrl($num) <Badge type="tip" text="static" />
+Generate a base-36 style encoded short string from a number
+
+- Parameters
+    - $num `int`
 - Returns `string`
 
 #### Usage
-```php 
-$shortUrl = FluentCrm\App\Models\UrlStores::getUrlSlug('https://www.google.com');
+```php
+$short = FluentCrm\App\Models\UrlStores::getNextShortUrl(100001);
 ```
 
-### getRowByShort($short)
-Get UrlStore object by url short
+### getRowByShort($short) <Badge type="tip" text="static" />
+Look up a UrlStores record by its short slug (case-sensitive BINARY match)
 
 - Parameters
     - $short `string`
-- Returns `FluentCrm\App\Models\UrlStores`
+- Returns `object` or `null`
 
 #### Usage
-```php 
+```php
 $urlStore = FluentCrm\App\Models\UrlStores::getRowByShort('12x');
 ```

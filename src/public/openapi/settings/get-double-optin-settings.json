@@ -1,0 +1,211 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/setting/double-optin": {
+      "get": {
+        "operationId": "getDoubleOptinSettings",
+        "summary": "GET Double Opt-in Settings",
+        "description": "Retrieve the double opt-in email settings. Can return global settings or list-specific settings when a `list_id` is provided. Optionally includes form field definitions when `with[]=settings_fields` is specified.",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "list_id",
+            "in": "query",
+            "description": "List ID to retrieve list-specific double opt-in settings. Omit for global settings.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "with[]",
+            "in": "query",
+            "description": "Include additional data. Use `settings_fields` to include form field definitions for the settings UI.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "settings_fields"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Double opt-in settings returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "settings": {
+                      "type": "object",
+                      "properties": {
+                        "design_template": {
+                          "type": "string",
+                          "description": "Email design template identifier."
+                        },
+                        "email_subject": {
+                          "type": "string",
+                          "description": "Double opt-in email subject line."
+                        },
+                        "email_pre_header": {
+                          "type": "string",
+                          "description": "Email pre-header text."
+                        },
+                        "email_body": {
+                          "type": "string",
+                          "description": "HTML email body. Must contain `#activate_link#` or `{{crm.activate_button}}`."
+                        },
+                        "after_confirmation_type": {
+                          "type": "string",
+                          "enum": [
+                            "message",
+                            "redirect"
+                          ],
+                          "description": "Action after subscriber confirms."
+                        },
+                        "after_confirm_message": {
+                          "type": "string",
+                          "description": "Message shown after confirmation (when type is `message`)."
+                        },
+                        "after_conf_redirect_url": {
+                          "type": "string",
+                          "description": "Redirect URL after confirmation (when type is `redirect`)."
+                        },
+                        "tag_based_redirect": {
+                          "type": "string",
+                          "enum": [
+                            "yes",
+                            "no"
+                          ],
+                          "description": "Enable tag-based redirect after confirmation."
+                        },
+                        "tag_redirects": {
+                          "type": "array",
+                          "description": "Tag-to-URL redirect mappings.",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "field_key": {
+                                "type": "array",
+                                "items": {
+                                  "type": "integer"
+                                },
+                                "description": "Tag IDs to match."
+                              },
+                              "field_value": {
+                                "type": "string",
+                                "description": "Redirect URL when tags match."
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "global_double_optin": {
+                      "type": "string",
+                      "enum": [
+                        "yes",
+                        "no"
+                      ],
+                      "description": "Whether global double opt-in is enabled for this list (only returned when list_id is provided)."
+                    },
+                    "settings_fields": {
+                      "type": "object",
+                      "description": "Form field definitions for the settings UI (only when `with[]=settings_fields`)."
+                    }
+                  }
+                },
+                "example": {
+                  "settings": {
+                    "design_template": "simple",
+                    "email_subject": "Please Confirm Your Subscription",
+                    "email_pre_header": "",
+                    "email_body": "<h2>Please confirm your subscription</h2><p>Click the button below to confirm.</p>{{crm.activate_button|Confirm Subscription}}",
+                    "after_confirmation_type": "message",
+                    "after_confirm_message": "<h2>Subscription Confirmed!</h2><p>Thank you for subscribing.</p>",
+                    "after_conf_redirect_url": "",
+                    "tag_based_redirect": "no",
+                    "tag_redirects": [
+                      {
+                        "field_key": [],
+                        "field_value": ""
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

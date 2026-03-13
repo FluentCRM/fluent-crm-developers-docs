@@ -1,0 +1,176 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/setting/old_logs": {
+      "get": {
+        "operationId": "getOldLogs",
+        "summary": "GET Old Log Details",
+        "description": "Get counts of old log records that would be deleted. Previews the number of email history logs, email clicks, email opens, system logs, and activity logs older than the specified number of days.",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "days_before",
+            "in": "query",
+            "description": "Number of days. Logs older than this will be counted. Minimum 7 days.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 7
+            }
+          },
+          {
+            "name": "selected_logs[]",
+            "in": "query",
+            "description": "Types of logs to count.",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "emails",
+                  "email_clicks",
+                  "email_open",
+                  "system_logs",
+                  "activity_logs"
+                ]
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Log counts returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "log_counts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "type": "string",
+                            "description": "Human-readable label for the log type."
+                          },
+                          "count": {
+                            "type": "integer",
+                            "description": "Number of log records older than the specified days."
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "log_counts": [
+                    {
+                      "title": "Email History Logs",
+                      "count": 15420
+                    },
+                    {
+                      "title": "Email clicks",
+                      "count": 8320
+                    },
+                    {
+                      "title": "Email Opens",
+                      "count": 12500
+                    },
+                    {
+                      "title": "System Logs",
+                      "count": 340
+                    },
+                    {
+                      "title": "Activity Logs",
+                      "count": 1200
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -1,0 +1,152 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/docs": {
+      "get": {
+        "operationId": "listDocs",
+        "summary": "GET List Docs",
+        "description": "Retrieve the full list of documentation articles fetched from the FluentCRM website. Results are cached for one week.",
+        "tags": [
+          "Docs"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of documentation articles.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "docs": {
+                      "type": "array",
+                      "description": "Array of documentation articles.",
+                      "items": {
+                        "$ref": "#/components/schemas/DocSummary"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "docs": [
+                    {
+                      "title": "Getting Started with FluentCRM",
+                      "content": "<p>Welcome to FluentCRM...</p>",
+                      "link": "https://fluentcrm.com/docs/getting-started/",
+                      "category": {
+                        "value": "getting-started",
+                        "label": "Getting Started"
+                      }
+                    },
+                    {
+                      "title": "Managing Contacts",
+                      "content": "<p>Learn how to manage your contacts...</p>",
+                      "link": "https://fluentcrm.com/docs/managing-contacts/",
+                      "category": {
+                        "value": "contacts",
+                        "label": "Contacts"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "DocSummary": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Sanitized title of the documentation article."
+          },
+          "content": {
+            "type": "string",
+            "description": "Sanitized HTML content of the article with target attributes added to links."
+          },
+          "link": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to the article on the FluentCRM website."
+          },
+          "category": {
+            "type": "object",
+            "description": "Primary documentation category.",
+            "properties": {
+              "value": {
+                "type": "string",
+                "description": "Category slug."
+              },
+              "label": {
+                "type": "string",
+                "description": "Human-readable category name."
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

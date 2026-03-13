@@ -1,0 +1,241 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/sequences/{id}/subscribers": {
+      "post": {
+        "operationId": "addSequenceSubscribers",
+        "summary": "POST Add Sequence Subscribers",
+        "description": "Subscribe contacts to an email sequence. Supports filtering by lists, tags, dynamic segments, or advanced filters. Subscribers already enrolled in the sequence are automatically excluded. Processes subscribers in batches (default 200 per request) -- use pagination for large sets. Requires FluentCampaign Pro.",
+        "tags": [
+          "Sequences"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The sequence ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "subscribers": {
+                    "type": "object",
+                    "description": "Subscriber selection criteria including lists and tags.",
+                    "properties": {
+                      "lists": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        },
+                        "description": "List IDs to include."
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        },
+                        "description": "Tag IDs to include."
+                      }
+                    }
+                  },
+                  "excludedSubscribers": {
+                    "type": "object",
+                    "description": "Subscriber exclusion criteria.",
+                    "properties": {
+                      "lists": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        },
+                        "description": "List IDs to exclude."
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        },
+                        "description": "Tag IDs to exclude."
+                      }
+                    }
+                  },
+                  "sending_filter": {
+                    "type": "string",
+                    "description": "Filter type for selecting subscribers.",
+                    "default": "list_tag",
+                    "enum": [
+                      "list_tag",
+                      "dynamic_segment",
+                      "advanced_filters"
+                    ]
+                  },
+                  "dynamic_segment": {
+                    "type": "object",
+                    "description": "Dynamic segment configuration (when `sending_filter` is `dynamic_segment`)."
+                  },
+                  "advanced_filters": {
+                    "type": "array",
+                    "description": "Advanced filter groups (when `sending_filter` is `advanced_filters`).",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "page": {
+                    "type": "integer",
+                    "description": "Page number for batch processing.",
+                    "default": 1
+                  }
+                }
+              },
+              "example": {
+                "subscribers": {
+                  "lists": [
+                    1,
+                    2
+                  ],
+                  "tags": [
+                    3
+                  ]
+                },
+                "excludedSubscribers": {
+                  "tags": [
+                    5
+                  ]
+                },
+                "sending_filter": "list_tag"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Subscribers added to the sequence. Check `remaining` to determine if more batches need processing.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "total": {
+                      "type": "integer",
+                      "description": "Total number of new subscribers to add (excluding already enrolled)."
+                    },
+                    "remaining": {
+                      "type": "integer",
+                      "description": "Number of subscribers remaining to process in subsequent requests."
+                    },
+                    "next_page": {
+                      "type": "integer",
+                      "description": "Next page number for batch processing."
+                    },
+                    "page_total": {
+                      "type": "integer",
+                      "description": "Total number of pages needed."
+                    },
+                    "in_total": {
+                      "type": "integer",
+                      "description": "Total matching subscribers before excluding already enrolled."
+                    }
+                  }
+                },
+                "example": {
+                  "total": 500,
+                  "remaining": 300,
+                  "next_page": 2,
+                  "page_total": 3,
+                  "in_total": 520
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "No subscribers found matching the selection criteria.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "No Subscribers found based on your selection"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

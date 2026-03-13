@@ -1,0 +1,262 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/custom-fields/contacts": {
+      "put": {
+        "operationId": "saveContactCustomFields",
+        "summary": "PUT Save Contact Custom Fields",
+        "description": "Save (replace) all custom contact field definitions. This overwrites the entire set of custom fields. Each field without a `slug` will have one auto-generated from its label. Duplicate slugs are deduplicated automatically.",
+        "tags": [
+          "Custom Fields"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "fields"
+                ],
+                "properties": {
+                  "fields": {
+                    "type": "array",
+                    "description": "Complete array of custom field definitions to save. This replaces all existing fields.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string",
+                          "description": "Human-readable field label."
+                        },
+                        "slug": {
+                          "type": "string",
+                          "description": "Unique field identifier/slug. Auto-generated from label if not provided."
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Field type.",
+                          "enum": [
+                            "text",
+                            "textarea",
+                            "number",
+                            "select-one",
+                            "select-multi",
+                            "radio",
+                            "checkbox",
+                            "date",
+                            "date_time"
+                          ]
+                        },
+                        "group": {
+                          "type": "string",
+                          "description": "Field group name for organizing fields into sections."
+                        },
+                        "options": {
+                          "type": "array",
+                          "description": "Available options for select, radio, and checkbox field types.",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "fields": [
+                  {
+                    "label": "Company Name",
+                    "slug": "company_name",
+                    "type": "text",
+                    "group": "default",
+                    "options": []
+                  },
+                  {
+                    "label": "Subscription Plan",
+                    "slug": "subscription_plan",
+                    "type": "select-one",
+                    "group": "default",
+                    "options": [
+                      "Free",
+                      "Pro",
+                      "Enterprise"
+                    ]
+                  },
+                  {
+                    "label": "Interests",
+                    "slug": "interests",
+                    "type": "checkbox",
+                    "group": "default",
+                    "options": [
+                      "Marketing",
+                      "Development",
+                      "Design"
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Custom fields saved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "fields": {
+                      "type": "array",
+                      "description": "The saved custom field definitions (with any auto-generated slugs applied).",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string",
+                            "description": "Human-readable field label."
+                          },
+                          "slug": {
+                            "type": "string",
+                            "description": "Unique field identifier/slug. Auto-generated from label if not provided."
+                          },
+                          "type": {
+                            "type": "string",
+                            "description": "Field type.",
+                            "enum": [
+                              "text",
+                              "textarea",
+                              "number",
+                              "select-one",
+                              "select-multi",
+                              "radio",
+                              "checkbox",
+                              "date",
+                              "date_time"
+                            ]
+                          },
+                          "group": {
+                            "type": "string",
+                            "description": "Field group name for organizing fields into sections."
+                          },
+                          "options": {
+                            "type": "array",
+                            "description": "Available options for select, radio, and checkbox field types.",
+                            "items": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Success message."
+                    }
+                  }
+                },
+                "example": {
+                  "fields": [
+                    {
+                      "label": "Company Name",
+                      "slug": "company_name",
+                      "type": "text",
+                      "group": "default",
+                      "options": []
+                    },
+                    {
+                      "label": "Subscription Plan",
+                      "slug": "subscription_plan",
+                      "type": "select-one",
+                      "group": "default",
+                      "options": [
+                        "Free",
+                        "Pro",
+                        "Enterprise"
+                      ]
+                    },
+                    {
+                      "label": "Interests",
+                      "slug": "interests",
+                      "type": "checkbox",
+                      "group": "default",
+                      "options": [
+                        "Marketing",
+                        "Development",
+                        "Design"
+                      ]
+                    }
+                  ],
+                  "message": "Fields saved successfully!"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

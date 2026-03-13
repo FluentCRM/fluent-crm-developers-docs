@@ -1,0 +1,286 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/templates": {
+      "get": {
+        "operationId": "listTemplates",
+        "summary": "GET List Templates",
+        "description": "Retrieve a paginated list of email templates. Supports filtering by status types and searching by title. Each template in the response includes its design template identifier.",
+        "tags": [
+          "Templates"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search templates by title (partial match).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "types[]",
+            "in": "query",
+            "description": "Filter by post status types.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "publish",
+                  "draft"
+                ]
+              },
+              "default": [
+                "publish",
+                "draft"
+              ]
+            }
+          },
+          {
+            "name": "orderBy",
+            "in": "query",
+            "description": "Column to sort by.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "ID"
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Sort direction.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "desc",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of templates per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 15
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of email templates.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "templates": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of templates matching the query."
+                        },
+                        "per_page": {
+                          "type": "integer",
+                          "description": "Number of templates per page."
+                        },
+                        "current_page": {
+                          "type": "integer",
+                          "description": "Current page number."
+                        },
+                        "last_page": {
+                          "type": "integer",
+                          "description": "Last page number."
+                        },
+                        "next_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "URL for the next page, or null if on the last page."
+                        },
+                        "prev_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "URL for the previous page, or null if on the first page."
+                        },
+                        "from": {
+                          "type": "integer",
+                          "description": "Starting record index on this page."
+                        },
+                        "to": {
+                          "type": "integer",
+                          "description": "Ending record index on this page."
+                        },
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/TemplateListItem"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "templates": {
+                    "total": 25,
+                    "per_page": 15,
+                    "current_page": 1,
+                    "last_page": 2,
+                    "next_page_url": "/wp-json/fluent-crm/v2/templates?page=2",
+                    "prev_page_url": null,
+                    "from": 1,
+                    "to": 15,
+                    "data": [
+                      {
+                        "ID": 42,
+                        "post_title": "Welcome Email",
+                        "post_content": "<h1>Welcome!</h1><p>Thank you for subscribing.</p>",
+                        "post_excerpt": "A welcome email for new subscribers",
+                        "post_status": "publish",
+                        "post_type": "fc_template",
+                        "post_date": "2024-01-15 10:30:00",
+                        "post_modified": "2024-03-01 14:30:00",
+                        "design_template": "simple"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "TemplateListItem": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "integer",
+            "description": "Unique identifier for the template (WordPress post ID)."
+          },
+          "post_title": {
+            "type": "string",
+            "description": "Template title."
+          },
+          "post_content": {
+            "type": "string",
+            "description": "Template HTML content."
+          },
+          "post_excerpt": {
+            "type": "string",
+            "description": "Template excerpt or preview text."
+          },
+          "post_status": {
+            "type": "string",
+            "enum": [
+              "publish",
+              "draft"
+            ],
+            "description": "Template status."
+          },
+          "post_type": {
+            "type": "string",
+            "description": "WordPress post type slug for FluentCRM templates."
+          },
+          "post_date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date when the template was created."
+          },
+          "post_modified": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date when the template was last modified."
+          },
+          "design_template": {
+            "type": "string",
+            "description": "Design template identifier (e.g., 'simple', 'plain', 'classic')."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

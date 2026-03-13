@@ -1,0 +1,189 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/sms/campaigns/estimated-contacts": {
+      "post": {
+        "operationId": "estimateSmsCampaignContacts",
+        "summary": "POST Estimate SMS Campaign Contacts",
+        "description": "Estimate the number of contacts that match the given segment/filter criteria for an SMS campaign. Supports three filter modes: `list_tag` (lists and tags), `dynamic_segment`, and `advanced_filters`. **PRO** (requires FluentCampaign Pro SMS module).",
+        "tags": [
+          "SMS"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sending_filter": {
+                    "type": "string",
+                    "description": "Filter type for selecting contacts.",
+                    "default": "list_tag",
+                    "enum": [
+                      "list_tag",
+                      "dynamic_segment",
+                      "advanced_filters"
+                    ]
+                  },
+                  "subscribers": {
+                    "type": "object",
+                    "description": "Subscriber inclusion settings (used with `list_tag` filter). Contains `lists` and `tags` arrays.",
+                    "properties": {
+                      "lists": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  },
+                  "excludedSubscribers": {
+                    "type": "object",
+                    "description": "Subscriber exclusion settings (used with `list_tag` filter). Contains `lists` and `tags` arrays.",
+                    "properties": {
+                      "lists": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  },
+                  "dynamic_segment": {
+                    "type": "object",
+                    "description": "Dynamic segment configuration (used with `dynamic_segment` filter)."
+                  },
+                  "advanced_filters": {
+                    "type": "array",
+                    "description": "Advanced filter groups (used with `advanced_filters` filter).",
+                    "items": {
+                      "type": "object"
+                    }
+                  }
+                }
+              },
+              "example": {
+                "sending_filter": "list_tag",
+                "subscribers": {
+                  "lists": [
+                    1,
+                    2
+                  ],
+                  "tags": [
+                    3
+                  ]
+                },
+                "excludedSubscribers": {
+                  "lists": [],
+                  "tags": [
+                    5
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contact count estimation.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": {
+                      "type": "integer",
+                      "description": "Estimated number of matching contacts."
+                    },
+                    "execution_time": {
+                      "type": "number",
+                      "description": "Query execution time in seconds."
+                    }
+                  }
+                },
+                "example": {
+                  "count": 1250,
+                  "execution_time": 0.045
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

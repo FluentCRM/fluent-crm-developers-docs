@@ -1,0 +1,163 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/forms/templates": {
+      "get": {
+        "operationId": "getFormTemplates",
+        "summary": "GET Form Templates",
+        "description": "Retrieve available form templates for creating new Fluent Forms with FluentCRM integration. Default templates include Inline Opt-in, Simple Opt-in, and Subscription Form with name fields.",
+        "tags": [
+          "Forms"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Available form templates.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "templates": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string",
+                            "description": "Human-readable template name."
+                          },
+                          "image": {
+                            "type": "string",
+                            "description": "URL to the template preview image."
+                          },
+                          "id": {
+                            "type": "string",
+                            "description": "Template identifier."
+                          },
+                          "form_fields": {
+                            "type": "string",
+                            "description": "JSON string of form field definitions."
+                          },
+                          "custom_css": {
+                            "type": "string",
+                            "description": "Custom CSS for the form template."
+                          },
+                          "map_fields": {
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "string"
+                            },
+                            "description": "Default field mapping for FluentCRM integration."
+                          }
+                        }
+                      },
+                      "description": "Map of template IDs to template details."
+                    }
+                  }
+                },
+                "example": {
+                  "templates": {
+                    "inline_subscribe": {
+                      "label": "Inline Opt-in Form",
+                      "image": "https://example.com/images/forms/form_1.svg",
+                      "id": "inline_subscribe",
+                      "form_fields": "{\"fields\":[...]}",
+                      "custom_css": ".fluent_form_FF_ID { position: relative; }",
+                      "map_fields": {
+                        "email": "email"
+                      }
+                    },
+                    "simple_optin": {
+                      "label": "Simple Opt-in Form",
+                      "image": "https://example.com/images/forms/form_2.svg",
+                      "id": "simple_optin",
+                      "form_fields": "{\"fields\":[...]}",
+                      "custom_css": "",
+                      "map_fields": {
+                        "email": "email"
+                      }
+                    },
+                    "with_name_subscribe": {
+                      "label": "Subscription Form",
+                      "image": "https://example.com/images/forms/form_3.svg",
+                      "id": "with_name_subscribe",
+                      "form_fields": "{\"fields\":[...]}",
+                      "custom_css": "",
+                      "map_fields": {
+                        "email": "email",
+                        "first_name": "{inputs.names.first_name}",
+                        "last_name": "{inputs.names.last_name}"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

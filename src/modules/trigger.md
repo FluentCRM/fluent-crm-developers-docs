@@ -1,372 +1,392 @@
 ---
-description: "An event or action that initiates a specific automated response, that is what we call a trigger."
+title: Custom Automation Trigger
+description: "Learn how to create a custom automation trigger for FluentCRM by extending the BaseTrigger class."
 ---
 
-# Trigger
-An event or action that initiates a specific automated response, that is what we call a trigger.
-For example, when a user subscribes to a newsletter, this action is considered a trigger.
-A trigger is the foundation of any automation process, it starts the series of actions that follows. The trigger is the first step of automation.
+# Custom Trigger
 
-## Creating a Trigger
-Say, you are providing some courses on your plugin. You would like to trigger workflows when a user enrols to a course.
-You can use the `course-enrolled` trigger to do that.
-Create a class that extends `FluentCrm\App\Services\Funnel\BaseTrigger` class.
+<Badge type="tip" vertical="top" text="FluentCRM Core" /> <Badge type="warning" vertical="top" text="Intermediate" />
+
+A trigger is an event that starts an automation funnel. For example, when a user enrolls in a course, subscribes to a newsletter, or logs in. Triggers are the entry point of every automation.
+
+## Base Class
+
+Extend `FluentCrm\App\Services\Funnel\BaseTrigger` and implement the required abstract methods.
+
+**Properties:**
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `$triggerName` | String | Unique identifier for this trigger (used as the WordPress action name) |
+| `$priority` | Int | Priority for `add_action` registration. Default `10` |
+| `$actionArgNum` | Int | Number of arguments passed to the WordPress action callback. Default `1` |
+
+**Abstract methods you must implement:**
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `getTrigger()` | Array | Trigger metadata (category, label, description, icon) |
+| `getFunnelSettingsDefaults()` | Array | Default values for the funnel settings fields |
+| `getSettingsFields($funnel)` | Array | Settings fields displayed when configuring the trigger |
+| `handle($funnel, $originalArgs)` | void | Called when the trigger event fires — processes the event and starts the funnel |
+
+**Optional methods you can override:**
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `getConditionFields($funnel)` | Array | Additional condition fields (e.g., target user roles, run multiple times) |
+| `getFunnelConditionDefaults($funnel)` | Array | Default values for condition fields |
+
+## Step-by-Step Example
+
+Let's create a trigger that fires when a user enrolls in a course.
+
+### 1. Constructor
+
+Set your trigger properties and call the parent constructor:
+
 ```php
 <?php
-namespace Your\Plugin\Name\Automation;
-... 
+
+namespace YourPlugin\Automation;
+
 use FluentCrm\App\Services\Funnel\BaseTrigger;
+use FluentCrm\App\Services\Funnel\FunnelHelper;
+use FluentCrm\App\Services\Funnel\FunnelProcessor;
+use FluentCrm\Framework\Support\Arr;
 
-class CourseEnrolledTrigger extends BaseTrigger {
-
-
-}
-```
-We need to override the default constructor method to set the trigger's properties.
-Constructor of the class should have the following body:
-```php
-
-public function __construct()
+class CourseEnrolledTrigger extends BaseTrigger
 {
-    $this->triggerName = 'my-plugin-course-enrolled';
-    $this->priority = 20;
-    $this->actionArgNum = 3;
-    parent::__construct();
+    public function __construct()
+    {
+        $this->triggerName = 'your_plugin_course_enrolled';
+        $this->priority = 20;
+        $this->actionArgNum = 2;
+        parent::__construct();
+    }
 }
 ```
-The `triggerName` property is the name of the event that will trigger this workflow. For our case, let's name it `my-plugin-course-enrolled`.
-The `priority` property is the priority of the action that will be added to the `add_action` function.
-The `actionArgNum` property is the number of arguments that will be passed to the callback.
-Finally, we need to call the parent constructor.
 
-Now, we need to define getTrigger method. This method should return an array of the trigger settings.
+The parent constructor calls `register()`, which hooks into the FluentCRM funnel system:
+- Adds your trigger to the `fluentcrm_funnel_triggers` filter
+- Registers `handle()` on the `fluentcrm_funnel_start_{triggerName}` action
+- Registers `prepareEditorDetails()` on the `fluentcrm_funnel_editor_details_{triggerName}` filter
+
+### 2. getTrigger()
+
+Return metadata that identifies your trigger in the automation builder UI:
 
 ```php
 public function getTrigger()
 {
     return [
-        'category'    => __('Awesome Course', 'my-plugin'),
-        'label'       => __('User enroll in a course', 'my-plugin'),
-        'description' => __('The will start when a student enroll a course', 'your-plugin')
-        'icon'        =>  'fc-icon-wp_new_user_signup',
+        'category'    => __('My Plugin', 'your-plugin'),
+        'label'       => __('User Enrolled in Course', 'your-plugin'),
+        'description' => __('This automation will start when a student enrolls in a course', 'your-plugin'),
+        'icon'        => 'fc-icon-wp_new_user_signup',
     ];
 }
 ```
 
-Define the `getFunnelSettingsDefaults` method. This method should return an array of the default settings for the workflow.
-```php
+The `icon` value should be one of the FluentCRM icon classes (prefixed with `fc-icon-`).
 
+### 3. getFunnelSettingsDefaults() and getSettingsFields()
+
+Define what settings the user can configure when creating an automation with this trigger:
+
+```php
 public function getFunnelSettingsDefaults()
 {
     return [
-        'subscription_status' => 'subscribed'
+        'subscription_status' => 'subscribed',
     ];
- }
-```
+}
 
-Define the `getSettingsFields` method. This method should return an array of the settings fields that will be displayed in the workflow settings page.
-You can customize settings as desired . Visit [Form Field Code Structure](/modules/form-field-code-structure/) for more information.
-
-```php
 public function getSettingsFields($funnel)
 {
     return [
-        'title'     => __('User enroll in a course', 'my-plugin'),
-        'sub_title' => __('This will start when a student enroll a course', 'your-plugin'),
+        'title'     => __('User Enrolled in Course', 'your-plugin'),
+        'sub_title' => __('This automation will start when a student enrolls in a course', 'your-plugin'),
         'fields'    => [
             'subscription_status' => [
                 'type'        => 'option_selectors',
                 'option_key'  => 'editable_statuses',
                 'is_multiple' => false,
-                'label'       => __('Subscription Status', 'my-plugin'),
-                'placeholder' => __('Select Status', 'my-plugin')
-            ]
-        ]
+                'label'       => __('Subscription Status', 'your-plugin'),
+                'placeholder' => __('Select Status', 'your-plugin'),
+            ],
+        ],
     ];
 }
 ```
-There should be an option to select the particular courses for which the workflow should be triggered.
-This can be done by adding `getConditionFields` method.
+
+See [Form Field Types](/modules/form-field-code-structure) for all available field types.
+
+### 4. getConditionFields() (Optional)
+
+Add conditions like target courses, user roles, or whether to allow re-entry:
+
 ```php
 public function getConditionFields($funnel)
 {
-    $courseOptions = [
-        [
-            'id'    => '2',
-            'title' => 'Think like a pro in JavaScript'
-        ],
-        [
-            'id'    => '3',
-            'title' => 'Master in wordpress plugin development'
-        ]
-    ];
     return [
-        'update_type'  => [
+        'update_type' => [
             'type'    => 'radio',
-            'label'   => __('If Contact Already Exist?', 'your-plugin'),
-            'help'    => __('Please specify what will happen if the subscriber already exist in the database', 'your-plugin'),
-            'options' => FunnelHelper::getUpdateOptions()
+            'label'   => __('If Contact Already Exists?', 'your-plugin'),
+            'help'    => __('Specify what happens if the subscriber already exists', 'your-plugin'),
+            'options' => FunnelHelper::getUpdateOptions(),
         ],
-        'course_ids'   => [
+        'course_ids' => [
             'type'        => 'multi-select',
             'label'       => __('Target Courses', 'your-plugin'),
-            'help'        => __('Select for which Courses this automation will run', 'your-plugin'),
-            'options'     => $courseOptions,
-            'inline_help' => __('Keep it blank to run to any Course Enrollment', 'your-plugin')
+            'help'        => __('Select which courses trigger this automation', 'your-plugin'),
+            'options'     => $this->getCourseOptions(), // your method to fetch courses
+            'inline_help' => __('Leave blank to run for any course', 'your-plugin'),
         ],
         'run_multiple' => [
             'type'        => 'yes_no_check',
             'label'       => '',
-            'check_label' => __('Restart the Automation Multiple times for a contact for this event. (Only enable if you want to restart automation for the same contact)', 'fluentcampaign-pro'),
-            'inline_help' => __('If you enable, then it will restart the automation for a contact if the contact already in the automation. Otherwise, It will just skip if already exist', 'fluentcampaign-pro')
-        ]
+            'check_label' => __('Restart the automation multiple times for the same contact', 'your-plugin'),
+            'inline_help' => __('If enabled, the automation restarts for contacts who are already in it', 'your-plugin'),
+        ],
     ];
 }
-```
-Let's populate some default values for condition fields with `getConditionDefaults` method.
-```php
-public function getConditionDefaults()
+
+public function getFunnelConditionDefaults($funnel)
 {
     return [
-        'update_type'  => 'update', // skip_all_actions, skip_update_if_exist
+        'update_type'  => 'update',
         'course_ids'   => [],
-        'run_multiple' => 'no'
+        'run_multiple' => 'no',
     ];
 }
 ```
-The `handle` method needs to be defined in order for it to be called when the trigger event occurs. We are almost finished with this process.
-The method takes two arguments. The first argument is the funnel object and second argument is the array of the arguments that are passed to the callback.
-Note that, we must prepare subscriber data.
+
+### 5. handle()
+
+This is the core method — called when your trigger event fires. It must:
+1. Extract data from `$originalArgs`
+2. Validate conditions (is this contact/event processable?)
+3. Prepare subscriber data
+4. Start the funnel sequence
+
 ```php
-// ... 
 public function handle($funnel, $originalArgs)
 {
-    // separate the arguments
-    $enrollmentReference = $originalArgs[0];
-    $courseId = $originalArgs[1];
-    $userId = $originalArgs[2];
+    $courseId = $originalArgs[0];
+    $userId = $originalArgs[1];
 
-    // get the funnel settings and conditions
-    $settings = $funnel->settings;
-    $conditions = $funnel->conditions;
-    
-    // prepare the subscriber data 
-    $subscriberData = [
-        'email' => '', // required
-        'first_name' => '',
-        'last_name' => '',
-        'status' => $settings['subscription_status']
-    ];
-    // or, you may use the FluentCRM helper function to prepare the subscriber data
-    $subscriberData = FunnelHelper::prepareUserData($userId);
-
-    // check if this funnel is able to process this course and run the automation
-    if(!$this->isProcessable($funnel, $courseId, $subscriberData)) {
+    // Check conditions
+    if (!$this->isProcessable($funnel, $courseId, $userId)) {
         return false;
     }
-    
-    // finally start funnel sequence for this subscriber
-    (new \FluentCrm\App\Services\Funnel\FunnelProcessor())->startFunnelSequence($funnel, $subscriberData, [
+
+    // Prepare subscriber data from WordPress user
+    $subscriberData = FunnelHelper::prepareUserData($userId);
+    $subscriberData['status'] = Arr::get($funnel->settings, 'subscription_status', 'subscribed');
+
+    // Start the funnel
+    (new FunnelProcessor())->startFunnelSequence($funnel, $subscriberData, [
         'source_trigger_name' => $this->triggerName,
-        'source_ref_id' => $courseId // optional
+        'source_ref_id'       => $courseId,
     ]);
-    
 }
-// ...
-```
-```php
-// ...
-// check if this funnel is able to process this course and run the automation
-private function isProcessable($funnel, $courseId, $subscriberData)
+
+private function isProcessable($funnel, $courseId, $userId)
 {
     $conditions = $funnel->conditions;
-    // check update_type
+
+    // Check if contact exists and handle accordingly
+    $user = get_user_by('ID', $userId);
+    $subscriber = FunnelHelper::getSubscriber($user->user_email);
+
     $updateType = Arr::get($conditions, 'update_type');
-    $subscriber = FunnelHelper::getSubscriber($subscriberData['email']);
     if ($subscriber && $updateType == 'skip_all_if_exist') {
         return false;
     }
-    // check the products ids
-    if($conditions['course_ids'] && !in_array($courseId, $conditions['course_ids'])) {
+
+    // Check course filter
+    $courseIds = Arr::get($conditions, 'course_ids', []);
+    if (!empty($courseIds) && !in_array($courseId, $courseIds)) {
         return false;
     }
-     // check run_only_one
+
+    // Check multiple run
     if ($subscriber && FunnelHelper::ifAlreadyInFunnel($funnel->id, $subscriber->id)) {
         $multipleRun = Arr::get($conditions, 'run_multiple') == 'yes';
         if ($multipleRun) {
             FunnelHelper::removeSubscribersFromFunnel($funnel->id, [$subscriber->id]);
-        } else {
-            return false;
         }
+        return $multipleRun;
     }
+
     return true;
 }
-// ...
 ```
-Everything is set and ready to go. Let's look at the full source code.
+
+### 6. Fire the Trigger Event
+
+In your plugin, fire the WordPress action that matches your `$triggerName` when the event occurs:
+
+```php
+// In your plugin's course enrollment handler:
+do_action('your_plugin_course_enrolled', $courseId, $userId);
+```
+
+### 7. Register
+
+Register your trigger class on the `fluent_crm/after_init` hook:
+
+```php
+add_action('fluent_crm/after_init', function () {
+    new YourPlugin\Automation\CourseEnrolledTrigger();
+});
+```
+
+## Complete Code
+
 ```php
 <?php
-namespace Your\Plugin\Name\Automation;
-... 
+
+namespace YourPlugin\Automation;
+
 use FluentCrm\App\Services\Funnel\BaseTrigger;
 use FluentCrm\App\Services\Funnel\FunnelHelper;
-use FluentCrm\Framework\Support\Arr;
 use FluentCrm\App\Services\Funnel\FunnelProcessor;
+use FluentCrm\Framework\Support\Arr;
 
-class CourseEnrolledTrigger extends BaseTrigger {
-
+class CourseEnrolledTrigger extends BaseTrigger
+{
     public function __construct()
     {
-        $this->triggerName = 'course-enrolled';
+        $this->triggerName = 'your_plugin_course_enrolled';
         $this->priority = 20;
-        $this->actionArgNum = 3;
+        $this->actionArgNum = 2;
         parent::__construct();
     }
-    
+
     public function getTrigger()
     {
         return [
-            'category'    => __('Awesome Course', 'my-plugin'),
-            'label'       => __('User enroll in a course', 'my-plugin'),
-            'description' => __('The will start when a student enroll a course', 'your-plugin')
-            'icon'        =>  'fc-icon-wp_new_user_signup',
+            'category'    => __('My Plugin', 'your-plugin'),
+            'label'       => __('User Enrolled in Course', 'your-plugin'),
+            'description' => __('This automation will start when a student enrolls in a course', 'your-plugin'),
+            'icon'        => 'fc-icon-wp_new_user_signup',
         ];
     }
-    
+
     public function getFunnelSettingsDefaults()
     {
         return [
-            'subscription_status' => 'subscribed'
+            'subscription_status' => 'subscribed',
         ];
-     }
-     
+    }
+
     public function getSettingsFields($funnel)
     {
         return [
-            'title'     => __('User enroll in a course', 'my-plugin'),
-            'sub_title' => __('This will start when a student enroll a course', 'your-plugin'),
+            'title'     => __('User Enrolled in Course', 'your-plugin'),
+            'sub_title' => __('This automation will start when a student enrolls in a course', 'your-plugin'),
             'fields'    => [
                 'subscription_status' => [
                     'type'        => 'option_selectors',
                     'option_key'  => 'editable_statuses',
                     'is_multiple' => false,
                     'label'       => __('Subscription Status', 'your-plugin'),
-                    'placeholder' => __('Select Status', 'my-plugin')
-                ]
-            ]
+                    'placeholder' => __('Select Status', 'your-plugin'),
+                ],
+            ],
         ];
     }
-    
+
     public function getConditionFields($funnel)
     {
-        $courseOptions = [
-            [
-                'id'    => '2',
-                'title' => 'Think like a pro in JavaScript'
-            ],
-            [
-                'id'    => '3',
-                'title' => 'Master in wordpress plugin development'
-            ]
-        ];
         return [
-            'update_type'  => [
+            'update_type' => [
                 'type'    => 'radio',
-                'label'   => __('If Contact Already Exist?', 'your-plugin'),
-                'help'    => __('Please specify what will happen if the subscriber already exist in the database', 'your-plugin'),
-                'options' => FunnelHelper::getUpdateOptions()
+                'label'   => __('If Contact Already Exists?', 'your-plugin'),
+                'help'    => __('Specify what happens if the subscriber already exists', 'your-plugin'),
+                'options' => FunnelHelper::getUpdateOptions(),
             ],
-            'course_ids'   => [
+            'course_ids' => [
                 'type'        => 'multi-select',
                 'label'       => __('Target Courses', 'your-plugin'),
-                'help'        => __('Select for which Courses this automation will run', 'your-plugin'),
-                'options'     => $courseOptions,
-                'inline_help' => __('Keep it blank to run to any Course Enrollment', 'your-plugin')
+                'help'        => __('Select which courses trigger this automation', 'your-plugin'),
+                'options'     => $this->getCourseOptions(),
+                'inline_help' => __('Leave blank to run for any course', 'your-plugin'),
             ],
             'run_multiple' => [
                 'type'        => 'yes_no_check',
                 'label'       => '',
-                'check_label' => __('Restart the Automation Multiple times for a contact for this event. (Only enable if you want to restart automation for the same contact)', 'fluentcampaign-pro'),
-                'inline_help' => __('If you enable, then it will restart the automation for a contact if the contact already in the automation. Otherwise, It will just skip if already exist', 'fluentcampaign-pro')
-            ]
+                'check_label' => __('Restart the automation multiple times for the same contact', 'your-plugin'),
+                'inline_help' => __('If enabled, the automation restarts for contacts who are already in it', 'your-plugin'),
+            ],
         ];
     }
-    
-    public function getConditionDefaults()
+
+    public function getFunnelConditionDefaults($funnel)
     {
         return [
-            'update_type'  => 'update', // skip_all_actions, skip_update_if_exist
+            'update_type'  => 'update',
             'course_ids'   => [],
-            'run_multiple' => 'no'
+            'run_multiple' => 'no',
         ];
     }
-    
+
     public function handle($funnel, $originalArgs)
     {
-        // separate the arguments
-        $enrollmentReference = $originalArgs[0];
-        $courseId = $originalArgs[1];
-        $userId = $originalArgs[2];
-    
-        // get the funnel settings and conditions
-        $settings = $funnel->settings;
-        $conditions = $funnel->conditions;
-        
-        // prepare the subscriber data
-        $subscriberData = [
-            'email' => '', // required
-            'first_name' => '',
-            'last_name' => '',
-            'status' => $settings['subscription_status']
-        ];
-        // you may use the helper function to prepare the subscriber data
-        $subscriberData = FunnelHelper::prepareUserData($userId);
-    
-        // check if this funnel is able to process this course and run the automation
-        if(!$this->isProcessable($funnel, $courseId, $subscriberData)) {
+        $courseId = $originalArgs[0];
+        $userId = $originalArgs[1];
+
+        if (!$this->isProcessable($funnel, $courseId, $userId)) {
             return false;
         }
-        
-        // finally start funnel sequence for this subscriber
-        (new \FluentCrm\App\Services\Funnel\FunnelProcessor())->startFunnelSequence($funnel, $subscriberData, [
+
+        $subscriberData = FunnelHelper::prepareUserData($userId);
+        $subscriberData['status'] = Arr::get($funnel->settings, 'subscription_status', 'subscribed');
+
+        (new FunnelProcessor())->startFunnelSequence($funnel, $subscriberData, [
             'source_trigger_name' => $this->triggerName,
-            'source_ref_id' => $courseId // optional
+            'source_ref_id'       => $courseId,
         ]);
     }
-    
-    // check if this funnel is able to process this course and run the automation
-    private function isProcessable($funnel, $courseId, $subscriberData)
+
+    private function isProcessable($funnel, $courseId, $userId)
     {
         $conditions = $funnel->conditions;
-        // check update_type
+        $user = get_user_by('ID', $userId);
+        $subscriber = FunnelHelper::getSubscriber($user->user_email);
+
         $updateType = Arr::get($conditions, 'update_type');
-        $subscriber = FunnelHelper::getSubscriber($subscriberData['email']);
         if ($subscriber && $updateType == 'skip_all_if_exist') {
             return false;
         }
-        // check the products ids
-        if($conditions['course_ids'] && !in_array($courseId, $conditions['course_ids'])) {
+
+        $courseIds = Arr::get($conditions, 'course_ids', []);
+        if (!empty($courseIds) && !in_array($courseId, $courseIds)) {
             return false;
         }
-         // check run_only_one
+
         if ($subscriber && FunnelHelper::ifAlreadyInFunnel($funnel->id, $subscriber->id)) {
             $multipleRun = Arr::get($conditions, 'run_multiple') == 'yes';
             if ($multipleRun) {
                 FunnelHelper::removeSubscribersFromFunnel($funnel->id, [$subscriber->id]);
-            } else {
-                return false;
             }
+            return $multipleRun;
         }
+
         return true;
     }
 
+    private function getCourseOptions()
+    {
+        // Replace with your plugin's course query
+        return [
+            ['id' => '1', 'title' => 'Introduction to PHP'],
+            ['id' => '2', 'title' => 'Advanced WordPress Development'],
+        ];
+    }
 }
 ```
-## Registering the Trigger
-All set! Your trigger is ready to use.
-Call the class to register the workflow.
-```php
-add_action('fluent_crm/after_init', function () {
-    new Your\Plugin\Name\Automation\CourseEnrolledTrigger();
-});
-```
+
+**Source:** `app/Services/Funnel/BaseTrigger.php`

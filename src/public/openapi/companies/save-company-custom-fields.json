@@ -1,0 +1,248 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/companies/custom-fields": {
+      "put": {
+        "operationId": "saveCompanyCustomFields",
+        "summary": "PUT Save Company Custom Fields",
+        "description": "Save (create or update) the global custom field definitions for companies. This replaces the entire set of custom field definitions.",
+        "tags": [
+          "Companies"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "fields"
+                ],
+                "properties": {
+                  "fields": {
+                    "type": "array",
+                    "description": "Array of custom field definitions. Can be passed as JSON string or array.",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "key": {
+                          "type": "string",
+                          "description": "Unique field key/slug."
+                        },
+                        "label": {
+                          "type": "string",
+                          "description": "Human-readable field label."
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Field input type.",
+                          "enum": [
+                            "text",
+                            "textarea",
+                            "number",
+                            "date",
+                            "select",
+                            "radio",
+                            "checkbox"
+                          ]
+                        },
+                        "options": {
+                          "type": "array",
+                          "description": "Available options for select/radio/checkbox fields.",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "settings": {
+                          "type": "object",
+                          "description": "Additional field settings."
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "fields": [
+                  {
+                    "key": "annual_revenue",
+                    "label": "Annual Revenue",
+                    "type": "number",
+                    "options": [],
+                    "settings": {}
+                  },
+                  {
+                    "key": "contract_end_date",
+                    "label": "Contract End Date",
+                    "type": "date",
+                    "options": [],
+                    "settings": {}
+                  },
+                  {
+                    "key": "priority_level",
+                    "label": "Priority Level",
+                    "type": "select",
+                    "options": [
+                      "Low",
+                      "Medium",
+                      "High"
+                    ],
+                    "settings": {}
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Custom fields saved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "fields": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "key": {
+                            "type": "string",
+                            "description": "Unique field key/slug."
+                          },
+                          "label": {
+                            "type": "string",
+                            "description": "Human-readable field label."
+                          },
+                          "type": {
+                            "type": "string",
+                            "description": "Field input type.",
+                            "enum": [
+                              "text",
+                              "textarea",
+                              "number",
+                              "date",
+                              "select",
+                              "radio",
+                              "checkbox"
+                            ]
+                          },
+                          "options": {
+                            "type": "array",
+                            "description": "Available options for select/radio/checkbox fields.",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "settings": {
+                            "type": "object",
+                            "description": "Additional field settings."
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "fields": [
+                    {
+                      "key": "annual_revenue",
+                      "label": "Annual Revenue",
+                      "type": "number",
+                      "options": [],
+                      "settings": {}
+                    },
+                    {
+                      "key": "contract_end_date",
+                      "label": "Contract End Date",
+                      "type": "date",
+                      "options": [],
+                      "settings": {}
+                    },
+                    {
+                      "key": "priority_level",
+                      "label": "Priority Level",
+                      "type": "select",
+                      "options": [
+                        "Low",
+                        "Medium",
+                        "High"
+                      ],
+                      "settings": {}
+                    }
+                  ],
+                  "message": "Fields saved successfully!"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

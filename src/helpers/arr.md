@@ -1,334 +1,481 @@
----
-description: "The Arr::add method adds a given key / value pair to an array if the given key doesn't already exist in the array:"
----
+# Array Helper (Arr)
 
-# Array Helper aka Arr
-
-- Class with Namespace: `\FluentCrm\Framework\Support\Arr`
+- Class with Namespace: `FluentCrm\Framework\Support\Arr`
 - Method Types: `static`
 
-<a name="method-array-add"></a>
-### `Arr::add()`
-
-The `Arr::add` method adds a given key / value pair to an array if the given key doesn't already exist in the array:
-```php 
+```php
 use FluentCrm\Framework\Support\Arr;
-
-$array = Arr::add(['name' => 'Desk'], 'price', 100);
-
-// ['name' => 'Desk', 'price' => 100]
-```
-    
-
-<a name="method-array-collapse"></a>
-### `Arr::collapse()`
-
-The `Arr::collapse` method collapses an array of arrays into a single array:
-```php 
-use FluentCrm\Framework\Support\Arr;
-
-$array = Arr::collapse([[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
-
-// [1, 2, 3, 4, 5, 6, 7, 8, 9]
 ```
 
-<a name="method-array-divide"></a>
-### `Arr::divide()`
+## Inspection & Testing
 
-The `Arr::divide` method returns two arrays, one containing the keys, and the other containing the values of the given array:
-```php 
-use FluentCrm\Framework\Support\Arr;
+### `Arr::accessible()`
 
-[$keys, $values] = Arr::divide(['name' => 'Desk']);
+Determines whether the given value is array accessible (plain array or `ArrayAccess` instance):
 
-// $keys: ['name']
-
-// $values: ['Desk']
+```php
+Arr::accessible([1, 2, 3]);    // true
+Arr::accessible(new Collection); // true
+Arr::accessible('string');     // false
 ```
 
-<a name="method-array-dot"></a>
-### `Arr::dot()`
+### `Arr::exists()`
 
-The `Arr::dot` method flattens a multi-dimensional array into a single level array that uses "dot" notation to indicate depth:
-```php 
-use FluentCrm\Framework\Support\Arr;
+Determines if the given key exists in the array. Supports `ArrayAccess`:
 
+```php
+$array = ['name' => 'John', 'age' => 30];
+
+Arr::exists($array, 'name');  // true
+Arr::exists($array, 'email'); // false
+```
+
+### `Arr::has()`
+
+Checks whether all of the given keys exist in an array using "dot" notation:
+
+```php
+$array = ['product' => ['name' => 'Desk', 'price' => 100]];
+
+Arr::has($array, 'product.name');                    // true
+Arr::has($array, ['product.price', 'product.discount']); // false
+```
+
+### `Arr::hasAny()`
+
+Checks whether **any** of the given keys exist in an array using "dot" notation:
+
+```php
+$array = ['product' => ['name' => 'Desk', 'price' => 100]];
+
+Arr::hasAny($array, ['product.price', 'product.discount']); // true
+Arr::hasAny($array, ['category', 'discount']);               // false
+```
+
+### `Arr::isAssoc()`
+
+Returns `true` if the array is associative (does not have sequential integer keys starting from 0):
+
+```php
+Arr::isAssoc(['a' => 1, 'b' => 2]); // true
+Arr::isAssoc([0, 1, 2]);            // false
+```
+
+### `Arr::isList()`
+
+Returns `true` if the array is a list (sequential integer keys starting from 0 with no gaps):
+
+```php
+Arr::isList(['a', 'b', 'c']); // true
+Arr::isList([1 => 'a']);       // false
+```
+
+### `Arr::isTrue()`
+
+Returns a boolean indicating whether the value at the given key is truthy per `FILTER_VALIDATE_BOOLEAN`. Handles string values like `'true'`, `'yes'`, `'1'`, `'on'` and their falsy counterparts:
+
+```php
+$array = ['active' => 'yes', 'debug' => 'false'];
+
+Arr::isTrue($array, 'active'); // true
+Arr::isTrue($array, 'debug');  // false
+```
+
+### `Arr::contains()`
+
+Returns `true` if **all** of the given values exist in the array:
+
+```php
+$array = ['apple', 'banana', 'cherry'];
+
+Arr::contains($array, ['apple', 'banana']); // true
+Arr::contains($array, ['apple', 'grape']);  // false
+```
+
+### `Arr::some()`
+
+Returns `true` if at least one element passes the callback test (like JavaScript's `Array.some`):
+
+```php
+$array = [1, 2, 3, 4, 5];
+
+Arr::some($array, fn($v) => $v > 4); // true
+Arr::some($array, fn($v) => $v > 5); // false
+```
+
+### `Arr::every()`
+
+Returns `true` if all elements pass the callback test (like JavaScript's `Array.every`):
+
+```php
+$array = [2, 4, 6, 8];
+
+Arr::every($array, fn($v) => $v % 2 === 0); // true
+```
+
+---
+
+## Access & Retrieval
+
+### `Arr::get()`
+
+Retrieves a value from a deeply nested array using "dot" notation:
+
+```php
 $array = ['products' => ['desk' => ['price' => 100]]];
 
-$flattened = Arr::dot($array);
+$price = Arr::get($array, 'products.desk.price');
+// 100
 
-// ['products.desk.price' => 100]
+$discount = Arr::get($array, 'products.desk.discount', 0);
+// 0 (default)
 ```
 
-<a name="method-array-except"></a>
-### `Arr::except()`
-
-The `Arr::except` method removes the given key / value pairs from an array:
-```php 
-use FluentCrm\Framework\Support\Arr;
-
-$array = ['name' => 'Desk', 'price' => 100];
-
-$filtered = Arr::except($array, ['price']);
-
-// ['name' => 'Desk']
-```
-<a name="method-array-first"></a>
 ### `Arr::first()`
 
-The `Arr::first` method returns the first element of an array passing a given truth test:
-```php 
-use FluentCrm\Framework\Support\Arr;
+Returns the first element of an array passing a given truth test:
 
+```php
 $array = [100, 200, 300];
 
 $first = Arr::first($array, function ($value, $key) {
     return $value >= 150;
 });
-
 // 200
 ```
-A default value may also be passed as the third parameter to the method. This value will be returned if no value passes the truth test:
-```php 
-use FluentCrm\Framework\Support\Arr;
 
+A default value may be passed as the third parameter:
+
+```php
 $first = Arr::first($array, $callback, $default);
 ```
 
-<a name="method-array-flatten"></a>
-### `Arr::flatten()`
-
-The `Arr::flatten` method flattens a multi-dimensional array into a single level array:
-
-```php 
-use FluentCrm\Framework\Support\Arr;
-
-$array = ['name' => 'Joe', 'languages' => ['PHP', 'Ruby']];
-
-$flattened = Arr::flatten($array);
-
-// ['Joe', 'PHP', 'Ruby']
-```
-
-<a name="method-array-forget"></a>
-### `Arr::forget()`
-
-The `Arr::forget` method removes a given key / value pair from a deeply nested array using "dot" notation:
-
-```php 
-use FluentCrm\Framework\Support\Arr;
-
-$array = ['products' => ['desk' => ['price' => 100]]];
-
-Arr::forget($array, 'products.desk');
-
-// ['products' => []]
-```
-
-<a name="method-array-get"></a>
-### `Arr::get()`
-
-The `Arr::get` method retrieves a value from a deeply nested array using "dot" notation:
-```php 
-use FluentCrm\Framework\Support\Arr;
-
-$array = ['products' => ['desk' => ['price' => 100]]];
-
-$price = Arr::get($array, 'products.desk.price');
-
-// 100
-```
-
-The `Arr::get` method also accepts a default value, which will be returned if the specific key is not found:
-
-```php 
-use FluentCrm\Framework\Support\Arr;
-
-$discount = Arr::get($array, 'products.desk.discount', 0);
-
-// 0
-```
-
-<a name="method-array-has"></a>
-### `Arr::has()`
-
-The `Arr::has` method checks whether a given item or items exists in an array using "dot" notation:
-
-```php 
-use FluentCrm\Framework\Support\Arr;
-
-$array = ['product' => ['name' => 'Desk', 'price' => 100]];
-
-$contains = Arr::has($array, 'product.name');
-
-// true
-
-$contains = Arr::has($array, ['product.price', 'product.discount']);
-
-// false
-```
-
-<a name="method-array-last"></a>
 ### `Arr::last()`
 
-The `Arr::last` method returns the last element of an array passing a given truth test:
-```php 
-use FluentCrm\Framework\Support\Arr;
+Returns the last element of an array passing a given truth test:
 
+```php
 $array = [100, 200, 300, 110];
 
 $last = Arr::last($array, function ($value, $key) {
     return $value >= 150;
 });
-
 // 300
 ```
 
-A default value may be passed as the third argument to the method. This value will be returned if no value passes the truth test:
-```php 
-use FluentCrm\Framework\Support\Arr;
+### `Arr::find()`
 
-$last = Arr::last($array, $callback, $default);
+Returns the first element that satisfies the callback, or `null`. Pass `true` as third argument to return the key instead:
+
+```php
+$users = [
+    ['name' => 'John', 'active' => false],
+    ['name' => 'Jane', 'active' => true],
+];
+
+$active = Arr::find($users, fn($u) => $u['active']);
+// ['name' => 'Jane', 'active' => true]
+
+$key = Arr::find($users, fn($u) => $u['active'], true);
+// 1
 ```
 
-<a name="method-array-only"></a>
 ### `Arr::only()`
 
-The `Arr::only` method returns only the specified key / value pairs from the given array:
-```php 
-use FluentCrm\Framework\Support\Arr;
+Returns only the specified key/value pairs from the given array:
 
+```php
 $array = ['name' => 'Desk', 'price' => 100, 'orders' => 10];
 
 $slice = Arr::only($array, ['name', 'price']);
-
 // ['name' => 'Desk', 'price' => 100]
 ```
-<a name="method-array-pluck"></a>
+
 ### `Arr::pluck()`
 
-The `Arr::pluck` method retrieves all of the values for a given key from an array:
-```php 
-use FluentCrm\Framework\Support\Arr;
+Retrieves all of the values for a given key from an array:
 
+```php
 $array = [
     ['developer' => ['id' => 1, 'name' => 'Jewel']],
     ['developer' => ['id' => 2, 'name' => 'Adre']],
 ];
 
 $names = Arr::pluck($array, 'developer.name');
-
 // ['Jewel', 'Adre']
-```
-You may also specify how you wish the resulting list to be keyed:
-```php 
-use FluentCrm\Framework\Support\Arr;
 
+// Optionally key the result:
 $names = Arr::pluck($array, 'developer.name', 'developer.id');
-
 // [1 => 'Jewel', 2 => 'Adre']
 ```
-<a name="method-array-prepend"></a>
-### `Arr::prepend()`
 
-The `Arr::prepend` method will push an item onto the beginning of an array:
-```php 
-use FluentCrm\Framework\Support\Arr;
-
-$array = ['one', 'two', 'three', 'four'];
-
-$array = Arr::prepend($array, 'zero');
-
-// ['zero', 'one', 'two', 'three', 'four']
-```
-
-If needed, you may specify the key that should be used for the value:
-```php 
-use FluentCrm\Framework\Support\Arr;
-
-$array = ['price' => 100];
-
-$array = Arr::prepend($array, 'Desk', 'name');
-
-// ['name' => 'Desk', 'price' => 100]
-```
-
-<a name="method-array-pull"></a>
-### `Arr::pull()`
-
-The `Arr::pull` method returns and removes a key / value pair from an array:
-```php 
-use FluentCrm\Framework\Support\Arr;
-
-$array = ['name' => 'Desk', 'price' => 100];
-
-$name = Arr::pull($array, 'name');
-
-// $name: Desk
-
-// $array: ['price' => 100]
-```
-
-A default value may be passed as the third argument to the method. This value will be returned if the key doesn't exist:
-```php 
-use FluentCrm\Framework\Support\Arr;
-
-$value = Arr::pull($array, $key, $default);
-```
-<a name="method-array-random"></a>
 ### `Arr::random()`
 
-The `Arr::random` method returns a random value from an array:
-```php 
-use FluentCrm\Framework\Support\Arr;
+Returns a random value from an array:
 
+```php
 $array = [1, 2, 3, 4, 5];
 
 $random = Arr::random($array);
-
 // 4 - (retrieved randomly)
-```
-You may also specify the number of items to return as an optional second argument. Note that providing this argument will return an array, even if only one item is desired:
-```php 
-use FluentCrm\Framework\Support\Arr;
 
+// Multiple items:
 $items = Arr::random($array, 2);
-
 // [2, 5] - (retrieved randomly)
 ```
 
-<a name="method-array-set"></a>
+---
+
+## Mutation & Modification
+
+### `Arr::add()`
+
+Adds a given key/value pair to an array if the given key doesn't already exist (supports dot notation):
+
+```php
+$array = Arr::add(['name' => 'Desk'], 'price', 100);
+// ['name' => 'Desk', 'price' => 100]
+```
+
 ### `Arr::set()`
 
-The `Arr::set` method sets a value within a deeply nested array using "dot" notation:
-```php 
-use FluentCrm\Framework\Support\Arr;
+Sets a value within a deeply nested array using "dot" notation:
 
+```php
 $array = ['products' => ['desk' => ['price' => 100]]];
 
 Arr::set($array, 'products.desk.price', 200);
-
 // ['products' => ['desk' => ['price' => 200]]]
 ```
 
-<a name="method-array-sort"></a>
+### `Arr::forget()`
+
+Removes a given key/value pair from a deeply nested array using "dot" notation (modifies by reference):
+
+```php
+$array = ['products' => ['desk' => ['price' => 100]]];
+
+Arr::forget($array, 'products.desk');
+// ['products' => []]
+```
+
+### `Arr::except()`
+
+Returns a copy of the array with the specified keys removed:
+
+```php
+$array = ['name' => 'Desk', 'price' => 100];
+
+$filtered = Arr::except($array, ['price']);
+// ['name' => 'Desk']
+```
+
+### `Arr::pull()`
+
+Returns and removes a key/value pair from an array:
+
+```php
+$array = ['name' => 'Desk', 'price' => 100];
+
+$name = Arr::pull($array, 'name');
+// $name: Desk
+// $array: ['price' => 100]
+```
+
+### `Arr::prepend()`
+
+Pushes an item onto the beginning of an array:
+
+```php
+$array = ['one', 'two', 'three', 'four'];
+
+$array = Arr::prepend($array, 'zero');
+// ['zero', 'one', 'two', 'three', 'four']
+
+// With key:
+$array = Arr::prepend(['price' => 100], 'Desk', 'name');
+// ['name' => 'Desk', 'price' => 100]
+```
+
+### `Arr::insertAt()`
+
+Inserts a new item at the given numeric position:
+
+```php
+$array = ['a', 'b', 'd'];
+
+$result = Arr::insertAt($array, 2, 'c');
+// ['a', 'b', 'c', 'd']
+```
+
+### `Arr::insertBefore()`
+
+Inserts a new key-value pair immediately before the specified key:
+
+```php
+$array = ['name' => 'Desk', 'price' => 100];
+
+$result = Arr::insertBefore($array, 'price', 'category', 'Furniture');
+// ['name' => 'Desk', 'category' => 'Furniture', 'price' => 100]
+```
+
+### `Arr::insertAfter()`
+
+Inserts a new key-value pair immediately after the specified key:
+
+```php
+$array = ['name' => 'Desk', 'price' => 100];
+
+$result = Arr::insertAfter($array, 'name', 'category', 'Furniture');
+// ['name' => 'Desk', 'category' => 'Furniture', 'price' => 100]
+```
+
+---
+
+## Transformation
+
+### `Arr::collapse()`
+
+Collapses an array of arrays into a single array:
+
+```php
+$array = Arr::collapse([[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
+// [1, 2, 3, 4, 5, 6, 7, 8, 9]
+```
+
+### `Arr::divide()`
+
+Returns two arrays — one containing the keys, the other containing the values:
+
+```php
+[$keys, $values] = Arr::divide(['name' => 'Desk']);
+// $keys: ['name']
+// $values: ['Desk']
+```
+
+### `Arr::dot()`
+
+Flattens a multi-dimensional array into a single level using "dot" notation to indicate depth:
+
+```php
+$array = ['products' => ['desk' => ['price' => 100]]];
+
+$flattened = Arr::dot($array);
+// ['products.desk.price' => 100]
+```
+
+### `Arr::undot()`
+
+Converts a flat dot-notation array back into a nested multi-dimensional array:
+
+```php
+$array = ['products.desk.price' => 100];
+
+$nested = Arr::undot($array);
+// ['products' => ['desk' => ['price' => 100]]]
+```
+
+### `Arr::flatten()`
+
+Flattens a multi-dimensional array into a single level:
+
+```php
+$array = ['name' => 'Joe', 'languages' => ['PHP', 'Ruby']];
+
+$flattened = Arr::flatten($array);
+// ['Joe', 'PHP', 'Ruby']
+```
+
+### `Arr::where()`
+
+Filters an array using the given closure:
+
+```php
+$array = [100, '200', 300, '400', 500];
+
+$filtered = Arr::where($array, function ($value, $key) {
+    return is_string($value);
+});
+// [1 => '200', 3 => '400']
+```
+
+### `Arr::whereNotNull()`
+
+Returns the array with all `null` values removed:
+
+```php
+$array = ['a', null, 'b', null, 'c'];
+
+$filtered = Arr::whereNotNull($array);
+// [0 => 'a', 2 => 'b', 4 => 'c']
+```
+
+### `Arr::map()`
+
+Recursively maps a callback to all non-iterable elements in an array. Delegates to WordPress `map_deep`:
+
+```php
+$array = ['name' => ' John ', 'address' => ['city' => ' NYC ']];
+
+$trimmed = Arr::map($array, 'trim');
+// ['name' => 'John', 'address' => ['city' => 'NYC']]
+```
+
+### `Arr::wrap()`
+
+Wraps a value in an array. Returns `[]` for `null`, and the value unchanged if already an array:
+
+```php
+Arr::wrap('hello');   // ['hello']
+Arr::wrap(['hello']); // ['hello']
+Arr::wrap(null);      // []
+```
+
+### `Arr::query()`
+
+Converts an array into a URL query string:
+
+```php
+$query = Arr::query(['name' => 'Desk', 'price' => 100]);
+// 'name=Desk&price=100'
+```
+
+### `Arr::crossJoin()`
+
+Returns all possible permutations (Cartesian product) of the given arrays:
+
+```php
+$result = Arr::crossJoin([1, 2], ['a', 'b']);
+// [[1, 'a'], [1, 'b'], [2, 'a'], [2, 'b']]
+```
+
+### `Arr::of()`
+
+Wraps an array in a `Collection` instance:
+
+```php
+$collection = Arr::of(['a', 'b', 'c']);
+// FluentCrm\Framework\Support\Collection
+```
+
+---
+
+## Sorting
+
 ### `Arr::sort()`
 
-The `Arr::sort` method sorts an array by its values:
-```php 
-use FluentCrm\Framework\Support\Arr;
+Sorts an array by its values:
 
+```php
 $array = ['Desk', 'Table', 'Chair'];
 
 $sorted = Arr::sort($array);
-
 // ['Chair', 'Desk', 'Table']
 ```
 
-You may also sort the array by the results of the given Closure:
-```php 
-use FluentCrm\Framework\Support\Arr;
+You may also sort by the results of the given closure:
 
+```php
 $array = [
     ['name' => 'Desk'],
     ['name' => 'Table'],
@@ -338,22 +485,14 @@ $array = [
 $sorted = array_values(Arr::sort($array, function ($value) {
     return $value['name'];
 }));
-
-/*
-    [
-        ['name' => 'Chair'],
-        ['name' => 'Desk'],
-        ['name' => 'Table'],
-    ]
-*/
+// [['name' => 'Chair'], ['name' => 'Desk'], ['name' => 'Table']]
 ```
-<a name="method-array-sort-recursive"></a>
+
 ### `Arr::sortRecursive()`
 
-The `Arr::sortRecursive` method recursively sorts an array using the `sort` function for numeric sub=arrays and `ksort` for associative sub-arrays:
-```php 
-use FluentCrm\Framework\Support\Arr;
+Recursively sorts an array using `sort` for numeric sub-arrays and `ksort` for associative sub-arrays:
 
+```php
 $array = [
     ['Roman', 'Taylor', 'Li'],
     ['PHP', 'Ruby', 'JavaScript'],
@@ -361,28 +500,48 @@ $array = [
 ];
 
 $sorted = Arr::sortRecursive($array);
-
 /*
-    [
-        ['JavaScript', 'PHP', 'Ruby'],
-        ['one' => 1, 'three' => 3, 'two' => 2],
-        ['Li', 'Roman', 'Taylor'],
-    ]
+[
+    ['JavaScript', 'PHP', 'Ruby'],
+    ['one' => 1, 'three' => 3, 'two' => 2],
+    ['Li', 'Roman', 'Taylor'],
+]
 */
 ```
 
-<a name="method-array-where"></a>
-### `Arr::where()`
+### `Arr::shuffle()`
 
-The `Arr::where` method filters an array using the given Closure:
-```php 
-use FluentCrm\Framework\Support\Arr;
+Shuffles the array randomly, with an optional seed for deterministic output:
 
-$array = [100, '200', 300, '400', 500];
-
-$filtered = Arr::where($array, function ($value, $key) {
-    return is_string($value);
-});
-
-// [1 => '200', 3 => '400']
+```php
+$array = Arr::shuffle([1, 2, 3, 4, 5]);
+// [3, 1, 5, 2, 4] - (shuffled randomly)
 ```
+
+---
+
+## Pattern Matching
+
+### `Arr::like()`
+
+Returns array values matching a pattern (case-insensitive, like SQL `LIKE`):
+
+```php
+$array = ['FluentCRM', 'FluentForm', 'WooCommerce'];
+
+$result = Arr::like($array, 'fluent');
+// ['FluentCRM', 'FluentForm']
+```
+
+### `Arr::keysLike()`
+
+Returns items from the array whose keys match the pattern:
+
+```php
+$array = ['first_name' => 'John', 'last_name' => 'Doe', 'email' => 'john@example.com'];
+
+$result = Arr::keysLike($array, 'name');
+// ['first_name' => 'John', 'last_name' => 'Doe']
+```
+
+Other pattern matching methods: `notLike()`, `startsLike()`, `endsLike()`, `keysNotLike()`, `keysStartLike()`, `keysEndLike()`.

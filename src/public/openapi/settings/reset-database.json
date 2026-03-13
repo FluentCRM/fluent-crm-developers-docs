@@ -1,0 +1,138 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/setting/reset_db": {
+      "post": {
+        "operationId": "resetDatabase",
+        "summary": "POST Reset Database",
+        "description": "Drop and recreate all FluentCRM database tables. This is a destructive operation that deletes all CRM data including contacts, campaigns, funnels, and logs. Requires the `manage_options` capability and the `FLUENTCRM_IS_DEV_FEATURES` constant to be defined as true in wp-config.php.",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Database tables reset successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "tables": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "List of database tables that were reset."
+                    }
+                  }
+                },
+                "example": {
+                  "message": "All FluentCRM Database Tables have been reset",
+                  "tables": [
+                    "fc_campaign_emails",
+                    "fc_campaigns",
+                    "fc_campaign_url_metrics",
+                    "fc_funnel_metrics",
+                    "fc_funnels",
+                    "fc_funnel_sequences",
+                    "fc_funnel_subscribers",
+                    "fc_lists",
+                    "fc_meta",
+                    "fc_subscriber_meta",
+                    "fc_subscriber_notes",
+                    "fc_subscriber_pivot",
+                    "fc_subscribers",
+                    "fc_tags",
+                    "fc_url_stores"
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient permissions or development mode not enabled.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Development mode is not activated. So you cannot use this feature. You can define \"FLUENTCRM_IS_DEV_FEATURES\" in your wp-config to enable this feature"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

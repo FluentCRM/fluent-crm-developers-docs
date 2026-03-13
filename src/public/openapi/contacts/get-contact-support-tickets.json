@@ -1,0 +1,207 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/subscribers/{id}/support-tickets": {
+      "get": {
+        "operationId": "getContactSupportTickets",
+        "summary": "GET Get Contact Support Tickets",
+        "description": "Retrieve support tickets for a contact from a specific support ticket provider. The data is fetched via the `fluentcrm-get_support_tickets_{provider}` filter hook. Also returns column configuration for rendering the ticket table.",
+        "tags": [
+          "Contacts"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The contact ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "provider",
+            "in": "query",
+            "description": "The support ticket provider identifier (e.g., `fluent-support`).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Support tickets data with column configuration.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tickets": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "description": "List of support tickets. Structure varies by provider.",
+                          "items": {
+                            "type": "object"
+                          }
+                        },
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of tickets."
+                        },
+                        "columns_config": {
+                          "type": "object",
+                          "description": "Column configuration for displaying the tickets table.",
+                          "properties": {
+                            "id": {
+                              "type": "object",
+                              "properties": {
+                                "label": {
+                                  "type": "string"
+                                },
+                                "width": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "status": {
+                              "type": "object",
+                              "properties": {
+                                "label": {
+                                  "type": "string"
+                                },
+                                "width": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "Submitted at": {
+                              "type": "object",
+                              "properties": {
+                                "label": {
+                                  "type": "string"
+                                },
+                                "width": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "action": {
+                              "type": "object",
+                              "properties": {
+                                "label": {
+                                  "type": "string"
+                                },
+                                "width": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "tickets": {
+                    "data": [
+                      {
+                        "id": 42,
+                        "status": "open",
+                        "Submitted at": "2024-03-01 09:00:00",
+                        "action": "https://example.com/support/ticket/42"
+                      }
+                    ],
+                    "total": 1,
+                    "columns_config": {
+                      "id": {
+                        "label": "ID",
+                        "width": "100px"
+                      },
+                      "status": {
+                        "label": "Status",
+                        "width": "120px"
+                      },
+                      "Submitted at": {
+                        "label": "Submitted at",
+                        "width": "150px"
+                      },
+                      "action": {
+                        "label": "Action",
+                        "width": "150px"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

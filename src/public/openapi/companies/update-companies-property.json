@@ -1,0 +1,178 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/companies/companies-property": {
+      "put": {
+        "operationId": "updateCompaniesProperty",
+        "summary": "PUT Update Companies Property",
+        "description": "Update a single property for one or more companies. Valid properties are `type`, `logo`, `owner_id`, and `refetch_logo`. When `refetch_logo` is used, the system attempts to re-fetch the company logo from its website URL. Fires `fluent_crm/company_{column}_to_{value}` action hooks for `type`, `status`, and `owner_id` changes.",
+        "tags": [
+          "Companies"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "property",
+                  "value",
+                  "companies"
+                ],
+                "properties": {
+                  "property": {
+                    "type": "string",
+                    "enum": [
+                      "type",
+                      "logo",
+                      "owner_id",
+                      "refetch_logo"
+                    ],
+                    "description": "The property/column to update."
+                  },
+                  "value": {
+                    "type": "string",
+                    "description": "The new value for the property. For `type`, must be a valid company type. For `refetch_logo`, any truthy value triggers the re-fetch."
+                  },
+                  "companies": {
+                    "description": "Company ID or array of company IDs to update.",
+                    "oneOf": [
+                      {
+                        "type": "integer"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "example": {
+                "property": "type",
+                "value": "partner",
+                "companies": [
+                  1,
+                  2,
+                  3
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Property updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "updated_logo": {
+                      "type": "string",
+                      "description": "Only present when `refetch_logo` was used and a new logo was found."
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Company successfully updated"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error (invalid column, value, or empty company IDs).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "errors": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -1,0 +1,283 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/webhooks/{id}": {
+      "put": {
+        "operationId": "updateWebhook",
+        "summary": "PUT Update Webhook",
+        "description": "Update an existing webhook's configuration. SMS webhooks cannot be edited; they must be deleted and recreated instead. The webhook's `id` and `url` fields are immutable and cannot be changed through this endpoint.",
+        "tags": [
+          "Webhooks"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The webhook ID to update.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Updated webhook name."
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "subscribed",
+                      "pending",
+                      "unsubscribed"
+                    ],
+                    "description": "Updated default subscription status."
+                  },
+                  "lists": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "description": "Updated list IDs to assign to incoming contacts."
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "description": "Updated tag IDs to assign to incoming contacts."
+                  },
+                  "companies": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "description": "Updated company IDs to assign to incoming contacts."
+                  }
+                }
+              },
+              "example": {
+                "name": "Updated Webhook Name",
+                "status": "pending",
+                "lists": [
+                  1,
+                  2
+                ],
+                "tags": [
+                  3
+                ],
+                "companies": []
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "webhooks": {
+                      "type": "array",
+                      "description": "Updated list of all webhooks.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "Unique identifier for the webhook."
+                          },
+                          "object_type": {
+                            "type": "string",
+                            "description": "Type discriminator. `webhook` for standard webhooks, `webhook_{provider}` for SMS webhooks."
+                          },
+                          "key": {
+                            "type": "string",
+                            "description": "UUID key used in the webhook URL."
+                          },
+                          "value": {
+                            "type": "object",
+                            "description": "Webhook configuration data.",
+                            "properties": {
+                              "name": {
+                                "type": "string",
+                                "description": "Human-readable webhook name."
+                              },
+                              "status": {
+                                "type": "string",
+                                "description": "Default subscription status for contacts created via this webhook.",
+                                "enum": [
+                                  "subscribed",
+                                  "pending",
+                                  "unsubscribed"
+                                ]
+                              },
+                              "lists": {
+                                "type": "array",
+                                "items": {
+                                  "type": "integer"
+                                },
+                                "description": "List IDs to assign to incoming contacts."
+                              },
+                              "tags": {
+                                "type": "array",
+                                "items": {
+                                  "type": "integer"
+                                },
+                                "description": "Tag IDs to assign to incoming contacts."
+                              },
+                              "companies": {
+                                "type": "array",
+                                "items": {
+                                  "type": "integer"
+                                },
+                                "description": "Company IDs to assign to incoming contacts."
+                              },
+                              "url": {
+                                "type": "string",
+                                "description": "The webhook endpoint URL."
+                              }
+                            }
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Timestamp when the webhook was created."
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Timestamp when the webhook was last updated."
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Success message."
+                    }
+                  }
+                },
+                "example": {
+                  "webhooks": [],
+                  "message": "Successfully updated the webhook"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Webhook not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Webhook not found"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "SMS webhooks cannot be edited.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "Error type identifier."
+                    }
+                  }
+                },
+                "example": {
+                  "message": "SMS webhooks cannot be edited. Please delete and create a new one if changes are needed.",
+                  "type": "sms_webhook_edit_blocked"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

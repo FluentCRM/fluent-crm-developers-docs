@@ -1,0 +1,169 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/templates/do-bulk-action": {
+      "post": {
+        "operationId": "bulkActionTemplates",
+        "summary": "POST Bulk Action Templates",
+        "description": "Perform a bulk action on multiple email templates. Supports changing the status of templates or permanently deleting them. When `select_all` is 'true', the action is applied to all templates regardless of the provided IDs.",
+        "tags": [
+          "Templates"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "action_name"
+                ],
+                "properties": {
+                  "action_name": {
+                    "type": "string",
+                    "enum": [
+                      "change_template_status",
+                      "delete_templates"
+                    ],
+                    "description": "The bulk action to perform."
+                  },
+                  "template_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "description": "Template IDs to act on."
+                  },
+                  "select_all": {
+                    "type": "string",
+                    "enum": [
+                      "true",
+                      "false"
+                    ],
+                    "description": "If 'true', applies the action to all templates, ignoring `template_ids`."
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "publish",
+                      "draft"
+                    ],
+                    "description": "New status to set (required when `action_name` is 'change_template_status')."
+                  }
+                }
+              },
+              "example": {
+                "action_name": "change_template_status",
+                "template_ids": [
+                  42,
+                  43,
+                  44
+                ],
+                "status": "draft"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Bulk action completed successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Status has been changed for the selected templates"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error (e.g., missing status for status change action).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Please select status"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

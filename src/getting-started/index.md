@@ -1,199 +1,153 @@
 ---
-description: "Complete developer guide for FluentCRM - learn to build powerful integrations, custom automations, and extend WordPress's most flexible email marketing platform. Everything you need to start developing with FluentCRM."
+title: Getting Started
+description: "Developer guide for FluentCRM — architecture overview, directory structure, key concepts, and links to detailed documentation."
 ---
 
-# FluentCRM Developer Guide
+# Getting Started
 
-<Badge type="tip" vertical="top" text="FluentCRM Core" /> <Badge type="warning" vertical="top" text="Complete Guide" />
+<Badge type="tip" vertical="top" text="FluentCRM Core" /> <Badge type="warning" vertical="top" text="Developer Guide" />
 
-Welcome to the complete developer guide for **FluentCRM** - the self-hosted email marketing automation plugin for WordPress. This comprehensive guide will take you from understanding the basics to building sophisticated integrations and custom functionality.
+FluentCRM is a self-hosted email marketing and CRM plugin for WordPress. It runs entirely on your WordPress site — no external API calls for contact storage or email management. This guide covers what you need to know to extend it.
 
-## What is FluentCRM?
+## Architecture Overview
 
-FluentCRM is a **Self-Hosted Email Marketing Automation Plugin** for WordPress that helps businesses manage their customer relationships, email campaigns, and marketing automation workflows. Unlike cloud-based solutions, FluentCRM runs entirely on your WordPress site, ensuring data privacy, unlimited contacts, and no monthly fees.
+FluentCRM is built on **WPFluent**, a Laravel-like framework for WordPress. It follows MVC patterns with Eloquent-style models, a route/controller/policy system for REST APIs, and a Vue 3 frontend.
 
-## Why Extend FluentCRM?
+**Key technical details:**
 
-FluentCRM is designed to be highly extensible, allowing developers to customize and extend its functionality far beyond what the plugin offers out-of-the-box. Whether you're a business owner looking to customize your CRM or a developer hired to create specific integrations, FluentCRM provides the tools you need.
-
-### 🔧 **Built for Customization**
-- **Extensive hook system** - 100+ action and filter hooks for custom functionality
-- **Modular architecture** - Clean separation allows safe modifications and additions
-- **RESTful API** - Complete programmatic access to all CRM data and functions
-- **WordPress-native** - Follows WordPress coding standards and best practices
-
-### 🏗️ **Flexible Extension Points**
-- **Custom automations** - Create triggers, actions, and benchmarks for unique workflows
-- **Third-party integrations** - Connect with external services and platforms
-- **Custom profile sections** - Add specialized data views and functionality
-- **API extensions** - Build custom endpoints for mobile apps or external systems
-
-### 💼 **Business Benefits**
-- **No vendor lock-in** - Your customizations stay with you, not dependent on external services
-- **Unlimited scalability** - Extend functionality as your business needs grow
-- **Cost-effective** - One-time development instead of ongoing SaaS fees
-- **Complete control** - Modify any aspect to match your specific business processes
-
-## FluentCRM Versions
-
-### FluentCRM Core (Free)
-The free version includes powerful core functionalities:
-
-- ✅ **Contact Management** - Unlimited contacts and custom fields
-- ✅ **Email Campaigns** - Beautiful drag-and-drop email builder
-- ✅ **Basic Automations** - Simple trigger-based workflows
-- ✅ **List Management** - Organize contacts with lists and tags
-- ✅ **Form Integration** - Works with popular form plugins
-- ✅ **WooCommerce Integration** - Basic e-commerce tracking
-- ✅ **Developer API** - Full access to hooks and REST API
-
-### FluentCRM Pro (Premium)
-The premium version adds advanced marketing features:
-
-- 🚀 **Advanced Automations** - Complex multi-path workflows
-- 🚀 **Email Sequences** - Drip campaigns and nurture sequences
-- 🚀 **Advanced Segmentation** - Smart tags and dynamic lists
-- 🚀 **Deep Integrations** - 50+ third-party integrations
-- 🚀 **Revenue Tracking** - Advanced e-commerce analytics
-- 🚀 **A/B Testing** - Split test campaigns and sequences
-- 🚀 **Advanced Reporting** - Detailed performance analytics
-
-## Core Development Concepts
-
-### 📊 **Data Architecture**
-FluentCRM follows WordPress conventions with a clean, normalized database structure:
-
-**Core Tables & Relationships:**
-
-- **🧑‍💼 Contacts** (`fc_subscribers`) - Central hub for all contact data
-  - Stores contact information, status, custom fields
-  - Links to all other CRM activities and data
-
-- **📋 Lists** (`fc_lists`) - Organize contacts into categories
-  - Marketing segments, customer groups, product interests
-  - Many-to-many relationship with contacts
-
-- **🏷️ Tags** (`fc_tags`) - Flexible labeling system
-  - Behavioral triggers, preferences, lifecycle stages
-  - Dynamic filtering and automation targeting
-
-- **📧 Campaigns** (`fc_campaigns`) - One-time email broadcasts
-  - Newsletter campaigns, promotions, announcements
-  - Track opens, clicks, and engagement metrics
-
-- **🤖 Funnels** (`fc_funnels`) - Automation workflows
-  - Multi-step email sequences and nurture campaigns
-  - Trigger-based automated customer journeys
-
-### 🔄 **Automation Workflow**
-The three-component automation system:
-
-1. **Triggers** - Events that start workflows (form submission, purchase, etc.)
-2. **Actions** - Tasks performed automatically (send email, add tag, etc.)  
-3. **Benchmarks** - Goals that define completion (purchase made, link clicked, etc.)
-
-### 🔌 **Extension Points**
-Multiple ways to extend FluentCRM:
-
-- **WordPress Hooks** - 100+ actions and filters for custom functionality
-- **REST API** - Complete programmatic access to all features  
-- **Module System** - Add new triggers, actions, and profile sections
-- **Smart Codes** - Dynamic content placeholders for personalization
-- **Custom Automations** - Create workflows as per your business needs
+- **PHP namespace:** `FluentCrm\App\` and `FluentCrm\Includes\`
+- **REST API base:** `/wp-json/fluent-crm/v2/`
+- **DB table prefix:** `fc_` (e.g., `fc_subscribers`, `fc_campaigns`, `fc_funnels`)
+- **Hook prefixes:** `fluentcrm_` (legacy) and `fluent_crm/` (current)
+- **Frontend:** Vue 3 with Element Plus, Pinia for state management
+- **Email editor:** Custom Gutenberg block editor for email composition
 
 ## Directory Structure
 
-Understanding FluentCRM's organized codebase:
-
-```yaml
+```
 fluent-crm/
-├── app/                    # Core application logic
-│   ├── Api/               # REST API endpoints and utilities
-│   ├── Functions/         # Global helper functions
-│   ├── Hooks/            # WordPress action/filter handlers
-│   ├── Http/             # Request handling and routing
-│   │   ├── Controllers/   # API and admin controllers
-│   │   ├── Policies/     # Permission and access control
-│   │   └── routes.php    # Route definitions
-│   ├── Models/           # Database models and relationships
-│   │   ├── Subscriber.php # Contact/subscriber model
-│   │   ├── Campaign.php  # Email campaign model
-│   │   ├── Funnel.php   # Automation workflow model
-│   │   └── ...          # Additional models
-│   ├── Services/         # Business logic and services
-│   │   ├── Funnel/      # Automation engine services
-│   │   ├── Libs/        # Third-party integrations
-│   │   └── Helper.php   # Core helper utilities
-│   └── views/           # PHP template files
-│
-├── assets/              # Frontend assets
-│   ├── admin/          # Admin interface assets
-│   ├── public/         # Public-facing assets
-│   └── images/         # Image resources
-│
-├── boot/               # Plugin initialization
-├── config/             # Configuration files
-├── database/           # Database migrations and schema
-│   ├── migrations/     # Database migration files
-│   └── DBMigrator.php # Migration handler
-│
-└── fluent-crm.php     # Plugin entry point
+├── app/
+│   ├── Api/                 # Public PHP API classes (Contacts, Companies)
+│   ├── Functions/           # Global helper functions (helpers.php)
+│   ├── Hooks/               # Hook handler classes
+│   │   └── Handlers/        # AdminMenu, ExternalPages, Scheduler, etc.
+│   ├── Http/
+│   │   ├── Controllers/     # REST API controllers
+│   │   ├── Policies/        # Permission & access control policies
+│   │   └── Routes/          # Route definitions (api.php)
+│   ├── Models/              # Eloquent-style database models
+│   ├── Modules/             # Feature modules (AbandonCart, etc.)
+│   ├── Services/            # Business logic
+│   │   ├── Funnel/          # Automation engine (triggers, actions, benchmarks)
+│   │   └── Libs/            # Mailer, parser, file system
+│   └── Views/               # PHP templates (external pages, admin)
+├── boot/                    # Plugin bootstrap (app.php)
+├── config/                  # Configuration files
+├── database/                # Migrations and schema
+├── resources/               # Frontend source (Vue, JS, CSS)
+│   ├── admin/               # Admin Vue app (Options API)
+│   └── v3app/               # V3 app modules (Pinia stores)
+├── custom-editor/           # Gutenberg email editor
+└── fluent-crm.php           # Plugin entry point
 ```
 
-## Development Environment Setup
+## Core Concepts
 
-### Prerequisites
-- **WordPress 5.0+** - Modern WordPress installation
-- **PHP 7.4+** - Recent PHP version with required extensions
-- **MySQL 5.6+** - Database with InnoDB support
-- **Basic WordPress Development** - Understanding of hooks, plugins, and themes
+### Data Model
 
-### Development Tools
-- **Code Editor** - VS Code, PhpStorm, or your preferred editor
-- **Local Environment** - Laravel Herd, XAMPP, WAMP, or Docker
-- **Version Control** - Git for tracking changes (optional but recommended)
-- **API Testing** - Postman or Insomnia for REST API development
+FluentCRM's data model centers around **contacts** (subscribers) with relationships to campaigns, tags, lists, and automations.
 
-### Getting Started Checklist
+| Table | Model | Purpose |
+|-------|-------|---------|
+| `fc_subscribers` | [Subscriber](/database/models/subscriber) | Contacts — the central entity |
+| `fc_campaigns` | [Campaign](/database/models/campaign) | Email campaigns (one-time broadcasts) |
+| `fc_campaign_emails` | [CampaignEmail](/database/models/campaign-email) | Individual emails sent per campaign per contact |
+| `fc_tags` | [Tag](/database/models/tag) | Flexible contact labels for segmentation |
+| `fc_lists` | [Lists](/database/models/lists) | Contact groups for organizing subscribers |
+| `fc_funnels` | [Funnel](/database/models/funnel) | Automation workflows |
+| `fc_funnel_sequences` | [FunnelSequence](/database/models/funnelSequence) | Steps within an automation |
+| `fc_meta` | [Meta](/database/models/meta) | Shared key-value store (multiple types) |
+| `fc_subscriber_notes` | [SubscriberNote](/database/models/subscriber-note) | Contact notes and activity logs |
+| `fc_companies` | [Company](/database/models/company) | Company/organization records |
 
-1. **📖 Read the Fundamentals**
-   - [ ] Understand the [database schema](/database/)
-   - [ ] Review [core models](/database/models/)
-   - [ ] Explore [global functions](/global-functions/)
+See the full [Database Schema](/database/) and [Models Reference](/database/models/) for details.
 
-2. **🔍 Explore the Hooks**
-   - [ ] Browse [action hooks](/hooks/actions/)
-   - [ ] Study [filter hooks](/hooks/filters/)
-   - [ ] Try [helper classes](/helpers/)
+### Automation System
 
-3. **🏗️ Build Your First Extension**
-   - [ ] Create a [custom trigger](/modules/trigger/)
-   - [ ] Build a [custom action](/modules/action/)
-   - [ ] Add a [profile section](/modules/contact-profile-section/)
+Automations (funnels) use three building blocks:
 
-4. **🌐 API Integration**
-   - [ ] Set up [REST API access](/rest-api/authentication)
-   - [ ] Test [contact management](/rest-api/contacts)
-   - [ ] Explore [webhook integration](/rest-api/webhooks)
+- **[Triggers](/modules/trigger)** — Events that start a workflow (form submission, tag added, purchase, etc.)
+- **[Actions](/modules/action)** — Steps executed in sequence (send email, add tag, wait, webhook, etc.)
+- **[Benchmarks](/modules/benchmark)** — Goal checkpoints a contact must reach (link clicked, purchase made, etc.)
 
-## Community & Support
+### Hook System
 
-### 📚 **Learning Resources**
-- **[Official Documentation (User) ](https://fluentcrm.com/docs/)** - User guides and tutorials
-- **[Developer Hooks Reference](/hooks/)** - Complete hook documentation
-- **[REST API Documentation](/rest-api/)** - Comprehensive API guide
-- **[Developer Changelog](/changelog/)** - Latest updates and breaking changes
+FluentCRM provides 200+ hooks for extending functionality:
 
-### 💬 **Community**
-- **[WPManageNinja Community](https://community.wpmanageninja.com/portal/space/fluent-crm/)** - Official community
-- **[Facebook Community](https://www.facebook.com/groups/fluentcrm)** - Active user discussions
-- **[Official Support](https://wpmanageninja.com/support-tickets/)** - Technical support
+- **[Action Hooks](/hooks/actions/)** — Run custom code when events occur (contact created, email sent, campaign completed, etc.)
+- **[Filter Hooks](/hooks/filters/)** — Modify data before it's used (email headers, contact statuses, admin menus, etc.)
 
-### 🚀 **Next Steps**
-Ready to start building? Choose your path:
+### REST API
 
-- **[Build Automations](/modules/automation/)** - Create powerful workflows
-- **[Extend the API](/extending-rest-api/)** - Add custom endpoints
-- **[Database Deep Dive](/database/)** - Master the data structure
-- **[Hook Integration](/hooks/)** - Leverage WordPress hooks
+The REST API provides full programmatic access to all CRM data. All endpoints require authentication.
 
+- **[Authentication](/rest-api/authentication)** — Cookie-based (wp_nonce) or Application Passwords
+- **[Contacts API](/rest-api/contacts)** — CRUD operations on subscribers
+- **[Campaigns API](/rest-api/campaigns)** — Create and manage email campaigns
+- **[Tags](/rest-api/tags) & [Lists](/rest-api/lists)** — Manage segmentation
+- **[Webhooks](/rest-api/webhooks)** — Inbound data via webhook endpoints
+
+See the full [REST API Reference](/rest-api/).
+
+## Extension Points
+
+### Adding Custom Functionality
+
+| What you want to do | Where to look |
+|---------------------|---------------|
+| Run code when a contact is created/updated | [Contact Action Hooks](/hooks/actions/contacts) |
+| Modify email content before sending | [Email Filters](/hooks/filters/emails-and-sending) |
+| Add a custom automation trigger | [Custom Trigger Module](/modules/trigger) |
+| Add a custom automation action | [Custom Action Module](/modules/action) |
+| Add a tab to the contact profile | [Profile Section Module](/modules/contact-profile-section) |
+| Add custom smart codes for emails | [Smart Code Module](/modules/smart-code) |
+| Track custom events on contacts | [Event Tracking Module](/modules/event-tracking) |
+| Add custom REST API endpoints | [Extending the REST API](/modules/extending-rest-api) |
+| Customize the admin dashboard | [Dashboard Filters](/hooks/filters/admin-and-dashboard) |
+| Modify frontend pages (unsubscribe, DOI) | [Frontend Filters](/hooks/filters/frontend) |
+
+### Helper Utilities
+
+FluentCRM includes helper classes and global functions:
+
+- **[Global Functions](/global-functions/)** — `fluentcrm_get_option()`, `fluentCrmApi()`, contact creation helpers
+- **[Arr Helper](/helpers/arr)** — Array manipulation utilities
+- **[Str Helper](/helpers/str)** — String manipulation utilities
+- **[Service Helper](/helpers/service_helper)** — CRM service utilities
+
+## Development Setup
+
+**Requirements:**
+- WordPress 5.6+
+- PHP 7.4+
+- MySQL 5.6+ (InnoDB)
+
+**Build tools** (only needed if modifying frontend):
+```bash
+pnpm install && pnpm run dev   # Vite dev server
+pnpm run build                 # Production build
+```
+
+**Custom email editor** (only if modifying the Gutenberg editor):
+```bash
+cd custom-editor && npm install && npm run build
+```
+
+## Next Steps
+
+- **[Database Schema](/database/)** — Understand the data structure
+- **[Models Reference](/database/models/)** — Learn the Eloquent-style models and relationships
+- **[Action Hooks](/hooks/actions/)** — Hook into contact, campaign, and automation events
+- **[Filter Hooks](/hooks/filters/)** — Modify emails, settings, menus, and more
+- **[REST API](/rest-api/)** — Build integrations with the API
+- **[Modules](/modules/)** — Create custom triggers, actions, and profile sections

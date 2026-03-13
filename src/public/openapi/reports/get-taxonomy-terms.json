@@ -1,0 +1,151 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/reports/taxonomy-terms": {
+      "get": {
+        "operationId": "getTaxonomyTerms",
+        "summary": "GET Taxonomy Terms",
+        "description": "Retrieve WordPress taxonomy terms with optional search filtering. Returns up to 20 terms matching the search query, plus any additional terms specified by `values` IDs. Useful for populating dropdowns for category/tag-based filters.",
+        "tags": [
+          "Reports"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "taxonomy",
+            "in": "query",
+            "description": "WordPress taxonomy slug (e.g., `category`, `post_tag`, `product_cat`).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "category"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search term to filter taxonomy terms by name.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "values",
+            "in": "query",
+            "description": "Array of term IDs that must be included in the results regardless of search.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Taxonomy terms retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "options": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Term ID as string."
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "Term name."
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "options": [
+                    {
+                      "id": "15",
+                      "title": "Uncategorized"
+                    },
+                    {
+                      "id": "22",
+                      "title": "News"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

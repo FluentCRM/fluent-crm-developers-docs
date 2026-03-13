@@ -1,0 +1,150 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/commerce-reports/{provider}/report": {
+      "get": {
+        "operationId": "getCommerceReport",
+        "summary": "GET Commerce Report",
+        "description": "Retrieve a specific type of commerce report for a provider. Returns detailed reporting data for the requested report type. Supported providers include 'woo' (WooCommerce), 'edd' (Easy Digital Downloads), 'learndash', 'lifterlms', 'tutorlms', and 'crm'. Additional providers can be registered via the 'fluentcrm_advanced_reports_provider_{provider}' filter.",
+        "tags": [
+          "Commerce Reports"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "path",
+            "description": "The commerce provider slug (e.g., 'woo', 'edd', 'learndash', 'lifterlms', 'tutorlms', 'crm').",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "report_type",
+            "in": "query",
+            "description": "The specific report type to retrieve. Available types depend on the provider implementation.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Specific report data for the provider.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Report data structure varies by provider and report_type. Contains the requested metrics and data series."
+                },
+                "example": {
+                  "chart_data": {
+                    "labels": [
+                      "Jan",
+                      "Feb",
+                      "Mar"
+                    ],
+                    "datasets": [
+                      {
+                        "label": "Revenue",
+                        "data": [
+                          5000,
+                          6200,
+                          3800
+                        ]
+                      }
+                    ]
+                  },
+                  "summary": {
+                    "total": 15000,
+                    "average": 5000
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Provider not found or not supported.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Provider Class stripe is not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

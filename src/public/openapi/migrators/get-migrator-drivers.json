@@ -1,0 +1,158 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/migrators": {
+      "get": {
+        "operationId": "getMigratorDrivers",
+        "summary": "GET Migrator Drivers",
+        "description": "Retrieve the list of available SaaS CRM migrator drivers. Default drivers include Mailchimp, ConvertKit, MailerLite, Drip, and ActiveCampaign. Additional drivers may be registered via the `fluent_crm/saas_migrators` filter.",
+        "tags": [
+          "Migrators"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of available migrator drivers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "drivers": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "type": "string",
+                            "description": "Human-readable driver name."
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Driver description."
+                          },
+                          "logo": {
+                            "type": "string",
+                            "description": "URL to the driver logo image."
+                          },
+                          "credentials": {
+                            "type": "object",
+                            "description": "Required credential fields for authentication.",
+                            "additionalProperties": {
+                              "type": "object",
+                              "properties": {
+                                "label": {
+                                  "type": "string"
+                                },
+                                "type": {
+                                  "type": "string"
+                                },
+                                "placeholder": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "description": "Map of driver keys to driver information."
+                    }
+                  }
+                },
+                "example": {
+                  "drivers": {
+                    "mailchimp": {
+                      "title": "Mailchimp",
+                      "description": "Migrate your Mailchimp contacts to FluentCRM",
+                      "logo": "https://example.com/images/mailchimp.svg",
+                      "credentials": {
+                        "api_key": {
+                          "label": "API Key",
+                          "type": "text",
+                          "placeholder": "Enter your Mailchimp API key"
+                        }
+                      }
+                    },
+                    "ConvertKit": {
+                      "title": "ConvertKit",
+                      "description": "Migrate your ConvertKit subscribers to FluentCRM",
+                      "logo": "https://example.com/images/convertkit.svg",
+                      "credentials": {
+                        "api_key": {
+                          "label": "API Key",
+                          "type": "text",
+                          "placeholder": "Enter your ConvertKit API key"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

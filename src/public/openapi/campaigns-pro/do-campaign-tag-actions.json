@@ -1,0 +1,235 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/campaigns-pro/{id}/tag-actions": {
+      "post": {
+        "operationId": "doCampaignTagActions",
+        "summary": "POST Campaign Tag Actions",
+        "description": "Add or remove tags from subscribers based on campaign activity (email opened, not opened, or link clicked). Only works on archived campaigns. Processes subscribers in paginated batches (default 50 per page) to handle large campaigns.",
+        "tags": [
+          "Campaigns Pro"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The campaign ID. Campaign must be in 'archived' status.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "action_type",
+                  "tags",
+                  "activity_type",
+                  "processing_page"
+                ],
+                "properties": {
+                  "action_type": {
+                    "type": "string",
+                    "enum": [
+                      "add_tags",
+                      "remove_tags"
+                    ],
+                    "description": "Whether to add or remove the specified tags."
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "description": "Array of tag IDs to add or remove."
+                  },
+                  "activity_type": {
+                    "type": "string",
+                    "enum": [
+                      "email_open",
+                      "email_not_open",
+                      "email_clicked"
+                    ],
+                    "description": "Filter subscribers by campaign activity type."
+                  },
+                  "processing_page": {
+                    "type": "integer",
+                    "description": "Current processing page number (1-based). Used for batch processing."
+                  },
+                  "link_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "description": "Required when activity_type is 'email_clicked'. Array of campaign URL IDs to filter by."
+                  }
+                }
+              },
+              "example": {
+                "action_type": "add_tags",
+                "tags": [
+                  5,
+                  12
+                ],
+                "activity_type": "email_open",
+                "processing_page": 1
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tag action processed for the current batch.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "processed_page": {
+                      "type": "integer",
+                      "description": "The page number that was just processed."
+                    },
+                    "processed_contacts": {
+                      "type": "integer",
+                      "description": "Number of contacts processed in this batch."
+                    },
+                    "has_more": {
+                      "type": "boolean",
+                      "description": "Whether there are more contacts to process."
+                    },
+                    "total_count": {
+                      "type": [
+                        "integer",
+                        "boolean"
+                      ],
+                      "description": "Total number of matching contacts. Only returned on the first page (processing_page = 1), otherwise false."
+                    },
+                    "subscriber_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      },
+                      "description": "IDs of subscribers processed in this batch."
+                    }
+                  }
+                },
+                "example": {
+                  "processed_page": 1,
+                  "processed_contacts": 50,
+                  "has_more": true,
+                  "total_count": 320,
+                  "subscriber_ids": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Campaign not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error or campaign is not archived.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "You can do this action if campaign is in archived status only"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

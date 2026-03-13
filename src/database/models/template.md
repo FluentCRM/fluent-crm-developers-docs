@@ -6,7 +6,7 @@ description: "Discover the Template Model in FluentCRM, designed to create and m
 
 | DB Table Name | {wp_db_prefix}_posts                                            |
 |---------------|-----------------------------------------------------------------|
-| Schema        | <a :href="$withBase('/database/#fc-subscribers-table')">Check Schema</a> |
+| Schema        | <a href="/database/#fc-subscribers-table">Check Schema</a> |
 | Source File   | fluent-crm/app/Models/Template.php                              |
 | Name Space    | FluentCrm\App\Models                                            |
 | Class         | FluentCrm\App\Models\Template                                   |

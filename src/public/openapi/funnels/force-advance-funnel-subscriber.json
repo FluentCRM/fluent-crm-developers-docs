@@ -1,0 +1,227 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/funnels/{id}/subscribers/{subscriber_id}/advance": {
+      "post": {
+        "operationId": "forceAdvanceFunnelSubscriber",
+        "summary": "POST Force Advance Funnel Subscriber",
+        "description": "Force a subscriber to advance to a specific sequence step in the funnel. The subscriber must be in `active` or `waiting` status (not `completed`, `cancelled`, or `pending`). If the subscriber is currently waiting on a benchmark, the benchmark is marked as skipped. The subscriber is then advanced to the target sequence and processing continues.",
+        "tags": [
+          "Funnels"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The funnel ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "subscriber_id",
+            "in": "path",
+            "description": "The subscriber/contact ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "sequence_id"
+                ],
+                "properties": {
+                  "sequence_id": {
+                    "type": "integer",
+                    "description": "The target sequence ID to advance the subscriber to."
+                  }
+                }
+              },
+              "example": {
+                "sequence_id": 5
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Subscriber advanced successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "funnel_subscriber": {
+                      "type": "object",
+                      "description": "Updated funnel subscriber record with current progress.",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "funnel_id": {
+                          "type": "integer"
+                        },
+                        "subscriber_id": {
+                          "type": "integer"
+                        },
+                        "status": {
+                          "type": "string"
+                        },
+                        "last_sequence_id": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
+                        },
+                        "next_sequence_id": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
+                        },
+                        "next_execution_time": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "format": "date-time"
+                        },
+                        "last_sequence": {
+                          "type": [
+                            "object",
+                            "null"
+                          ]
+                        },
+                        "next_sequence_item": {
+                          "type": [
+                            "object",
+                            "null"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Subscriber has been advanced",
+                  "funnel_subscriber": {
+                    "id": 1,
+                    "funnel_id": 1,
+                    "subscriber_id": 42,
+                    "status": "active",
+                    "last_sequence_id": 5,
+                    "next_sequence_id": 6
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Subscriber cannot be advanced.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "message": "No corresponding subscriber found in this funnel"
+                    }
+                  },
+                  "invalid_status": {
+                    "value": {
+                      "message": "Cannot advance a subscriber with status: completed"
+                    }
+                  },
+                  "sequence_not_found": {
+                    "value": {
+                      "message": "Target sequence not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

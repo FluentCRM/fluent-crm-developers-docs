@@ -1,0 +1,142 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/setting/abandon-cart": {
+      "get": {
+        "operationId": "getAbandonCartSettings",
+        "summary": "GET Abandon Cart Settings",
+        "description": "Retrieve abandoned cart feature settings, available e-commerce providers, and provider-specific options. Returns settings for configuring abandoned cart tracking and recovery automations.",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Abandoned cart settings and provider information.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "settings": {
+                      "type": "object",
+                      "description": "Current abandoned cart settings.",
+                      "properties": {
+                        "enabled": {
+                          "type": "string",
+                          "enum": [
+                            "yes",
+                            "no"
+                          ],
+                          "description": "Whether abandoned cart tracking is enabled."
+                        }
+                      },
+                      "additionalProperties": true
+                    },
+                    "available_providers": {
+                      "type": "array",
+                      "description": "List of available e-commerce providers that support abandoned cart tracking.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "slug": {
+                            "type": "string",
+                            "description": "Provider slug identifier."
+                          },
+                          "label": {
+                            "type": "string",
+                            "description": "Human-readable provider name."
+                          },
+                          "settings_fields": {
+                            "type": "array",
+                            "description": "Provider-specific settings form fields.",
+                            "items": {
+                              "type": "object"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "additionalProperties": true
+                },
+                "example": {
+                  "settings": {
+                    "enabled": "no"
+                  },
+                  "available_providers": [
+                    {
+                      "slug": "woocommerce",
+                      "label": "WooCommerce",
+                      "settings_fields": []
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

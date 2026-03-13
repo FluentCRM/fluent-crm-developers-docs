@@ -1,0 +1,160 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/sms/subscribers/{id}/stats": {
+      "get": {
+        "operationId": "getSubscriberSmsStats",
+        "summary": "GET Get Subscriber SMS Statistics",
+        "description": "Retrieve SMS statistics for a specific subscriber/contact, including total message counts broken down by type (campaign, automation, custom) and status (sent, delivered, failed, pending). **PRO** (requires FluentCampaign Pro SMS module).",
+        "tags": [
+          "SMS"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Subscriber (contact) ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "SMS statistics for the subscriber.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "stats": {
+                      "type": "object",
+                      "properties": {
+                        "total_messages": {
+                          "type": "integer",
+                          "description": "Total SMS messages sent to this subscriber."
+                        },
+                        "campaign_messages": {
+                          "type": "integer",
+                          "description": "Messages sent via campaigns."
+                        },
+                        "automation_messages": {
+                          "type": "integer",
+                          "description": "Messages sent via automations."
+                        },
+                        "custom_sms": {
+                          "type": "integer",
+                          "description": "Custom (one-off) messages."
+                        },
+                        "sent_messages": {
+                          "type": "integer",
+                          "description": "Messages with `sent` status."
+                        },
+                        "delivered_messages": {
+                          "type": "integer",
+                          "description": "Messages with `delivered` status."
+                        },
+                        "failed_messages": {
+                          "type": "integer",
+                          "description": "Messages with `failed` status."
+                        },
+                        "pending_messages": {
+                          "type": "integer",
+                          "description": "Messages with `pending` status."
+                        },
+                        "last_sent": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true,
+                          "description": "Timestamp of the most recently sent SMS."
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "stats": {
+                    "total_messages": 25,
+                    "campaign_messages": 15,
+                    "automation_messages": 8,
+                    "custom_sms": 2,
+                    "sent_messages": 22,
+                    "delivered_messages": 20,
+                    "failed_messages": 1,
+                    "pending_messages": 2,
+                    "last_sent": "2024-06-01 10:01:00"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Subscriber not found."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -1,0 +1,176 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/lists/bulk": {
+      "post": {
+        "operationId": "bulkCreateLists",
+        "summary": "POST Bulk Create Lists",
+        "description": "Create or update multiple contact lists in a single request. Lists are matched by slug -- if a list with the given slug already exists, its title is updated; otherwise a new list is created. Lists without a `title` are skipped.",
+        "tags": [
+          "Lists"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "lists": {
+                    "type": "array",
+                    "description": "Array of list objects to create or update. Alternatively, use `items` as the key name.",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "title"
+                      ],
+                      "properties": {
+                        "title": {
+                          "type": "string",
+                          "description": "Display name of the list."
+                        },
+                        "slug": {
+                          "type": "string",
+                          "description": "URL-friendly identifier. Auto-generated from title if omitted."
+                        }
+                      }
+                    }
+                  },
+                  "items": {
+                    "type": "array",
+                    "description": "Alternative key for the lists array. Used as fallback if `lists` is empty.",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "title"
+                      ],
+                      "properties": {
+                        "title": {
+                          "type": "string",
+                          "description": "Display name of the list."
+                        },
+                        "slug": {
+                          "type": "string",
+                          "description": "URL-friendly identifier. Auto-generated from title if omitted."
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "lists": [
+                  {
+                    "title": "Newsletter",
+                    "slug": "newsletter"
+                  },
+                  {
+                    "title": "Product Updates"
+                  },
+                  {
+                    "title": "Weekly Digest",
+                    "slug": "weekly-digest"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lists created or updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Success message."
+                    },
+                    "ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer"
+                      },
+                      "description": "Array of IDs for the created or updated lists."
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Provided Lists have been successfully created",
+                  "ids": [
+                    10,
+                    11,
+                    12
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

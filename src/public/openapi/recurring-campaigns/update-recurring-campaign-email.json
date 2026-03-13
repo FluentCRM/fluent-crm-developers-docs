@@ -1,0 +1,265 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/recurring-campaigns/{campaign_id}/emails/update-email": {
+      "post": {
+        "operationId": "updateRecurringCampaignEmail",
+        "summary": "POST Update Recurring Campaign Email",
+        "description": "Update a child email within a recurring campaign. Supports two steps: `edit` for updating the email body, design template, and settings; and `review` for updating the email subject, scheduled time, status, and settings. When using the `review` step with `pending-scheduled` status, the parent recurring campaign must be active. Requires FluentCampaign Pro.",
+        "tags": [
+          "Recurring Campaigns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "description": "The parent recurring campaign ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "step"
+                ],
+                "properties": {
+                  "step": {
+                    "type": "string",
+                    "description": "The update step. `edit` updates email body and design. `review` updates subject, schedule, and status.",
+                    "enum": [
+                      "edit",
+                      "review"
+                    ]
+                  },
+                  "email": {
+                    "type": "object",
+                    "description": "Email data to update. Can be a JSON object or a JSON-encoded string.",
+                    "required": [
+                      "id"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "description": "The child email ID."
+                      },
+                      "email_body": {
+                        "type": "string",
+                        "description": "Email body content (HTML). Required for `edit` step."
+                      },
+                      "email_subject": {
+                        "type": "string",
+                        "description": "Email subject line. Required for `review` step."
+                      },
+                      "scheduled_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Scheduled send time. Required for `review` step. If in the past, it is set to the current time."
+                      },
+                      "status": {
+                        "type": "string",
+                        "description": "Email status. Required for `review` step. Use `pending-scheduled` to schedule for sending.",
+                        "enum": [
+                          "draft",
+                          "pending-scheduled",
+                          "cancelled"
+                        ]
+                      },
+                      "settings": {
+                        "type": "object",
+                        "description": "Email settings including mailer configuration."
+                      },
+                      "design_template": {
+                        "type": "string",
+                        "description": "Design template (e.g., `simple`, `visual_builder`). Used in `edit` step."
+                      }
+                    }
+                  }
+                }
+              },
+              "examples": {
+                "edit_step": {
+                  "summary": "Edit email body",
+                  "value": {
+                    "step": "edit",
+                    "email": {
+                      "id": 22,
+                      "email_body": "<p>Updated email content for {{contact.first_name}}</p>",
+                      "design_template": "simple",
+                      "settings": {
+                        "mailer_settings": {
+                          "from_name": "",
+                          "from_email": "",
+                          "reply_to_name": "",
+                          "reply_to_email": "",
+                          "is_custom": "no"
+                        }
+                      }
+                    }
+                  }
+                },
+                "review_step": {
+                  "summary": "Review and schedule email",
+                  "value": {
+                    "step": "review",
+                    "email": {
+                      "id": 22,
+                      "email_subject": "Your Weekly Update - April 1",
+                      "scheduled_at": "2024-04-01 09:00:00",
+                      "status": "pending-scheduled",
+                      "settings": {
+                        "mailer_settings": {
+                          "from_name": "",
+                          "from_email": "",
+                          "reply_to_name": "",
+                          "reply_to_email": "",
+                          "is_custom": "no"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Success message."
+                    }
+                  }
+                },
+                "examples": {
+                  "edit_success": {
+                    "summary": "Edit step success",
+                    "value": {
+                      "message": "Email body has been successfully updated"
+                    }
+                  },
+                  "review_success": {
+                    "summary": "Review step success",
+                    "value": {
+                      "message": "Settings has been successfully updated"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurring campaign or email not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error (e.g., empty email body, missing required fields, inactive parent campaign).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "errors": {
+                      "type": "object"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Recurring campaign status is set to draft. You can not publish this email. Please make your recurring campaign status as active first."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

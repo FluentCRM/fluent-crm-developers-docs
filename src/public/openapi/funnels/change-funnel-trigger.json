@@ -1,0 +1,230 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/funnels/{id}/change-trigger": {
+      "put": {
+        "operationId": "changeFunnelTrigger",
+        "summary": "PUT Change Funnel Trigger",
+        "description": "Change the trigger of an existing automation funnel. This resets the funnel's settings and conditions to empty values. Returns an error if the new trigger name is the same as the current one.",
+        "tags": [
+          "Funnels"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The funnel ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "trigger_name",
+                  "title"
+                ],
+                "properties": {
+                  "trigger_name": {
+                    "type": "string",
+                    "description": "The new trigger event name."
+                  },
+                  "title": {
+                    "type": "string",
+                    "description": "Updated funnel title."
+                  }
+                }
+              },
+              "example": {
+                "trigger_name": "fluentcrm_contact_added_to_tags",
+                "title": "Tag-Based Welcome Sequence"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Trigger changed successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "funnel": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "description": "Unique identifier for the funnel."
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "Funnel title."
+                        },
+                        "trigger_name": {
+                          "type": "string",
+                          "description": "The trigger event name that starts this funnel."
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "draft",
+                            "published"
+                          ],
+                          "description": "Funnel status."
+                        },
+                        "conditions": {
+                          "type": "array",
+                          "description": "Funnel-level conditions.",
+                          "items": {
+                            "type": "object"
+                          }
+                        },
+                        "settings": {
+                          "type": "object",
+                          "description": "Funnel settings."
+                        },
+                        "created_by": {
+                          "type": "integer",
+                          "description": "WordPress user ID of the creator."
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "Timestamp when the funnel was created."
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "Timestamp when the funnel was last updated."
+                        },
+                        "subscribers_count": {
+                          "type": "integer",
+                          "description": "Number of subscribers in this funnel."
+                        },
+                        "description": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Funnel description stored as meta."
+                        },
+                        "labels": {
+                          "type": "array",
+                          "description": "Labels assigned to the funnel.",
+                          "items": {
+                            "$ref": "#/components/schemas/FunnelLabel"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Funnel Trigger has been successfully updated",
+                  "funnel": {
+                    "id": 1,
+                    "title": "Tag-Based Welcome Sequence",
+                    "trigger_name": "fluentcrm_contact_added_to_tags",
+                    "status": "draft",
+                    "conditions": [],
+                    "settings": [],
+                    "created_by": 1
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Trigger name is the same or validation error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Trigger name is same"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -1,0 +1,175 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/setting/experiments/campaigns": {
+      "get": {
+        "operationId": "getExperimentCampaigns",
+        "summary": "GET Experiment Campaigns",
+        "description": "Retrieve all campaigns sorted by ID in descending order. Used in the experimental settings UI to allow selecting campaigns for experimental features.",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all campaigns.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "campaigns": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "Campaign ID."
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "Campaign title."
+                          },
+                          "status": {
+                            "type": "string",
+                            "description": "Campaign status."
+                          },
+                          "type": {
+                            "type": "string",
+                            "description": "Campaign type."
+                          },
+                          "slug": {
+                            "type": "string"
+                          },
+                          "template_id": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ]
+                          },
+                          "email_subject": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "email_pre_header": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "email_body": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "design_template": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "scheduled_at": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "format": "date-time"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "campaigns": [
+                    {
+                      "id": 10,
+                      "title": "Welcome Campaign",
+                      "status": "sent",
+                      "type": "campaign",
+                      "slug": "welcome-campaign",
+                      "created_at": "2024-01-15 10:30:00",
+                      "updated_at": "2024-01-15 12:00:00"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -1,0 +1,269 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/campaigns/{id}/status": {
+      "get": {
+        "operationId": "getCampaignStatus",
+        "summary": "GET Get Campaign Status",
+        "description": "Get the comprehensive status and analytics of a campaign. This is the primary endpoint for the campaign status/reporting page. Returns campaign details, email delivery statistics broken down by status, sent count, open/click analytics (for archived campaigns), and A/B subject line performance. For working campaigns, it also manages stuck email recovery and automatic archival.",
+        "tags": [
+          "Campaigns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The campaign ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "request_counter",
+            "in": "query",
+            "description": "Counter for polling requests. Used internally to trigger periodic cleanup of stuck emails (every 4th request).",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campaign status retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "current_timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Current server timestamp."
+                    },
+                    "stat": {
+                      "type": "array",
+                      "description": "Email count grouped by status.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          },
+                          "total": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    },
+                    "campaign": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string"
+                        },
+                        "recipients_count": {
+                          "type": "integer"
+                        },
+                        "scheduled_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true
+                        },
+                        "settings": {
+                          "type": "object"
+                        },
+                        "sent_by": {
+                          "type": "string",
+                          "nullable": true,
+                          "description": "Display name and email of the user who sent the campaign."
+                        },
+                        "open_tracking_status": {
+                          "type": "string",
+                          "description": "Whether open tracking is enabled. Only present for archived campaigns."
+                        },
+                        "click_tracking_status": {
+                          "type": "string",
+                          "description": "Whether click tracking is enabled. Only present for archived campaigns."
+                        },
+                        "scheduling_range": {
+                          "type": "object",
+                          "nullable": true
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    },
+                    "sent_count": {
+                      "type": "integer",
+                      "description": "Total number of successfully sent emails."
+                    },
+                    "analytics": {
+                      "type": "object",
+                      "description": "Open and click analytics. Populated only for archived campaigns.",
+                      "properties": {
+                        "open": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer"
+                            },
+                            "subtitle": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "click": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer"
+                            },
+                            "subtitle": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "subject_analytics": {
+                      "type": "object",
+                      "description": "A/B test subject line performance. Populated only for archived campaigns with multiple subjects."
+                    }
+                  }
+                },
+                "example": {
+                  "current_timestamp": "2024-03-02 14:30:00",
+                  "stat": [
+                    {
+                      "status": "sent",
+                      "total": 1195
+                    },
+                    {
+                      "status": "failed",
+                      "total": 5
+                    }
+                  ],
+                  "campaign": {
+                    "id": 12,
+                    "title": "Spring Sale 2024",
+                    "status": "archived",
+                    "recipients_count": 1200,
+                    "scheduled_at": "2024-03-01 10:00:00",
+                    "settings": {},
+                    "sent_by": "Admin User (admin@example.com)",
+                    "open_tracking_status": "yes",
+                    "click_tracking_status": "yes",
+                    "created_at": "2024-02-28 08:00:00",
+                    "updated_at": "2024-03-01 10:30:00"
+                  },
+                  "sent_count": 1195,
+                  "analytics": {
+                    "open": {
+                      "total": 840,
+                      "subtitle": "70.3% open rate"
+                    },
+                    "click": {
+                      "total": 320,
+                      "subtitle": "26.8% click rate"
+                    }
+                  },
+                  "subject_analytics": {}
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Campaign not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

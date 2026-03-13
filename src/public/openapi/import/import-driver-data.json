@@ -1,0 +1,241 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/import/drivers/{driver}": {
+      "post": {
+        "operationId": "importDriverData",
+        "summary": "POST Import Data via Driver",
+        "description": "Execute the import process for a specific driver. For the `users` driver, imports WordPress users as contacts in batches. For other drivers, the import behavior is determined by the driver's filter hook. Call repeatedly with incrementing `importing_page` until `has_more` is `false`.",
+        "tags": [
+          "Import"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "driver",
+            "in": "path",
+            "required": true,
+            "description": "Import driver identifier (e.g., `users`).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "config": {
+                    "type": "object",
+                    "description": "Driver-specific configuration. For the `users` driver, includes roles, tags, lists, status, and update settings.",
+                    "properties": {
+                      "roles": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "WordPress user roles to import."
+                      },
+                      "tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        },
+                        "description": "Tag IDs to assign."
+                      },
+                      "lists": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        },
+                        "description": "List IDs to assign."
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "subscribed",
+                          "pending",
+                          "unsubscribed"
+                        ],
+                        "description": "Status to assign to new contacts."
+                      },
+                      "update": {
+                        "type": "string",
+                        "enum": [
+                          "yes",
+                          "no"
+                        ],
+                        "description": "Whether to update existing contacts."
+                      },
+                      "double_optin_email": {
+                        "type": "string",
+                        "enum": [
+                          "yes",
+                          "no"
+                        ],
+                        "description": "Whether to send a double opt-in email."
+                      },
+                      "import_silently": {
+                        "type": "string",
+                        "enum": [
+                          "yes",
+                          "no"
+                        ],
+                        "description": "If `yes`, disables tag/list events during import."
+                      }
+                    }
+                  },
+                  "importing_page": {
+                    "type": "integer",
+                    "default": 1,
+                    "description": "Current batch page number."
+                  }
+                }
+              },
+              "example": {
+                "config": {
+                  "roles": [
+                    "subscriber"
+                  ],
+                  "tags": [
+                    1
+                  ],
+                  "lists": [
+                    2
+                  ],
+                  "status": "subscribed",
+                  "update": "no",
+                  "double_optin_email": "no",
+                  "import_silently": "no"
+                },
+                "importing_page": 1
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Batch import result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "page_total": {
+                      "type": "integer",
+                      "description": "Total number of batch pages."
+                    },
+                    "record_total": {
+                      "type": "integer",
+                      "description": "Total number of matching records."
+                    },
+                    "has_more": {
+                      "type": "boolean",
+                      "description": "`true` if more batches remain."
+                    },
+                    "current_page": {
+                      "type": "integer",
+                      "description": "The page number just processed."
+                    },
+                    "next_page": {
+                      "type": "integer",
+                      "description": "The next page number to request."
+                    }
+                  }
+                },
+                "example": {
+                  "page_total": 3,
+                  "record_total": 250,
+                  "has_more": true,
+                  "current_page": 1,
+                  "next_page": 2
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Driver not found or import error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Sorry no driver found for this import"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -1,0 +1,184 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/setting/rest-keys": {
+      "get": {
+        "operationId": "getRestKeys",
+        "summary": "GET REST API Keys",
+        "description": "Retrieve all REST API application passwords created through FluentCRM. Returns a list of FluentCRM managers (non-admin users with CRM access) and their associated API keys.",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "REST API keys and eligible managers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "managers": {
+                      "type": "array",
+                      "description": "Non-admin users with FluentCRM access who can be assigned API keys.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "WordPress user ID."
+                          },
+                          "full_name": {
+                            "type": "string",
+                            "description": "User's first and last name."
+                          },
+                          "email": {
+                            "type": "string",
+                            "format": "email"
+                          }
+                        }
+                      }
+                    },
+                    "rest_keys": {
+                      "type": "array",
+                      "description": "Users with existing FluentCRM REST API keys.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "WordPress user ID."
+                          },
+                          "first_name": {
+                            "type": "string"
+                          },
+                          "last_name": {
+                            "type": "string"
+                          },
+                          "email": {
+                            "type": "string",
+                            "format": "email"
+                          },
+                          "api_keys": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "uuid": {
+                                  "type": "string",
+                                  "description": "Application password UUID."
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "description": "API key name."
+                                },
+                                "created": {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "description": "When the API key was created."
+                                }
+                              }
+                            }
+                          },
+                          "manage_url": {
+                            "type": "string",
+                            "description": "Admin URL to manage the user's application passwords."
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "managers": [
+                    {
+                      "id": 5,
+                      "full_name": "Jane - Smith",
+                      "email": "jane@example.com"
+                    }
+                  ],
+                  "rest_keys": [
+                    {
+                      "id": 5,
+                      "first_name": "Jane",
+                      "last_name": "Smith",
+                      "email": "jane@example.com",
+                      "api_keys": [
+                        {
+                          "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+                          "name": "FluentCRM API",
+                          "created": "2024-01-15 10:30:00"
+                        }
+                      ],
+                      "manage_url": "https://example.com/wp-admin/user-edit.php?user_id=5#application-passwords-section"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

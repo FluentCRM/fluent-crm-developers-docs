@@ -1,0 +1,292 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/import/drivers/{driver}": {
+      "get": {
+        "operationId": "getImportDriver",
+        "summary": "GET Import Driver Details",
+        "description": "Retrieve configuration details for a specific import driver. For the `users` driver, returns available WordPress roles and configuration fields. When called with `summary=true`, returns a preview of matching users. For other drivers, the response is determined by the driver's filter hook.",
+        "tags": [
+          "Import"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "driver",
+            "in": "path",
+            "required": true,
+            "description": "Import driver identifier (e.g., `users`, `csv`).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "summary",
+            "in": "query",
+            "required": false,
+            "description": "If truthy, returns a summary/preview of contacts to import based on the current config.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "config[roles][]",
+            "in": "query",
+            "required": false,
+            "description": "User roles to filter by (for the `users` driver summary view).",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Driver configuration or import summary.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "description": "Driver configuration fields (initial load).",
+                      "properties": {
+                        "config": {
+                          "type": "object",
+                          "description": "Default configuration values.",
+                          "additionalProperties": true
+                        },
+                        "fields": {
+                          "type": "object",
+                          "description": "Field definitions for the driver configuration form.",
+                          "additionalProperties": {
+                            "type": "object",
+                            "properties": {
+                              "label": {
+                                "type": "string"
+                              },
+                              "inline_help": {
+                                "type": "string"
+                              },
+                              "type": {
+                                "type": "string"
+                              },
+                              "options": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string"
+                                    },
+                                    "label": {
+                                      "type": "string"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "labels": {
+                          "type": "object",
+                          "description": "Button labels for the import wizard steps.",
+                          "properties": {
+                            "step_2": {
+                              "type": "string"
+                            },
+                            "step_3": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "description": "Import summary/preview (when `summary` is truthy).",
+                      "properties": {
+                        "import_info": {
+                          "type": "object",
+                          "properties": {
+                            "subscribers": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "email": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "description": "Preview of contacts to be imported (up to 5)."
+                            },
+                            "total": {
+                              "type": "integer",
+                              "description": "Total number of matching users."
+                            },
+                            "has_list_config": {
+                              "type": "boolean"
+                            },
+                            "has_tag_config": {
+                              "type": "boolean"
+                            },
+                            "has_status_config": {
+                              "type": "boolean"
+                            },
+                            "has_update_config": {
+                              "type": "boolean"
+                            },
+                            "has_silent_config": {
+                              "type": "boolean"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "config": {
+                    "summary": "Driver configuration (users driver)",
+                    "value": {
+                      "config": {
+                        "roles": []
+                      },
+                      "fields": {
+                        "roles": {
+                          "label": "Select User Roles",
+                          "type": "checkbox-group",
+                          "options": [
+                            {
+                              "id": "subscriber",
+                              "label": "Subscriber"
+                            },
+                            {
+                              "id": "administrator",
+                              "label": "Administrator"
+                            }
+                          ]
+                        }
+                      },
+                      "labels": {
+                        "step_2": "Next [Review Data]",
+                        "step_3": "Import Users Now"
+                      }
+                    }
+                  },
+                  "summary": {
+                    "summary": "Import summary preview",
+                    "value": {
+                      "import_info": {
+                        "subscribers": [
+                          {
+                            "name": "John Doe",
+                            "email": "john@example.com"
+                          },
+                          {
+                            "name": "Jane Smith",
+                            "email": "jane@example.com"
+                          }
+                        ],
+                        "total": 150,
+                        "has_list_config": true,
+                        "has_tag_config": true,
+                        "has_status_config": true,
+                        "has_update_config": true,
+                        "has_silent_config": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Driver not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Sorry no driver found for this import"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

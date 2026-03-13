@@ -1,0 +1,362 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/reports/dashboard-stats": {
+      "get": {
+        "operationId": "getDashboardStats",
+        "summary": "GET Dashboard Stats",
+        "description": "Retrieve overall dashboard statistics including active contacts count, campaigns count, emails sent, active automations, onboarding progress, quick links, recent contacts, recent campaigns, active automations list, and system recommendations.",
+        "tags": [
+          "Reports"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Dashboard statistics retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "stats": {
+                      "type": "object",
+                      "description": "Overall count statistics.",
+                      "properties": {
+                        "total_subscribers": {
+                          "$ref": "#/components/schemas/StatItem"
+                        },
+                        "total_campaigns": {
+                          "$ref": "#/components/schemas/StatItem"
+                        },
+                        "email_sent": {
+                          "$ref": "#/components/schemas/StatItem"
+                        },
+                        "total_automations": {
+                          "$ref": "#/components/schemas/StatItem"
+                        },
+                        "email_pending": {
+                          "description": "Present only when there are pending emails.",
+                          "allOf": [
+                            {
+                              "$ref": "#/components/schemas/StatItem"
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "sales": {
+                      "type": "array",
+                      "description": "Sales statistics (populated by Pro add-on via filter).",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "dashboard_notices": {
+                      "type": "array",
+                      "description": "Admin notices for the dashboard (e.g., cron warnings).",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "onboarding": {
+                      "description": "Onboarding checklist progress. Null if onboarding is complete.",
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer",
+                              "description": "Total onboarding steps."
+                            },
+                            "completed": {
+                              "type": "integer",
+                              "description": "Number of completed steps."
+                            },
+                            "steps": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "label": {
+                                    "type": "string"
+                                  },
+                                  "completed": {
+                                    "type": "boolean"
+                                  },
+                                  "route": {
+                                    "type": "object",
+                                    "properties": {
+                                      "name": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "quick_links": {
+                      "type": "array",
+                      "description": "Quick navigation links for the dashboard.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "type": "string"
+                          },
+                          "url": {
+                            "type": "string"
+                          },
+                          "icon": {
+                            "type": "string"
+                          },
+                          "is_external": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    },
+                    "ff_config": {
+                      "type": "object",
+                      "description": "Fluent Forms integration status.",
+                      "properties": {
+                        "is_installed": {
+                          "type": "boolean"
+                        },
+                        "create_form_link": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "recommendation": {
+                      "description": "Pro upgrade recommendation based on installed plugins. False if Pro is active.",
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "provider": {
+                              "type": "string"
+                            },
+                            "title": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "string"
+                            },
+                            "btn_text": {
+                              "type": "string"
+                            },
+                            "learn_more": {
+                              "type": "string"
+                            },
+                            "base_title": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        {
+                          "type": "boolean",
+                          "enum": [
+                            false
+                          ]
+                        }
+                      ]
+                    },
+                    "system_tips": {
+                      "description": "Database cleanup suggestion when email history exceeds 400,000 records. Empty string when not applicable.",
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "title": {
+                              "type": "string"
+                            },
+                            "body": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "recent_contacts": {
+                      "type": "array",
+                      "description": "Most recent subscribed contacts (up to 3).",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "active_automations": {
+                      "type": "array",
+                      "description": "Most recent published automations (up to 3).",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "recent_campaigns": {
+                      "type": "array",
+                      "description": "Most recent archived campaigns with stats (up to 3).",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "triggers": {
+                      "type": "array",
+                      "description": "Available funnel triggers (populated via filter).",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "stats": {
+                    "total_subscribers": {
+                      "title": "Active Contacts",
+                      "count": 1250,
+                      "route": {
+                        "name": "subscribers"
+                      }
+                    },
+                    "total_campaigns": {
+                      "title": "Campaigns",
+                      "count": 15,
+                      "route": {
+                        "name": "campaigns"
+                      }
+                    },
+                    "email_sent": {
+                      "title": "Emails Sent",
+                      "count": 45000,
+                      "route": {
+                        "name": "all_emails"
+                      }
+                    },
+                    "total_automations": {
+                      "title": "Active Automations",
+                      "count": 3,
+                      "route": {
+                        "name": "funnels"
+                      }
+                    }
+                  },
+                  "sales": [],
+                  "dashboard_notices": [],
+                  "onboarding": null,
+                  "quick_links": [
+                    {
+                      "title": "Contact Segments",
+                      "url": "/wp-admin/admin.php?page=fluentcrm-admin#/contact-groups/lists",
+                      "icon": "ContactSegments"
+                    }
+                  ],
+                  "ff_config": {
+                    "is_installed": true,
+                    "create_form_link": "/wp-admin/admin.php?page=fluent_forms#add=1"
+                  },
+                  "recommendation": false,
+                  "system_tips": "",
+                  "recent_contacts": [],
+                  "active_automations": [],
+                  "recent_campaigns": [],
+                  "triggers": []
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "StatItem": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Display label for the stat."
+          },
+          "count": {
+            "type": "integer",
+            "description": "Numeric count value."
+          },
+          "route": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Frontend route name."
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

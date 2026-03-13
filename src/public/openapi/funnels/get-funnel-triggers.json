@@ -1,0 +1,125 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/funnels/triggers": {
+      "get": {
+        "operationId": "getFunnelTriggers",
+        "summary": "GET Get Funnel Triggers",
+        "description": "Retrieve all available funnel trigger definitions. Returns a map of trigger names to their configuration objects including labels, categories, and descriptions.",
+        "tags": [
+          "Funnels"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Map of available funnel triggers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "triggers": {
+                      "type": "object",
+                      "description": "Map of trigger definitions keyed by trigger name.",
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string",
+                            "description": "Human-readable trigger label."
+                          },
+                          "category": {
+                            "type": "string",
+                            "description": "Trigger category."
+                          },
+                          "description": {
+                            "type": "string",
+                            "description": "Trigger description."
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "triggers": {
+                    "fluent_crm/contact_created": {
+                      "label": "Contact Created",
+                      "category": "CRM",
+                      "description": "Triggered when a new contact is created"
+                    },
+                    "fluentcrm_contact_added_to_tags": {
+                      "label": "Tag Applied",
+                      "category": "CRM",
+                      "description": "Triggered when a tag is applied to a contact"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

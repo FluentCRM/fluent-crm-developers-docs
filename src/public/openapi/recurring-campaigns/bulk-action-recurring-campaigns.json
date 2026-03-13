@@ -1,0 +1,223 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/recurring-campaigns/do-bulk-action": {
+      "post": {
+        "operationId": "bulkActionRecurringCampaigns",
+        "summary": "POST Bulk Action Recurring Campaigns",
+        "description": "Perform a bulk action on multiple recurring campaigns. Supported actions are `apply_labels` (attach labels to campaigns) and `delete_campaigns` (delete campaigns and their child emails). When `select_all` is `true`, the action is applied to all recurring campaigns regardless of the `campaign_ids` provided. Requires FluentCampaign Pro.",
+        "tags": [
+          "Recurring Campaigns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "action_name",
+                  "campaign_ids"
+                ],
+                "properties": {
+                  "action_name": {
+                    "type": "string",
+                    "description": "The bulk action to perform.",
+                    "enum": [
+                      "apply_labels",
+                      "delete_campaigns"
+                    ]
+                  },
+                  "campaign_ids": {
+                    "type": "array",
+                    "description": "Array of recurring campaign IDs to apply the action to.",
+                    "items": {
+                      "type": "integer"
+                    }
+                  },
+                  "select_all": {
+                    "type": "string",
+                    "description": "When set to `true`, the action is applied to all recurring campaigns, ignoring `campaign_ids`.",
+                    "enum": [
+                      "true",
+                      "false"
+                    ]
+                  },
+                  "labels": {
+                    "type": "array",
+                    "description": "Array of label IDs to attach. Required when `action_name` is `apply_labels`.",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              },
+              "examples": {
+                "apply_labels": {
+                  "summary": "Apply labels to campaigns",
+                  "value": {
+                    "action_name": "apply_labels",
+                    "campaign_ids": [
+                      5,
+                      6
+                    ],
+                    "labels": [
+                      1,
+                      3
+                    ]
+                  }
+                },
+                "delete_campaigns": {
+                  "summary": "Delete selected campaigns",
+                  "value": {
+                    "action_name": "delete_campaigns",
+                    "campaign_ids": [
+                      7,
+                      8
+                    ]
+                  }
+                },
+                "select_all": {
+                  "summary": "Delete all campaigns",
+                  "value": {
+                    "action_name": "delete_campaigns",
+                    "campaign_ids": [],
+                    "select_all": "true"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Bulk action completed successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Success message."
+                    }
+                  }
+                },
+                "examples": {
+                  "labels_applied": {
+                    "summary": "Labels applied",
+                    "value": {
+                      "message": "Labels has been applied successfully"
+                    }
+                  },
+                  "campaigns_deleted": {
+                    "summary": "Campaigns deleted",
+                    "value": {
+                      "message": "Selected Recurring Email Campaigns has been deleted"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error (e.g., no campaign IDs, no labels for apply_labels, invalid action).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "no_ids": {
+                    "summary": "No campaign IDs provided",
+                    "value": {
+                      "message": "Please provide Recurring Campaign IDs"
+                    }
+                  },
+                  "no_labels": {
+                    "summary": "No labels provided",
+                    "value": {
+                      "message": "Please provide labels"
+                    }
+                  },
+                  "invalid_action": {
+                    "summary": "Invalid action",
+                    "value": {
+                      "message": "invalid bulk action"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

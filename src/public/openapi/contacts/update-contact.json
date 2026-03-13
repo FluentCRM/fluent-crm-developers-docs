@@ -1,0 +1,549 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/subscribers/{id}": {
+      "put": {
+        "operationId": "updateContact",
+        "summary": "PUT Update Contact",
+        "description": "Update an existing contact's fields, custom values, tags, and lists. Supports attaching and detaching tags/lists in a single request. The `subscriber` object or individual fields can be passed in the request body.",
+        "tags": [
+          "Contacts"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The contact ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "subscriber": {
+                    "type": "object",
+                    "description": "Contact data can be nested inside a `subscriber` object or passed at the top level.",
+                    "properties": {
+                      "email": {
+                        "type": "string",
+                        "format": "email",
+                        "description": "Email address (must be unique)."
+                      },
+                      "first_name": {
+                        "type": "string"
+                      },
+                      "last_name": {
+                        "type": "string"
+                      },
+                      "prefix": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "subscribed",
+                          "pending",
+                          "unsubscribed",
+                          "bounced",
+                          "complained"
+                        ]
+                      },
+                      "contact_type": {
+                        "type": "string",
+                        "enum": [
+                          "lead",
+                          "customer"
+                        ]
+                      },
+                      "address_line_1": {
+                        "type": "string"
+                      },
+                      "address_line_2": {
+                        "type": "string"
+                      },
+                      "postal_code": {
+                        "type": "string"
+                      },
+                      "city": {
+                        "type": "string"
+                      },
+                      "state": {
+                        "type": "string"
+                      },
+                      "country": {
+                        "type": "string"
+                      },
+                      "phone": {
+                        "type": "string"
+                      },
+                      "timezone": {
+                        "type": "string"
+                      },
+                      "date_of_birth": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "description": "Date of birth (YYYY-MM-DD). Send null or empty string to clear."
+                      },
+                      "source": {
+                        "type": "string"
+                      },
+                      "custom_values": {
+                        "type": "object",
+                        "description": "Custom field key-value pairs to update.",
+                        "additionalProperties": {
+                          "type": "string"
+                        }
+                      },
+                      "attach_tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        },
+                        "description": "Tag IDs to attach."
+                      },
+                      "detach_tags": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        },
+                        "description": "Tag IDs to detach."
+                      },
+                      "attach_lists": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        },
+                        "description": "List IDs to attach."
+                      },
+                      "detach_lists": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer"
+                        },
+                        "description": "List IDs to detach."
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "subscriber": {
+                  "first_name": "John",
+                  "last_name": "Smith",
+                  "phone": "+1987654321",
+                  "custom_values": {
+                    "company_name": "Acme Corp"
+                  },
+                  "attach_tags": [
+                    3,
+                    5
+                  ],
+                  "detach_lists": [
+                    2
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contact updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "contact": {
+                      "$ref": "#/components/schemas/Contact"
+                    },
+                    "isDirty": {
+                      "type": "boolean",
+                      "description": "Whether any standard fields were actually changed."
+                    },
+                    "values": {
+                      "type": "object",
+                      "description": "Custom values that were updated.",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Subscriber successfully updated",
+                  "contact": {
+                    "id": 1,
+                    "email": "john@example.com",
+                    "first_name": "John",
+                    "last_name": "Smith",
+                    "status": "subscribed"
+                  },
+                  "isDirty": true,
+                  "values": {
+                    "company_name": "Acme Corp"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error (e.g., duplicate email).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "errors": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "Contact": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the contact."
+          },
+          "user_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Associated WordPress user ID."
+          },
+          "hash": {
+            "type": "string",
+            "description": "Unique hash for the contact."
+          },
+          "contact_owner": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "User ID of the contact owner."
+          },
+          "company_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Primary company ID."
+          },
+          "prefix": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Name prefix (e.g., Mr, Mrs, Ms)."
+          },
+          "first_name": {
+            "type": "string",
+            "description": "Contact first name."
+          },
+          "last_name": {
+            "type": "string",
+            "description": "Contact last name."
+          },
+          "full_name": {
+            "type": "string",
+            "description": "Full name (computed from first_name and last_name)."
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Contact email address."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "subscribed",
+              "pending",
+              "unsubscribed",
+              "bounced",
+              "complained"
+            ],
+            "description": "Contact subscription status."
+          },
+          "contact_type": {
+            "type": "string",
+            "enum": [
+              "lead",
+              "customer"
+            ],
+            "description": "Contact type."
+          },
+          "address_line_1": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Address line 1."
+          },
+          "address_line_2": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Address line 2."
+          },
+          "postal_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Postal/zip code."
+          },
+          "city": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "City."
+          },
+          "state": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "State or province."
+          },
+          "country": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Two-letter country code."
+          },
+          "ip": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "IP address."
+          },
+          "latitude": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Latitude coordinate."
+          },
+          "longitude": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Longitude coordinate."
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Phone number."
+          },
+          "timezone": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Timezone identifier."
+          },
+          "date_of_birth": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Date of birth (YYYY-MM-DD)."
+          },
+          "source": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Source of the contact."
+          },
+          "life_time_value": {
+            "type": "number",
+            "description": "Lifetime value of the contact."
+          },
+          "last_activity": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Timestamp of last activity."
+          },
+          "total_points": {
+            "type": "integer",
+            "description": "Total engagement points."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the contact was created."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the contact was last updated."
+          },
+          "photo": {
+            "type": "string",
+            "description": "Gravatar URL."
+          },
+          "tags": {
+            "type": "array",
+            "description": "Tags assigned to the contact.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "slug": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "lists": {
+            "type": "array",
+            "description": "Lists the contact belongs to.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "slug": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "stats": {
+            "type": "object",
+            "description": "Contact statistics (only included when requested via `with[]` parameter).",
+            "properties": {
+              "emails": {
+                "type": "integer"
+              },
+              "opens": {
+                "type": "integer"
+              },
+              "clicks": {
+                "type": "integer"
+              },
+              "total_points": {
+                "type": "integer"
+              },
+              "last_activity": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

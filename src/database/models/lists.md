@@ -1,7 +1,7 @@
 # Lists Model
 | DB Table Name | {wp_db_prefix}_fc_lists                                            |
 |---------------|--------------------------------------------------------------------|
-| Schema        | <a :href="$withBase('/database/#fc-lists-table')">Check Schema</a> |
+| Schema        | <a href="/database/#fc-lists-table">Check Schema</a> |
 | Source File   | fluent-crm/app/Models/Lists.php                                    |
 | Name Space    | FluentCrm\App\Models                                               |
 | Class         | FluentCrm\App\Models\Lists                                         |

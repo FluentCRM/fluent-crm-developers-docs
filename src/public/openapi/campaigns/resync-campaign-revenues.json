@@ -1,0 +1,129 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/campaigns/{id}/revenues/resync": {
+      "post": {
+        "operationId": "resyncCampaignRevenues",
+        "summary": "POST Resync Campaign Revenues",
+        "description": "Re-synchronize the revenue data for a campaign by recalculating totals from WooCommerce orders. Updates the `_campaign_revenue` meta with fresh order totals. Only works with WooCommerce.",
+        "tags": [
+          "Campaigns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The campaign ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Revenue re-synced successfully or no revenue/orders found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "total": {
+                      "type": "string",
+                      "description": "Formatted total revenue amount. Only present when re-sync is successful."
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Revenue re-synced",
+                    "value": {
+                      "message": "Revenue has been re-synced successfully",
+                      "total": "4950.00"
+                    }
+                  },
+                  "no_revenue": {
+                    "summary": "No revenue found",
+                    "value": {
+                      "message": "No revenue found for this campaign"
+                    }
+                  },
+                  "no_orders": {
+                    "summary": "No orders found",
+                    "value": {
+                      "message": "No order found to re-sync"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

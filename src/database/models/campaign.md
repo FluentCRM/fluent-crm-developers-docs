@@ -6,10 +6,14 @@ description: "Campaign Model is used to manage all the campaign related data."
 
 | DB Table Name | {wp_db_prefix}_fc_campaigns                                            |
 |---------------|------------------------------------------------------------------------|
-| Schema        | <a :href="$withBase('/database/#fc-campaigns-table')">Check Schema</a> |
+| Schema        | <a href="/database/#fc-campaigns-table">Check Schema</a> |
 | Source File   | fluent-crm/app/Models/Campaign.php                                     |
 | Name Space    | FluentCrm\App\Models                                                   |
 | Class         | FluentCrm\App\Models\Campaign                                          |
+
+## Global Scope
+
+This model has a global scope that filters by `type = 'campaign'`. Every query automatically includes `WHERE type = 'campaign'`. Submodels like `FunnelCampaign` override this with their own type.
 
 ## Attributes
 <table class="nowrap">
@@ -34,7 +38,7 @@ description: "Campaign Model is used to manage all the campaign related data."
       <tr>
          <th>type</th>
          <td>String</td>
-         <td></td>
+         <td>Auto-set to 'campaign' by global scope</td>
       </tr>
       <tr>
          <th>title</th>
@@ -49,12 +53,12 @@ description: "Campaign Model is used to manage all the campaign related data."
       <tr>
          <th>slug</th>
          <td>String</td>
-         <td></td>
+         <td>Auto-sanitized via mutator</td>
       </tr>
       <tr>
          <th>status</th>
          <td>String</td>
-         <td></td>
+         <td>draft | scheduled | working | sent | 0 (archived)</td>
       </tr>
       <tr>
          <th>template_id</th>
@@ -79,7 +83,7 @@ description: "Campaign Model is used to manage all the campaign related data."
       <tr>
          <th>recipients_count</th>
          <td>Integer</td>
-         <td></td>
+         <td>Cast to int via accessor</td>
       </tr>
       <tr>
          <th>delay</th>
@@ -127,14 +131,9 @@ description: "Campaign Model is used to manage all the campaign related data."
          <td></td>
       </tr>
       <tr>
-         <th>last_activity</th>
-         <td>Date Time</td>
-         <td></td>
-      </tr>
-      <tr>
          <th>settings</th>
          <td>Text</td>
-         <td></td>
+         <td>Serialized array, auto serialize/unserialize via mutators</td>
       </tr>
       <tr>
          <th>created_by</th>
@@ -154,17 +153,27 @@ description: "Campaign Model is used to manage all the campaign related data."
    </tbody>
 </table>
 
+### Virtual Attributes (Accessors)
+
+| Attribute | Returns | Description |
+|-----------|---------|-------------|
+| `rendered_body` | String | Rendered HTML body via Template parser |
+| `subject` | String | First A/B Subject value, or `email_subject` fallback |
+
 ## Usage
 Please check <a href="/database/models/">Model Basic</a> for Common methods.
 
 ### Accessing Attributes
 
-```php 
+```php
 
 $campaign = FluentCrm\App\Models\Campaign::find(1);
 
 $campaign->id; // returns id
-$campaign->email; // returns email
+$campaign->title; // returns title
+$campaign->settings; // returns deserialized array (auto via accessor)
+$campaign->subject; // returns A/B subject or email_subject
+$campaign->rendered_body; // returns rendered HTML
 .......
 ```
 
@@ -180,18 +189,18 @@ Filter campaign by status
 
 #### Usage:
 
-```php 
-// Get all which has published, draft and archived status
+```php
+// Get all campaigns with published status
 $campaigns = FluentCrm\App\Models\Campaign::ofType('published')->get();
 ```
 
 ### archived()
-Filter campaign by status
+Filter archived campaigns (status = 0)
 
 #### Usage:
 
-```php 
-// Get all campaign which has archived status
+```php
+// Get all archived campaigns
 $campaigns = FluentCrm\App\Models\Campaign::archived()->get();
 ```
 
@@ -202,120 +211,127 @@ This model has the following relationships that you can use
 ### template
 Access the associated template of a model
 
-- return `FluentCrm\App\Models\Template` Model Collection
+- return `FluentCrm\App\Models\Template` Model
 
 #### Example:
-```php 
+```php
 // Accessing Template
 $campaignTemplate = $campaign->template;
-
-// For Filtering by template relationship
 
 // Get Campaigns which has post_status: publish
 $campaigns = FluentCrm\App\Models\Campaign::whereHas('template', function($query) {
     $query->where('post_status', 'publish');
 })->get();
-
-// Get Campaigns which does not have post_status: publish
-$campaigns = FluentCrm\App\Models\Campaign::whereDoesntHave('template', function($query) {
-    $query->where('post_status', 'publish');
-})->get();
-
 ```
 
 ### emails
-Access all the associated emails of a model
+Access all the associated emails of a model (all email types)
 
 - return `FluentCrm\App\Models\CampaignEmail` Model Collections
 
 #### Example:
-```php 
+```php
 // Accessing CampaignEmails
 $campaignEmails = $campaign->emails;
-
-// For Filtering by tags relationship
-
-// Get Campaigns which has email ids: 1/2/3
-$campaigns = FluentCrm\App\Models\Campaign::whereHas('emails', funtion($query) {
-    $query->whereIn('id', [1,2,3]);
-})->get();
-
-// Get Campaigns which does not have email ids: 1/2/3
-$campaigns = FluentCrm\App\Models\Campaign::whereDoesntHave('emails', funtion($query) {
-    $query->whereIn('id', [1,2,3]);
-})->get();
 ```
 
 ### campaign_emails
-Access all the associated campaign emails which has email_type 'campaign' of a model
+Access only campaign-type emails (filtered by `email_type = 'campaign'`)
 
 - return `FluentCrm\App\Models\CampaignEmail` Model Collections
 
 #### Example:
-```php 
-// Accessing All the emails which has email_type 'campaign' of campaign
+```php
+// Accessing only campaign emails (excludes sequence emails)
 $campaignEmails = $campaign->campaign_emails;
 ```
 
 ### subjects
-Access all the associated subjects of a Campaign model
+Access all the A/B subject lines of a Campaign model
 
 - return `FluentCrm\App\Models\Subject` Model Collections
 
 #### Example:
-```php 
+```php
 // Accessing All the Subjects of campaign
 $campaignSubjects = $campaign->subjects;
+```
+
+### labelsTerm
+Access labels attached to this campaign via the `fc_term_relations` pivot table
+
+- return `FluentCrm\App\Models\Label` Model Collections (BelongsToMany)
+
+#### Example:
+```php
+// Accessing labels via relationship
+$labels = $campaign->labelsTerm;
 ```
 
 <hr />
 
 ## Methods
-Along with Global Model methods, this model has few helper methods.
+Along with Global Model methods, this model has these helper methods.
+
+### syncSubjects($subjects)
+
+Create or update A/B subject lines for the campaign
+
+- Parameters
+  - $subjects `array` — array of `['key' => weight, 'value' => text]` items
+- Returns `HasMany` relation
+
+#### Usage
+```php
+$campaign->syncSubjects([
+    ['key' => 50, 'value' => 'Subject A'],
+    ['key' => 50, 'value' => 'Subject B'],
+]);
+```
 
 ### subscribeBySegment($settings, $limit, $offset)
 
-Subscribe contacts to a campaign
+Subscribe contacts to a campaign based on segment settings
 
 - Parameters
   - $settings `array`
   - $limit `boolean`|`int` Default: false
   - $offset `int` Default: 0
-- Returns `array`
+- Returns `array` — `['result' => array, 'total_subscribed' => int, 'total_items' => int]`
 
 #### Usage
-```php 
+```php
 $response = $campaign->subscribeBySegment($settings, 10, 2);
 ```
 
 ### getSubscribersModel($settings)
-Get Contact's model by campaign settings
+Get Subscriber query builder by campaign settings
 
 - Parameters
   - $settings `array`
-- Returns `array`
+- Returns `Builder` or `null`
 
 #### Usage
-```php 
+```php
 $contactModel = $campaign->getSubscribersModel($settings);
 ```
 
 ### getSubscriberIdsBySegmentSettings($settings, $limit, $offset)
-Get contact's ids by campaign settings
+Get contact IDs by campaign settings (without creating CampaignEmail rows)
 
 - Parameters
   - $settings `array`
   - $limit `boolean`|`int` Default: false
   - $offset `int` Default: 0
-- Returns `array`
+- Returns `array` — `['subscriber_ids' => array, 'total_count' => int]`
 
 #### Usage
-```php 
-$subscriberIds = $campaign->getSubscriberIdsBySegmentSettings($settings, 10, 2);
+```php
+$result = $campaign->getSubscriberIdsBySegmentSettings($settings, 10, 2);
 ```
 
 ### getSubscriberIdsCountBySegmentSettings($settings, $status)
-Get Unsubscribe reason if contact unsubscribe and provide feedback
+Get count of contacts matching segment settings
 
 - Parameters
   - $settings `array`
@@ -323,216 +339,250 @@ Get Unsubscribe reason if contact unsubscribe and provide feedback
 - Returns `int`
 
 #### Usage
-```php 
+```php
 $total = $campaign->getSubscriberIdsCountBySegmentSettings($settings, 'subscribed');
 ```
 
-### getSubQueryForLisTorTagFilter($query, $ids, $table, $objectType)
-Get the sub-query by list or tag filtering
-
-- Parameters
-  - $query `object`
-  - $ids `array`
-  - $table `string`
-  - $objectType `string`
-- Returns `object` 
-
-#### Usage
-```php 
-$query = $campaign->getSubQueryForLisTorTagFilter($query, [1,2,3], 'tags', 'FluentCrm\App\Models\Tag');
-```
-
-### getSubscribeIdsByList($items, $status, $limit, $offset)
-Get the contact list which has provided lists
-
-- Parameters
-  - $items `array`
-  - $status `string` Default: subscribed
-  - $limit `boolean`|`int` Default: false
-  - $offset `int` Default: 0
-- Returns `boolean`
-
-#### Usage
-```php 
-$isInTags = $campaign->getSubscribeIdsByList($items, 'subscribed', 20, 2);
-```
-
-### getSubscribeIdsByListCount($items, $status, $limit, $offset)
-Get the contact list count which has provided lists
-
-- Parameters
-  - $items `array`
-  - $status `string` Default: subscribed
-  - $limit `boolean`|`int` Default: false
-  - $offset `int` Default: 0
-- Returns `boolean`
-
-#### Usage
-```php 
-$total = $campaign->getSubscribeIdsByListCount($items, 'subscribed', 20, 2);
-```
-
-### getSubscribeIdsByListModel($items, $status, $limit, $offset)
-Get the contact list by list model
-
-- Parameters
-  - $items `array`
-  - $status `string` Default: subscribed
-  - $limit `boolean`|`int` Default: false
-  - $offset `int` Default: 0
-- Returns  `array`
-
-#### Usage
-```php 
-$subscriberIds = $campaign->getSubscribeIdsByListModel($items, 'subscribed', 20, 2);
-```
-
 ### subscribe($subscriberIds, $emailArgs, $isModel)
-Subscribe contact to campaign 
+Enqueue campaign emails for subscribers
 
 - Parameters
-  - $subscriberIds `array`
-  - $emailArgs `array` extra campaign_email args
-  - $isModel `boolean` if the $subscriberIds is collection or not
-- Returns `array`
+  - $subscriberIds `array` or Collection
+  - $emailArgs `array` — extra campaign_email fields
+  - $isModel `boolean` — if the $subscriberIds is a collection
+- Returns `array` — inserted CampaignEmail IDs
 
 #### Usage
-```php 
-$updatedSubscriberIds = $campaign->subscribe([1,2,5], [], false);
+```php
+$emailIds = $campaign->subscribe([1,2,5], [], false);
 ```
 
 ### unsubscribe($subscriberIds)
 Remove contacts from a Campaign
 
 - Parameters
-  - $subscriberIds `array` 
+  - $subscriberIds `array`
 - Returns `boolean`
 
 #### Usage
-```php 
+```php
 $result = $campaign->unsubscribe([1,2,3]);
 ```
 
-### guessEmailSubject($listIds)
-Guess the subject by probability formula
+### guessEmailSubject()
+Select an A/B subject using weighted random selection
 
 - Parameters
-  - $listIds array
-- Returns `object` or `null`
+  - none
+- Returns `FluentCrm\App\Models\Subject` or `null`
 
 #### Usage
-```php 
-$campaign->guessEmailSubject();
+```php
+$subject = $campaign->guessEmailSubject();
 ```
 
 ### getParsedText($text, $subscriber)
-Parse shortcodes of contact's info
+Parse SmartCode placeholders in text
 
 - Parameters
   - $text `string`
-  - $subscriber `array`
-  - Returns `string`
+  - $subscriber `Subscriber`
+- Returns `string`
 
 #### Usage
-```php 
-$campaign->getParsedText('{{contact.first_name}}', $subscriber);
+```php
+$parsed = $campaign->getParsedText('Hello {{contact.first_name}}', $subscriber);
 ```
 
 ### filterDuplicateSubscribers($subscriberIds, $subscribers)
-Filter all duplicate subscribers
+Remove subscribers who already have a CampaignEmail for this campaign
 
 - Parameters
   - $subscriberIds `array`
-  - $subscribers `array`
-- Returns `array`
+  - $subscribers `Collection`
+- Returns `Collection`
 
 #### Usage
-```php 
-$subscriberIds = $campaign->filterDuplicateSubscribers([1,2,3], $subscribers);
+```php
+$unique = $campaign->filterDuplicateSubscribers([1,2,3], $subscribers);
 ```
 
 ### archive()
-Archive campaign
+Archive a campaign (sets status to 0)
 
 - Parameters
   - none
-- Returns `boolean`
+- Returns `FluentCrm\App\Models\Campaign`
 
 #### Usage
-```php 
-$result = $campaign->archive();
+```php
+$campaign->archive();
 ```
 
-
-
 ### getUtmParams()
-Get utm params [utm_source, utm_medium, utm_campaign, utm_term, utm_content]
+Get UTM parameters if UTM tracking is enabled
 
 - Parameters
   - none
-- Returns `array`
+- Returns `array` — non-empty UTM fields, or empty array
 
 #### Usage
-```php 
+```php
 $utm = $campaign->getUtmParams();
 ```
 
-### stats
-Get Campaign's utm records
+### stats()
+Get campaign statistics (total, sent, views, clicks, unsubscribers, revenue)
 
 - Parameters
   - none
 - Returns `array`
 
 #### Usage
-```php 
+```php
 $campaignStats = $campaign->stats();
 ```
 
 ### getEmailCount()
-get email counts of campaign
+Get raw email count for this campaign
 
 - Parameters
   - none
 - Returns `int`
 
 #### Usage
-```php 
+```php
 $total = $campaign->getEmailCount();
 ```
 
 ### maybeDeleteDuplicates()
-to remove duplicate records of campaign
+Remove duplicate CampaignEmail rows for this campaign
 
 - Parameters
   - none
-- Returns `object` FluentCrm\App\Models\Campaign
+- Returns `FluentCrm\App\Models\Campaign`
 
 #### Usage
-```php 
-$campaign = $campaign->maybeDeleteDuplicates();
+```php
+$campaign->maybeDeleteDuplicates();
 ```
 
 ### getHash()
-Get campaign's hash
+Get or generate a persistent campaign hash (stored in meta)
 
 - Parameters
   - none
 - Returns `string`
 
 #### Usage
-```php 
+```php
 $hash = $campaign->getHash();
 ```
 
 ### deleteCampaignData()
-Delete campaign's data
+Delete all associated data (emails, URL metrics, meta) but NOT the campaign itself
 
 - Parameters
   - none
-- Returns `object` FluentCrm\App\Models\Campaign
+- Returns `FluentCrm\App\Models\Campaign`
 
 #### Usage
-```php 
-$campaign = $campaign->deleteCampaignData();
+```php
+$campaign->deleteCampaignData();
+```
+
+### rangedScheduleDates()
+Get start/end dates for range-scheduled campaigns
+
+- Parameters
+  - none
+- Returns `array` — `['start' => 'Y-m-d H:i:s', 'end' => 'Y-m-d H:i:s']` or `null`
+
+#### Usage
+```php
+$dates = $campaign->rangedScheduleDates();
+```
+
+### getShareableUrl()
+Get a public preview URL for the campaign
+
+- Parameters
+  - none
+- Returns `string` — full URL
+
+#### Usage
+```php
+$url = $campaign->getShareableUrl();
+```
+
+### labels()
+Get all labels attached to this campaign
+
+- Parameters
+  - none
+- Returns `Collection` of `FluentCrm\App\Models\Label`
+
+#### Usage
+```php
+$labels = $campaign->labels();
+```
+
+### getFormattedLabels()
+Get labels in simplified format for API responses
+
+- Parameters
+  - none
+- Returns `Collection` of `['id', 'slug', 'title', 'color']` arrays
+
+#### Usage
+```php
+$labels = $campaign->getFormattedLabels();
+```
+
+### attachLabels($labelIds)
+Attach labels to this campaign
+
+- Parameters
+  - $labelIds `int` or `array`
+- Returns `FluentCrm\App\Models\Campaign`
+
+#### Usage
+```php
+$campaign->attachLabels([1, 2, 3]);
+```
+
+### detachLabels($labelIds)
+Remove labels from this campaign
+
+- Parameters
+  - $labelIds `int` or `array`
+- Returns `FluentCrm\App\Models\Campaign`
+
+#### Usage
+```php
+$campaign->detachLabels([1, 2]);
+```
+
+### getOpenTrackingStatus($globalFallback)
+Get the campaign's open tracking setting
+
+- Parameters
+  - $globalFallback `boolean` — Default `true`. Falls back to site-wide setting
+- Returns `string` or `null` — `'yes'`, `'no'`, `'anonymous'`
+
+#### Usage
+```php
+$status = $campaign->getOpenTrackingStatus();
+```
+
+### getClickTrackingStatus($globalFallback)
+Get the campaign's click tracking setting
+
+- Parameters
+  - $globalFallback `boolean` — Default `true`. Falls back to site-wide setting
+- Returns `string` or `null`
+
+#### Usage
+```php
+$status = $campaign->getClickTrackingStatus();
 ```

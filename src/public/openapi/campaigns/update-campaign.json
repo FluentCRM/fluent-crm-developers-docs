@@ -1,0 +1,280 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/campaigns/{id}": {
+      "put": {
+        "operationId": "updateCampaign",
+        "summary": "PUT Update Campaign",
+        "description": "Update an existing campaign. Supports updating title, email content, UTM parameters, template, settings, and A/B test subjects. When `next_step` is provided, it advances the campaign wizard and performs step-specific validation (e.g., compliance checks for unsubscribe links on step 2).",
+        "tags": [
+          "Campaigns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The campaign ID to update.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Campaign title. Must be unique across campaigns (excluding this campaign)."
+                  },
+                  "slug": {
+                    "type": "string"
+                  },
+                  "template_id": {
+                    "type": "integer"
+                  },
+                  "email_subject": {
+                    "type": "string"
+                  },
+                  "email_pre_header": {
+                    "type": "string"
+                  },
+                  "email_body": {
+                    "type": "string"
+                  },
+                  "utm_status": {
+                    "type": "integer",
+                    "enum": [
+                      0,
+                      1
+                    ]
+                  },
+                  "utm_source": {
+                    "type": "string"
+                  },
+                  "utm_medium": {
+                    "type": "string"
+                  },
+                  "utm_campaign": {
+                    "type": "string"
+                  },
+                  "utm_term": {
+                    "type": "string"
+                  },
+                  "utm_content": {
+                    "type": "string"
+                  },
+                  "scheduled_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "design_template": {
+                    "type": "string",
+                    "description": "Email design template type (e.g., `simple`, `plain`, `raw_html`, `visual_builder`)."
+                  },
+                  "settings": {
+                    "type": "object",
+                    "description": "Campaign settings including template config, mailer settings, etc."
+                  },
+                  "update_subjects": {
+                    "type": "boolean",
+                    "description": "If true, syncs A/B test subjects from the `subjects` array."
+                  },
+                  "subjects": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "key": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "description": "A/B test subject lines. Only processed when `update_subjects` is true."
+                  },
+                  "next_step": {
+                    "type": "integer",
+                    "description": "Advance the campaign wizard to this step. Step 1 = compose, Step 2 = subjects/compliance."
+                  }
+                }
+              },
+              "example": {
+                "title": "Spring Sale 2024",
+                "email_subject": "Don't miss our Spring Sale!",
+                "email_pre_header": "Limited time offer",
+                "email_body": "<p>Hello {{contact.first_name}}, check out our sale!</p>",
+                "design_template": "simple",
+                "next_step": 2
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Campaign updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "campaign": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string"
+                        },
+                        "email_subject": {
+                          "type": "string"
+                        },
+                        "email_pre_header": {
+                          "type": "string"
+                        },
+                        "email_body": {
+                          "type": "string"
+                        },
+                        "design_template": {
+                          "type": "string"
+                        },
+                        "settings": {
+                          "type": "object"
+                        },
+                        "subjects": {
+                          "type": "array",
+                          "items": {
+                            "type": "object"
+                          }
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "campaign": {
+                    "id": 12,
+                    "title": "Spring Sale 2024",
+                    "status": "draft",
+                    "email_subject": "Don't miss our Spring Sale!",
+                    "email_pre_header": "Limited time offer",
+                    "design_template": "simple",
+                    "settings": {},
+                    "subjects": [],
+                    "created_at": "2024-03-01 10:00:00",
+                    "updated_at": "2024-03-02 14:00:00"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error or compliance check failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "compliance_failed": {
+                      "type": "boolean",
+                      "description": "True when the email body is missing required unsubscribe or manage subscription links."
+                    }
+                  }
+                },
+                "example": {
+                  "compliance_failed": true,
+                  "message": "##crm.manage_subscription_url## or ##crm.unsubscribe_url## or {{crm_global_email_footer}} string is required for compliance."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

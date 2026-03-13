@@ -1,0 +1,251 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/campaigns/{id}": {
+      "get": {
+        "operationId": "getCampaign",
+        "summary": "GET Get Campaign",
+        "description": "Retrieve a single campaign by ID. Optionally include related data (template, subjects) via the `with` parameter. When `viewCampaign` is set, returns the campaign with its paginated emails. Also returns available email templates and the server's current time.",
+        "tags": [
+          "Campaigns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The campaign ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "with[]",
+            "in": "query",
+            "description": "Include related data (e.g., `template`, `subjects`).",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "viewCampaign",
+            "in": "query",
+            "description": "If set, returns the campaign with paginated emails instead of the standard response.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campaign retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "campaign": {
+                      "type": "object",
+                      "description": "The campaign data including `server_time`.",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "slug": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string"
+                        },
+                        "template_id": {
+                          "type": "integer",
+                          "nullable": true
+                        },
+                        "email_subject": {
+                          "type": "string"
+                        },
+                        "email_pre_header": {
+                          "type": "string"
+                        },
+                        "email_body": {
+                          "type": "string"
+                        },
+                        "recipients_count": {
+                          "type": "integer"
+                        },
+                        "design_template": {
+                          "type": "string"
+                        },
+                        "scheduled_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true
+                        },
+                        "settings": {
+                          "type": "object"
+                        },
+                        "server_time": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "Current server time in WordPress timezone."
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "template": {
+                          "type": "object",
+                          "nullable": true
+                        },
+                        "subjects": {
+                          "type": "array",
+                          "items": {
+                            "type": "object"
+                          }
+                        }
+                      }
+                    },
+                    "templates": {
+                      "type": "array",
+                      "description": "Available email templates (ID and title only).",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "ID": {
+                            "type": "integer"
+                          },
+                          "post_title": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "campaign": {
+                    "id": 12,
+                    "title": "Spring Sale 2024",
+                    "slug": "spring-sale-2024",
+                    "status": "draft",
+                    "template_id": 5,
+                    "email_subject": "Don't miss our Spring Sale!",
+                    "email_pre_header": "Limited time offer",
+                    "email_body": "<p>Hello {{contact.first_name}}</p>",
+                    "recipients_count": 0,
+                    "design_template": "simple",
+                    "scheduled_at": null,
+                    "settings": {},
+                    "server_time": "2024-03-01 14:30:00",
+                    "created_at": "2024-03-01 10:00:00",
+                    "updated_at": "2024-03-01 10:00:00",
+                    "template": null,
+                    "subjects": []
+                  },
+                  "templates": [
+                    {
+                      "ID": 10,
+                      "post_title": "Basic Template"
+                    },
+                    {
+                      "ID": 8,
+                      "post_title": "Newsletter Template"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Campaign not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -1,0 +1,175 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/setting/bounce_configs": {
+      "get": {
+        "operationId": "getBounceConfigs",
+        "summary": "GET Bounce Handler Configurations",
+        "description": "Retrieve bounce handler webhook URLs and configuration for all supported email service providers (Amazon SES, Mailgun, PostMark, SendGrid, SparkPost, Elastic Email, etc.). Also returns FluentSMTP configuration status if the plugin is installed.",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bounce handler configurations for all supported providers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "bounce_settings": {
+                      "type": "object",
+                      "description": "Map of provider slugs to their bounce handler configurations.",
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string",
+                            "description": "Display name of the email provider."
+                          },
+                          "webhook_url": {
+                            "type": "string",
+                            "description": "Webhook URL to configure in the provider's settings."
+                          },
+                          "doc_url": {
+                            "type": "string",
+                            "description": "Documentation URL for setting up the bounce handler."
+                          },
+                          "input_title": {
+                            "type": "string",
+                            "description": "Label for the webhook URL field."
+                          },
+                          "input_info": {
+                            "type": "string",
+                            "description": "Help text explaining how to use the webhook URL."
+                          }
+                        }
+                      }
+                    },
+                    "fluentsmtp_info": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "configured": {
+                              "type": "boolean",
+                              "description": "Whether FluentSMTP has active connections."
+                            },
+                            "verified_senders": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "List of verified sender email addresses."
+                            },
+                            "config_url": {
+                              "type": "string",
+                              "description": "Admin URL to FluentSMTP connections page."
+                            }
+                          }
+                        },
+                        {
+                          "type": "boolean",
+                          "enum": [
+                            false
+                          ],
+                          "description": "False when FluentSMTP is not installed."
+                        }
+                      ]
+                    }
+                  }
+                },
+                "example": {
+                  "bounce_settings": {
+                    "ses": {
+                      "label": "Amazon SES",
+                      "webhook_url": "https://example.com/index.php?fluentcrm=1&route=bounce_handler&provider=ses&verify_key=fcrm_abc123",
+                      "doc_url": "https://fluentcrm.com/docs/bounce-handler-with-amazon-ses/",
+                      "input_title": "Amazon SES Bounce Handler URL",
+                      "input_info": "Please use this bounce handler url in your Amazon SES + SNS settings"
+                    },
+                    "mailgun": {
+                      "label": "Mailgun",
+                      "webhook_url": "https://example.com/wp-json/fluent-crm/v2/public/bounce_handler/mailgun/handle/fcrm_abc123",
+                      "doc_url": "https://fluentcrm.com/docs/bounce-handling-with-mailgun/",
+                      "input_title": "Mailgun Bounce Handler Webhook URL",
+                      "input_info": "Please paste this URL into your Mailgun's Webhook settings to enable Bounce Handling with FluentCRM"
+                    }
+                  },
+                  "fluentsmtp_info": {
+                    "configured": true,
+                    "verified_senders": [
+                      "hello@example.com"
+                    ],
+                    "config_url": "https://example.com/wp-admin/options-general.php?page=fluent-mail#/connections"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

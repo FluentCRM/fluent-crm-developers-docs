@@ -6,7 +6,7 @@ description: "Funnel Subscriber Model"
 
 | DB Table Name | {wp_db_prefix}_fc_funnel_subscribers                                      |
 |---------------|---------------------------------------------------------------------------|
-| Schema        | <a :href="$withBase('/database/#fc-funnel-subscribers')">Check Schema</a> |
+| Schema        | <a href="/database/#fc-funnel-subscribers">Check Schema</a> |
 | Source File   | fluent-crm/app/Models/FunnelSubscriber.php                                |
 | Name Space    | FluentCrm\App\Models                                                      |
 | Class         | FluentCrm\App\Models\FunnelSubscriber                                     |
@@ -95,7 +95,7 @@ description: "Funnel Subscriber Model"
             <th>delay</th>
             <td>Integer</td>
             <td></td>
-        <tr>
+        </tr>
         <tr>
             <th>source_ref_id</th>
             <td> Integer</td>

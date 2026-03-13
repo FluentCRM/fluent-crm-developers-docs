@@ -1,0 +1,211 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/dynamic-segments/{id}": {
+      "put": {
+        "operationId": "updateDynamicSegment",
+        "summary": "PUT Update Dynamic Segment",
+        "description": "Update an existing custom dynamic segment's title, conditions, and filter settings. The segment data is sent as a JSON-encoded string. Requires FluentCampaign Pro.",
+        "tags": [
+          "Dynamic Segments"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the custom segment to update.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "segment"
+                ],
+                "properties": {
+                  "segment": {
+                    "type": "string",
+                    "description": "JSON-encoded segment object containing the updated title, conditions, and filter settings."
+                  }
+                }
+              },
+              "example": {
+                "segment": "{\"title\":\"Highly Engaged Subscribers\",\"conditions\":[{\"field\":\"status\",\"operator\":\"whereIn\",\"value\":[\"subscribed\"]},{\"field\":\"last_activity\",\"operator\":\">=\",\"value\":7}],\"condition_match\":\"match_all\",\"email_activities\":{\"status\":\"yes\",\"last_email_open\":{\"value\":14,\"operator\":\">=\"},\"last_email_link_click\":{\"value\":0,\"operator\":\">=\"},\"last_email_activity_match\":\"match_any\"}}"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Segment updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Success message."
+                    },
+                    "segment": {
+                      "type": "object",
+                      "description": "The updated segment data object with the assigned ID.",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "description": "Segment ID."
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "Updated segment title."
+                        },
+                        "conditions": {
+                          "type": "array",
+                          "description": "Updated filter conditions.",
+                          "items": {
+                            "type": "object"
+                          }
+                        },
+                        "condition_match": {
+                          "type": "string",
+                          "enum": [
+                            "match_all",
+                            "match_any"
+                          ]
+                        },
+                        "email_activities": {
+                          "type": "object",
+                          "description": "Updated email activity filter settings."
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Segment has been updated",
+                  "segment": {
+                    "id": 12,
+                    "title": "Highly Engaged Subscribers",
+                    "conditions": [
+                      {
+                        "field": "status",
+                        "operator": "whereIn",
+                        "value": [
+                          "subscribed"
+                        ]
+                      },
+                      {
+                        "field": "last_activity",
+                        "operator": ">=",
+                        "value": 7
+                      }
+                    ],
+                    "condition_match": "match_all",
+                    "email_activities": {
+                      "status": "yes",
+                      "last_email_open": {
+                        "value": 14,
+                        "operator": ">="
+                      },
+                      "last_email_link_click": {
+                        "value": 0,
+                        "operator": ">="
+                      },
+                      "last_email_activity_match": "match_any"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Please provide segment title"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

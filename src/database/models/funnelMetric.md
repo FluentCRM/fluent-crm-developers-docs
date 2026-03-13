@@ -6,7 +6,7 @@ description: "FunnelMetric Model is used to store the metrics of a funnel sequen
 
 | DB Table Name | {wp_db_prefix}_fc_funnel_metrics                                      |
 |---------------|-----------------------------------------------------------------------|
-| Schema        | <a :href="$withBase('/database/#fc-funnel-metrics')">Check Schema</a> |
+| Schema        | <a href="/database/#fc-funnel-metrics">Check Schema</a> |
 | Source File   | fluent-crm/app/Models/FunnelMetric.php                                |
 | Name Space    | FluentCrm\App\Models                                                  |
 | Class         | FluentCrm\App\Models\FunnelMetric                                     |

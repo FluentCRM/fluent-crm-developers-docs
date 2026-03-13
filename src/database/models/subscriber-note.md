@@ -4,12 +4,23 @@ description: "Learn about the Subscriber Note Model in FluentCRM, designed to ad
 
 # Subscriber Note Model
 
-| DB Table Name | {wp_db_prefix}_fc_subscriber_notes                                       |
-|---------------|--------------------------------------------------------------------------|
-| Schema        | <a :href="$withBase('/database/#fc-subscribers-table')">Check Schema</a> |
-| Source File   | fluent-crm/app/Models/SubscriberNote.php                                 |
-| Name Space    | FluentCrm\App\Models                                                     |
-| Class         | FluentCrm\App\Models\SubscriberNote                                      |
+| DB Table Name | {wp_db_prefix}_fc_subscriber_notes                                            |
+|---------------|-------------------------------------------------------------------------------|
+| Schema        | <a href="/database/#fc-subscriber-notes-table">Check Schema</a> |
+| Source File   | fluent-crm/app/Models/SubscriberNote.php                                      |
+| Name Space    | FluentCrm\App\Models                                                          |
+| Class         | FluentCrm\App\Models\SubscriberNote                                           |
+
+## Global Scope
+
+This model has a global scope that **excludes** rows where `status IN ('_company_note_', '_system_log_')`. This means queries on `SubscriberNote` only return regular contact notes.
+
+::: tip Shared Table
+The `fc_subscriber_notes` table is shared by three models:
+- **SubscriberNote** — regular contact notes (excludes `_company_note_` and `_system_log_` statuses)
+- **CompanyNote** — company notes (`status = '_company_note_'`)
+- **SystemLog** — system log entries (`status = '_system_log_'`)
+:::
 
 ## Attributes
 <table class="nowrap">
@@ -39,7 +50,7 @@ description: "Learn about the Subscriber Note Model in FluentCRM, designed to ad
       <tr>
          <th>created_by</th>
          <td>Integer</td>
-         <td></td>
+         <td>Auto-set to current user on create</td>
       </tr>
       <tr>
          <th>status</th>
@@ -69,12 +80,12 @@ description: "Learn about the Subscriber Note Model in FluentCRM, designed to ad
       <tr>
          <th>created_at</th>
          <td>Date Time</td>
-         <td></td>
+         <td>Auto-set on create</td>
       </tr>
       <tr>
          <th>updated_at</th>
          <td>Date Time</td>
-         <td></td>
+         <td>Auto-set on create and update</td>
       </tr>
    </tbody>
 </table>
@@ -85,12 +96,13 @@ Please check <a href="/database/models/">Model Basic</a> for Common methods.
 
 ### Accessing Attributes
 
-```php 
+```php
 
 $note = FluentCrm\App\Models\SubscriberNote::find(1);
 
 $note->id; // returns id
-$note->title; // returns meta title
+$note->title; // returns title
+$note->description; // returns description
 .......
 ```
 
@@ -98,32 +110,27 @@ $note->title; // returns meta title
 ## Fillable Attributes
 
 ```php
-
 'subscriber_id',
 'parent_id',
 'created_by',
-'status',
 'type',
-'is_private',
 'title',
-'description'
+'description',
+'created_at'
 ```
 
 
 ## Relations
-This model has the following relationships that you can use
 
 ### subscriber
-Access all the associated subscriber of a model
+Access the associated subscriber of a note
 
-- return `FluentCrm\App\Models\Subscriber` Model Collections
+- return `FluentCrm\App\Models\Subscriber` Model
 
 #### Example:
-```php 
+```php
 // Accessing Subscriber
 $subscriber = $note->subscriber;
-
-// For Filtering by subscriber relationship
 
 // Get notes which has subscriber ids: 1/2/3
 $notes = FluentCrm\App\Models\SubscriberNote::whereHas('subscriber', function($query) {
@@ -140,17 +147,16 @@ $notes = FluentCrm\App\Models\SubscriberNote::whereDoesntHave('subscriber', func
 
 
 ## Methods
-Along with Global Model methods, this model has few helper methods.
 
 ### markAs($status)
-Get total number of subscribers of a tag
+Update the note status
 
 - Parameters
     - $status `string`
 - Returns `FluentCrm\App\Models\SubscriberNote`
 
 #### Usage
-```php 
+```php
 $note = $note->markAs('open');
 ```
 
@@ -160,9 +166,9 @@ Get note creator personal information
 
 - Parameters
     - none
-- Returns `array`
+- Returns `array` — `['ID', 'display_name', 'photo']`
 
 #### Usage
-```php 
+```php
 $creatorInfo = $note->createdBy();
 ```

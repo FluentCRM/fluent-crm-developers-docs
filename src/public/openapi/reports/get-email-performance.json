@@ -1,0 +1,172 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/reports/email-performance": {
+      "get": {
+        "operationId": "getEmailPerformance",
+        "summary": "GET Email Performance",
+        "description": "Retrieve aggregated email performance metrics including totals and percentages for sent, delivered, opened, clicked, and bounced emails. The `days` parameter controls the time window: a positive integer means the last N days, `0` means all time, and omitting it defaults to the last 30 days.",
+        "tags": [
+          "Reports"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "description": "Number of days to look back. Use `0` for all time. Defaults to 30 days if omitted.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Email performance metrics retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "stats": {
+                      "type": "object",
+                      "properties": {
+                        "totals": {
+                          "type": "object",
+                          "description": "Absolute counts for each metric.",
+                          "properties": {
+                            "sent": {
+                              "type": "integer",
+                              "description": "Total emails sent."
+                            },
+                            "delivered": {
+                              "type": "integer",
+                              "description": "Delivered emails (sent minus bounced)."
+                            },
+                            "opened": {
+                              "type": "integer",
+                              "description": "Emails opened at least once."
+                            },
+                            "clicked": {
+                              "type": "integer",
+                              "description": "Emails with at least one link click."
+                            },
+                            "bounced": {
+                              "type": "integer",
+                              "description": "Bounced emails."
+                            }
+                          }
+                        },
+                        "percentages": {
+                          "type": "object",
+                          "description": "Percentage rates. Delivery and bounce rates are based on (sent + bounced). Open and click rates are based on delivered.",
+                          "properties": {
+                            "delivered": {
+                              "type": "number",
+                              "description": "Delivery rate percentage."
+                            },
+                            "opened": {
+                              "type": "number",
+                              "description": "Open rate percentage."
+                            },
+                            "clicked": {
+                              "type": "number",
+                              "description": "Click rate percentage."
+                            },
+                            "bounced": {
+                              "type": "number",
+                              "description": "Bounce rate percentage."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "stats": {
+                    "totals": {
+                      "sent": 10000,
+                      "delivered": 9800,
+                      "opened": 4500,
+                      "clicked": 1200,
+                      "bounced": 200
+                    },
+                    "percentages": {
+                      "delivered": 96.08,
+                      "opened": 45.92,
+                      "clicked": 12.24,
+                      "bounced": 1.96
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

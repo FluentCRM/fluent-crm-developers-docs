@@ -1,0 +1,290 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/subscribers/bulk-add-update": {
+      "post": {
+        "operationId": "bulkAddUpdateContacts",
+        "summary": "POST Bulk Add/Update Contacts",
+        "description": "Add or update multiple contacts in a single request. Each contact in the array is processed individually. Invalid contacts (missing or invalid email) are collected and returned separately. Optionally sends double opt-in emails and forces updates on existing contacts.",
+        "tags": [
+          "Contacts"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "contacts"
+                ],
+                "properties": {
+                  "contacts": {
+                    "type": "array",
+                    "description": "Array of contact objects to create or update.",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "email"
+                      ],
+                      "properties": {
+                        "email": {
+                          "type": "string",
+                          "format": "email"
+                        },
+                        "first_name": {
+                          "type": "string"
+                        },
+                        "last_name": {
+                          "type": "string"
+                        },
+                        "prefix": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "subscribed",
+                            "pending",
+                            "unsubscribed",
+                            "bounced",
+                            "complained"
+                          ]
+                        },
+                        "contact_type": {
+                          "type": "string",
+                          "enum": [
+                            "lead",
+                            "customer"
+                          ]
+                        },
+                        "address_line_1": {
+                          "type": "string"
+                        },
+                        "address_line_2": {
+                          "type": "string"
+                        },
+                        "postal_code": {
+                          "type": "string"
+                        },
+                        "city": {
+                          "type": "string"
+                        },
+                        "state": {
+                          "type": "string"
+                        },
+                        "country": {
+                          "type": "string"
+                        },
+                        "phone": {
+                          "type": "string"
+                        },
+                        "timezone": {
+                          "type": "string"
+                        },
+                        "date_of_birth": {
+                          "type": "string"
+                        },
+                        "source": {
+                          "type": "string"
+                        },
+                        "tags": {
+                          "type": "array",
+                          "items": {
+                            "type": "integer"
+                          },
+                          "description": "Tag IDs to assign."
+                        },
+                        "lists": {
+                          "type": "array",
+                          "items": {
+                            "type": "integer"
+                          },
+                          "description": "List IDs to assign."
+                        }
+                      }
+                    }
+                  },
+                  "double_optin": {
+                    "type": "boolean",
+                    "description": "Send double opt-in emails to contacts with `pending` status.",
+                    "default": false
+                  },
+                  "force_update": {
+                    "type": "boolean",
+                    "description": "Update existing contacts that share an email address.",
+                    "default": false
+                  }
+                }
+              },
+              "example": {
+                "contacts": [
+                  {
+                    "email": "john@example.com",
+                    "first_name": "John",
+                    "last_name": "Doe",
+                    "status": "subscribed",
+                    "tags": [
+                      1,
+                      3
+                    ],
+                    "lists": [
+                      2
+                    ]
+                  },
+                  {
+                    "email": "jane@example.com",
+                    "first_name": "Jane",
+                    "last_name": "Smith",
+                    "status": "pending"
+                  }
+                ],
+                "force_update": true,
+                "double_optin": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Bulk operation result with created, updated, and invalid contacts.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "created": {
+                      "type": "array",
+                      "description": "Newly created contacts.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "email": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "updated": {
+                      "type": "array",
+                      "description": "Updated existing contacts.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "email": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    "invalids": {
+                      "type": "array",
+                      "description": "Contacts that could not be processed (invalid/missing email).",
+                      "items": {
+                        "type": "object"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Successfully added/updated the subscribers.",
+                  "created": [
+                    {
+                      "id": 42,
+                      "email": "john@example.com",
+                      "status": "subscribed"
+                    }
+                  ],
+                  "updated": [
+                    {
+                      "id": 5,
+                      "email": "jane@example.com",
+                      "status": "pending"
+                    }
+                  ],
+                  "invalids": []
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

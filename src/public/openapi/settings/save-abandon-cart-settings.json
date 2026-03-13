@@ -1,0 +1,158 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/setting/abandon-cart": {
+      "post": {
+        "operationId": "saveAbandonCartSettings",
+        "summary": "POST Save Abandon Cart Settings",
+        "description": "Save abandoned cart feature settings. When enabling the feature (`enabled: yes`), the abandoned cart database table is automatically created via migration. Also updates the experimental settings to reflect the abandoned cart status.",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "settings"
+                ],
+                "properties": {
+                  "settings": {
+                    "type": "object",
+                    "description": "Abandoned cart settings. Only known setting keys (matching existing settings) are accepted.",
+                    "properties": {
+                      "enabled": {
+                        "type": "string",
+                        "enum": [
+                          "yes",
+                          "no"
+                        ],
+                        "description": "Enable or disable abandoned cart tracking."
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                }
+              },
+              "example": {
+                "settings": {
+                  "enabled": "yes"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Settings saved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "reload": {
+                      "type": "boolean",
+                      "description": "True if the enabled status changed, indicating the UI should reload."
+                    },
+                    "settings": {
+                      "type": "object",
+                      "description": "The saved settings."
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Settings has been saved successfully",
+                  "reload": true,
+                  "settings": {
+                    "enabled": "yes"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error from a filter hook.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -1,0 +1,179 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/companies/search-unattached-contacts": {
+      "get": {
+        "operationId": "searchUnattachedContacts",
+        "summary": "GET Search Unattached Contacts",
+        "description": "Search for contacts (subscribers) that are **not** currently associated with a specific company. Useful for finding contacts to attach to a company. Returns contacts ordered by ID descending.",
+        "tags": [
+          "Companies"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "company_id",
+            "in": "query",
+            "description": "The company ID. Only contacts not attached to this company are returned.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search term to filter contacts by name, email, or other searchable fields.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Maximum number of contacts to return.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of contacts not attached to the specified company.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "Contact ID."
+                          },
+                          "first_name": {
+                            "type": "string",
+                            "description": "First name."
+                          },
+                          "last_name": {
+                            "type": "string",
+                            "description": "Last name."
+                          },
+                          "full_name": {
+                            "type": "string",
+                            "description": "Full name."
+                          },
+                          "email": {
+                            "type": "string",
+                            "format": "email",
+                            "description": "Email address."
+                          },
+                          "status": {
+                            "type": "string",
+                            "description": "Subscription status."
+                          },
+                          "photo": {
+                            "type": "string",
+                            "description": "Gravatar URL."
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "results": [
+                    {
+                      "id": 42,
+                      "first_name": "John",
+                      "last_name": "Doe",
+                      "full_name": "John Doe",
+                      "email": "john@example.com",
+                      "status": "subscribed",
+                      "photo": "https://www.gravatar.com/avatar/abc123"
+                    },
+                    {
+                      "id": 38,
+                      "first_name": "Alice",
+                      "last_name": "Johnson",
+                      "full_name": "Alice Johnson",
+                      "email": "alice@example.com",
+                      "status": "subscribed",
+                      "photo": "https://www.gravatar.com/avatar/def456"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

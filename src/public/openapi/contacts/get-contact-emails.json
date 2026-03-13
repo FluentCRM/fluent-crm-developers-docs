@@ -1,0 +1,281 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/subscribers/{id}/emails": {
+      "get": {
+        "operationId": "getContactEmails",
+        "summary": "GET Get Contact Emails",
+        "description": "Retrieve a paginated list of emails sent to a contact. Supports filtering by open/click status. Can also show FluentSMTP logs when the `tab` parameter is set to `fluentsmtp`.",
+        "tags": [
+          "Contacts"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The contact ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Filter emails by engagement status.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "open",
+                "click",
+                "unopened"
+              ]
+            }
+          },
+          {
+            "name": "tab",
+            "in": "query",
+            "description": "Email source tab. Use `fluentsmtp` to show FluentSMTP logs instead of CRM campaign emails.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "crm",
+              "enum": [
+                "crm",
+                "fluentsmtp"
+              ]
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of emails per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 15
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of emails.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "emails": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer"
+                        },
+                        "per_page": {
+                          "type": "integer"
+                        },
+                        "current_page": {
+                          "type": "integer"
+                        },
+                        "last_page": {
+                          "type": "integer"
+                        },
+                        "next_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "prev_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "from": {
+                          "type": "integer"
+                        },
+                        "to": {
+                          "type": "integer"
+                        },
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer",
+                                "description": "Campaign email ID."
+                              },
+                              "campaign_id": {
+                                "type": "integer",
+                                "description": "Campaign ID."
+                              },
+                              "subscriber_id": {
+                                "type": "integer",
+                                "description": "Contact ID."
+                              },
+                              "email_type": {
+                                "type": "string",
+                                "description": "Type of email."
+                              },
+                              "email_subject_id": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ]
+                              },
+                              "email_address": {
+                                "type": "string",
+                                "description": "Recipient email address."
+                              },
+                              "email_subject": {
+                                "type": "string",
+                                "description": "Email subject line."
+                              },
+                              "email_body": {
+                                "type": "string",
+                                "description": "Email HTML body."
+                              },
+                              "status": {
+                                "type": "string",
+                                "description": "Email delivery status."
+                              },
+                              "is_open": {
+                                "type": "integer",
+                                "description": "Whether the email was opened (0 or 1)."
+                              },
+                              "click_counter": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ],
+                                "description": "Number of clicks."
+                              },
+                              "scheduled_at": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "created_at": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "emails": {
+                    "total": 25,
+                    "per_page": 15,
+                    "current_page": 1,
+                    "last_page": 2,
+                    "next_page_url": "/wp-json/fluent-crm/v2/subscribers/1/emails?page=2",
+                    "prev_page_url": null,
+                    "from": 1,
+                    "to": 15,
+                    "data": [
+                      {
+                        "id": 100,
+                        "campaign_id": 5,
+                        "subscriber_id": 1,
+                        "email_type": "campaign",
+                        "email_address": "john@example.com",
+                        "email_subject": "Weekly Newsletter",
+                        "status": "sent",
+                        "is_open": 1,
+                        "click_counter": 3,
+                        "scheduled_at": "2024-03-01 09:00:00",
+                        "created_at": "2024-03-01 09:00:00",
+                        "updated_at": "2024-03-01 14:30:00"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

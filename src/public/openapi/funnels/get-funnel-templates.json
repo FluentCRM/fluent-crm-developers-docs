@@ -1,0 +1,176 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/funnels/templates": {
+      "get": {
+        "operationId": "getFunnelTemplates",
+        "summary": "GET Get Funnel Templates",
+        "description": "Retrieve available funnel templates from the remote template repository. Returns templates filtered by active plugin dependencies, all templates, and allowed dependency categories.",
+        "tags": [
+          "Funnels"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of funnel templates.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "templates": {
+                      "type": "array",
+                      "description": "Templates filtered to only those whose dependencies are satisfied by active plugins.",
+                      "items": {
+                        "$ref": "#/components/schemas/FunnelTemplate"
+                      }
+                    },
+                    "all": {
+                      "type": "array",
+                      "description": "All available templates regardless of dependencies.",
+                      "items": {
+                        "$ref": "#/components/schemas/FunnelTemplate"
+                      }
+                    },
+                    "cats": {
+                      "type": "array",
+                      "description": "List of allowed dependency categories based on active plugins.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "templates": [
+                    {
+                      "id": 1,
+                      "title": "Welcome Email Series",
+                      "short_description": "A 3-part welcome email series for new subscribers.",
+                      "type": "email_sequence",
+                      "dependencies": [],
+                      "content": "https://fluentcrm.com/wp-content/templates/welcome.json",
+                      "link": "https://fluentcrm.com/templates/welcome-email-series/",
+                      "media": "",
+                      "status": "publish"
+                    }
+                  ],
+                  "all": [],
+                  "cats": [
+                    "fluentforms",
+                    "woocommerce",
+                    "fluentcrm_pro"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "FunnelTemplate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Template ID."
+          },
+          "title": {
+            "type": "string",
+            "description": "Template title."
+          },
+          "short_description": {
+            "type": "string",
+            "description": "Short description of the template."
+          },
+          "type": {
+            "type": "string",
+            "description": "Template type."
+          },
+          "dependencies": {
+            "type": "array",
+            "description": "Required plugin dependency categories.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "content": {
+            "type": "string",
+            "description": "URL to the template JSON data."
+          },
+          "link": {
+            "type": "string",
+            "description": "URL to the template page."
+          },
+          "media": {
+            "type": "string",
+            "description": "URL to template media/attachment."
+          },
+          "status": {
+            "type": "string",
+            "description": "Template publish status."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

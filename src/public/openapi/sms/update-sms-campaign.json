@@ -1,0 +1,213 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/sms/campaigns/{id}": {
+      "put": {
+        "operationId": "updateSmsCampaign",
+        "summary": "PUT Update SMS Campaign",
+        "description": "Update an existing SMS campaign. Only `title`, `message_content`, and `settings` can be updated. An optional `next_step` value can be stored as campaign meta. The message content allows only anchor (`<a>`) tags; all other HTML is stripped. **PRO** (requires FluentCampaign Pro SMS module).",
+        "tags": [
+          "SMS"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "SMS campaign ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title",
+                  "message_content"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Campaign title."
+                  },
+                  "message_content": {
+                    "type": "string",
+                    "description": "SMS message body. Only `<a>` tags are allowed."
+                  },
+                  "settings": {
+                    "type": "object",
+                    "description": "Optional campaign settings object."
+                  },
+                  "next_step": {
+                    "type": "string",
+                    "description": "Optional next configuration step identifier, stored as campaign meta."
+                  }
+                }
+              },
+              "example": {
+                "title": "Summer Sale SMS (Updated)",
+                "message_content": "Updated: Don't miss our summer sale! Visit https://example.com",
+                "settings": {
+                  "sending_filter": "list_tag"
+                },
+                "next_step": "3"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "SMS campaign updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "campaign": {
+                      "$ref": "#/components/schemas/SmsCampaign"
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "campaign": {
+                    "id": 5,
+                    "title": "Summer Sale SMS (Updated)",
+                    "message_content": "Updated: Don't miss our summer sale! Visit https://example.com",
+                    "status": "draft",
+                    "type": "campaign",
+                    "created_at": "2024-05-28 08:00:00",
+                    "updated_at": "2024-05-29 10:00:00"
+                  },
+                  "message": "SMS Campaign Updated successfully"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Campaign not found."
+          },
+          "422": {
+            "description": "Validation error (missing title or message_content)."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "SmsCampaign": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "message_content": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "processing",
+              "pending-scheduled",
+              "scheduled",
+              "working",
+              "paused",
+              "archived"
+            ]
+          },
+          "type": {
+            "type": "string"
+          },
+          "recipients_count": {
+            "type": "integer"
+          },
+          "scheduled_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "settings": {
+            "type": "object"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -1,0 +1,181 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/dynamic-segments/estimated-contacts": {
+      "post": {
+        "operationId": "estimateDynamicSegmentContacts",
+        "summary": "POST Estimate Dynamic Segment Contacts",
+        "description": "Get the estimated number of contacts matching a set of segment filter conditions. Useful for previewing a segment before creating or updating it. Requires FluentCampaign Pro.",
+        "tags": [
+          "Dynamic Segments"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "filters"
+                ],
+                "properties": {
+                  "filters": {
+                    "type": "object",
+                    "description": "Filter configuration object containing conditions and email activity settings.",
+                    "properties": {
+                      "conditions": {
+                        "type": "array",
+                        "description": "Array of filter conditions.",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "field": {
+                              "type": "string",
+                              "description": "Field to filter on."
+                            },
+                            "operator": {
+                              "type": "string",
+                              "description": "Comparison operator."
+                            },
+                            "value": {
+                              "description": "Value to compare against."
+                            }
+                          }
+                        }
+                      },
+                      "condition_match": {
+                        "type": "string",
+                        "description": "How to combine conditions.",
+                        "enum": [
+                          "match_all",
+                          "match_any"
+                        ]
+                      },
+                      "email_activities": {
+                        "type": "object",
+                        "description": "Email activity filter settings."
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "filters": {
+                  "conditions": [
+                    {
+                      "field": "status",
+                      "operator": "whereIn",
+                      "value": [
+                        "subscribed"
+                      ]
+                    },
+                    {
+                      "field": "created_at",
+                      "operator": ">=",
+                      "value": 30
+                    }
+                  ],
+                  "condition_match": "match_all",
+                  "email_activities": {
+                    "status": "no",
+                    "last_email_open": {
+                      "value": 0,
+                      "operator": ">="
+                    },
+                    "last_email_link_click": {
+                      "value": 0,
+                      "operator": ">="
+                    },
+                    "last_email_activity_match": "match_any"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Estimated contact count.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": {
+                      "type": "integer",
+                      "description": "Number of contacts matching the provided filters."
+                    }
+                  }
+                },
+                "example": {
+                  "count": 245
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

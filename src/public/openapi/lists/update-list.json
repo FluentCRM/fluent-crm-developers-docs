@@ -1,0 +1,221 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/lists/{id}": {
+      "put": {
+        "operationId": "updateList",
+        "summary": "PUT Update List",
+        "description": "Update an existing contact list by its ID. The `title` field is required. If `slug` is provided, it is regenerated from the title. Alternatively, set `id` to `0` and pass `update_by=slug` to find the list by its slug instead.",
+        "tags": [
+          "Lists"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the list to update. Pass `0` with `update_by=slug` to look up by slug instead.",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Display name of the list."
+                  },
+                  "slug": {
+                    "type": "string",
+                    "description": "URL-friendly unique identifier. If provided, the slug is regenerated from the title."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Optional description of the list."
+                  },
+                  "update_by": {
+                    "type": "string",
+                    "description": "Set to `slug` to look up the list by its slug instead of ID (only when `id` is `0`).",
+                    "enum": [
+                      "slug"
+                    ]
+                  }
+                }
+              },
+              "example": {
+                "title": "Weekly Newsletter",
+                "slug": "weekly-newsletter",
+                "description": "Updated description for the weekly newsletter list"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "lists": {
+                      "type": "integer",
+                      "description": "Number of rows updated (legacy key name). Typically `1`."
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Success message."
+                    }
+                  }
+                },
+                "example": {
+                  "lists": 1,
+                  "message": "Successfully saved the list."
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error or slug conflict.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "errors": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Provided slug already exists in another list"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "ContactList": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the list."
+          },
+          "title": {
+            "type": "string",
+            "description": "Display name of the list."
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL-friendly unique identifier."
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Optional description of the list."
+          },
+          "is_public": {
+            "type": "integer",
+            "description": "Whether the list is publicly visible. `0` for private, `1` for public.",
+            "enum": [
+              0,
+              1
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the list was created (WordPress timezone)."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the list was last updated (WordPress timezone)."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

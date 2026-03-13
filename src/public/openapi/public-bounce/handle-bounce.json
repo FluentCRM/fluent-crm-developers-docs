@@ -1,0 +1,189 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/public/bounce_handler/{service_name}/{security_code}": {
+      "post": {
+        "operationId": "handleBounce",
+        "summary": "POST Handle Bounce",
+        "description": "Webhook endpoint for email service providers to report bounces, complaints, and unsubscribes. This is the shorter path variant without `/handle/`. Accepts any HTTP method. Validates the security code and processes the bounce event for supported services. Custom services can be handled via the `fluent_crm_handle_bounce_{service_name}` filter.",
+        "tags": [
+          "Public"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "service_name",
+            "in": "path",
+            "description": "Email service provider name.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "mailgun",
+                "pepipost",
+                "postmark",
+                "sendgrid",
+                "sparkpost",
+                "elasticemail",
+                "postalserver",
+                "smtp2go",
+                "brevo",
+                "tosend"
+              ]
+            }
+          },
+          {
+            "name": "security_code",
+            "in": "path",
+            "description": "Security code for webhook authentication. Must match the stored bounce key.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Bounce event payload. The structure varies by email service provider.",
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true,
+                "description": "Provider-specific bounce/complaint payload."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Bounce processed successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BounceResponse"
+                },
+                "example": {
+                  "success": 1,
+                  "message": "recorded",
+                  "service": "sendgrid",
+                  "result": "bounced",
+                  "time": 1709312400
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid security code.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "boolean",
+                      "description": "Always false on authentication failure."
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Error message."
+                    }
+                  }
+                },
+                "example": {
+                  "status": false,
+                  "message": "Invalid Data or Security Code"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "BounceResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "integer",
+            "description": "1 if the bounce was processed successfully, 0 otherwise.",
+            "enum": [
+              0,
+              1
+            ]
+          },
+          "message": {
+            "type": "string",
+            "description": "Result message."
+          },
+          "service": {
+            "type": "string",
+            "description": "The email service name that was processed."
+          },
+          "result": {
+            "type": "string",
+            "description": "Processing result details."
+          },
+          "time": {
+            "type": "integer",
+            "description": "Unix timestamp when the bounce was processed."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

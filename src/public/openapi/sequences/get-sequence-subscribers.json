@@ -1,0 +1,277 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/sequences/{id}/subscribers": {
+      "get": {
+        "operationId": "getSequenceSubscribers",
+        "summary": "GET Get Sequence Subscribers",
+        "description": "Retrieve a paginated list of subscribers enrolled in a specific email sequence. Each record includes the sequence tracker data and the associated subscriber. Requires FluentCampaign Pro.",
+        "tags": [
+          "Sequences"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The sequence ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of records per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 15
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of sequence subscribers with tracker data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "total": {
+                      "type": "integer",
+                      "description": "Total number of subscribers in this sequence."
+                    },
+                    "per_page": {
+                      "type": "integer",
+                      "description": "Number of records per page."
+                    },
+                    "current_page": {
+                      "type": "integer",
+                      "description": "Current page number."
+                    },
+                    "last_page": {
+                      "type": "integer",
+                      "description": "Last page number."
+                    },
+                    "next_page_url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "prev_page_url": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "from": {
+                      "type": "integer"
+                    },
+                    "to": {
+                      "type": "integer"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/SequenceTracker"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "total": 50,
+                  "per_page": 15,
+                  "current_page": 1,
+                  "last_page": 4,
+                  "next_page_url": "/wp-json/fluent-crm/v2/sequences/1/subscribers?page=2",
+                  "prev_page_url": null,
+                  "from": 1,
+                  "to": 15,
+                  "data": [
+                    {
+                      "id": 1,
+                      "campaign_id": 1,
+                      "subscriber_id": 42,
+                      "last_sequence_id": 5,
+                      "next_sequence_id": 6,
+                      "status": "active",
+                      "last_executed_time": "2024-03-01 10:00:00",
+                      "next_execution_time": "2024-03-02 10:00:00",
+                      "created_at": "2024-03-01 10:00:00",
+                      "updated_at": "2024-03-01 10:00:00",
+                      "subscriber": {
+                        "id": 42,
+                        "first_name": "John",
+                        "last_name": "Doe",
+                        "email": "john@example.com",
+                        "status": "subscribed",
+                        "photo": "https://www.gravatar.com/avatar/abc123"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "SequenceTracker": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique tracker ID."
+          },
+          "campaign_id": {
+            "type": "integer",
+            "description": "Parent sequence ID."
+          },
+          "subscriber_id": {
+            "type": "integer",
+            "description": "Subscriber ID."
+          },
+          "last_sequence_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "ID of the last sent sequence email."
+          },
+          "next_sequence_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "ID of the next sequence email to send."
+          },
+          "status": {
+            "type": "string",
+            "description": "Tracker status.",
+            "enum": [
+              "active",
+              "completed",
+              "cancelled"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "description": "Record type.",
+            "enum": [
+              "sequence_tracker"
+            ]
+          },
+          "last_executed_time": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "When the last email was executed."
+          },
+          "next_execution_time": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "When the next email is scheduled."
+          },
+          "notes": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "description": "Execution notes/history."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when tracking started."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when tracking was last updated."
+          },
+          "subscriber": {
+            "description": "The subscriber associated with this tracker (included when loaded with relations).",
+            "type": "object"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

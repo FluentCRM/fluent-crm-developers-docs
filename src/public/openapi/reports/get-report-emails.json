@@ -1,0 +1,247 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/reports/emails": {
+      "get": {
+        "operationId": "getReportEmails",
+        "summary": "GET Report Emails",
+        "description": "Retrieve a paginated list of campaign emails with their associated subscriber and campaign data. Optionally filter by email status. When requesting page 1, the response also includes a breakdown of email counts grouped by status.",
+        "tags": [
+          "Reports"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filter emails by status (e.g., `sent`, `pending`, `failed`, `bounced`).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination. When `1`, the response includes status counts.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of emails per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 15
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Report emails retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "emails": {
+                      "type": "object",
+                      "description": "Paginated email results.",
+                      "properties": {
+                        "current_page": {
+                          "type": "integer"
+                        },
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "campaign_id": {
+                                "type": "integer"
+                              },
+                              "subscriber_id": {
+                                "type": "integer"
+                              },
+                              "status": {
+                                "type": "string"
+                              },
+                              "email_subject": {
+                                "type": "string"
+                              },
+                              "email_address": {
+                                "type": "string"
+                              },
+                              "is_open": {
+                                "type": "integer",
+                                "enum": [
+                                  0,
+                                  1
+                                ]
+                              },
+                              "click_counter": {
+                                "type": "integer"
+                              },
+                              "scheduled_at": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "created_at": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "subscriber": {
+                                "type": "object",
+                                "description": "Associated contact data."
+                              },
+                              "campaign": {
+                                "type": "object",
+                                "description": "Associated campaign data."
+                              }
+                            }
+                          }
+                        },
+                        "last_page": {
+                          "type": "integer"
+                        },
+                        "per_page": {
+                          "type": "integer"
+                        },
+                        "total": {
+                          "type": "integer"
+                        }
+                      }
+                    },
+                    "statuses": {
+                      "description": "Email counts grouped by status. Only returned on page 1, `null` otherwise.",
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": {
+                            "type": "integer"
+                          },
+                          "description": "Keys are status strings, values are counts."
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "example": {
+                  "emails": {
+                    "current_page": 1,
+                    "data": [
+                      {
+                        "id": 101,
+                        "campaign_id": 5,
+                        "subscriber_id": 42,
+                        "status": "sent",
+                        "email_subject": "Welcome!",
+                        "email_address": "john@example.com",
+                        "is_open": 1,
+                        "click_counter": 3,
+                        "scheduled_at": "2024-03-01 10:00:00",
+                        "created_at": "2024-03-01 09:55:00",
+                        "updated_at": "2024-03-01 12:30:00",
+                        "subscriber": {
+                          "id": 42,
+                          "email": "john@example.com"
+                        },
+                        "campaign": {
+                          "id": 5,
+                          "title": "Welcome Campaign"
+                        }
+                      }
+                    ],
+                    "last_page": 10,
+                    "per_page": 15,
+                    "total": 150
+                  },
+                  "statuses": {
+                    "sent": 120,
+                    "pending": 20,
+                    "failed": 5,
+                    "bounced": 5
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

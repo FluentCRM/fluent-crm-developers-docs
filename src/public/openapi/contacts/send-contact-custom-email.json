@@ -1,0 +1,180 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/subscribers/{id}/emails/send": {
+      "post": {
+        "operationId": "sendContactCustomEmail",
+        "summary": "POST Send Contact Custom Email",
+        "description": "Send a custom one-off email to a specific contact. The contact must have a status of `subscribed` or `transactional`. Creates a custom email campaign record and immediately queues it for sending.",
+        "tags": [
+          "Contacts"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The contact ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "campaign"
+                ],
+                "properties": {
+                  "campaign": {
+                    "type": "object",
+                    "description": "The email campaign data. Obtain the structure from the template mock endpoint first.",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "description": "Internal title for the email."
+                      },
+                      "email_subject": {
+                        "type": "string",
+                        "description": "Email subject line."
+                      },
+                      "email_pre_header": {
+                        "type": "string",
+                        "description": "Email pre-header text."
+                      },
+                      "email_body": {
+                        "type": "string",
+                        "description": "Email body HTML content."
+                      },
+                      "settings": {
+                        "type": "object",
+                        "description": "Email settings including template config and mailer settings."
+                      },
+                      "design_template": {
+                        "type": "string",
+                        "description": "Template design type."
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "campaign": {
+                  "title": "Welcome Email",
+                  "email_subject": "Welcome to our platform!",
+                  "email_pre_header": "We're glad to have you.",
+                  "email_body": "<h1>Welcome!</h1><p>Thank you for joining us.</p>",
+                  "settings": {},
+                  "design_template": "simple"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email sent successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Custom Email has been successfully sent"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Contact status is not subscribed or transactional.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Subscriber's status need to be subscribed."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

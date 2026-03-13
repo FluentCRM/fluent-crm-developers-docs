@@ -1,0 +1,130 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/import/drivers": {
+      "get": {
+        "operationId": "getImportDrivers",
+        "summary": "GET Import Drivers",
+        "description": "Retrieve the list of available import providers (drivers). Default drivers include CSV File and WordPress Users. Additional drivers may be available based on installed plugins (e.g., FluentCart, LifterLMS, LearnDash).",
+        "tags": [
+          "Import"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of available import drivers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "drivers": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string",
+                            "description": "Human-readable driver name."
+                          },
+                          "logo": {
+                            "type": "string",
+                            "description": "URL to the driver logo image."
+                          },
+                          "disabled": {
+                            "type": "boolean",
+                            "description": "Whether the driver is disabled (e.g., requires Pro)."
+                          },
+                          "disabled_message": {
+                            "type": "string",
+                            "description": "Message explaining why the driver is disabled."
+                          }
+                        }
+                      },
+                      "description": "Map of driver keys to driver details."
+                    }
+                  }
+                },
+                "example": {
+                  "drivers": {
+                    "csv": {
+                      "label": "CSV File",
+                      "logo": "https://example.com/images/csv.svg",
+                      "disabled": false
+                    },
+                    "users": {
+                      "label": "WordPress Users",
+                      "logo": "https://example.com/images/wordpress.svg",
+                      "disabled": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

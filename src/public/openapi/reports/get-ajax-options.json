@@ -1,0 +1,167 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/reports/ajax-options": {
+      "get": {
+        "operationId": "getAjaxOptions",
+        "summary": "GET Ajax Options",
+        "description": "Retrieve searchable, paginated option items for various entity types. Used by select dropdowns that need server-side search. Supported `option_key` values include: `woo_categories`, `woo_products`, `product_selector_woo`, `product_selector_woo_order`, `edd_products`, `product_selector_edd`, `voxel_products`, `product_selector_voxel`, `voxel_product_types`, `campaigns`, `funnels`, `email_sequences`, `companies`, `post_type`, `company_industries`, `company_types`, `users`. Unrecognized keys are passed to the `fluentcrm_ajax_options_{key}` filter.",
+        "tags": [
+          "Reports"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "option_key",
+            "in": "query",
+            "description": "The type of options to retrieve.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "campaigns"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search term to filter results.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "values",
+            "in": "query",
+            "description": "Array of IDs that must be included in the results regardless of search term.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "name": "sub_option_key",
+            "in": "query",
+            "description": "Sub-type filter. Used with `woo_products` (for product type) and `post_type` (for the WordPress post type slug).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Options retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "options": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "oneOf": [
+                              {
+                                "type": "integer"
+                              },
+                              {
+                                "type": "string"
+                              }
+                            ],
+                            "description": "Option identifier."
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "Display label."
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "options": [
+                    {
+                      "id": 5,
+                      "title": "Summer Campaign - 5"
+                    },
+                    {
+                      "id": 3,
+                      "title": "Welcome Series - 3"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

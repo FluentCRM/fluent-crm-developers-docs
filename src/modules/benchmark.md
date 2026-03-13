@@ -1,247 +1,265 @@
 ---
-description: "Benchmark is a goal or target that you want to reach. For example, when a user clicks on a link in your email then it can be a benchmark."
+title: Custom Automation Benchmark
+description: "Learn how to create a custom automation benchmark (goal) for FluentCRM by extending the BaseBenchMark class."
 ---
 
-# Benchmark
+# Custom Benchmark
 
-Benchmark is a goal or target that you want to reach. For example, when a user clicks on a link in your email then it can be a benchmark.
-When one or more tags are applied based on a trigger and a set of actions, then it can be a benchmark. A benchmark is the last step of an automation.
+<Badge type="tip" vertical="top" text="FluentCRM Core" /> <Badge type="warning" vertical="top" text="Intermediate" />
 
-## Creating a Benchmark
-Creating a benchmark is very much similar to creating a trigger or action with slight difference.
-You just need to extend the `FluentCrm\App\Services\Funnel\BaseBenchmark` class and implement the required methods.
-Let's assume some tags are applied for particular users when a course is enrolled. For those users, you want to end the automation. That means, they 
-have reached the benchmark.
-Please, note that FluentCRM already has a tag benchmark. But, we are creating a custom benchmark for the sake of example.
+A benchmark is a goal or checkpoint within an automation funnel. Unlike triggers (which start a funnel) and actions (which execute tasks), benchmarks act as conditional gates — the automation pauses until the contact meets the benchmark criteria.
 
-Create a new class and extend the `FluentCrm\App\Services\Funnel\BaseBenchmark` class. Constructor of the class has the following body:
+For example, "Tag Applied" or "Link Clicked" are benchmarks. Contacts can also enter a funnel directly at a benchmark point if configured.
+
+**Benchmarks have two types:**
+- **Optional** — The automation continues past this point without waiting. If the benchmark fires later, the contact jumps to this point.
+- **Required (Essential)** — The automation waits at this point until the contact meets the goal before continuing.
+
+## Base Class
+
+Extend `FluentCrm\App\Services\Funnel\BaseBenchMark` and implement the required abstract methods.
+
+**Properties:**
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `$triggerName` | String | The WordPress action name this benchmark listens to |
+| `$actionArgNum` | Int | Number of arguments passed to the action callback. Default `1` |
+| `$priority` | Int | Priority for registration. Default `10` |
+
+**Abstract methods you must implement:**
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `getBlock()` | Array | Block metadata (title, description, icon, default settings) |
+| `getBlockFields($funnel)` | Array | Settings fields for configuring this benchmark |
+| `handle($benchMark, $originalArgs)` | void | Called when the benchmark event fires — checks if the contact matches |
+
+**Built-in helper methods:**
+
+| Method | Returns | Description |
+|--------|---------|-------------|
+| `benchmarkTypeField()` | Array | Standard radio field for choosing Optional vs Required |
+| `canEnterField()` | Array | Standard checkbox for allowing direct entry at this point |
+
+## Step-by-Step Example
+
+Let's create a benchmark that triggers when specific tags from your plugin are applied to a contact.
+
+### 1. Constructor
+
 ```php
 <?php
-namespace Your\Plugin\Name\Automation;
 
-use FluentCrm\App\Services\Funnel\BaseBenchmark;
+namespace YourPlugin\Automation;
 
-class CourseEnrolledBenchmark extends BaseBenchmark {
-        
-    public function __construct()
-    {
-        $this->triggerName = 'your_own_action_trigger_name'; // Change this with your action trigger that you are targeting
-        $this->actionArgNum = 2;
-        $this->priority = 20;
-        parent::__construct();
-    }
-}
-```
-Define the `getBlock` method. This method  actually returns the block of the benchmark. The block is the UI of the benchmark.
-```php
-    public function getBlock()
-    {
-        return [
-            'category'    => __('MyTag Applied', 'your-plugin'),
-            'title'       => __('Course Enrolled', 'your-plugin'),
-            'description' => __('This will run when selected tags have been applied to a contact', 'your-plugin'),
-            'icon'        => 'fc-icon-apply_list', // use any icon you like
-            'settings'    => [
-                'tags'        => [],
-                'select_type' => 'any',
-                'type'        => 'optional',
-                'can_enter'   => 'yes'
-            ]
-        ];
-    }
-```
-define `getDefaultSettings` method. This method returns the default settings of the benchmark.
-```php
-    public function getDefaultSettings()
-    {
-        return [
-            'tags'        => [],
-            'select_type' => 'any',
-            'type'        => 'optional',
-            'can_enter'   => 'yes'
-        ];
-    }
-```
-
-Now, you need to define `getBlockFields` method which returns the settings of the benchmark.
-```php
-    public function getBlockFields($funnel)
-    {
-        $yourCustomTags = [
-            [
-                'id'    => 'your-tag-id',
-                'title' => 'Your Tag Title',
-            ],
-            [
-                'id'    => 'your-other-tag-id',
-                'title' => 'Your Other Tag Title',
-            ]
-        ];
-        return [
-            'title'     => __('My Plugin Tag Applied', 'your-plugin'),
-            'sub_title' => __('This will run when selected Tags have been applied to a contact', 'your-plugin'),
-            'fields'    => [
-                'tags'        => [
-                    'type'        => 'multi-select',
-                    'options'  => $yourCustomTags,
-                    'is_multiple' => true,
-                    'label'       => __('Select Tags', 'your-plugin'),
-                    'placeholder' => __('Select Tags', 'your-plugin')
-                ],
-                'select_type' => [
-                    'label'      => __('Run When', 'your-plugin'),
-                    'type'       => 'radio',
-                    'inline'     => true,
-                    'options'    => [
-                        [
-                            'id'    => 'any',
-                            'title' => __('contact added in any of the selected Tags', 'fluent-crm')
-                        ],
-                        [
-                            'id'    => 'all',
-                            'title' => __('contact added in all of the selected Tags', 'fluent-crm')
-                        ]
-                    ],
-                    'dependency' => [
-                        'depends_on' => 'tags',
-                        'operator'   => '!=',
-                        'value'      => ''
-                    ]
-                ]
-            ]
-        ];
-    }
-```
-Finally, you need to define `handle` method. This method is called when the benchmark is reached. You can do anything you want in this method.
-```php
-    public function handle($benchMark, $originalArgs)
-    {
-        $tagIds = $originalArgs[0];
-        $subscriber = $originalArgs[1];
-        $settings = $benchMark->settings;
-
-        $isMatched = array_intersect($settings['tags'], $tagIds);
-        if (!$isMatched) {
-            return false; // not in our scope
-        }
-
-        $marchType = Arr::get($settings, 'select_type');
-
-        $subscriberTags = $subscriber->tags->pluck('id')->toArray();
-        $intersection = array_intersect($tagIds, $subscriberTags);
-
-        if ($marchType === 'any') {
-            // At least one funnel list id is available.
-            $isMatched = !empty($intersection);
-        } else {
-            // All the funnel list ids are present.
-            $isMatched = count($intersection) === count($settings['tags']);
-        }
-
-        if (!$isMatched) {
-            return false; // not in our scope
-        }
-
-        $funnelProcessor = new FunnelProcessor();
-        $funnelProcessor->startFunnelFromSequencePoint($benchMark, $subscriber);
-    }
-}
-```
-Let's see what we have done in the `handle` method. First, we have checked if the tags applied to the subscriber are in our scope or not. If not, then we have returned `false`.
-Then, we have checked if the tags applied to the subscriber are matching with the tags of the benchmark or not. If not, then we have returned `false`.
-Finally, we have started the automation from the benchmark.
-
-The full code of the benchmark should look follows:
-```php
-<?php
-namespace Your\Plugin\Name\Automation;
-
-use FluentCrm\App\Services\Funnel\BaseBenchmark;
+use FluentCrm\App\Services\Funnel\BaseBenchMark;
 use FluentCrm\App\Services\Funnel\FunnelProcessor;
-use FluentCrm\Includes\Helpers\Arr;
+use FluentCrm\Framework\Support\Arr;
 
-class CourseEnrolledBenchmark extends BaseBenchmark {
-        
+class TagAppliedBenchmark extends BaseBenchMark
+{
     public function __construct()
     {
-        $this->triggerName = 'your_own_action_trigger_name';
+        $this->triggerName = 'your_plugin_tag_applied';
         $this->actionArgNum = 2;
         $this->priority = 20;
         parent::__construct();
     }
-    
+}
+```
+
+The parent constructor registers:
+- `addBenchmark()` on the `fluentcrm_funnel_blocks` filter
+- `pushBlockFields()` on the `fluentcrm_funnel_block_fields` filter
+- `handle()` on the `fluentcrm_funnel_benchmark_start_{triggerName}` action
+- `assertCurrentGoalState()` on the `fluent_crm/benchmark_already_asserted_{triggerName}` filter
+
+### 2. getBlock()
+
+Return block metadata. Note the `settings` key must include defaults for `type` (benchmark type) and `can_enter`:
+
+```php
+public function getBlock()
+{
+    return [
+        'title'       => __('My Plugin Tag Applied', 'your-plugin'),
+        'description' => __('This will run when selected tags are applied to a contact', 'your-plugin'),
+        'icon'        => 'fc-icon-apply_list',
+        'settings'    => [
+            'tags'        => [],
+            'select_type' => 'any',
+            'type'        => 'optional',
+            'can_enter'   => 'yes',
+        ],
+    ];
+}
+```
+
+### 3. getBlockFields()
+
+Define the settings UI. Use the built-in `benchmarkTypeField()` and `canEnterField()` helpers for the standard benchmark controls:
+
+```php
+public function getBlockFields($funnel)
+{
+    return [
+        'title'     => __('My Plugin Tag Applied', 'your-plugin'),
+        'sub_title' => __('This will run when selected tags are applied to a contact', 'your-plugin'),
+        'fields'    => [
+            'tags' => [
+                'type'        => 'multi-select',
+                'options'     => $this->getTagOptions(),
+                'is_multiple' => true,
+                'label'       => __('Select Tags', 'your-plugin'),
+                'placeholder' => __('Select Tags', 'your-plugin'),
+            ],
+            'select_type' => [
+                'label'   => __('Run When', 'your-plugin'),
+                'type'    => 'radio',
+                'inline'  => true,
+                'options' => [
+                    ['id' => 'any', 'title' => __('Contact has any of the selected tags', 'your-plugin')],
+                    ['id' => 'all', 'title' => __('Contact has all of the selected tags', 'your-plugin')],
+                ],
+                'dependency' => [
+                    'depends_on' => 'tags',
+                    'operator'   => '!=',
+                    'value'      => '',
+                ],
+            ],
+            'type'      => $this->benchmarkTypeField(),
+            'can_enter' => $this->canEnterField(),
+        ],
+    ];
+}
+```
+
+See [Form Field Types](/modules/form-field-code-structure) for all available field types.
+
+### 4. handle()
+
+Called when the benchmark event fires. Check if the contact matches the benchmark criteria, and if so, start or resume the funnel from this point:
+
+```php
+public function handle($benchMark, $originalArgs)
+{
+    $tagIds = $originalArgs[0];
+    $subscriber = $originalArgs[1];
+    $settings = $benchMark->settings;
+
+    // Quick check: do any applied tags overlap with configured tags?
+    $isMatched = array_intersect($settings['tags'], $tagIds);
+    if (!$isMatched) {
+        return false;
+    }
+
+    $matchType = Arr::get($settings, 'select_type');
+    $subscriberTags = $subscriber->tags->pluck('id')->toArray();
+    $intersection = array_intersect($settings['tags'], $subscriberTags);
+
+    if ($matchType === 'any') {
+        $isMatched = !empty($intersection);
+    } else {
+        // All configured tags must be present
+        $isMatched = count($intersection) === count($settings['tags']);
+    }
+
+    if (!$isMatched) {
+        return false;
+    }
+
+    $funnelProcessor = new FunnelProcessor();
+    $funnelProcessor->startFunnelFromSequencePoint($benchMark, $subscriber);
+}
+```
+
+### 5. Fire the Benchmark Event
+
+In your plugin, fire the action when the event occurs:
+
+```php
+// When tags are applied in your plugin:
+do_action('your_plugin_tag_applied', $tagIds, $subscriber);
+```
+
+### 6. Register
+
+```php
+add_action('fluent_crm/after_init', function () {
+    new YourPlugin\Automation\TagAppliedBenchmark();
+});
+```
+
+## Complete Code
+
+```php
+<?php
+
+namespace YourPlugin\Automation;
+
+use FluentCrm\App\Services\Funnel\BaseBenchMark;
+use FluentCrm\App\Services\Funnel\FunnelProcessor;
+use FluentCrm\Framework\Support\Arr;
+
+class TagAppliedBenchmark extends BaseBenchMark
+{
+    public function __construct()
+    {
+        $this->triggerName = 'your_plugin_tag_applied';
+        $this->actionArgNum = 2;
+        $this->priority = 20;
+        parent::__construct();
+    }
+
     public function getBlock()
     {
         return [
-            'category'    => __('MyTag Applied', 'your-plugin'),
-            'title'       => __('Course Enrolled', 'your-plugin'),
-            'description' => __('This will run when selected tags have been applied to a contact', 'your-plugin'),
-            'icon'        => 'fc-icon-apply_list', // use any icon you like
+            'title'       => __('My Plugin Tag Applied', 'your-plugin'),
+            'description' => __('This will run when selected tags are applied to a contact', 'your-plugin'),
+            'icon'        => 'fc-icon-apply_list',
             'settings'    => [
                 'tags'        => [],
                 'select_type' => 'any',
                 'type'        => 'optional',
-                'can_enter'   => 'yes'
-            ]
+                'can_enter'   => 'yes',
+            ],
         ];
     }
-    public function getDefaultSettings()
-    {
-        return [
-            'tags'        => [],
-            'select_type' => 'any',
-            'type'        => 'optional',
-            'can_enter'   => 'yes'
-        ];
-    }
-    
+
     public function getBlockFields($funnel)
     {
-        $yourCustomTags = [
-            [
-                'id'    => 'your-tag-id',
-                'title' => 'Your Tag Title',
-            ],
-            [
-                'id'    => 'your-other-tag-id',
-                'title' => 'Your Other Tag Title',
-            ]
-        ];
         return [
             'title'     => __('My Plugin Tag Applied', 'your-plugin'),
-            'sub_title' => __('This will run when selected Tags have been applied to a contact', 'your-plugin'),
+            'sub_title' => __('This will run when selected tags are applied to a contact', 'your-plugin'),
             'fields'    => [
-                'tags'        => [
+                'tags' => [
                     'type'        => 'multi-select',
-                    'options'  => $yourCustomTags,
+                    'options'     => $this->getTagOptions(),
                     'is_multiple' => true,
                     'label'       => __('Select Tags', 'your-plugin'),
-                    'placeholder' => __('Select Tags', 'your-plugin')
+                    'placeholder' => __('Select Tags', 'your-plugin'),
                 ],
                 'select_type' => [
-                    'label'      => __('Run When', 'your-plugin'),
-                    'type'       => 'radio',
-                    'inline'     => true,
-                    'options'    => [
-                        [
-                            'id'    => 'any',
-                            'title' => __('contact added in any of the selected Tags', 'fluent-crm')
-                        ],
-                        [
-                            'id'    => 'all',
-                            'title' => __('contact added in all of the selected Tags', 'fluent-crm')
-                        ]
+                    'label'   => __('Run When', 'your-plugin'),
+                    'type'    => 'radio',
+                    'inline'  => true,
+                    'options' => [
+                        ['id' => 'any', 'title' => __('Contact has any of the selected tags', 'your-plugin')],
+                        ['id' => 'all', 'title' => __('Contact has all of the selected tags', 'your-plugin')],
                     ],
                     'dependency' => [
                         'depends_on' => 'tags',
                         'operator'   => '!=',
-                        'value'      => ''
-                    ]
-                ]
-            ]
+                        'value'      => '',
+                    ],
+                ],
+                'type'      => $this->benchmarkTypeField(),
+                'can_enter' => $this->canEnterField(),
+            ],
         ];
     }
-    
+
     public function handle($benchMark, $originalArgs)
     {
         $tagIds = $originalArgs[0];
@@ -250,37 +268,36 @@ class CourseEnrolledBenchmark extends BaseBenchmark {
 
         $isMatched = array_intersect($settings['tags'], $tagIds);
         if (!$isMatched) {
-            return false; // not in our scope
+            return false;
         }
 
-        $marchType = Arr::get($settings, 'select_type');
-
+        $matchType = Arr::get($settings, 'select_type');
         $subscriberTags = $subscriber->tags->pluck('id')->toArray();
-        $intersection = array_intersect($tagIds, $subscriberTags);
+        $intersection = array_intersect($settings['tags'], $subscriberTags);
 
-        if ($marchType === 'any') {
-            // At least one funnel list id is available.
+        if ($matchType === 'any') {
             $isMatched = !empty($intersection);
         } else {
-            // All the funnel list ids are present.
             $isMatched = count($intersection) === count($settings['tags']);
         }
 
         if (!$isMatched) {
-            return false; // not in our scope
+            return false;
         }
 
         $funnelProcessor = new FunnelProcessor();
         $funnelProcessor->startFunnelFromSequencePoint($benchMark, $subscriber);
     }
+
+    private function getTagOptions()
+    {
+        // Replace with your plugin's tag query
+        return [
+            ['id' => 'beginner', 'title' => 'Beginner'],
+            ['id' => 'advanced', 'title' => 'Advanced'],
+        ];
+    }
 }
 ```
-### Registering the Benchmark
-Your benchmark is ready to use. Now, you need to register it with FluentCRM.
-```php
-add_action('fluentcrm_addons_loaded', function () {
-    new Your\Plugin\Name\Automation\CourseEnrolledBenchmark();
-},99);
-```
 
-
+**Source:** `app/Services/Funnel/BaseBenchMark.php`

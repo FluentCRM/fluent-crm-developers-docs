@@ -1,0 +1,271 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/sms/subscribers/{id}/logs": {
+      "get": {
+        "operationId": "getSubscriberSmsLogs",
+        "summary": "GET Get Subscriber SMS Logs",
+        "description": "Retrieve paginated SMS message logs for a specific subscriber/contact. Each log entry includes the message content, phone number, timestamps, and type. Supports filtering by SMS type and ordering. **PRO** (requires FluentCampaign Pro SMS module).",
+        "tags": [
+          "SMS"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Subscriber (contact) ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of results per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Filter by SMS type. Use `all` to show all types.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "all",
+              "enum": [
+                "all",
+                "campaign",
+                "automation",
+                "custom_sms"
+              ]
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Sort direction by created_at.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "asc",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated SMS logs for the subscriber.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "logs": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/SmsLog"
+                          }
+                        },
+                        "total": {
+                          "type": "integer"
+                        },
+                        "per_page": {
+                          "type": "integer"
+                        },
+                        "current_page": {
+                          "type": "integer"
+                        },
+                        "last_page": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "logs": {
+                    "data": [
+                      {
+                        "id": 1,
+                        "subscriber_id": 42,
+                        "campaign_id": 5,
+                        "mobile_number": "+1234567890",
+                        "message_content": "Don't miss our summer sale!",
+                        "message": "Don't miss our summer sale!",
+                        "from": "+1234567890",
+                        "date": "06/01/2024",
+                        "time": "10:01",
+                        "type": "campaign",
+                        "status": "sent",
+                        "sms_type": "campaign",
+                        "sent_at": "2024-06-01 10:01:00",
+                        "created_at": "2024-06-01 10:00:00"
+                      }
+                    ],
+                    "total": 15,
+                    "per_page": 20,
+                    "current_page": 1,
+                    "last_page": 1
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Subscriber not found."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "SmsLog": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "subscriber_id": {
+            "type": "integer"
+          },
+          "campaign_id": {
+            "type": "integer",
+            "nullable": true
+          },
+          "mobile_number": {
+            "type": "string"
+          },
+          "message_content": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string",
+            "description": "Alias of message_content."
+          },
+          "from": {
+            "type": "string",
+            "description": "Alias of mobile_number."
+          },
+          "date": {
+            "type": "string",
+            "description": "Formatted date (MM/DD/YYYY)."
+          },
+          "time": {
+            "type": "string",
+            "description": "Formatted time (HH:MM)."
+          },
+          "type": {
+            "type": "string",
+            "description": "Alias of sms_type."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "sent",
+              "delivered",
+              "failed",
+              "cancelled"
+            ]
+          },
+          "sms_type": {
+            "type": "string",
+            "enum": [
+              "campaign",
+              "automation",
+              "custom_sms"
+            ]
+          },
+          "sent_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

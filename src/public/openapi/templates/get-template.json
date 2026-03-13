@@ -1,0 +1,194 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/templates/{id}": {
+      "get": {
+        "operationId": "getTemplate",
+        "summary": "GET Get Template",
+        "description": "Retrieve a single email template by ID. Returns the template content, email subject, edit type, design template, and settings including template configuration and footer settings. If the template ID does not exist, returns a blank template structure with defaults.",
+        "tags": [
+          "Templates"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The template ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Template details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "template": {
+                      "$ref": "#/components/schemas/TemplateDetail"
+                    }
+                  }
+                },
+                "example": {
+                  "template": {
+                    "post_title": "Welcome Email",
+                    "post_content": "<h1>Welcome!</h1><p>Thank you for subscribing, {{contact.first_name}}.</p>",
+                    "post_excerpt": "A welcome email for new subscribers",
+                    "email_subject": "Welcome to {{crm.business_name}}!",
+                    "edit_type": "html",
+                    "design_template": "simple",
+                    "settings": {
+                      "template_config": {
+                        "content_padding": 20
+                      },
+                      "footer_settings": {
+                        "custom_footer": "no",
+                        "footer_content": ""
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "TemplateDetail": {
+        "type": "object",
+        "description": "Detailed template data for editing.",
+        "properties": {
+          "post_title": {
+            "type": "string",
+            "description": "Template title."
+          },
+          "post_content": {
+            "type": "string",
+            "description": "Template HTML content."
+          },
+          "post_excerpt": {
+            "type": "string",
+            "description": "Template excerpt or email preview text."
+          },
+          "email_subject": {
+            "type": "string",
+            "description": "Email subject line."
+          },
+          "edit_type": {
+            "type": "string",
+            "enum": [
+              "html",
+              "visual"
+            ],
+            "description": "Editor type used for this template."
+          },
+          "design_template": {
+            "type": "string",
+            "description": "Design template identifier (e.g., 'simple', 'plain', 'classic')."
+          },
+          "settings": {
+            "type": "object",
+            "description": "Template settings.",
+            "properties": {
+              "template_config": {
+                "type": "object",
+                "description": "Template configuration options.",
+                "properties": {
+                  "content_padding": {
+                    "type": "integer",
+                    "description": "Content padding in pixels.",
+                    "default": 20
+                  }
+                },
+                "additionalProperties": true
+              },
+              "footer_settings": {
+                "type": "object",
+                "description": "Footer configuration.",
+                "properties": {
+                  "custom_footer": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "description": "Whether to use a custom footer.",
+                    "default": "no"
+                  },
+                  "footer_content": {
+                    "type": "string",
+                    "description": "Custom footer HTML content."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

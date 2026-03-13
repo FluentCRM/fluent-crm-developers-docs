@@ -1,0 +1,259 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/companies/{id}/notes": {
+      "get": {
+        "operationId": "getCompanyNotes",
+        "summary": "GET Get Company Notes",
+        "description": "Retrieve a paginated list of notes for a company. Notes are ordered by ID descending (newest first). Each note includes the `added_by` field showing who created it. Also returns note sync fields configuration.",
+        "tags": [
+          "Companies"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The company ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search notes by title (LIKE match).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of notes per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 15
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of company notes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "notes": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer"
+                        },
+                        "per_page": {
+                          "type": "integer"
+                        },
+                        "current_page": {
+                          "type": "integer"
+                        },
+                        "last_page": {
+                          "type": "integer"
+                        },
+                        "next_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "prev_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "from": {
+                          "type": "integer"
+                        },
+                        "to": {
+                          "type": "integer"
+                        },
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/CompanyNote"
+                          }
+                        }
+                      }
+                    },
+                    "fields": {
+                      "type": "object",
+                      "description": "Note sync field configuration.",
+                      "properties": {
+                        "fields": {
+                          "type": "array",
+                          "items": {
+                            "type": "object"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "notes": {
+                    "total": 5,
+                    "per_page": 15,
+                    "current_page": 1,
+                    "last_page": 1,
+                    "next_page_url": null,
+                    "prev_page_url": null,
+                    "from": 1,
+                    "to": 5,
+                    "data": [
+                      {
+                        "id": 10,
+                        "subscriber_id": 1,
+                        "title": "Partnership discussion",
+                        "description": "<p>Discussed partnership terms. Follow up next week.</p>",
+                        "type": "note",
+                        "created_at": "2024-03-01 14:30:00",
+                        "updated_at": "2024-03-01 14:30:00",
+                        "added_by": "Admin User"
+                      }
+                    ]
+                  },
+                  "fields": {
+                    "fields": []
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "CompanyNote": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the note."
+          },
+          "subscriber_id": {
+            "type": "integer",
+            "description": "The company ID this note belongs to (stored in subscriber_id column)."
+          },
+          "title": {
+            "type": "string",
+            "description": "Note title."
+          },
+          "description": {
+            "type": "string",
+            "description": "Note content (HTML)."
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "note",
+              "call",
+              "email",
+              "meeting",
+              "activity"
+            ],
+            "description": "Note type."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the note was created."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the note was last updated."
+          },
+          "added_by": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Display name of the user who created the note."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

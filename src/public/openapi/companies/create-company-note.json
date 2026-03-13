@@ -1,0 +1,260 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/companies/{id}/notes": {
+      "post": {
+        "operationId": "createCompanyNote",
+        "summary": "POST Create Company Note",
+        "description": "Add a new note to a company. If `created_at` is not provided, it defaults to the current WordPress time. Fires the `fluent_crm/company_note_added` action hook after creation.",
+        "tags": [
+          "Companies"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The company ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "note"
+                ],
+                "properties": {
+                  "note": {
+                    "type": "object",
+                    "required": [
+                      "title",
+                      "description",
+                      "type"
+                    ],
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "description": "Note title."
+                      },
+                      "description": {
+                        "type": "string",
+                        "description": "Note content (HTML)."
+                      },
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "note",
+                          "call",
+                          "email",
+                          "meeting",
+                          "activity"
+                        ],
+                        "description": "Note type."
+                      },
+                      "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "Custom creation date. Defaults to current WordPress time if not provided."
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "note": {
+                  "title": "Partnership discussion",
+                  "description": "<p>Discussed partnership terms. Follow up next week.</p>",
+                  "type": "meeting"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Note created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "note": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "description": "Unique identifier for the note."
+                        },
+                        "subscriber_id": {
+                          "type": "integer",
+                          "description": "The company ID this note belongs to (stored in subscriber_id column)."
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "Note title."
+                        },
+                        "description": {
+                          "type": "string",
+                          "description": "Note content (HTML)."
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "note",
+                            "call",
+                            "email",
+                            "meeting",
+                            "activity"
+                          ],
+                          "description": "Note type."
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "When the note was created."
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "When the note was last updated."
+                        },
+                        "added_by": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Display name of the user who created the note."
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "note": {
+                    "id": 15,
+                    "subscriber_id": 1,
+                    "title": "Partnership discussion",
+                    "description": "<p>Discussed partnership terms. Follow up next week.</p>",
+                    "type": "meeting",
+                    "created_at": "2024-03-01 14:30:00",
+                    "updated_at": "2024-03-01 14:30:00"
+                  },
+                  "message": "Note has been successfully added"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Company not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error (title, description, and type are required).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "errors": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

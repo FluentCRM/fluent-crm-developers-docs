@@ -1,0 +1,191 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/companies/search": {
+      "get": {
+        "operationId": "searchCompanies",
+        "summary": "GET Search Companies",
+        "description": "Search companies by name with a simplified result format (id, name, email, logo, phone, website). Returns up to 50 results sorted by name. Optionally exclude companies already associated with a specific subscriber. Pre-selected company IDs can be passed via `values[]` to ensure they appear in the results even if they don't match the search.",
+        "tags": [
+          "Companies"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search term to filter companies by name.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "subscriber_id",
+            "in": "query",
+            "description": "If provided, exclude companies already associated with this subscriber.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "values[]",
+            "in": "query",
+            "description": "Array of company IDs that should always be included in results (for pre-selected values in dropdowns).",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "Company ID."
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "Company name."
+                          },
+                          "email": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "Company email."
+                          },
+                          "logo": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "Logo URL."
+                          },
+                          "phone": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "Phone number."
+                          },
+                          "website": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "Website URL."
+                          }
+                        }
+                      }
+                    },
+                    "has_more": {
+                      "type": "boolean",
+                      "description": "Whether there are more than 50 total companies (indicates results may be truncated)."
+                    }
+                  }
+                },
+                "example": {
+                  "results": [
+                    {
+                      "id": 1,
+                      "name": "Acme Corporation",
+                      "email": "info@acme.com",
+                      "logo": "https://example.com/wp-content/uploads/fluentcrm/acme-logo.png",
+                      "phone": "+1-555-0100",
+                      "website": "https://acme.com"
+                    },
+                    {
+                      "id": 3,
+                      "name": "Acme Labs",
+                      "email": "labs@acme.com",
+                      "logo": null,
+                      "phone": null,
+                      "website": "https://labs.acme.com"
+                    }
+                  ],
+                  "has_more": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

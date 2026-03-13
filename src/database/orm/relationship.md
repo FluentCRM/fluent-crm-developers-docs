@@ -21,7 +21,7 @@ Database tables are often related to one another. For example, a blog post may h
 
 ## Defining Relationships
 
-Fluent ORM relationships are defined as methods on your Fluent ORM model classes. Since, like Fluent ORM models themselves, relationships also serve as powerful <a :href="$withBase('/database/query-builder')">query builders</a>, defining relationships as methods provides powerful method chaining and querying capabilities. For example, we may chain additional constraints on this `orders` relationship:
+Fluent ORM relationships are defined as methods on your Fluent ORM model classes. Since, like Fluent ORM models themselves, relationships also serve as powerful <a href="/database/query-builder">query builders</a>, defining relationships as methods provides powerful method chaining and querying capabilities. For example, we may chain additional constraints on this `orders` relationship:
 ```php
 $customer->orders()->where('status', 'paid')->get();
 ```
@@ -515,7 +515,7 @@ foreach ($tag->videos as $video) {
 ```
 
 ### Querying Relations
-Since all types of Fluent ORM relationships are defined via methods, you may call those methods to obtain an instance of the relationship without actually executing the relationship queries. In addition, all types of Fluent ORM relationships also serve as <a :href="$withBase('/database/query-builder')">query builders</a>, allowing you to continue to chain constraints onto the relationship query before finally executing the SQL against your database.
+Since all types of Fluent ORM relationships are defined via methods, you may call those methods to obtain an instance of the relationship without actually executing the relationship queries. In addition, all types of Fluent ORM relationships also serve as <a href="/database/query-builder">query builders</a>, allowing you to continue to chain constraints onto the relationship query before finally executing the SQL against your database.
 
 For example, imagine a blog system in which a `User` model has many associated `Post` models:
 ```php
@@ -542,7 +542,7 @@ $user = FluentCrm\App\Models\User::find(1);
  
 $user->posts()->where('active', 1)->get();
 ```
-You are able to use any of the query builder methods on the relationship, so be sure to explore the <a :href="$withBase('/database/query-builder')">query builders</a> documentation to learn about all the methods that are available to you.
+You are able to use any of the query builder methods on the relationship, so be sure to explore the <a href="/database/query-builder">query builders</a> documentation to learn about all the methods that are available to you.
 
 
 ### Relationship Methods Vs. Dynamic Properties
@@ -705,7 +705,7 @@ $users = FluentCrm\App\Models\User::with(['posts' => function ($query) {
     $query->where('title', 'like', '%first%');
 }])->get();
 ```
-In this example, Fluent ORM will only eager load posts where the post's title column contains the word first. Of course, you may call other <a :href="$withBase('/database/query-builder')">query builders</a> methods to further customize the eager loading operation:
+In this example, Fluent ORM will only eager load posts where the post's title column contains the word first. Of course, you may call other <a href="/database/query-builder">query builders</a> methods to further customize the eager loading operation:
 ```php
 $users = FluentCrm\App\Models\User::with(['posts' => function ($query) {
     $query->orderBy('created_at', 'desc');

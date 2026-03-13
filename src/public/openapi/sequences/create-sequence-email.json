@@ -1,0 +1,507 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/sequences/{id}/email": {
+      "post": {
+        "operationId": "createSequenceEmail",
+        "summary": "POST Create Sequence Email",
+        "description": "Create a new email within an email sequence. The email data is passed inside an `email` object. The title is automatically set from the email_subject. Mailer settings are inherited from the parent sequence. Requires FluentCampaign Pro.",
+        "tags": [
+          "Sequences"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The parent sequence ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "object",
+                    "description": "Email data object.",
+                    "required": [
+                      "email_subject",
+                      "email_body"
+                    ],
+                    "properties": {
+                      "email_subject": {
+                        "type": "string",
+                        "description": "Email subject line."
+                      },
+                      "email_pre_header": {
+                        "type": "string",
+                        "description": "Email pre-header text."
+                      },
+                      "email_body": {
+                        "type": "string",
+                        "description": "Email body content (HTML)."
+                      },
+                      "design_template": {
+                        "type": "string",
+                        "description": "Design template (e.g., `simple`, `visual_builder`)."
+                      },
+                      "template_id": {
+                        "type": "integer",
+                        "description": "Template ID (0 if none)."
+                      },
+                      "settings": {
+                        "type": "object",
+                        "description": "Email settings including timing configuration.",
+                        "properties": {
+                          "timings": {
+                            "type": "object",
+                            "properties": {
+                              "delay_unit": {
+                                "type": "string",
+                                "enum": [
+                                  "days",
+                                  "hours",
+                                  "minutes",
+                                  "weeks"
+                                ]
+                              },
+                              "delay": {
+                                "type": [
+                                  "string",
+                                  "integer"
+                                ],
+                                "description": "Delay value in the specified unit."
+                              },
+                              "is_anytime": {
+                                "type": "string",
+                                "enum": [
+                                  "yes",
+                                  "no"
+                                ]
+                              },
+                              "sending_time": {
+                                "description": "Sending time or time range."
+                              },
+                              "selected_days_only": {
+                                "type": "string",
+                                "enum": [
+                                  "yes",
+                                  "no"
+                                ]
+                              },
+                              "allowed_days": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "utm_status": {
+                        "type": "integer",
+                        "description": "Enable UTM tracking (1 = enabled, 0 = disabled)."
+                      },
+                      "utm_source": {
+                        "type": "string",
+                        "description": "UTM source parameter."
+                      },
+                      "utm_medium": {
+                        "type": "string",
+                        "description": "UTM medium parameter."
+                      },
+                      "utm_campaign": {
+                        "type": "string",
+                        "description": "UTM campaign parameter."
+                      },
+                      "utm_term": {
+                        "type": "string",
+                        "description": "UTM term parameter."
+                      },
+                      "utm_content": {
+                        "type": "string",
+                        "description": "UTM content parameter."
+                      },
+                      "_visual_builder_design": {
+                        "type": "object",
+                        "description": "Visual builder design data (only when `design_template` is `visual_builder`)."
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "email": {
+                  "email_subject": "Day 1: Getting Started",
+                  "email_pre_header": "Your first steps",
+                  "email_body": "<p>Welcome! Here is how to get started...</p>",
+                  "design_template": "simple",
+                  "template_id": 0,
+                  "settings": {
+                    "timings": {
+                      "delay_unit": "days",
+                      "delay": "1",
+                      "is_anytime": "yes",
+                      "sending_time": ""
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sequence email created successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "$ref": "#/components/schemas/SequenceEmail"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Sequence email has been created",
+                  "email": {
+                    "id": 12,
+                    "parent_id": 1,
+                    "title": "Day 1: Getting Started",
+                    "type": "sequence_mail",
+                    "status": "published",
+                    "email_subject": "Day 1: Getting Started",
+                    "email_pre_header": "Your first steps",
+                    "email_body": "<p>Welcome! Here is how to get started...</p>",
+                    "delay": 86400,
+                    "design_template": "simple",
+                    "created_at": "2024-03-01 10:00:00",
+                    "updated_at": "2024-03-01 10:00:00"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Invalid Request"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "SequenceEmail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the sequence email."
+          },
+          "parent_id": {
+            "type": "integer",
+            "description": "Parent sequence ID."
+          },
+          "title": {
+            "type": "string",
+            "description": "Email title (typically same as subject)."
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL-friendly slug."
+          },
+          "type": {
+            "type": "string",
+            "description": "Record type (always `sequence_mail`).",
+            "enum": [
+              "sequence_mail"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "description": "Email status.",
+            "enum": [
+              "draft",
+              "published"
+            ]
+          },
+          "design_template": {
+            "type": "string",
+            "description": "Design template used for the email (e.g., `simple`, `visual_builder`)."
+          },
+          "template_id": {
+            "type": "integer",
+            "description": "Template ID (0 if none)."
+          },
+          "email_subject": {
+            "type": "string",
+            "description": "Email subject line."
+          },
+          "email_pre_header": {
+            "type": "string",
+            "description": "Email pre-header text."
+          },
+          "email_body": {
+            "type": "string",
+            "description": "Email body content (HTML)."
+          },
+          "delay": {
+            "type": "integer",
+            "description": "Delay in seconds from sequence start before sending this email."
+          },
+          "settings": {
+            "type": "object",
+            "description": "Email settings including timing and mailer configuration.",
+            "properties": {
+              "action_triggers": {
+                "type": "array",
+                "description": "Action triggers for the email.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "timings": {
+                "type": "object",
+                "properties": {
+                  "delay_unit": {
+                    "type": "string",
+                    "description": "Unit for the delay value.",
+                    "enum": [
+                      "days",
+                      "hours",
+                      "minutes",
+                      "weeks"
+                    ]
+                  },
+                  "delay": {
+                    "type": [
+                      "string",
+                      "integer"
+                    ],
+                    "description": "Delay value in the specified unit."
+                  },
+                  "is_anytime": {
+                    "type": "string",
+                    "description": "Whether to send at any time.",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ]
+                  },
+                  "sending_time": {
+                    "description": "Sending time or time range.",
+                    "oneOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    ]
+                  },
+                  "selected_days_only": {
+                    "type": "string",
+                    "description": "Whether to send only on selected days.",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ]
+                  },
+                  "allowed_days": {
+                    "type": "array",
+                    "description": "Allowed days of the week.",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "Mon",
+                        "Tue",
+                        "Wed",
+                        "Thu",
+                        "Fri",
+                        "Sat",
+                        "Sun"
+                      ]
+                    }
+                  }
+                }
+              },
+              "template_config": {
+                "type": "object",
+                "description": "Template configuration."
+              },
+              "mailer_settings": {
+                "type": "object",
+                "properties": {
+                  "from_name": {
+                    "type": "string"
+                  },
+                  "from_email": {
+                    "type": "string"
+                  },
+                  "reply_to_name": {
+                    "type": "string"
+                  },
+                  "reply_to_email": {
+                    "type": "string"
+                  },
+                  "is_custom": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "utm_status": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Whether UTM tracking is enabled (1 = enabled, 0 = disabled)."
+          },
+          "utm_source": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "UTM source parameter."
+          },
+          "utm_medium": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "UTM medium parameter."
+          },
+          "utm_campaign": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "UTM campaign parameter."
+          },
+          "utm_term": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "UTM term parameter."
+          },
+          "utm_content": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "UTM content parameter."
+          },
+          "created_by": {
+            "type": "integer",
+            "description": "WordPress user ID of the creator."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the email was created."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the email was last updated."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

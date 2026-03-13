@@ -1,0 +1,233 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/funnels/send-test-webhook": {
+      "post": {
+        "operationId": "sendTestWebhook",
+        "summary": "POST Send Test Webhook",
+        "description": "Send a test webhook request to a remote URL using sample subscriber data. Uses the current user's email to find a subscriber, or falls back to any subscribed contact. Supports GET and POST methods with custom headers and body data. Body data can be subscriber data or custom key-value pairs.",
+        "tags": [
+          "Funnels"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "required": [
+                      "remote_url"
+                    ],
+                    "properties": {
+                      "remote_url": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "The webhook URL to send the test request to."
+                      },
+                      "sending_method": {
+                        "type": "string",
+                        "enum": [
+                          "GET",
+                          "POST"
+                        ],
+                        "description": "HTTP method for the webhook request."
+                      },
+                      "request_format": {
+                        "type": "string",
+                        "enum": [
+                          "default",
+                          "json"
+                        ],
+                        "description": "Request body format. When `json` with POST method, sends Content-Type as `application/json`."
+                      },
+                      "body_data_type": {
+                        "type": "string",
+                        "enum": [
+                          "subscriber_data",
+                          "custom"
+                        ],
+                        "description": "`subscriber_data` sends the full subscriber object; `custom` sends key-value pairs from `body_data_values`."
+                      },
+                      "body_data_values": {
+                        "type": "array",
+                        "description": "Custom key-value pairs for the request body. Used when `body_data_type` is `custom`.",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "data_key": {
+                              "type": "string",
+                              "description": "Field name."
+                            },
+                            "data_value": {
+                              "type": "string",
+                              "description": "Field value. Supports SmartCode parsing (e.g., `{{contact.email}}`)."
+                            }
+                          }
+                        }
+                      },
+                      "header_type": {
+                        "type": "string",
+                        "enum": [
+                          "no_header",
+                          "with_headers"
+                        ],
+                        "description": "Whether to include custom headers."
+                      },
+                      "header_data": {
+                        "type": "array",
+                        "description": "Custom headers. Used when `header_type` is `with_headers`.",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "data_key": {
+                              "type": "string",
+                              "description": "Header name."
+                            },
+                            "data_value": {
+                              "type": "string",
+                              "description": "Header value. Supports SmartCode parsing."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "data": {
+                  "remote_url": "https://hooks.example.com/webhook",
+                  "sending_method": "POST",
+                  "request_format": "json",
+                  "body_data_type": "subscriber_data",
+                  "body_data_values": [],
+                  "header_type": "no_header",
+                  "header_data": []
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Test webhook sent successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Test Webhook has been sent successfully"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error or webhook failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "missing_url": {
+                    "value": {
+                      "message": "Remote URL is required"
+                    }
+                  },
+                  "no_subscriber": {
+                    "value": {
+                      "message": "No subscriber found to send test webhook. Please add at least one contact with subscribed status."
+                    }
+                  },
+                  "failed": {
+                    "value": {
+                      "message": "Test Webhook failed to send: Connection timed out"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/templates/all": {
+      "get": {
+        "operationId": "listAllTemplates",
+        "summary": "GET List All Templates",
+        "description": "Retrieve all published email templates (non-paginated) along with available smartcodes. Useful for template selection dropdowns where all published templates are needed at once.",
+        "tags": [
+          "Templates"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "All published templates and available smartcodes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "templates": {
+                      "type": "array",
+                      "description": "All published email templates, ordered by ID descending.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "ID": {
+                            "type": "integer",
+                            "description": "Unique identifier for the template (WordPress post ID)."
+                          },
+                          "post_title": {
+                            "type": "string",
+                            "description": "Template title."
+                          },
+                          "post_content": {
+                            "type": "string",
+                            "description": "Template HTML content."
+                          },
+                          "post_excerpt": {
+                            "type": "string",
+                            "description": "Template excerpt or preview text."
+                          },
+                          "post_status": {
+                            "type": "string",
+                            "enum": [
+                              "publish",
+                              "draft"
+                            ],
+                            "description": "Template status."
+                          },
+                          "post_type": {
+                            "type": "string",
+                            "description": "WordPress post type slug for FluentCRM templates."
+                          },
+                          "post_date": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Date when the template was created."
+                          },
+                          "post_modified": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Date when the template was last modified."
+                          },
+                          "design_template": {
+                            "type": "string",
+                            "description": "Design template identifier (e.g., 'simple', 'plain', 'classic')."
+                          }
+                        }
+                      }
+                    },
+                    "smartcodes": {
+                      "type": "array",
+                      "description": "Available smartcode groups for use in templates.",
+                      "items": {
+                        "$ref": "#/components/schemas/SmartCodeGroup"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "templates": [
+                    {
+                      "ID": 42,
+                      "post_title": "Welcome Email",
+                      "post_content": "<h1>Welcome!</h1><p>Thank you for subscribing.</p>",
+                      "post_excerpt": "",
+                      "post_status": "publish",
+                      "post_type": "fc_template",
+                      "post_date": "2024-01-15 10:30:00",
+                      "post_modified": "2024-03-01 14:30:00"
+                    }
+                  ],
+                  "smartcodes": [
+                    {
+                      "key": "contact",
+                      "title": "Contact",
+                      "shortcodes": {
+                        "{{contact.full_name}}": "Full Name",
+                        "{{contact.first_name}}": "First Name",
+                        "{{contact.last_name}}": "Last Name",
+                        "{{contact.email}}": "Contact Email"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "SmartCodeGroup": {
+        "type": "object",
+        "description": "A group of related smartcodes.",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Group identifier (e.g., 'contact', 'general', 'contact_custom_fields')."
+          },
+          "title": {
+            "type": "string",
+            "description": "Human-readable group title."
+          },
+          "shortcodes": {
+            "type": "object",
+            "description": "Key-value pairs where keys are smartcode placeholders and values are human-readable labels.",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

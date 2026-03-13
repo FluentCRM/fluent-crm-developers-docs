@@ -6,7 +6,7 @@ description: "Discover the SubscriberMeta Model in FluentCRM, which allows you t
 
 | DB Table Name | {wp_db_prefix}_fc_subscriber_meta                                        |
 |---------------|--------------------------------------------------------------------------|
-| Schema        | <a :href="$withBase('/database/#fc-subscribers-table')">Check Schema</a> |
+| Schema        | <a href="/database/#fc-subscribers-table">Check Schema</a> |
 | Source File   | fluent-crm/app/Models/SubscriberMeta.php                                 |
 | Name Space    | FluentCrm\App\Models                                                     |
 | Class         | FluentCrm\App\Models\SubscriberMeta                                      |
