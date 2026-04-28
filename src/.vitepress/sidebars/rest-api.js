@@ -146,6 +146,7 @@ export default [
             { text: 'Bulk Action <badge type="warning">POST</badge>', link: '/rest-api/operations/templates/bulk-action-templates' },
             { text: 'Get Smart Codes <badge type="tip">GET</badge>', link: '/rest-api/operations/templates/get-smart-codes' },
             { text: 'Set Global Style <badge type="warning">POST</badge>', link: '/rest-api/operations/templates/set-global-style' },
+            { text: 'Fetch Built-in Template <badge type="warning">POST</badge>', link: '/rest-api/operations/templates/get-built-in-template' },
             { text: 'Built-in Templates <badge type="tip">GET</badge>', link: '/rest-api/operations/templates/get-built-in-templates' },
         ]
     },
