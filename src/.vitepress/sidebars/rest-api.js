@@ -146,7 +146,25 @@ export default [
             { text: 'Bulk Action <badge type="warning">POST</badge>', link: '/rest-api/operations/templates/bulk-action-templates' },
             { text: 'Get Smart Codes <badge type="tip">GET</badge>', link: '/rest-api/operations/templates/get-smart-codes' },
             { text: 'Set Global Style <badge type="warning">POST</badge>', link: '/rest-api/operations/templates/set-global-style' },
+            { text: 'Fetch Built-in Template <badge type="warning">POST</badge>', link: '/rest-api/operations/templates/get-built-in-template' },
             { text: 'Built-in Templates <badge type="tip">GET</badge>', link: '/rest-api/operations/templates/get-built-in-templates' },
+        ]
+    },
+    {
+        text: 'Email Patterns',
+        collapsed: true,
+        items: [
+            { text: 'List Email Patterns <badge type="tip">GET</badge>', link: '/rest-api/operations/email-patterns/list-email-patterns' },
+            { text: 'List Patterns (WP Format) <badge type="tip">GET</badge>', link: '/rest-api/operations/email-patterns/list-email-patterns-wp-format' },
+            { text: 'List Categories <badge type="tip">GET</badge>', link: '/rest-api/operations/email-patterns/list-email-pattern-categories' },
+            { text: 'Create Category <badge type="warning">POST</badge>', link: '/rest-api/operations/email-patterns/create-email-pattern-category' },
+            { text: 'Delete Category <badge type="danger">DELETE</badge>', link: '/rest-api/operations/email-patterns/delete-email-pattern-category' },
+            { text: 'Create Email Pattern <badge type="warning">POST</badge>', link: '/rest-api/operations/email-patterns/create-email-pattern' },
+            { text: 'Create Pattern (WP Format) <badge type="warning">POST</badge>', link: '/rest-api/operations/email-patterns/create-email-pattern-wp-format' },
+            { text: 'Get Email Pattern <badge type="tip">GET</badge>', link: '/rest-api/operations/email-patterns/get-email-pattern' },
+            { text: 'Update Email Pattern <badge type="info">PUT</badge>', link: '/rest-api/operations/email-patterns/update-email-pattern' },
+            { text: 'Delete Email Pattern <badge type="danger">DELETE</badge>', link: '/rest-api/operations/email-patterns/delete-email-pattern' },
+            { text: 'Bulk Action <badge type="warning">POST</badge>', link: '/rest-api/operations/email-patterns/bulk-action-email-patterns' },
         ]
     },
     {
@@ -201,6 +219,7 @@ export default [
             { text: 'Get Email <badge type="tip">GET</badge>', link: '/rest-api/operations/sequences/get-sequence-email' },
             { text: 'Create Email <badge type="warning">POST</badge>', link: '/rest-api/operations/sequences/create-sequence-email' },
             { text: 'Update Email <badge type="info">PUT</badge>', link: '/rest-api/operations/sequences/update-sequence-email' },
+            { text: 'Update Email Delay <badge type="info">PATCH</badge>', link: '/rest-api/operations/sequences/update-sequence-email-delay' },
             { text: 'Delete Email <badge type="danger">DELETE</badge>', link: '/rest-api/operations/sequences/delete-sequence-email' },
             { text: 'Duplicate Email <badge type="warning">POST</badge>', link: '/rest-api/operations/sequences/duplicate-sequence-email' },
             { text: 'Create/Update Email <badge type="warning">POST</badge>', link: '/rest-api/operations/sequences/create-or-update-sequence-email' },
@@ -292,6 +311,11 @@ export default [
             { text: 'Email Sent Stats <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-email-sent-stats' },
             { text: 'Email Open Stats <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-email-open-stats' },
             { text: 'Email Click Stats <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-email-click-stats' },
+            { text: 'Email Unsubscribe Stats <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-email-unsub-stats' },
+            { text: 'Contacts by Status <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-contacts-by-status' },
+            { text: 'Contacts by Tags <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-contacts-by-tags' },
+            { text: 'Contacts by Lists <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-contacts-by-lists' },
+            { text: 'Contacts by Country <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-contacts-by-country' },
             { text: 'Email Performance <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-email-performance' },
             { text: 'Report Options <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-report-options' },
             { text: 'Ajax Options <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-ajax-options' },
@@ -299,8 +323,24 @@ export default [
             { text: 'Cascade Selections <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-cascade-selections' },
             { text: 'Get Emails <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-report-emails' },
             { text: 'Delete Emails <badge type="danger">DELETE</badge>', link: '/rest-api/operations/reports/delete-report-emails' },
+            { text: 'Top Campaigns <badge type="tip">GET</badge> <badge type="danger">Pro</badge>', link: '/rest-api/operations/reports/get-top-campaigns' },
+            { text: 'Recent Tags <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-recent-tags' },
+            { text: 'Campaigns List <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-campaigns-list' },
+            { text: 'Campaign Options <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-campaign-options' },
+            { text: 'Automation Reports <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-automation-reports' },
+            { text: 'Automation Step Report <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-automation-step-report' },
             { text: 'Advanced Providers <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-advanced-report-providers' },
             { text: 'Ping <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/ping-report' },
+        ]
+    },
+    {
+        text: 'AI',
+        collapsed: true,
+        items: [
+            { text: 'Get AI Settings <badge type="tip">GET</badge>', link: '/rest-api/operations/ai/get-ai-settings' },
+            { text: 'Save AI Settings <badge type="warning">POST</badge>', link: '/rest-api/operations/ai/save-ai-settings' },
+            { text: 'Test AI Connection <badge type="warning">POST</badge>', link: '/rest-api/operations/ai/test-ai-connection' },
+            { text: 'Generate AI Content <badge type="warning">POST</badge>', link: '/rest-api/operations/ai/generate-ai-content' },
         ]
     },
     {
@@ -485,8 +525,8 @@ export default [
             { text: 'List Docs <badge type="tip">GET</badge>', link: '/rest-api/operations/docs/list-docs' },
             { text: 'Get Doc <badge type="tip">GET</badge>', link: '/rest-api/operations/docs/get-doc' },
             { text: 'Get Addons <badge type="tip">GET</badge>', link: '/rest-api/operations/docs/get-doc-addons' },
-            { text: 'Bounce Handler <badge type="warning">POST</badge>', link: '/rest-api/operations/public-bounce/handle-bounce-with-handle' },
-            { text: 'Bounce Handler (Alt) <badge type="warning">POST</badge>', link: '/rest-api/operations/public-bounce/handle-bounce' },
+            { text: 'Bounce Handler <badge type="warning">ANY</badge>', link: '/rest-api/operations/public-bounce/handle-bounce-with-handle' },
+            { text: 'Bounce Handler (Alt) <badge type="warning">ANY</badge>', link: '/rest-api/operations/public-bounce/handle-bounce' },
         ]
     },
 ]
