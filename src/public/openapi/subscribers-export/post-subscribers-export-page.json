@@ -92,7 +92,11 @@
                   },
                   "sort_type": {
                     "type": "string",
-                    "default": "DESC"
+                    "default": "DESC",
+                    "enum": [
+                      "ASC",
+                      "DESC"
+                    ]
                   },
                   "has_commerce": {
                     "type": "boolean"
@@ -104,6 +108,7 @@
                     }
                   },
                   "advanced_filters": {
+                    "type": "string",
                     "description": "Raw advanced filter groups when `filter_type=advanced`."
                   },
                   "tags": {

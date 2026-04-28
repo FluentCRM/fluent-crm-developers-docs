@@ -135,7 +135,11 @@
             "required": false,
             "schema": {
               "type": "string",
-              "default": "DESC"
+              "default": "DESC",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
             }
           },
           {
