@@ -296,6 +296,16 @@ export default [
         ]
     },
     {
+        text: 'AI',
+        collapsed: true,
+        items: [
+            { text: 'Get AI Settings <badge type="tip">GET</badge>', link: '/rest-api/operations/ai/get-ai-settings' },
+            { text: 'Save AI Settings <badge type="warning">POST</badge>', link: '/rest-api/operations/ai/save-ai-settings' },
+            { text: 'Test AI Connection <badge type="warning">POST</badge>', link: '/rest-api/operations/ai/test-ai-connection' },
+            { text: 'Generate AI Content <badge type="warning">POST</badge>', link: '/rest-api/operations/ai/generate-ai-content' },
+        ]
+    },
+    {
         text: 'Settings',
         collapsed: true,
         items: [

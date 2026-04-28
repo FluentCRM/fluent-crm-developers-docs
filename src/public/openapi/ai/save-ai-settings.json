@@ -1,0 +1,195 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/ai/settings": {
+      "post": {
+        "operationId": "saveAiSettings",
+        "summary": "POST Save AI Settings",
+        "description": "Save AI writing settings. The API key is encrypted before storage. If you send a masked key value starting with `****`, the existing stored key is preserved. Sending an empty `api_key` clears the saved key.",
+        "tags": [
+          "AI"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "settings": {
+                    "type": "object",
+                    "properties": {
+                      "is_enabled": {
+                        "type": "string",
+                        "enum": [
+                          "yes",
+                          "no"
+                        ],
+                        "description": "Enable or disable AI writing. Any value other than `yes` is stored as `no`."
+                      },
+                      "provider": {
+                        "type": "string",
+                        "enum": [
+                          "",
+                          "openai",
+                          "claude",
+                          "gemini"
+                        ],
+                        "description": "AI provider slug."
+                      },
+                      "model": {
+                        "type": "string",
+                        "description": "Model identifier for the selected provider."
+                      },
+                      "api_key": {
+                        "type": "string",
+                        "description": "Raw API key to save, a masked key starting with `****` to keep the existing key, or an empty string to clear it."
+                      },
+                      "custom_prompt": {
+                        "type": "string",
+                        "description": "Additional system instructions appended to the built-in writing prompt."
+                      }
+                    },
+                    "required": [
+                      "is_enabled",
+                      "provider",
+                      "model",
+                      "api_key",
+                      "custom_prompt"
+                    ]
+                  }
+                },
+                "required": [
+                  "settings"
+                ]
+              },
+              "example": {
+                "settings": {
+                  "is_enabled": "yes",
+                  "provider": "openai",
+                  "model": "gpt-4o-mini",
+                  "api_key": "sk-live-example",
+                  "custom_prompt": "Keep the tone friendly and direct."
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "AI settings saved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                },
+                "example": {
+                  "message": "AI Writing settings saved successfully."
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error. Returned when the provider is invalid or the selected model is not allowed for the chosen provider.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "invalidProvider": {
+                    "value": {
+                      "message": "Invalid AI provider selected.",
+                      "code": "rest_forbidden",
+                      "data": {
+                        "status": 422
+                      }
+                    }
+                  },
+                  "invalidModel": {
+                    "value": {
+                      "message": "Invalid model selected for this provider.",
+                      "code": "rest_forbidden",
+                      "data": {
+                        "status": 422
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

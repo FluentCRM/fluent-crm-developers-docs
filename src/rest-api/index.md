@@ -1,6 +1,6 @@
 # FluentCRM REST API
 
-Complete REST API documentation for FluentCRM — covering **319 endpoints** across 28 modules, including FluentCampaign Pro.
+Complete REST API documentation for FluentCRM — covering **323 endpoints** across 29 modules, including FluentCampaign Pro.
 
 ## Base URL
 
@@ -69,6 +69,7 @@ Use test/staging sites only. API requests make permanent changes to your data.
 | Module | Endpoints | Description |
 |--------|-----------|-------------|
 | [Settings](/rest-api/operations/settings/get-settings) | 38 | Global settings, double opt-in, integrations, compliance |
+| [AI](/rest-api/operations/ai/get-ai-settings) | 4 | AI writing settings and generation endpoints |
 | [Import](/rest-api/operations/import/upload-csv-import) | 6 | CSV upload, WP users import, third-party drivers |
 | [Users](/rest-api/operations/users/list-users) | 2 | WordPress user listing and roles |
 | [Forms](/rest-api/operations/forms/list-forms) | 5 | Fluent Forms integration |
