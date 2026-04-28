@@ -1,6 +1,6 @@
 ---
 title: Handle Bounce (with /handle/ path)
-description: "Webhook endpoint for email service providers to report bounces via the /handle/ path variant."
+description: "Public bounce webhook endpoint for the /handle/ path variant. FluentCRM registers this route as ANY, while the OpenAPI view uses POST for compatibility."
 outline: false
 aside: false
 ---
