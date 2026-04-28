@@ -1,6 +1,6 @@
 # FluentCRM REST API
 
-Complete REST API documentation for FluentCRM — covering **320 endpoints** across 28 modules, including FluentCampaign Pro.
+Complete REST API documentation for FluentCRM — covering **350 endpoints** across 31 modules, including FluentCampaign Pro.
 
 ## Base URL
 
@@ -51,8 +51,9 @@ Use test/staging sites only. API requests make permanent changes to your data.
 | Module | Endpoints | Description |
 |--------|-----------|-------------|
 | [Campaigns](/rest-api/operations/campaigns/list-campaigns) | 32 | Create, schedule, send, and analyze email campaigns |
-| [Templates](/rest-api/operations/templates/list-templates) | 11 | Email templates, smart codes, global styles |
-| [Sequences](/rest-api/operations/sequences/list-sequences) | 18 | Automated email sequences (Pro) |
+| [Templates](/rest-api/operations/templates/list-templates) | 12 | Email templates, smart codes, global styles |
+| [Email Patterns](/rest-api/operations/email-patterns/list-email-patterns) | 11 | Reusable email patterns and editor blocks |
+| [Sequences](/rest-api/operations/sequences/list-sequences) | 19 | Automated email sequences (Pro) |
 | [Recurring Campaigns](/rest-api/operations/recurring-campaigns/list-recurring-campaigns) | 14 | Recurring/automated campaigns (Pro) |
 
 ### Automation & Analytics
@@ -60,7 +61,7 @@ Use test/staging sites only. API requests make permanent changes to your data.
 | Module | Endpoints | Description |
 |--------|-----------|-------------|
 | [Funnels](/rest-api/operations/funnels/list-funnels) | 31 | Marketing automation funnels with triggers, actions, benchmarks |
-| [Reports](/rest-api/operations/reports/get-dashboard-stats) | 14 | Dashboard stats, email performance, contact growth |
+| [Reports](/rest-api/operations/reports/get-dashboard-stats) | 25 | Dashboard stats, email performance, contact growth |
 | [Webhooks](/rest-api/operations/webhooks/list-webhooks) | 5 | Incoming webhook endpoints for data collection |
 | [Dynamic Segments](/rest-api/operations/dynamic-segments/list-dynamic-segments) | 9 | Smart contact segments with dynamic conditions (Pro) |
 
@@ -69,6 +70,7 @@ Use test/staging sites only. API requests make permanent changes to your data.
 | Module | Endpoints | Description |
 |--------|-----------|-------------|
 | [Settings](/rest-api/operations/settings/get-settings) | 38 | Global settings, double opt-in, integrations, compliance |
+| [AI](/rest-api/operations/ai/get-ai-settings) | 4 | AI writing settings and generation endpoints |
 | [Import](/rest-api/operations/import/upload-csv-import) | 6 | CSV upload, WP users import, third-party drivers |
 | [Users](/rest-api/operations/users/list-users) | 2 | WordPress user listing and roles |
 | [Forms](/rest-api/operations/forms/list-forms) | 5 | Fluent Forms integration |
@@ -84,6 +86,7 @@ Use test/staging sites only. API requests make permanent changes to your data.
 | [Pro Settings](/rest-api/operations/pro-settings/get-license-status) | 11 | License, managers, SMS settings (Pro) |
 | [Commerce Reports](/rest-api/operations/commerce-reports/get-commerce-reports) | 2 | WooCommerce/EDD revenue reports (Pro) |
 | [SMS](/rest-api/operations/sms/list-sms-campaigns) | 25 | SMS campaigns, messages, subscriber SMS (Pro) |
+| [Subscribers Export](/rest-api/operations/subscribers-export/post-subscribers-export-page) | 2 | Paginated export pages for subscriber CSV/data exports (Pro) |
 
 ### Other
 

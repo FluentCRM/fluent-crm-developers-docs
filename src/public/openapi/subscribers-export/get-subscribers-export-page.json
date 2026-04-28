@@ -1,0 +1,362 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/subscribers-export": {
+      "get": {
+        "operationId": "getSubscribersExportPage",
+        "summary": "GET Subscribers Export Page",
+        "description": "Retrieve one page of export-ready subscriber rows. This legacy `GET` route is kept for backward compatibility, but `POST /subscribers-export` is preferred because filter payloads can exceed URL limits. Requires FluentCampaign Pro.",
+        "tags": [
+          "Subscribers Export"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "columns[]",
+            "in": "query",
+            "description": "Columns to export. Must be a non-empty array.",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "custom_fields[]",
+            "in": "query",
+            "description": "Custom field keys to include in the export.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "commerce_columns[]",
+            "in": "query",
+            "description": "Commerce-related export columns.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "company_ids[]",
+            "in": "query",
+            "description": "Company IDs to filter by.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Export page number. Each page contains up to 500 rows.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "filter_type",
+            "in": "query",
+            "description": "Filter mode. Use `simple` for tags/lists/statuses filters or `advanced` for raw filter groups.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "simple",
+              "enum": [
+                "simple",
+                "advanced"
+              ]
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search term for subscriber lookup.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "description": "Sort column.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "id"
+            }
+          },
+          {
+            "name": "sort_type",
+            "in": "query",
+            "description": "Sort direction.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "DESC",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          },
+          {
+            "name": "has_commerce",
+            "in": "query",
+            "description": "Whether to restrict the export to contacts with commerce data.",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "contact_ids[]",
+            "in": "query",
+            "description": "Specific contact IDs to export.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "name": "advanced_filters",
+            "in": "query",
+            "description": "Raw advanced filter groups when `filter_type=advanced`.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tags[]",
+            "in": "query",
+            "description": "Tag filters for simple mode.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "name": "statuses[]",
+            "in": "query",
+            "description": "Subscriber statuses for simple mode.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "lists[]",
+            "in": "query",
+            "description": "List filters for simple mode.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Optional user-facing export limit, capped at 100000 rows.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Optional starting offset.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Export page retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "page": {
+                      "type": "integer"
+                    },
+                    "total": {
+                      "type": "integer",
+                      "description": "Total exportable contacts. Returned on page 1."
+                    },
+                    "headers": {
+                      "type": "array",
+                      "description": "Export column labels. Returned on page 1.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "rows": {
+                      "type": "array",
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": [
+                            "string",
+                            "number",
+                            "boolean",
+                            "null"
+                          ]
+                        }
+                      }
+                    },
+                    "has_more": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "page",
+                    "rows",
+                    "has_more"
+                  ]
+                },
+                "example": {
+                  "page": 1,
+                  "total": 1225,
+                  "headers": [
+                    "ID",
+                    "Email",
+                    "First Name",
+                    "Tags"
+                  ],
+                  "rows": [
+                    [
+                      42,
+                      "jane@example.com",
+                      "Jane",
+                      "VIP, Customers"
+                    ],
+                    [
+                      43,
+                      "john@example.com",
+                      "John",
+                      "Newsletter"
+                    ]
+                  ],
+                  "has_more": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid export request.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No contacts matched the export query.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}
