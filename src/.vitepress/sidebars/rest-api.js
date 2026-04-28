@@ -146,7 +146,25 @@ export default [
             { text: 'Bulk Action <badge type="warning">POST</badge>', link: '/rest-api/operations/templates/bulk-action-templates' },
             { text: 'Get Smart Codes <badge type="tip">GET</badge>', link: '/rest-api/operations/templates/get-smart-codes' },
             { text: 'Set Global Style <badge type="warning">POST</badge>', link: '/rest-api/operations/templates/set-global-style' },
+            { text: 'Fetch Built-in Template <badge type="warning">POST</badge>', link: '/rest-api/operations/templates/get-built-in-template' },
             { text: 'Built-in Templates <badge type="tip">GET</badge>', link: '/rest-api/operations/templates/get-built-in-templates' },
+        ]
+    },
+    {
+        text: 'Email Patterns',
+        collapsed: true,
+        items: [
+            { text: 'List Email Patterns <badge type="tip">GET</badge>', link: '/rest-api/operations/email-patterns/list-email-patterns' },
+            { text: 'List Patterns (WP Format) <badge type="tip">GET</badge>', link: '/rest-api/operations/email-patterns/list-email-patterns-wp-format' },
+            { text: 'List Categories <badge type="tip">GET</badge>', link: '/rest-api/operations/email-patterns/list-email-pattern-categories' },
+            { text: 'Create Category <badge type="warning">POST</badge>', link: '/rest-api/operations/email-patterns/create-email-pattern-category' },
+            { text: 'Delete Category <badge type="danger">DELETE</badge>', link: '/rest-api/operations/email-patterns/delete-email-pattern-category' },
+            { text: 'Create Email Pattern <badge type="warning">POST</badge>', link: '/rest-api/operations/email-patterns/create-email-pattern' },
+            { text: 'Create Pattern (WP Format) <badge type="warning">POST</badge>', link: '/rest-api/operations/email-patterns/create-email-pattern-wp-format' },
+            { text: 'Get Email Pattern <badge type="tip">GET</badge>', link: '/rest-api/operations/email-patterns/get-email-pattern' },
+            { text: 'Update Email Pattern <badge type="info">PUT</badge>', link: '/rest-api/operations/email-patterns/update-email-pattern' },
+            { text: 'Delete Email Pattern <badge type="danger">DELETE</badge>', link: '/rest-api/operations/email-patterns/delete-email-pattern' },
+            { text: 'Bulk Action <badge type="warning">POST</badge>', link: '/rest-api/operations/email-patterns/bulk-action-email-patterns' },
         ]
     },
     {
