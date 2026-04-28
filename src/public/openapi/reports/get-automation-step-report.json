@@ -1,0 +1,251 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/reports/automations/{id}/steps": {
+      "get": {
+        "operationId": "getAutomationStepReport",
+        "summary": "GET Automation Step Report",
+        "description": "Retrieve a published automation funnel and its step-by-step performance metrics, including counts, drop-offs, and revenue data for email steps.",
+        "tags": [
+          "Reports"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Automation funnel ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Automation step report retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "funnel": {
+                      "type": "object",
+                      "description": "Automation funnel record.",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string"
+                        },
+                        "trigger_name": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "title"
+                      ]
+                    },
+                    "stats": {
+                      "type": "object",
+                      "description": "Step-by-step performance metrics for the funnel.",
+                      "properties": {
+                        "metrics": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "label": {
+                                "type": "string"
+                              },
+                              "count": {
+                                "type": "integer"
+                              },
+                              "sequence_id": {
+                                "type": "integer"
+                              },
+                              "type": {
+                                "type": "string"
+                              },
+                              "percent": {
+                                "type": "integer"
+                              },
+                              "percent_text": {
+                                "type": "integer"
+                              },
+                              "previous_step_count": {
+                                "type": "integer"
+                              },
+                              "drop_count": {
+                                "type": "integer"
+                              },
+                              "drop_percent": {
+                                "type": "integer"
+                              },
+                              "revenues": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "link_clicks": {
+                                "type": "integer"
+                              },
+                              "email_opens": {
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "label",
+                              "count",
+                              "sequence_id",
+                              "type",
+                              "percent",
+                              "percent_text",
+                              "previous_step_count",
+                              "drop_count",
+                              "drop_percent"
+                            ]
+                          }
+                        },
+                        "total_revenue": {
+                          "type": "number"
+                        },
+                        "total_revenue_formatted": {
+                          "type": "string"
+                        },
+                        "revenue_currency": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "metrics",
+                        "total_revenue",
+                        "total_revenue_formatted",
+                        "revenue_currency"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "funnel",
+                    "stats"
+                  ]
+                },
+                "example": {
+                  "funnel": {
+                    "id": 7,
+                    "title": "Welcome Funnel",
+                    "status": "published",
+                    "trigger_name": "List Applied"
+                  },
+                  "stats": {
+                    "metrics": [
+                      {
+                        "label": "Entrance",
+                        "count": 420,
+                        "sequence_id": 0,
+                        "type": "root",
+                        "percent": 100,
+                        "percent_text": 100,
+                        "previous_step_count": 420,
+                        "drop_count": 0,
+                        "drop_percent": 0
+                      },
+                      {
+                        "label": "Send Welcome Email",
+                        "count": 390,
+                        "sequence_id": 22,
+                        "type": "email",
+                        "percent": 93,
+                        "percent_text": 93,
+                        "previous_step_count": 420,
+                        "drop_count": 30,
+                        "drop_percent": 7,
+                        "revenues": [
+                          "USD 240.00"
+                        ],
+                        "link_clicks": 118,
+                        "email_opens": 260
+                      }
+                    ],
+                    "total_revenue": 240,
+                    "total_revenue_formatted": "240.00",
+                    "revenue_currency": "USD"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

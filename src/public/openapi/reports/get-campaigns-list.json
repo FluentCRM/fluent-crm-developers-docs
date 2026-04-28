@@ -1,0 +1,268 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/reports/campaigns-list": {
+      "get": {
+        "operationId": "getCampaignsList",
+        "summary": "GET Campaigns List",
+        "description": "Retrieve a paginated list of archived campaigns ordered by last update time. Each campaign in the response includes a computed `stats` object.",
+        "tags": [
+          "Reports"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of archived campaigns to return per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 15
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Archived campaigns retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "campaigns": {
+                      "type": "object",
+                      "description": "Paginated archived campaign results.",
+                      "properties": {
+                        "current_page": {
+                          "type": "integer"
+                        },
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "title": {
+                                "type": "string"
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": [
+                                  "archived"
+                                ]
+                              },
+                              "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "stats": {
+                                "type": "object",
+                                "description": "Computed email performance summary for the campaign.",
+                                "properties": {
+                                  "total": {
+                                    "type": "integer"
+                                  },
+                                  "sent": {
+                                    "type": "integer"
+                                  },
+                                  "clicks": {
+                                    "type": "integer"
+                                  },
+                                  "views": {
+                                    "type": "integer"
+                                  },
+                                  "unsubscribers": {
+                                    "type": "integer"
+                                  },
+                                  "revenue": {
+                                    "type": "object",
+                                    "properties": {
+                                      "label": {
+                                        "type": "string"
+                                      },
+                                      "total": {
+                                        "type": "string"
+                                      },
+                                      "currency": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "total",
+                                  "sent",
+                                  "clicks",
+                                  "views",
+                                  "unsubscribers"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "title",
+                              "status",
+                              "updated_at",
+                              "stats"
+                            ]
+                          }
+                        },
+                        "from": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
+                        },
+                        "last_page": {
+                          "type": "integer"
+                        },
+                        "next_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "path": {
+                          "type": "string"
+                        },
+                        "per_page": {
+                          "type": "integer"
+                        },
+                        "prev_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "to": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
+                        },
+                        "total": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "current_page",
+                        "data",
+                        "last_page",
+                        "per_page",
+                        "total"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "campaigns"
+                  ]
+                },
+                "example": {
+                  "campaigns": {
+                    "current_page": 1,
+                    "data": [
+                      {
+                        "id": 14,
+                        "title": "Spring Promotion",
+                        "status": "archived",
+                        "updated_at": "2026-04-18 14:12:00",
+                        "stats": {
+                          "total": 1200,
+                          "sent": 1187,
+                          "clicks": 214,
+                          "views": 603,
+                          "unsubscribers": 9
+                        }
+                      }
+                    ],
+                    "from": 1,
+                    "last_page": 2,
+                    "next_page_url": "https://yourdomain.com/wp-json/fluent-crm/v2/reports/campaigns-list?page=2",
+                    "path": "https://yourdomain.com/wp-json/fluent-crm/v2/reports/campaigns-list",
+                    "per_page": 15,
+                    "prev_page_url": null,
+                    "to": 15,
+                    "total": 19
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/email-patterns/do-bulk-action": {
+      "post": {
+        "operationId": "bulkActionEmailPatterns",
+        "summary": "POST Bulk Action Email Patterns",
+        "description": "Perform a bulk action on email patterns. Currently the only supported action is `delete_patterns`.",
+        "tags": [
+          "Email Patterns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "action_name"
+                ],
+                "properties": {
+                  "action_name": {
+                    "type": "string",
+                    "enum": [
+                      "delete_patterns"
+                    ],
+                    "description": "The bulk action to perform."
+                  },
+                  "pattern_ids": {
+                    "type": "array",
+                    "description": "Array of email pattern IDs to delete when `select_all` is not truthy.",
+                    "items": {
+                      "type": "integer"
+                    }
+                  },
+                  "select_all": {
+                    "type": "boolean",
+                    "description": "If true, deletes all patterns matching the optional `search` filter instead of only the provided `pattern_ids`."
+                  },
+                  "search": {
+                    "type": "string",
+                    "description": "Optional search term used only with `select_all=true`."
+                  }
+                }
+              },
+              "examples": {
+                "deleteSelected": {
+                  "summary": "Delete selected patterns",
+                  "value": {
+                    "action_name": "delete_patterns",
+                    "pattern_ids": [
+                      12,
+                      14,
+                      18
+                    ]
+                  }
+                },
+                "deleteAllMatching": {
+                  "summary": "Delete all matching patterns",
+                  "value": {
+                    "action_name": "delete_patterns",
+                    "select_all": true,
+                    "search": "welcome"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Bulk action completed successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "3 pattern(s) deleted successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid action or no patterns selected.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "invalidAction": {
+                    "summary": "Invalid action",
+                    "value": {
+                      "message": "Invalid action"
+                    }
+                  },
+                  "noSelection": {
+                    "summary": "No patterns selected",
+                    "value": {
+                      "message": "No patterns selected"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}
