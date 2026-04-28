@@ -1,6 +1,6 @@
 # FluentCRM REST API
 
-Complete REST API documentation for FluentCRM — covering **319 endpoints** across 28 modules, including FluentCampaign Pro.
+Complete REST API documentation for FluentCRM — covering **320 endpoints** across 28 modules, including FluentCampaign Pro.
 
 ## Base URL
 
@@ -51,7 +51,7 @@ Use test/staging sites only. API requests make permanent changes to your data.
 | Module | Endpoints | Description |
 |--------|-----------|-------------|
 | [Campaigns](/rest-api/operations/campaigns/list-campaigns) | 32 | Create, schedule, send, and analyze email campaigns |
-| [Templates](/rest-api/operations/templates/list-templates) | 11 | Email templates, smart codes, global styles |
+| [Templates](/rest-api/operations/templates/list-templates) | 12 | Email templates, smart codes, global styles |
 | [Sequences](/rest-api/operations/sequences/list-sequences) | 18 | Automated email sequences (Pro) |
 | [Recurring Campaigns](/rest-api/operations/recurring-campaigns/list-recurring-campaigns) | 14 | Recurring/automated campaigns (Pro) |
 
