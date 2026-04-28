@@ -201,6 +201,7 @@ export default [
             { text: 'Get Email <badge type="tip">GET</badge>', link: '/rest-api/operations/sequences/get-sequence-email' },
             { text: 'Create Email <badge type="warning">POST</badge>', link: '/rest-api/operations/sequences/create-sequence-email' },
             { text: 'Update Email <badge type="info">PUT</badge>', link: '/rest-api/operations/sequences/update-sequence-email' },
+            { text: 'Update Email Delay <badge type="info">PATCH</badge>', link: '/rest-api/operations/sequences/update-sequence-email-delay' },
             { text: 'Delete Email <badge type="danger">DELETE</badge>', link: '/rest-api/operations/sequences/delete-sequence-email' },
             { text: 'Duplicate Email <badge type="warning">POST</badge>', link: '/rest-api/operations/sequences/duplicate-sequence-email' },
             { text: 'Create/Update Email <badge type="warning">POST</badge>', link: '/rest-api/operations/sequences/create-or-update-sequence-email' },
@@ -291,6 +292,7 @@ export default [
             { text: 'Cascade Selections <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-cascade-selections' },
             { text: 'Get Emails <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-report-emails' },
             { text: 'Delete Emails <badge type="danger">DELETE</badge>', link: '/rest-api/operations/reports/delete-report-emails' },
+            { text: 'Top Campaigns <badge type="tip">GET</badge> <badge type="danger">Pro</badge>', link: '/rest-api/operations/reports/get-top-campaigns' },
             { text: 'Advanced Providers <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-advanced-report-providers' },
             { text: 'Ping <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/ping-report' },
         ]
