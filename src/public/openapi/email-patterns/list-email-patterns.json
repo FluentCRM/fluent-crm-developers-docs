@@ -1,0 +1,196 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/email-patterns": {
+      "get": {
+        "operationId": "listEmailPatterns",
+        "summary": "GET List Email Patterns",
+        "description": "Retrieve paginated reusable email patterns stored in FluentCRM. Supports simple text search against the underlying pattern value payload and returns normalized pattern objects.",
+        "tags": [
+          "Email Patterns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search term applied against the stored pattern value payload.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of patterns per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 15
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of email patterns.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "patterns": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/EmailPattern"
+                          }
+                        },
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of patterns matching the query."
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "patterns": {
+                    "data": [
+                      {
+                        "id": 12,
+                        "slug": "fluentcrm/welcome-pattern-12",
+                        "title": "Welcome Pattern",
+                        "content": "<!-- wp:paragraph --><p>Welcome to our newsletter.</p><!-- /wp:paragraph -->",
+                        "category": "Onboarding",
+                        "description": "Reusable onboarding email block.",
+                        "sync_status": "unsynced",
+                        "created_at": "2026-04-20 09:15:00",
+                        "updated_at": "2026-04-21 11:30:00"
+                      }
+                    ],
+                    "total": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "EmailPattern": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Pattern ID."
+          },
+          "slug": {
+            "type": "string",
+            "description": "Generated pattern slug."
+          },
+          "title": {
+            "type": "string",
+            "description": "Pattern title."
+          },
+          "content": {
+            "type": "string",
+            "description": "Pattern content HTML or block markup."
+          },
+          "category": {
+            "type": "string",
+            "description": "Assigned category name."
+          },
+          "description": {
+            "type": "string",
+            "description": "Pattern description."
+          },
+          "sync_status": {
+            "type": "string",
+            "description": "Pattern sync status.",
+            "default": "unsynced"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "Pattern creation timestamp."
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "Pattern update timestamp."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}
