@@ -515,8 +515,8 @@ export default [
             { text: 'List Docs <badge type="tip">GET</badge>', link: '/rest-api/operations/docs/list-docs' },
             { text: 'Get Doc <badge type="tip">GET</badge>', link: '/rest-api/operations/docs/get-doc' },
             { text: 'Get Addons <badge type="tip">GET</badge>', link: '/rest-api/operations/docs/get-doc-addons' },
-            { text: 'Bounce Handler <badge type="warning">POST</badge>', link: '/rest-api/operations/public-bounce/handle-bounce-with-handle' },
-            { text: 'Bounce Handler (Alt) <badge type="warning">POST</badge>', link: '/rest-api/operations/public-bounce/handle-bounce' },
+            { text: 'Bounce Handler <badge type="warning">ANY</badge>', link: '/rest-api/operations/public-bounce/handle-bounce-with-handle' },
+            { text: 'Bounce Handler (Alt) <badge type="warning">ANY</badge>', link: '/rest-api/operations/public-bounce/handle-bounce' },
         ]
     },
 ]
