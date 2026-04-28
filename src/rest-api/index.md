@@ -1,6 +1,6 @@
 # FluentCRM REST API
 
-Complete REST API documentation for FluentCRM — covering **319 endpoints** across 28 modules, including FluentCampaign Pro.
+Complete REST API documentation for FluentCRM — covering **328 endpoints** across 28 modules, including FluentCampaign Pro.
 
 ## Base URL
 
@@ -60,7 +60,7 @@ Use test/staging sites only. API requests make permanent changes to your data.
 | Module | Endpoints | Description |
 |--------|-----------|-------------|
 | [Funnels](/rest-api/operations/funnels/list-funnels) | 31 | Marketing automation funnels with triggers, actions, benchmarks |
-| [Reports](/rest-api/operations/reports/get-dashboard-stats) | 14 | Dashboard stats, email performance, contact growth |
+| [Reports](/rest-api/operations/reports/get-dashboard-stats) | 24 | Dashboard stats, email performance, contact growth |
 | [Webhooks](/rest-api/operations/webhooks/list-webhooks) | 5 | Incoming webhook endpoints for data collection |
 | [Dynamic Segments](/rest-api/operations/dynamic-segments/list-dynamic-segments) | 9 | Smart contact segments with dynamic conditions (Pro) |
 
