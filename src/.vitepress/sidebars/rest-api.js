@@ -430,6 +430,7 @@ export default [
             { text: 'Delete Campaign <badge type="danger">DELETE</badge>', link: '/rest-api/operations/sms/delete-sms-campaign' },
             { text: 'Schedule <badge type="warning">POST</badge>', link: '/rest-api/operations/sms/schedule-sms-campaign' },
             { text: 'Unschedule <badge type="warning">POST</badge>', link: '/rest-api/operations/sms/unschedule-sms-campaign' },
+            { text: 'Un-schedule (Legacy) <badge type="warning">POST</badge>', link: '/rest-api/operations/sms/un-schedule-sms-campaign' },
             { text: 'Pause <badge type="warning">POST</badge>', link: '/rest-api/operations/sms/pause-sms-campaign' },
             { text: 'Resume <badge type="warning">POST</badge>', link: '/rest-api/operations/sms/resume-sms-campaign' },
             { text: 'Duplicate <badge type="warning">POST</badge>', link: '/rest-api/operations/sms/duplicate-sms-campaign' },
