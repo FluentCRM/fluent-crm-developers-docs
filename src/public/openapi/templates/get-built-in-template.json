@@ -1,0 +1,250 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/templates/built-in-template": {
+      "post": {
+        "operationId": "getBuiltInTemplate",
+        "summary": "POST Fetch Built-In Template",
+        "description": "Download a single built-in template from an allowed remote FluentCRM template URL and return it in FluentCRM's local template payload shape without saving it as a WordPress template.",
+        "tags": [
+          "Templates"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "HTTPS URL of the remote built-in template JSON file. Only trusted FluentCRM template hosts are accepted."
+                  }
+                }
+              },
+              "example": {
+                "file": "https://fluentcrm.com/wp-content/templates/welcome.json"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Built-in template downloaded and normalized successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "template": {
+                      "$ref": "#/components/schemas/BuiltInTemplatePayload"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Template has been inserted",
+                  "template": {
+                    "post_title": "Welcome Series - Day 1",
+                    "post_content": "<table><tr><td><h1>Welcome</h1><p>Hello ##subscriber.first_name##</p></td></tr></table>",
+                    "post_excerpt": "Welcome your subscribers with a polished first-touch email.",
+                    "email_subject": "Welcome to ##crm.business_name##",
+                    "edit_type": "visual",
+                    "design_template": "simple",
+                    "settings": {
+                      "template_config": {
+                        "content_padding": 20
+                      },
+                      "footer_settings": {
+                        "custom_footer": "no",
+                        "footer_content": "",
+                        "disable_footer": "no"
+                      }
+                    },
+                    "_visual_builder_design": {
+                      "version": 1,
+                      "blocks": []
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Template URL is invalid, the download failed, or the remote file is not a valid FluentCRM template.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "invalidUrl": {
+                    "summary": "Invalid template source URL",
+                    "value": {
+                      "message": "Invalid template source URL"
+                    }
+                  },
+                  "downloadFailed": {
+                    "summary": "Remote download failed",
+                    "value": {
+                      "message": "Unable to download the selected template. Please try again."
+                    }
+                  },
+                  "invalidTemplate": {
+                    "summary": "Invalid FluentCRM template file",
+                    "value": {
+                      "message": "The selected file is not a valid FluentCRM template."
+                    }
+                  },
+                  "emptyContent": {
+                    "summary": "Template has no content",
+                    "value": {
+                      "message": "The selected template does not have any email content."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "BuiltInTemplatePayload": {
+        "type": "object",
+        "description": "Remote built-in template normalized to the local FluentCRM template payload shape.",
+        "properties": {
+          "post_title": {
+            "type": "string",
+            "description": "Template title."
+          },
+          "post_content": {
+            "type": "string",
+            "description": "Template email HTML content."
+          },
+          "post_excerpt": {
+            "type": "string",
+            "description": "Template preview text or excerpt."
+          },
+          "email_subject": {
+            "type": "string",
+            "description": "Template email subject line."
+          },
+          "edit_type": {
+            "type": "string",
+            "description": "Editor type for the template.",
+            "enum": [
+              "html",
+              "visual"
+            ]
+          },
+          "design_template": {
+            "type": "string",
+            "description": "Design template identifier."
+          },
+          "settings": {
+            "type": "object",
+            "properties": {
+              "template_config": {
+                "type": "object",
+                "description": "Template configuration settings.",
+                "additionalProperties": true
+              },
+              "footer_settings": {
+                "type": "object",
+                "properties": {
+                  "custom_footer": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ]
+                  },
+                  "footer_content": {
+                    "type": "string"
+                  },
+                  "disable_footer": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "_visual_builder_design": {
+            "description": "Visual builder block design payload, when present.",
+            "nullable": true
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}
