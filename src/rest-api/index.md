@@ -1,6 +1,6 @@
 # FluentCRM REST API
 
-Complete REST API documentation for FluentCRM — covering **319 endpoints** across 28 modules, including FluentCampaign Pro.
+Complete REST API documentation for FluentCRM — covering **321 endpoints** across 29 modules, including FluentCampaign Pro.
 
 ## Base URL
 
@@ -84,6 +84,7 @@ Use test/staging sites only. API requests make permanent changes to your data.
 | [Pro Settings](/rest-api/operations/pro-settings/get-license-status) | 11 | License, managers, SMS settings (Pro) |
 | [Commerce Reports](/rest-api/operations/commerce-reports/get-commerce-reports) | 2 | WooCommerce/EDD revenue reports (Pro) |
 | [SMS](/rest-api/operations/sms/list-sms-campaigns) | 24 | SMS campaigns, messages, subscriber SMS (Pro) |
+| [Subscribers Export](/rest-api/operations/subscribers-export/post-subscribers-export-page) | 2 | Paginated export pages for subscriber CSV/data exports (Pro) |
 
 ### Other
 

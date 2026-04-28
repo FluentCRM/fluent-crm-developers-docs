@@ -231,6 +231,14 @@ export default [
         ]
     },
     {
+        text: 'Subscribers Export <badge type="danger">Pro</badge>',
+        collapsed: true,
+        items: [
+            { text: 'Get Export Page <badge type="tip">GET</badge>', link: '/rest-api/operations/subscribers-export/get-subscribers-export-page' },
+            { text: 'Post Export Page <badge type="warning">POST</badge>', link: '/rest-api/operations/subscribers-export/post-subscribers-export-page' },
+        ]
+    },
+    {
         text: 'Dynamic Segments <badge type="danger">Pro</badge>',
         collapsed: true,
         items: [
