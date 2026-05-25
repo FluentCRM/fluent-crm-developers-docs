@@ -71,15 +71,19 @@ wp fluent_crm cli_send [--force=yes] [--silent=yes] [--run_time=<seconds>] [--of
 | `--force` | — | Skip confirmation prompt |
 | `--silent` | — | Suppress output (useful for cron scripts) |
 | `--run_time` | `50` | Max seconds to run before stopping |
-| `--offset` | `200` | Emails to process per batch |
+| `--offset` | `200` | Where in the pending queue this worker starts reading. Used to spread multiple parallel workers across the queue so they don't compete for the same emails (the per-batch size itself is fixed internally) |
 | `--min_pending` | `300` | Stop when pending count drops below this |
-| `--option_key` | `fluentcrm_is_sending_cli_emails` | WordPress option key used as mutex lock |
+| `--option_key` | `fluentcrm_is_sending_cli_emails` | WordPress option key used as the mutex lock. Give each parallel worker a unique value so they run independently |
 
 **Cron example:**
 
 ```bash
 */2 * * * * cd /path/to/wordpress && wp fluent_crm cli_send --force=yes --silent=yes
 ```
+
+::: tip Running multiple senders in parallel
+To send faster, run several workers at once — each with a unique `--option_key` and a staggered `--offset`. Emails are claimed atomically, so workers never send duplicates. See [Email Sending Speed](/modules/email-sending-speed#step-3-parallel-sending-with-wp-cli-high-volume) for a complete cron-based setup and how to choose the number of workers.
+:::
 
 ---
 

@@ -7,6 +7,13 @@ export default [
         ]
     },
     {
+        text: 'Email Delivery',
+        collapsed: false,
+        items: [
+            { text: 'Email Sending Speed', link: '/modules/email-sending-speed' },
+        ]
+    },
+    {
         text: 'Automation',
         collapsed: false,
         items: [

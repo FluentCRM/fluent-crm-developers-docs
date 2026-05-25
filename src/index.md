@@ -16,7 +16,10 @@ pageClass: docs-home
     <a href="./getting-started/" class="primary">Get Started</a>
     <a href="./rest-api/" class="secondary">REST API</a>
     <a href="./hooks/" class="secondary">Hooks Reference</a>
+    <a href="https://docs.fluentcrm.com/" class="secondary" target="_blank" rel="noopener">User Documentation ↗</a>
   </div>
+
+  <p class="hero-note">Looking for help <strong>using</strong> FluentCRM rather than building on it? Head to the <a href="https://docs.fluentcrm.com/" target="_blank" rel="noopener">User Documentation</a>.</p>
 </section>
 
 <section id="home-popular" class="home-content">
