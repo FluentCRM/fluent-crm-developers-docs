@@ -1,43 +1,36 @@
 # Authentication
 
-FluentCRM uses WordPress REST API authentication. You'll need to create application credentials to access the API securely.
+FluentCRM uses WordPress Application Passwords for REST API authentication. This is the standard WordPress authentication method that provides secure, non-interactive access to the REST API.
 
-## Creating API Credentials
+## Creating Application Passwords
 
-### Step 1: Create a Manager Account
+### Step 1: Access User Profile
 
-First, create a dedicated user account for API access:
+1. Log in to your WordPress admin dashboard
+2. Navigate to `Users → Profile` (or `Users → All Users` and click on your user)
+3. Scroll down to the "Application Passwords" section
 
-1. Navigate to `FluentCRM → Settings → Managers`
-2. Click "Add New Manager" 
-3. Select the specific FluentCRM permissions you want to grant
-4. Save the manager account
+### Step 2: Create New Application Password
 
-::: warning Important
-Do NOT use an Administrator user role for API access. Create a dedicated manager account with only the necessary FluentCRM permissions for better security.
-:::
+1. In the "Application Passwords" section, enter a name for your application (e.g., "FluentCRM API")
+2. Click "Add New Application Password"
 
-![Create Manager](https://rest-api.fluentcrm.com/images/create_manager-8a396fc8.png)
-
-### Step 2: Generate API Credentials
-
-1. Go to `FluentCRM → Settings → Rest API`
-2. Click "Create New API Key"
-3. Select the manager account you created in Step 1
-4. Click "Generate Key"
-
-![REST API Screen](https://rest-api.fluentcrm.com/images/rest_api_screen-9887ffeb.png)
+![WordPress Application Passwords](/assets/img/wordpress-app-passwords.png)
 
 ### Step 3: Save Your Credentials
 
-After generating the key, you'll receive:
-- **Username**: Your API username  
-- **Application Password**: Your API password
+After creating the application password, WordPress will display:
+- **Username**: Your WordPress username
+- **Application Password**: A generated password (e.g., "oqYd hptb PnKC XHur CJbG 01UW")
 
-![API Success](https://rest-api.fluentcrm.com/images/rest_api_success_keys-1d59b207.png)
+![Generated Application Password](/assets/img/wordpress-generated-password.png)
 
 ::: warning Important
-Save these credentials immediately! The application password cannot be retrieved later.
+Save these credentials immediately! The application password cannot be retrieved later and will only be shown once.
+:::
+
+::: tip Note
+Application passwords are different from your regular WordPress password and are specifically designed for API access. They can be easily revoked if needed.
 :::
 
 ## Authentication Methods
@@ -51,16 +44,17 @@ curl "https://yourdomain.com/wp-json/fluent-crm/v2/subscribers" \
   -H "Authorization: Basic $(echo -n 'API_USERNAME:API_PASSWORD' | base64)"
 ```
 
-### URL Parameters (Not Recommended)
+### Cookie Authentication (Not Recommended for API)
 
-For testing only, you can pass credentials as URL parameters:
+For testing only, you can use cookie authentication, but this is not recommended for API access:
 
 ```bash
-curl "https://yourdomain.com/wp-json/fluent-crm/v2/subscribers?_wp_http_referer=API_USERNAME:API_PASSWORD"
+curl "https://yourdomain.com/wp-json/fluent-crm/v2/subscribers" \
+  -H "Cookie: wordpress_logged_in_xxx=your_cookie_value"
 ```
 
 ::: warning Security Notice
-Never use URL parameter authentication in production. Always use proper Authorization headers.
+Never use cookie authentication for API access in production. Always use Application Passwords with proper Authorization headers.
 :::
 
 ## Example API Call
@@ -164,30 +158,53 @@ else:
     print(response.text)
 ```
 
+### Ruby
+
+```ruby
+require 'net/http'
+require 'uri'
+require 'base64'
+
+username = 'your_api_username'
+password = 'your_api_password'
+url = URI('https://yourdomain.com/wp-json/fluent-crm/v2/subscribers')
+
+http = Net::HTTP.new(url.host, url.port)
+http.use_ssl = true
+
+request = Net::HTTP::Get.new(url)
+request['Authorization'] = "Basic #{Base64.strict_encode64("#{username}:#{password}")}"
+request['Content-Type'] = 'application/json'
+
+response = http.request(request)
+puts response.body
+```
+
 ## Testing Your Authentication
 
 To verify your credentials are working, make a simple API call:
 
 ```bash
-curl "https://yourdomain.com/wp-json/fluent-crm/v2/reports/options" \
+curl "https://yourdomain.com/wp-json/fluent-crm/v2/subscribers" \
   -H "Authorization: Basic API_USERNAME:API_PASSWORD"
 ```
 
-If successful, you'll receive a JSON response with FluentCRM options data.
+If successful, you'll receive a JSON response with your subscribers data.
 
 ## Troubleshooting
 
 ### Common Issues
 
 **401 Unauthorized Error**
-- Verify your username and password are correct
-- Ensure the manager account has proper FluentCRM permissions
-- Check that FluentCRM is properly installed and activated
+- Verify your username and application password are correct
+- Ensure the application password hasn't been revoked
+- Check that the user account has proper permissions
+- Verify that FluentCRM is properly installed and activated
 
 **403 Forbidden Error**  
-- The manager account may lack necessary permissions
-- Verify the account is not an Administrator role
-- Check FluentCRM permission settings for the manager
+- The user account may lack necessary permissions
+- Verify the account has appropriate WordPress capabilities
+- Check if the user has access to FluentCRM features
 
 **404 Not Found Error**
 - Verify the API endpoint URL is correct
@@ -196,11 +213,10 @@ If successful, you'll receive a JSON response with FluentCRM options data.
 
 ### Permission Requirements
 
-Your API manager account needs these minimum permissions:
-- **View Contacts**: Required for GET requests
-- **Manage Contacts**: Required for POST/PUT/DELETE requests  
-- **View Reports**: Required for analytics endpoints
-- **Manage Campaigns**: Required for campaign operations
+Your API user account needs these minimum permissions:
+- **WordPress Administrator role**: Full access to all endpoints
+- **Appropriate capabilities**: Required for the specific operations you're performing
+- **FluentCRM access**: User must have access to FluentCRM features
 
 ## Security Best Practices
 
