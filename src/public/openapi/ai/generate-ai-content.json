@@ -1,0 +1,172 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/ai/generate": {
+      "post": {
+        "operationId": "generateAiContent",
+        "summary": "POST Generate AI Content",
+        "description": "Generate or transform email copy using the saved AI settings. Supported actions are `rewrite`, `shorten`, `expand`, `fix_grammar`, and `custom`.",
+        "tags": [
+          "AI"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "enum": [
+                      "rewrite",
+                      "shorten",
+                      "expand",
+                      "fix_grammar",
+                      "custom"
+                    ],
+                    "description": "Transformation action to perform."
+                  },
+                  "content": {
+                    "type": "string",
+                    "description": "Selected email content to transform. Required for all actions except a custom prompt-only request."
+                  },
+                  "tone": {
+                    "type": "string",
+                    "description": "Optional tone hint appended to the generated system prompt."
+                  },
+                  "custom_prompt": {
+                    "type": "string",
+                    "description": "Custom instruction text. Used when `action=custom`."
+                  }
+                },
+                "required": [
+                  "action"
+                ]
+              },
+              "example": {
+                "action": "rewrite",
+                "content": "Hello there, I hope this email finds you well. We wanted to let you know about our new offer.",
+                "tone": "friendly",
+                "custom_prompt": ""
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "AI content generated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "type": "string",
+                      "description": "Generated text returned by the configured AI provider after sanitization."
+                    }
+                  },
+                  "required": [
+                    "content"
+                  ]
+                },
+                "example": {
+                  "content": "Hi {{contact.first_name}},\n\nWe’ve got a new offer you might like. Here’s a quick look at what’s new."
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation, configuration, or provider API error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "invalidAction": {
+                    "value": {
+                      "message": "Invalid action specified.",
+                      "data": {
+                        "status": 422
+                      }
+                    }
+                  },
+                  "notEnabled": {
+                    "value": {
+                      "message": "AI Writing is not enabled. Please configure it in Settings.",
+                      "data": {
+                        "status": 422
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

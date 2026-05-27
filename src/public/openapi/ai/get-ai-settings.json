@@ -1,0 +1,144 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/ai/settings": {
+      "get": {
+        "operationId": "getAiSettings",
+        "summary": "GET AI Settings",
+        "description": "Retrieve the saved AI writing settings. If an API key is stored, the response returns a masked value that exposes only the last 4 characters.",
+        "tags": [
+          "AI"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "AI settings retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "settings": {
+                      "type": "object",
+                      "properties": {
+                        "is_enabled": {
+                          "type": "string",
+                          "enum": [
+                            "yes",
+                            "no"
+                          ],
+                          "description": "Whether AI writing is enabled."
+                        },
+                        "provider": {
+                          "type": "string",
+                          "description": "Configured AI provider slug.",
+                          "enum": [
+                            "",
+                            "openai",
+                            "claude",
+                            "gemini"
+                          ]
+                        },
+                        "api_key": {
+                          "type": "string",
+                          "description": "Masked API key value, or an empty string if none is saved."
+                        },
+                        "model": {
+                          "type": "string",
+                          "description": "Configured model identifier."
+                        },
+                        "custom_prompt": {
+                          "type": "string",
+                          "description": "Additional system instructions appended to the built-in AI writing prompt."
+                        }
+                      },
+                      "required": [
+                        "is_enabled",
+                        "provider",
+                        "api_key",
+                        "model",
+                        "custom_prompt"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "settings"
+                  ]
+                },
+                "example": {
+                  "settings": {
+                    "is_enabled": "yes",
+                    "provider": "openai",
+                    "api_key": "****9x7K",
+                    "model": "gpt-4o-mini",
+                    "custom_prompt": "Keep the tone friendly and direct."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

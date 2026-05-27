@@ -1,0 +1,206 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/sequences/{id}/email/{email_id}/delay": {
+      "patch": {
+        "operationId": "updateSequenceEmailDelay",
+        "summary": "PATCH Update Sequence Email Delay",
+        "description": "Update the wait time for a sequence email. The route accepts top-level `delay` and `delay_unit` values and stores them in `email.settings.timings`. Requires FluentCampaign Pro.",
+        "tags": [
+          "Sequences"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Parent sequence ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "email_id",
+            "in": "path",
+            "description": "Sequence email ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "delay": {
+                    "type": "string",
+                    "description": "Delay amount to store in `settings.timings.delay`. The controller sanitizes this as text and defaults to `0` when omitted."
+                  },
+                  "delay_unit": {
+                    "type": "string",
+                    "description": "Delay unit to store in `settings.timings.delay_unit`. Allowed values in code are `minutes`, `hours`, `days`, `weeks`, and `Months`. Any other value falls back to `days`.",
+                    "enum": [
+                      "minutes",
+                      "hours",
+                      "days",
+                      "weeks",
+                      "Months"
+                    ]
+                  }
+                }
+              },
+              "example": {
+                "delay": "3",
+                "delay_unit": "days"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sequence email delay updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "$ref": "#/components/schemas/SequenceEmail"
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "email"
+                  ]
+                },
+                "example": {
+                  "message": "Wait time has been updated",
+                  "email": {
+                    "id": 12,
+                    "parent_id": 4,
+                    "email_subject": "Day 3 Follow-up",
+                    "settings": {
+                      "timings": {
+                        "delay": "3",
+                        "delay_unit": "days"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SequenceEmail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "parent_id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "email_subject": {
+            "type": "string"
+          },
+          "email_pre_header": {
+            "type": "string"
+          },
+          "email_body": {
+            "type": "string"
+          },
+          "design_template": {
+            "type": "string"
+          },
+          "template_id": {
+            "type": "integer"
+          },
+          "settings": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}
