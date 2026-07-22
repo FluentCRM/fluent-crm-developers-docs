@@ -121,11 +121,34 @@ $contact = $contactApi->createOrUpdate($data, $forceUpdate = false, $deleteOther
 
 **Parameters**
 - `$data` `array` — Contact data (must include `email`). Can include `tags`, `lists`, `detach_tags`, `detach_lists`, and `custom_values`.
-- `$forceUpdate` `bool` — If `true`, updates status even on existing contacts regardless of their current status
+- `$forceUpdate` `bool` — If `true`, the caller takes explicit responsibility for the `status` write: it is applied unconditionally, including resurrecting an `unsubscribed`/`bounced`/`complained`/`spammed` contact or downgrading a `subscribed` one. If `false` (default), status writes are guarded — see the warning below.
 - `$deleteOtherValues` `bool` — If `true`, replaces all custom field data (deletes fields not in the new data)
 - `$sync` `bool` — Reserved for future use
 
 **Returns** `false` | [Subscriber](/database/models/subscriber)
+
+::: warning Status writes no longer auto-escalate to force (since FluentCRM 3.1.9)
+`createOrUpdate()` no longer turns `$forceUpdate` on implicitly. With the default `$forceUpdate = false`, a `status` in `$data` is applied only when it moves in a safe direction:
+
+- Moving **into** suppression (`unsubscribed`, `bounced`, `complained`, `spammed`) is always applied — e.g. syncing a remote hard-bounce still works without force.
+- A suppressed contact is **never resurrected** — not even to `pending`.
+- A `subscribed` contact is never downgraded (e.g. a payload with `status: 'pending'` is ignored).
+- Any other current status (`pending`, `transactional`, …) accepts the payload status.
+
+Earlier versions silently enabled the force path whenever the payload carried a status and the existing contact was not `subscribed`, so "re-subscribe on purchase / form submission"-style integrations resurrected suppressed contacts implicitly. That intent must now be explicit:
+
+- Pass `$forceUpdate = true` when your flow itself proves consent (e.g. the person explicitly re-subscribed through your UI and you intend to overwrite a suppressed status).
+- For double opt-in re-consent flows, move the contact to `pending` and send the opt-in email — `updateStatus()` is the explicit, caller-owned status setter and always applies the given status, and `sendDoubleOptinEmail()` only sends to `pending` contacts:
+
+```php
+$contact = $contactApi->createOrUpdate($data); // status write is guarded
+
+if ($contact && $contact->status != 'subscribed') {
+    $contact = $contact->updateStatus('pending');
+    $contact->sendDoubleOptinEmail();
+}
+```
+:::
 
 **Example:**
 
