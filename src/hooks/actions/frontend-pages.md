@@ -383,3 +383,31 @@ add_action('fluent_crm/view_on_browser_footer', function($campaignEmail) {
 ```
 
 **Source:** `app/Views/external/view_on_browser.php`
+
+---
+
+## Public Request Dispatch Hooks
+
+FluentCRM's public request router (`?fluentcrm=1`) exposes two dynamic action hooks as extension points. Both fire on **unauthenticated** requests.
+
+### `fluentcrm_webhook_to_{handler}`
+
+Fires for `?fluentcrm=1&route=webhook&handler={handler}`. Intended for inbound webhooks from external services (for example, the Pro SMS module listens on `fluentcrm_webhook_to_sms_webhook`).
+
+**Parameters**
+- `$data` (array) The full request data (`$_REQUEST`)
+
+### `fluent_crm/handle_frontend_for_{handler}`
+
+Fires for `?fluentcrm=1&route=general&handler={handler}`. Intended for public frontend flows (for example, the abandoned-cart modules use it for cart-recovery links).
+
+**Parameters**
+- `$data` (array) The full request data (`$_REQUEST`)
+
+::: danger Listeners must authenticate their own requests
+These hooks follow the same trust model as WordPress core's `wp_ajax_nopriv_{action}`: FluentCRM performs **no** authentication, capability check, or nonce verification before dispatching. Any visitor can trigger your listener with arbitrary request data.
+
+If your listener changes state (writes to the database, sends email/SMS, modifies a contact), it **must** validate its own per-request secret before acting — for example a signed hash or an unguessable token issued when the URL was generated, as the built-in listeners do (the SMS webhook verifies a webhook hash; cart-recovery links require a matching per-cart `checkout_key`). Treat every field of `$data` as untrusted input.
+:::
+
+**Source:** `app/Hooks/Handlers/ExternalPages.php`
