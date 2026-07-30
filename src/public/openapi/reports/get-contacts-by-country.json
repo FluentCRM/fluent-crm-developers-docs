@@ -1,0 +1,130 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/reports/contacts-by-country": {
+      "get": {
+        "operationId": "getContactsByCountry",
+        "summary": "GET Contacts by Country",
+        "description": "Retrieve contact totals grouped by normalized uppercase country code.",
+        "tags": [
+          "Reports"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contact counts by country retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "countries": {
+                      "type": "array",
+                      "description": "Contact totals grouped by country code.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "country_code": {
+                            "type": "string",
+                            "description": "Uppercase ISO-like country code stored on the contact."
+                          },
+                          "contact_count": {
+                            "type": "integer",
+                            "description": "Number of contacts in that country."
+                          }
+                        },
+                        "required": [
+                          "country_code",
+                          "contact_count"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "countries"
+                  ]
+                },
+                "example": {
+                  "countries": [
+                    {
+                      "country_code": "US",
+                      "contact_count": 320
+                    },
+                    {
+                      "country_code": "BD",
+                      "contact_count": 87
+                    },
+                    {
+                      "country_code": "GB",
+                      "contact_count": 42
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -1,0 +1,195 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/email-patterns/wp-format": {
+      "get": {
+        "operationId": "listEmailPatternsWpFormat",
+        "summary": "GET List Email Patterns (WP Format)",
+        "description": "Retrieve email patterns formatted like WordPress `wp_block` REST responses for the FluentCRM editor middleware.",
+        "tags": [
+          "Email Patterns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Email patterns in WordPress block REST format.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WpBlockEmailPattern"
+                  }
+                },
+                "example": [
+                  {
+                    "id": 12,
+                    "date": "2026-04-20 09:15:00",
+                    "date_gmt": "2026-04-20 09:15:00",
+                    "modified": "2026-04-21 11:30:00",
+                    "modified_gmt": "2026-04-21 11:30:00",
+                    "slug": "fluentcrm/welcome-pattern-12",
+                    "status": "publish",
+                    "type": "wp_block",
+                    "link": "",
+                    "title": {
+                      "raw": "Welcome Pattern"
+                    },
+                    "content": {
+                      "raw": "<!-- wp:paragraph --><p>Welcome to our newsletter.</p><!-- /wp:paragraph -->",
+                      "protected": false
+                    },
+                    "meta": {},
+                    "wp_pattern_sync_status": "unsynced",
+                    "wp_pattern_category": [
+                      3
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "WpBlockEmailPattern": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Pattern ID."
+          },
+          "date": {
+            "type": "string",
+            "description": "Creation timestamp."
+          },
+          "date_gmt": {
+            "type": "string",
+            "description": "Creation timestamp in GMT."
+          },
+          "modified": {
+            "type": "string",
+            "description": "Last modification timestamp."
+          },
+          "modified_gmt": {
+            "type": "string",
+            "description": "Last modification timestamp in GMT."
+          },
+          "slug": {
+            "type": "string",
+            "description": "Pattern slug."
+          },
+          "status": {
+            "type": "string",
+            "description": "Always `publish` for this response shape."
+          },
+          "type": {
+            "type": "string",
+            "description": "Always `wp_block`."
+          },
+          "link": {
+            "type": "string",
+            "description": "Pattern link. Currently empty."
+          },
+          "title": {
+            "type": "object",
+            "properties": {
+              "raw": {
+                "type": "string",
+                "description": "Raw pattern title."
+              }
+            }
+          },
+          "content": {
+            "type": "object",
+            "properties": {
+              "raw": {
+                "type": "string",
+                "description": "Raw block content."
+              },
+              "protected": {
+                "type": "boolean",
+                "description": "Whether the content is protected."
+              }
+            }
+          },
+          "meta": {
+            "type": "object",
+            "description": "WordPress block metadata object."
+          },
+          "wp_pattern_sync_status": {
+            "type": "string",
+            "description": "Pattern sync status."
+          },
+          "wp_pattern_category": {
+            "type": "array",
+            "description": "Resolved WordPress-style category IDs.",
+            "items": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

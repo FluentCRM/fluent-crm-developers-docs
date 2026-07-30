@@ -1,0 +1,184 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/reports/top-campaigns": {
+      "get": {
+        "operationId": "getTopCampaigns",
+        "summary": "GET Top Campaigns",
+        "description": "Retrieve the top archived campaigns ranked by `open_rate`, `click_rate`, or `total_sent`. Requires FluentCampaign Pro.",
+        "tags": [
+          "Reports"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sort_by",
+            "in": "query",
+            "description": "Ranking metric. Any unsupported value falls back to `open_rate`.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "open_rate",
+              "enum": [
+                "open_rate",
+                "click_rate",
+                "total_sent"
+              ]
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Maximum number of top campaigns to return.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Top campaign report retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "campaigns": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "total_sent": {
+                            "type": "integer",
+                            "description": "Total number of sent emails counted for the campaign."
+                          },
+                          "open_rate": {
+                            "type": "number",
+                            "description": "Open rate percentage."
+                          },
+                          "click_rate": {
+                            "type": "number",
+                            "description": "Click rate percentage."
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "title",
+                          "updated_at",
+                          "total_sent",
+                          "open_rate",
+                          "click_rate"
+                        ]
+                      }
+                    },
+                    "available": {
+                      "type": "boolean",
+                      "description": "Always `true` when the Pro report is available."
+                    }
+                  },
+                  "required": [
+                    "campaigns",
+                    "available"
+                  ]
+                },
+                "example": {
+                  "campaigns": [
+                    {
+                      "id": 14,
+                      "title": "Spring Promotion",
+                      "updated_at": "2026-04-18 14:12:00",
+                      "total_sent": 1187,
+                      "open_rate": 54.43,
+                      "click_rate": 18.03
+                    },
+                    {
+                      "id": 11,
+                      "title": "Welcome Series Wrap-up",
+                      "updated_at": "2026-04-09 11:05:00",
+                      "total_sent": 930,
+                      "open_rate": 48.17,
+                      "click_rate": 15.91
+                    }
+                  ],
+                  "available": true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

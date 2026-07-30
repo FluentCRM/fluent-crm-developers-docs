@@ -26,8 +26,8 @@
     "/public/bounce_handler/{service_name}/{security_code}": {
       "post": {
         "operationId": "handleBounce",
-        "summary": "POST Handle Bounce",
-        "description": "Webhook endpoint for email service providers to report bounces, complaints, and unsubscribes. This is the shorter path variant without `/handle/`. Accepts any HTTP method. Validates the security code and processes the bounce event for supported services. Custom services can be handled via the `fluent_crm_handle_bounce_{service_name}` filter.",
+        "summary": "Handle Bounce",
+        "description": "Webhook endpoint for email service providers to report bounces, complaints, and unsubscribes. This is the shorter path variant without `/handle/`. The FluentCRM router registers this route as `ANY`; it is represented as `POST` here because OpenAPI requires a concrete operation method. Validates the security code and processes the bounce event for built-in services. Custom services can be handled via the `fluent_crm_handle_bounce_{service_name}` filter.",
         "tags": [
           "Public"
         ],
@@ -36,22 +36,10 @@
           {
             "name": "service_name",
             "in": "path",
-            "description": "Email service provider name.",
+            "description": "Email service provider name. Built-in handlers include `mailgun`, `pepipost`, `postmark`, `sendgrid`, `sparkpost`, `elasticemail`, `postalserver`, `smtp2go`, `brevo`, and `tosend`. Custom provider slugs are also allowed and can be handled with the `fluent_crm_handle_bounce_{service_name}` filter.",
             "required": true,
             "schema": {
-              "type": "string",
-              "enum": [
-                "mailgun",
-                "pepipost",
-                "postmark",
-                "sendgrid",
-                "sparkpost",
-                "elasticemail",
-                "postalserver",
-                "smtp2go",
-                "brevo",
-                "tosend"
-              ]
+              "type": "string"
             }
           },
           {
@@ -79,42 +67,35 @@
         },
         "responses": {
           "200": {
-            "description": "Bounce processed successfully.",
+            "description": "Bounce request processed. The controller returns a success payload for valid requests, and also returns an error-shaped JSON body when the security code is invalid.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BounceResponse"
-                },
-                "example": {
-                  "success": 1,
-                  "message": "recorded",
-                  "service": "sendgrid",
-                  "result": "bounced",
-                  "time": 1709312400
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Invalid security code.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "boolean",
-                      "description": "Always false on authentication failure."
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/BounceResponse"
                     },
-                    "message": {
-                      "type": "string",
-                      "description": "Error message."
+                    {
+                      "$ref": "#/components/schemas/BounceErrorResponse"
+                    }
+                  ]
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "success": 1,
+                      "message": "recorded",
+                      "service": "sendgrid",
+                      "result": "bounced",
+                      "time": 1709312400
+                    }
+                  },
+                  "invalidSecurityCode": {
+                    "value": {
+                      "status": false,
+                      "message": "Invalid Data or Security Code"
                     }
                   }
-                },
-                "example": {
-                  "status": false,
-                  "message": "Invalid Data or Security Code"
                 }
               }
             }
@@ -175,6 +156,23 @@
             "description": "Unix timestamp when the bounce was processed."
           }
         }
+      },
+      "BounceErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean",
+            "description": "False when the security code is invalid."
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message returned by the bounce controller."
+          }
+        },
+        "required": [
+          "status",
+          "message"
+        ]
       }
     },
     "securitySchemes": {

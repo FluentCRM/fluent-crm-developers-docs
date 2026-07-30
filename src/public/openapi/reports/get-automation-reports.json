@@ -1,0 +1,359 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/reports/automations": {
+      "get": {
+        "operationId": "getAutomationReports",
+        "summary": "GET Automation Reports",
+        "description": "Retrieve paginated published automation funnels with aggregate subscriber counts, execution progress totals, recent subscriber entries, and a top-triggered automations summary.",
+        "tags": [
+          "Reports"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Number of automation records to return per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 15
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Automation reports retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "automations": {
+                      "type": "object",
+                      "description": "Paginated published automation funnels.",
+                      "properties": {
+                        "current_page": {
+                          "type": "integer"
+                        },
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "title": {
+                                "type": "string"
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": [
+                                  "published"
+                                ]
+                              },
+                              "trigger_name": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "created_at": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "total_subscribers": {
+                                "type": "integer"
+                              },
+                              "completed_count": {
+                                "type": "integer"
+                              },
+                              "in_progress_count": {
+                                "type": "integer"
+                              },
+                              "last_run_at": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "format": "date-time"
+                              },
+                              "recent_subscribers": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "integer"
+                                    },
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "email": {
+                                      "type": "string"
+                                    },
+                                    "avatar": {
+                                      "type": [
+                                        "string",
+                                        "null"
+                                      ]
+                                    },
+                                    "entered_at": {
+                                      "type": "string",
+                                      "format": "date-time"
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "name",
+                                    "email",
+                                    "entered_at"
+                                  ]
+                                }
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "title",
+                              "status",
+                              "total_subscribers",
+                              "completed_count",
+                              "in_progress_count",
+                              "recent_subscribers"
+                            ]
+                          }
+                        },
+                        "from": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
+                        },
+                        "last_page": {
+                          "type": "integer"
+                        },
+                        "next_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "path": {
+                          "type": "string"
+                        },
+                        "per_page": {
+                          "type": "integer"
+                        },
+                        "prev_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "to": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
+                        },
+                        "total": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "current_page",
+                        "data",
+                        "last_page",
+                        "per_page",
+                        "total"
+                      ]
+                    },
+                    "overview": {
+                      "type": "object",
+                      "description": "Aggregate automation report totals.",
+                      "properties": {
+                        "total": {
+                          "type": "integer"
+                        },
+                        "subscribers": {
+                          "type": "integer"
+                        },
+                        "completed": {
+                          "type": "integer"
+                        },
+                        "in_progress": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "total",
+                        "subscribers",
+                        "completed",
+                        "in_progress"
+                      ]
+                    },
+                    "top_automations": {
+                      "type": "array",
+                      "description": "Top 5 published automations ranked by trigger count.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "trigger_name": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "trigger_count": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "title",
+                          "trigger_count"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "automations",
+                    "overview",
+                    "top_automations"
+                  ]
+                },
+                "example": {
+                  "automations": {
+                    "current_page": 1,
+                    "data": [
+                      {
+                        "id": 7,
+                        "title": "Welcome Funnel",
+                        "status": "published",
+                        "trigger_name": "List Applied",
+                        "created_at": "2026-03-01 09:00:00",
+                        "total_subscribers": 420,
+                        "completed_count": 280,
+                        "in_progress_count": 95,
+                        "last_run_at": "2026-04-28 08:20:00",
+                        "recent_subscribers": [
+                          {
+                            "id": 12,
+                            "name": "Jane Doe",
+                            "email": "jane@example.com",
+                            "avatar": null,
+                            "entered_at": "2026-04-28 08:20:00"
+                          }
+                        ]
+                      }
+                    ],
+                    "from": 1,
+                    "last_page": 1,
+                    "next_page_url": null,
+                    "path": "https://yourdomain.com/wp-json/fluent-crm/v2/reports/automations",
+                    "per_page": 15,
+                    "prev_page_url": null,
+                    "to": 1,
+                    "total": 1
+                  },
+                  "overview": {
+                    "total": 8,
+                    "subscribers": 1640,
+                    "completed": 950,
+                    "in_progress": 311
+                  },
+                  "top_automations": [
+                    {
+                      "id": 7,
+                      "title": "Welcome Funnel",
+                      "trigger_name": "List Applied",
+                      "trigger_count": 420
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}
