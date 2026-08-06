@@ -506,17 +506,19 @@ export default [
         ]
     },
     {
-        text: 'Pro Settings (11)',
+        text: 'Pro Settings (13)',
         collapsed: true,
         items: [
             { text: 'Get License Status <badge type="tip">GET</badge>', link: '/rest-api/operations/pro-settings/get-license-status' },
             { text: 'Get SMS Settings <badge type="tip">GET</badge>', link: '/rest-api/operations/pro-settings/get-sms-settings' },
+            { text: 'Get WhatsApp Settings <badge type="tip">GET</badge>', link: '/rest-api/operations/pro-settings/get-whatsapp-settings' },
             { text: 'List Managers <badge type="tip">GET</badge>', link: '/rest-api/operations/pro-settings/get-managers' },
             { text: 'Add Manager <badge type="warning">POST</badge>', link: '/rest-api/operations/pro-settings/add-manager' },
             { text: 'Disable SMS <badge type="warning">POST</badge>', link: '/rest-api/operations/pro-settings/disable-sms' },
             { text: 'Import Funnel <badge type="warning">POST</badge>', link: '/rest-api/operations/pro-settings/import-funnel' },
             { text: 'Save License <badge type="warning">POST</badge>', link: '/rest-api/operations/pro-settings/save-license' },
             { text: 'Save SMS Settings <badge type="warning">POST</badge>', link: '/rest-api/operations/pro-settings/save-sms-settings' },
+            { text: 'Save WhatsApp Settings <badge type="warning">POST</badge>', link: '/rest-api/operations/pro-settings/save-whatsapp-settings' },
             { text: 'Update Manager <badge type="info">PUT</badge>', link: '/rest-api/operations/pro-settings/update-manager' },
             { text: 'Deactivate License <badge type="danger">DELETE</badge>', link: '/rest-api/operations/pro-settings/deactivate-license' },
             { text: 'Delete Manager <badge type="danger">DELETE</badge>', link: '/rest-api/operations/pro-settings/delete-manager' },
@@ -551,6 +553,21 @@ export default [
             { text: 'Update SMS Campaign Labels <badge type="info">PUT</badge>', link: '/rest-api/operations/sms/update-sms-campaign-labels' },
             { text: 'Delete SMS Campaign <badge type="danger">DELETE</badge>', link: '/rest-api/operations/sms/delete-sms-campaign' },
             { text: 'Delete SMS Messages <badge type="danger">DELETE</badge>', link: '/rest-api/operations/sms/delete-sms-messages' },
+        ]
+    },
+    {
+        text: 'WhatsApp (Pro) (9)',
+        collapsed: true,
+        items: [
+            { text: 'Get Subscriber WhatsApp Messages <badge type="tip">GET</badge>', link: '/rest-api/operations/whatsapp/get-subscriber-whatsapp-messages' },
+            { text: 'Get Subscriber WhatsApp Session <badge type="tip">GET</badge>', link: '/rest-api/operations/whatsapp/get-subscriber-whatsapp-session' },
+            { text: 'Get Subscriber WhatsApp Stats <badge type="tip">GET</badge>', link: '/rest-api/operations/whatsapp/get-subscriber-whatsapp-stats' },
+            { text: 'List WhatsApp Templates <badge type="tip">GET</badge>', link: '/rest-api/operations/whatsapp/list-whatsapp-templates' },
+            { text: 'Create WhatsApp Template <badge type="warning">POST</badge>', link: '/rest-api/operations/whatsapp/create-whatsapp-template' },
+            { text: 'Send Subscriber WhatsApp Message <badge type="warning">POST</badge>', link: '/rest-api/operations/whatsapp/send-subscriber-whatsapp-message' },
+            { text: 'Sync WhatsApp Templates <badge type="warning">POST</badge>', link: '/rest-api/operations/whatsapp/sync-whatsapp-templates' },
+            { text: 'Validate WhatsApp Template <badge type="warning">POST</badge>', link: '/rest-api/operations/whatsapp/validate-whatsapp-template' },
+            { text: 'Delete WhatsApp Template <badge type="danger">DELETE</badge>', link: '/rest-api/operations/whatsapp/delete-whatsapp-template' },
         ]
     },
     {

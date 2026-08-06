@@ -86,10 +86,6 @@
                     "activation_hash": {
                       "type": "string",
                       "description": "Hash identifying this site's activation."
-                    },
-                    "is_expired": {
-                      "type": "boolean",
-                      "description": "True when the licence has lapsed."
                     }
                   }
                 },
