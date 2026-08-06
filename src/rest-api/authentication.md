@@ -4,12 +4,14 @@ FluentCRM uses WordPress REST API authentication. You'll need to create applicat
 
 ## Creating API Credentials
 
-### Step 1: Create a Manager Account
+### Step 1: Choose the Account for API Access
 
-First, create a dedicated user account for API access:
+Use a dedicated account rather than your own, so access can be revoked without disrupting anyone.
 
-1. Navigate to `FluentCRM → Settings → Managers`
-2. Click "Add New Manager" 
+**With FluentCRM Pro**, grant that account scoped CRM permissions:
+
+1. Navigate to `FluentCRM → Settings → CRM Managers`
+2. Click "Add New Manager"
 3. Select the specific FluentCRM permissions you want to grant
 4. Save the manager account
 
@@ -17,50 +19,76 @@ First, create a dedicated user account for API access:
 Do NOT use an Administrator user role for API access. Create a dedicated manager account with only the necessary FluentCRM permissions for better security.
 :::
 
+::: tip Using the free version?
+CRM Managers is a **Pro** feature. On the free plugin there is no way to grant partial CRM
+permissions, so API access has to go through a user who can already manage FluentCRM — normally an
+Administrator. Treat those credentials accordingly: give the Application Password a recognisable
+name and revoke it the moment the integration is retired.
+:::
+
 ![Create Manager](https://rest-api.fluentcrm.com/images/create_manager-8a396fc8.png)
 
-### Step 2: Generate API Credentials
+### Step 2: Generate an Application Password
 
-1. Go to `FluentCRM → Settings → Rest API`
-2. Click "Create New API Key"
-3. Select the manager account you created in Step 1
-4. Click "Generate Key"
+::: tip This moved to WordPress
+FluentCRM no longer has its own `Settings → Rest API` screen for creating API keys. Application
+Passwords are a built-in WordPress feature (since WordPress 5.6), so you create them from the user's
+profile instead. Passwords generated the old way keep working — nothing needs to be reissued.
+:::
 
-![REST API Screen](https://rest-api.fluentcrm.com/images/rest_api_screen-9887ffeb.png)
+1. Go to `Users → All Users` and click the manager account you created in Step 1
+   (or `Users → Profile` if it's your own account)
+2. Scroll down to the **Application Passwords** section
+3. Enter a name you'll recognise later, for example `FluentCRM API`
+4. Click **Add New Application Password**
 
 ### Step 3: Save Your Credentials
 
-After generating the key, you'll receive:
-- **Username**: Your API username  
-- **Application Password**: Your API password
+WordPress shows the generated password **once**:
 
-![API Success](https://rest-api.fluentcrm.com/images/rest_api_success_keys-1d59b207.png)
+- **Username**: the WordPress username (login) of that account — not the email address
+- **Application Password**: the generated string, displayed in groups like `abcd EFGH ijkl MNOP qrst UVWX`
 
 ::: warning Important
-Save these credentials immediately! The application password cannot be retrieved later.
+Copy it immediately — WordPress hashes it and it cannot be shown again. If you lose it, revoke the
+entry and create a new one.
 :::
+
+The spaces are only there for readability. WordPress strips every non-alphanumeric character before
+comparing, so `abcd EFGH ijkl` and `abcdEFGHijkl` both authenticate.
+
+::: warning Don't see the Application Passwords section?
+WordPress only offers it over **HTTPS**, or when the site is set to the `local` environment type.
+On a plain-HTTP site the section is hidden entirely. Serve the site over SSL — that is also a
+requirement for using Basic Authentication safely, since the credentials travel on every request.
+:::
+
+To revoke access later, return to the same screen and delete the entry. That immediately invalidates
+any integration using it, without affecting the user's normal login password.
 
 ## Authentication Methods
 
-### Basic Authentication (Recommended)
+### Basic Authentication
 
-Use HTTP Basic Authentication with your API credentials:
+Application Passwords authenticate over HTTP Basic Authentication. The simplest form is `curl -u`,
+which builds and encodes the header for you:
 
 ```bash
 curl "https://yourdomain.com/wp-json/fluent-crm/v2/subscribers" \
-  -H "Authorization: Basic $(echo -n 'API_USERNAME:API_PASSWORD' | base64)"
+  -u 'API_USERNAME:API_PASSWORD'
 ```
 
-### URL Parameters (Not Recommended)
-
-For testing only, you can pass credentials as URL parameters:
+If you build the header yourself, the value must be the **base64 encoding** of `username:password`:
 
 ```bash
-curl "https://yourdomain.com/wp-json/fluent-crm/v2/subscribers?_wp_http_referer=API_USERNAME:API_PASSWORD"
+curl "https://yourdomain.com/wp-json/fluent-crm/v2/subscribers" \
+  -H "Authorization: Basic $(printf '%s' 'API_USERNAME:API_PASSWORD' | base64)"
 ```
 
-::: warning Security Notice
-Never use URL parameter authentication in production. Always use proper Authorization headers.
+::: danger Always use HTTPS
+Basic Authentication sends your credentials on every single request, protected only by TLS. Over
+plain HTTP they are readable in transit. WordPress will not even expose Application Passwords on a
+non-SSL site.
 :::
 
 ## Example API Call
@@ -69,7 +97,7 @@ Here's a complete example of making an authenticated API request:
 
 ```bash
 curl "https://yourdomain.com/wp-json/fluent-crm/v2/subscribers" \
-  -H "Authorization: Basic API_USERNAME:API_PASSWORD" \
+  -u 'API_USERNAME:API_PASSWORD' \
   -H "Content-Type: application/json"
 ```
 
@@ -170,7 +198,7 @@ To verify your credentials are working, make a simple API call:
 
 ```bash
 curl "https://yourdomain.com/wp-json/fluent-crm/v2/reports/options" \
-  -H "Authorization: Basic API_USERNAME:API_PASSWORD"
+  -u 'API_USERNAME:API_PASSWORD'
 ```
 
 If successful, you'll receive a JSON response with FluentCRM options data.
@@ -180,14 +208,30 @@ If successful, you'll receive a JSON response with FluentCRM options data.
 ### Common Issues
 
 **401 Unauthorized Error**
-- Verify your username and password are correct
-- Ensure the manager account has proper FluentCRM permissions
-- Check that FluentCRM is properly installed and activated
 
-**403 Forbidden Error**  
-- The manager account may lack necessary permissions
-- Verify the account is not an Administrator role
-- Check FluentCRM permission settings for the manager
+The request was not authenticated at all — WordPress did not accept the credentials.
+
+- Confirm you are using the account's **username (login)**, not its email address
+- Confirm you are using the **Application Password**, not the account's normal login password
+- Re-check the password; if in doubt, revoke the entry and generate a fresh one
+- If the **Authorization** header never arrives, WordPress sees an anonymous request. Some Apache
+  setups running PHP as CGI/FastCGI strip it. Add this to `.htaccess`:
+
+  ```apache
+  SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+  ```
+
+- No **Application Passwords** section on the profile screen means the site is not on HTTPS
+  (see Step 2)
+
+**403 Forbidden Error**
+
+The credentials were accepted, but the account is not allowed to perform this action.
+
+- The manager account lacks the capability the endpoint requires — check it against the table below
+- Remember the dependencies: write permissions also need the matching read permission
+- Note that an **Administrator** has every capability, so a 403 on an admin account points at
+  something else, such as a security plugin blocking the REST API
 
 **404 Not Found Error**
 - Verify the API endpoint URL is correct
@@ -196,11 +240,22 @@ If successful, you'll receive a JSON response with FluentCRM options data.
 
 ### Permission Requirements
 
-Your API manager account needs these minimum permissions:
-- **View Contacts**: Required for GET requests
-- **Manage Contacts**: Required for POST/PUT/DELETE requests  
-- **View Reports**: Required for analytics endpoints
-- **Manage Campaigns**: Required for campaign operations
+Permissions are granted per manager on the `FluentCRM → Settings → CRM Managers` screen. The labels
+below are what you'll see there, with the underlying capability in brackets:
+
+| Permission | Capability | Needed for |
+|---|---|---|
+| Contacts Read | `fcrm_read_contacts` | Reading contacts, lists, tags |
+| Contacts Add/Update/Import | `fcrm_manage_contacts` | Creating and updating contacts |
+| Contacts Delete | `fcrm_manage_contacts_delete` | Deleting contacts |
+| Contact Tags/List/Companies/Segment Create or Update | `fcrm_manage_contact_cats` | Managing lists, tags and companies |
+| Emails Read | `fcrm_read_emails` | Reading campaigns and email data |
+| Emails Write/Send | `fcrm_manage_emails` | Creating and sending campaigns |
+| CRM Dashboard | `fcrm_view_dashboard` | Dashboard and reporting endpoints |
+| Manage CRM Settings | `fcrm_manage_settings` | Settings endpoints — the highest permission level |
+
+Several permissions imply others: granting *Contacts Add/Update/Import* also requires
+*Contacts Read*, and FluentCRM enforces that dependency for you.
 
 ## Security Best Practices
 
