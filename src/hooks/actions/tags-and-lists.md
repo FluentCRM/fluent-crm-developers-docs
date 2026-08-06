@@ -88,15 +88,15 @@ This action runs when a new list has been created — from the Lists screen, the
 the `fluentCrmApi('lists')` API, the CRM migrators, and whenever an unknown list name is
 auto-created while sanitizing list input.
 
-::: danger Argument type is not consistent
-Four of the five call sites pass a `Lists` model. The fifth — `Sanitize::sanitizeListIds()`, which
-auto-creates lists from names — passes an **array of list IDs** instead. A callback that assumes a
-model will break there, so guard before using it:
+::: warning Older versions pass an array from one call site
+FluentCRM 3.1.10 and earlier fired this hook from `Sanitize::sanitizeListIds()` — the path that
+auto-creates lists from names — with an **array of list IDs** instead of the model. Every call site
+now passes the `Lists` model. If you support those versions, guard before using it:
 
 ```php
 add_action('fluent_crm/list_created', function($listModel) {
    if (!$listModel instanceof \FluentCrm\App\Models\Lists) {
-       return; // Sanitize::sanitizeListIds() passes an array of IDs
+       return; // older Sanitize::sanitizeListIds() passed an array of IDs
    }
    // ...
 });
@@ -104,7 +104,7 @@ add_action('fluent_crm/list_created', function($listModel) {
 :::
 
 **Parameters**
-- `$listModel` [Lists Model](/database/models/lists) - or, when fired from `Sanitize::sanitizeListIds()`, an array of all list IDs resolved so far in that call (numeric inputs and matched existing lists included, not only the newly created one)
+- `$listModel` [Lists Model](/database/models/lists) - the newly created list
 
 **Usage:**
 ```php

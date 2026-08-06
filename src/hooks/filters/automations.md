@@ -475,23 +475,25 @@ add_filter('fluentcrm_automation_conditions_assess_my_group', function($result, 
 Determines whether a contact falls into the B variant of an automation A/B test. The unfiltered value
 is a weighted coin flip using the step's `path_a` / `path_b` split percentages (both default `50`).
 
-::: warning
-The third argument is the **sequence again**, not the funnel subscriber — `FunnelABTesting::handle()`
-passes `$sequence` for both. The contact and the funnel-subscriber id are not exposed to this filter,
-so per-contact bucketing (for example, a stable hash of the contact id) is not possible here. Read
-`$sequence->settings` for the split percentages.
+::: warning The third argument changed — breaking
+FluentCampaign Pro 3.1.10 and earlier passed `$sequence` **twice**, so the contact was unreachable and per-contact
+bucketing was impossible. The duplicate has been dropped: the third argument is now the subscriber,
+and the funnel-subscriber id was added as a fourth. A callback that read the third argument as a
+sequence must be updated.
 :::
 
 **Parameters**
 - `$isB` Boolean - whether this contact gets variant B
-- `$sequence` FunnelSequence Model - the A/B test step
-- `$sequence` FunnelSequence Model - the same object again
+- `$sequence` FunnelSequence Model - the A/B test step; read `$sequence->settings` for the split percentages
+- `$subscriber` [Subscriber Model](/database/models/subscriber) - the contact being bucketed
+- `$funnelSubscriberId` INT - the funnel subscriber row id
 
 **Usage:**
 ```php
-add_filter('fluent_crm/funnel_ab_test_is_b', function($isB, $sequence) {
-    return $isB;
-}, 10, 2);
+add_filter('fluent_crm/funnel_ab_test_is_b', function($isB, $sequence, $subscriber) {
+    // Stable bucketing: the same contact always lands in the same variant
+    return (crc32($subscriber->email) % 100) >= (int) ($sequence->settings['path_a'] ?? 50);
+}, 10, 3);
 ```
 
 **Source:** `fluentcampaign-pro/app/Services/Funnel/Conditions/FunnelABTesting.php`

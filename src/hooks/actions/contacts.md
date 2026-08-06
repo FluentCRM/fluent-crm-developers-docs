@@ -255,10 +255,11 @@ This action fires whenever a subscriber's status changes, providing both old and
 - `$oldStatus` string - previous status
 - `$newStatus` string - new status
 
-::: danger `$newStatus` is not always passed
-The Pro **Change Contact Status** automation action fires this hook with only two arguments. A
-callback declared with three *required* parameters throws an `ArgumentCountError` when that action
-runs. Give the third parameter a default and fall back to the model:
+::: warning Older Pro versions pass only two arguments
+FluentCampaign Pro 3.1.10 and earlier fired this hook from the **Change Contact Status** automation
+action without `$newStatus`, so a callback declared with three *required* parameters threw an
+`ArgumentCountError` when that action ran. If you support those versions, give the third parameter a
+default and fall back to the model:
 
 ```php
 add_action('fluent_crm/subscriber_status_changed', function($subscriber, $oldStatus, $newStatus = null) {
@@ -269,7 +270,7 @@ add_action('fluent_crm/subscriber_status_changed', function($subscriber, $oldSta
 
 **Usage:**
 ```php
-add_action('fluent_crm/subscriber_status_changed', function($subscriber, $oldStatus, $newStatus = null) {
+add_action('fluent_crm/subscriber_status_changed', function($subscriber, $oldStatus, $newStatus) {
    // React to any status change
 }, 10, 3);
 ```
