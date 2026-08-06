@@ -27,7 +27,7 @@
       "put": {
         "operationId": "saveCompanyCustomFields",
         "summary": "PUT Save Company Custom Fields",
-        "description": "Save (create or update) the global custom field definitions for companies. This replaces the entire set of custom field definitions.",
+        "description": "Save (create or update) the global custom field definitions for companies. This replaces the entire set of custom field definitions.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contact_cats`\n\n_Enforced by `CompanyPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Companies"
         ],

@@ -27,7 +27,7 @@
       "post": {
         "operationId": "createContact",
         "summary": "POST Create Contact",
-        "description": "Create a new contact. If `__force_update` is set to `yes`, it will update an existing contact with the same email instead of returning an error. Optionally sends a double opt-in email.",
+        "description": "Create a new contact. If `__force_update` is set to `yes`, it will update an existing contact with the same email instead of returning an error. Optionally sends a double opt-in email.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contacts`\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Contacts"
         ],

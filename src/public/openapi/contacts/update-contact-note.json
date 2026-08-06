@@ -27,7 +27,7 @@
       "put": {
         "operationId": "updateContactNote",
         "summary": "PUT Update Contact Note",
-        "description": "Update an existing note for a contact. The note description supports SmartCode/merge tags which are parsed before saving.",
+        "description": "Update an existing note for a contact. The note description supports SmartCode/merge tags which are parsed before saving.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contacts`\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Contacts"
         ],

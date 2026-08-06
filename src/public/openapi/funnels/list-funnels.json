@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "get": {
         "operationId": "listFunnels",
         "summary": "GET List Funnels",
-        "description": "Retrieve a paginated list of automation funnels. Supports sorting, searching by title, and filtering by label IDs. Optionally includes trigger definitions.",
+        "description": "Retrieve a paginated list of automation funnels. Supports sorting, searching by title, and filtering by label IDs. Optionally includes trigger definitions.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],
@@ -116,6 +116,42 @@
               "type": "integer",
               "default": 1
             }
+          },
+          {
+            "name": "tags[]",
+            "in": "query",
+            "description": "Only automations whose contacts carry these tag ids.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "name": "lists[]",
+            "in": "query",
+            "description": "Only automations whose contacts are on these list ids.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "name": "statuses[]",
+            "in": "query",
+            "description": "Filter automations by status, e.g. `published` or `draft`.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           }
         ],
         "responses": {
@@ -177,7 +213,7 @@
                     },
                     "triggers": {
                       "type": "object",
-                      "description": "Map of trigger definitions keyed by trigger name. Only included when `with[]` contains `triggers`.",
+                      "description": "Map of trigger definitions keyed by trigger name. Only included when `with[]` contains `triggers`. Returned **only** when `with[]=triggers` is requested.",
                       "additionalProperties": {
                         "$ref": "#/components/schemas/Trigger"
                       }
@@ -365,7 +401,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

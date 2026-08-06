@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "get": {
         "operationId": "listLabels",
         "summary": "GET List Labels",
-        "description": "Retrieve all global labels ordered by their position. Labels are used to categorize and organize automation funnels and other objects within FluentCRM.",
+        "description": "Retrieve all global labels ordered by their position. Labels are used to categorize and organize automation funnels and other objects within FluentCRM.\n\n<!-- fc:access -->\n\n**Required capability:** any FluentCRM permission \u2014 the route only checks that the user holds at least one.\n\nGated on the user holding ANY FluentCRM permission, not one specific capability.\n\n_Enforced by `CustomFieldsPolicy::getlabels()`._\n\n<!-- /fc:access -->",
         "tags": [
           "Labels"
         ],
@@ -176,7 +176,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

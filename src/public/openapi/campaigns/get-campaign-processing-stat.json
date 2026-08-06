@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getCampaignProcessingStat",
         "summary": "GET Get Campaign Processing Stat",
-        "description": "Get the current processing status and statistics of a campaign being sent. This endpoint is polled during campaign sending to track progress. It processes a chunk of emails on each call and returns the updated campaign state, including whether the campaign has finished processing.",
+        "description": "Get the current processing status and statistics of a campaign being sent. This endpoint is polled during campaign sending to track progress. It processes a chunk of emails on each call and returns the updated campaign state, including whether the campaign has finished processing.\n\n::: warning TWO RESPONSE SHAPES\nThis endpoint returns different keys depending on campaign state. While the campaign is `processing` you get `campaign`, `didRun`, and `scheduling_method`. Once it is not, you get `reload: true` and `campaign` instead \u2014 and **no** `didRun` or `scheduling_method`. Branch on the presence of `reload`.\n:::\n\nPolling this endpoint is what advances the send: each call processes a chunk of emails (30 by default, for up to 10 seconds) before returning. It is a worker tick, not a read-only status probe.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Campaigns"
         ],
@@ -53,64 +53,68 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "campaign": {
+                  "oneOf": [
+                    {
                       "type": "object",
+                      "title": "Not processing",
+                      "description": "Returned when the campaign is not in the `processing` state. The client should reload and stop polling.",
                       "properties": {
-                        "id": {
-                          "type": "integer"
+                        "reload": {
+                          "type": "boolean",
+                          "description": "Always true \u2014 tells the client to refresh and stop polling."
                         },
-                        "title": {
-                          "type": "string"
-                        },
-                        "status": {
-                          "type": "string"
-                        },
-                        "recipients_count": {
-                          "type": "integer"
-                        },
-                        "scheduling_range": {
+                        "campaign": {
                           "type": "object",
-                          "nullable": true,
-                          "description": "Range schedule dates if the campaign uses range scheduling."
-                        },
-                        "created_at": {
-                          "type": "string",
-                          "format": "date-time"
-                        },
-                        "updated_at": {
-                          "type": "string",
-                          "format": "date-time"
+                          "properties": {},
+                          "description": "The campaign record, with its subject variants loaded."
                         }
                       }
                     },
-                    "reload": {
-                      "type": "boolean",
-                      "description": "If true, the campaign is no longer processing and the UI should reload."
-                    },
-                    "didRun": {
-                      "type": "boolean",
-                      "description": "Whether email processing was executed on this request."
-                    },
-                    "scheduling_method": {
-                      "type": "string",
-                      "description": "The method used for scheduling (e.g., `wp_remote_post`, `action_scheduler`)."
+                    {
+                      "type": "object",
+                      "title": "Processing",
+                      "description": "Returned while the campaign is actively sending. Poll this endpoint to drive the progress UI.",
+                      "properties": {
+                        "campaign": {
+                          "type": "object",
+                          "properties": {},
+                          "description": "The campaign record, with its subject variants loaded."
+                        },
+                        "didRun": {
+                          "type": "boolean",
+                          "description": "True when this request itself dispatched a batch of emails."
+                        },
+                        "scheduling_method": {
+                          "type": "string",
+                          "description": "Which scheduler produced the batch."
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "processing": {
+                    "summary": "Campaign is sending",
+                    "value": {
+                      "campaign": {
+                        "id": 3,
+                        "status": "processing",
+                        "recipients_count": 628
+                      },
+                      "didRun": true,
+                      "scheduling_method": "action_scheduler"
+                    }
+                  },
+                  "notProcessing": {
+                    "summary": "Campaign finished or not started",
+                    "value": {
+                      "reload": true,
+                      "campaign": {
+                        "id": 3,
+                        "status": "archived"
+                      }
                     }
                   }
-                },
-                "example": {
-                  "campaign": {
-                    "id": 12,
-                    "title": "Spring Sale 2024",
-                    "status": "processing",
-                    "recipients_count": 850,
-                    "scheduling_range": null,
-                    "created_at": "2024-03-01 10:00:00",
-                    "updated_at": "2024-03-02 14:05:00"
-                  },
-                  "didRun": true,
-                  "scheduling_method": "wp_remote_post"
                 }
               }
             }
@@ -164,7 +168,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

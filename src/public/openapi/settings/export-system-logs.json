@@ -1,0 +1,131 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/setting/system-logs/export": {
+      "get": {
+        "operationId": "exportSystemLogs",
+        "summary": "GET Export System Logs (CSV)",
+        "description": "Stream the system log as a CSV download.\n\n::: warning\nThis endpoint does **not** return JSON. It sets CSV download headers, streams rows directly to the output buffer, and calls `exit` \u2014 so ordinary REST clients that expect a JSON envelope will not work. Treat it as a file download.\n:::\n\nRows are streamed in chunks by descending id rather than buffered in memory, so the export works on log tables too large to load at once, and it stops early if the client disconnects.\n\nThe file opens with a UTF-8 BOM for spreadsheet compatibility, and every cell is escaped so a value beginning with `=`, `+`, `-`, or `@` cannot execute as a formula.\n\nColumns are `ID`, `Date & Time`, `Title`, `Description`, with HTML stripped from the description. The filename encodes the range, e.g. `fluent-crm-system-logs-last-30-days-2026-08-04-113000.csv`.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `SettingsPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "range",
+            "in": "query",
+            "description": "`all` for everything, or a number of days to look back. Unrecognised values fall back to `all`.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "all"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Case-insensitive substring match against the log title or description.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A CSV file. Sent with download headers, not a JSON body.",
+            "content": {
+              "text/csv": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                },
+                "example": "ID,Date & Time,Title,Description\n282,2025-04-22 19:51:02,Running Scheduler -> cron,Handler::handle\n"
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

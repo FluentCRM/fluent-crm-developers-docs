@@ -1,0 +1,170 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/ai/generate": {
+      "post": {
+        "operationId": "generateAiContent",
+        "summary": "POST Rewrite Or Generate Text",
+        "description": "Run one of the inline writing actions used by the email editors on a block of text.\n\n`content` is required for every action except `custom`; for `custom` you must supply either `content`, `custom_prompt`, or both. AI must already be enabled and configured \u2014 this endpoint uses the **saved** provider, model, and key and ignores any credentials in the request body.\n\nThe call blocks for up to 30 seconds while the provider responds.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `AiPolicy::generate()`._\n\n<!-- /fc:access -->",
+        "tags": [
+          "AI"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "description": "Writing action to perform.",
+                    "enum": [
+                      "rewrite",
+                      "shorten",
+                      "expand",
+                      "fix_grammar",
+                      "custom"
+                    ]
+                  },
+                  "content": {
+                    "type": "string",
+                    "description": "Text to operate on. Required unless `action` is `custom`."
+                  },
+                  "tone": {
+                    "type": "string",
+                    "description": "Optional tone hint folded into the system prompt."
+                  },
+                  "custom_prompt": {
+                    "type": "string",
+                    "description": "Free-form instruction. Only meaningful when `action` is `custom`."
+                  }
+                },
+                "required": [
+                  "action"
+                ]
+              },
+              "example": {
+                "action": "shorten",
+                "content": "We are absolutely delighted to announce...",
+                "tone": "professional"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Generated text.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "content": {
+                      "type": "string",
+                      "description": "The provider's output, passed through `sanitize_textarea_field()`."
+                    }
+                  }
+                },
+                "example": {
+                  "content": "We're pleased to announce our spring release."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unknown `action`, missing `content`, AI disabled, provider/model/key not configured, or the provider returned an error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

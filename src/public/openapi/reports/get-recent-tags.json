@@ -1,0 +1,163 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/reports/recent-tags": {
+      "get": {
+        "operationId": "getRecentTags",
+        "summary": "GET Recently Created Tags",
+        "description": "The most recently **created** tags, each with its current contact count.\n\nOrdering is by `created_at` descending \u2014 this is a \u201cwhat's new\u201d widget, not a popularity ranking. For that, use `GET /reports/contacts-by-tags`.\n\nNot paginated: `per_page` is a plain limit and defaults to 5. `contact_count` comes back as a **string**.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_view_dashboard`\n\n_Enforced by `ReportPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "tags": [
+          "Reports"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Maximum number of tags to return.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 5
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recently created tags.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tags": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "Tag id."
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "Tag name."
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "description": "When the tag was created.",
+                            "format": "date-time"
+                          },
+                          "contact_count": {
+                            "type": "string",
+                            "description": "Number of contacts carrying the tag, as a string."
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "tags": [
+                    {
+                      "id": 16,
+                      "title": "FluentCart Purchased",
+                      "created_at": "2025-11-17 18:09:49",
+                      "contact_count": "2028"
+                    },
+                    {
+                      "id": 15,
+                      "title": "Manually Added",
+                      "created_at": "2025-10-07 20:40:58",
+                      "contact_count": "36"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getFunnelSubscriberReporting",
         "summary": "GET Get Funnel Subscriber Reporting",
-        "description": "Retrieve detailed reporting for a specific subscriber within a funnel. Returns the subscriber's funnel progress, metrics, and all funnel sequences.",
+        "description": "Retrieve detailed reporting for a specific subscriber within a funnel. Returns the subscriber's funnel progress, metrics, and all funnel sequences.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],

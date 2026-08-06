@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getCompanyNotes",
         "summary": "GET Get Company Notes",
-        "description": "Retrieve a paginated list of notes for a company. Notes are ordered by ID descending (newest first). Each note includes the `added_by` field showing who created it. Also returns note sync fields configuration.",
+        "description": "Retrieve a paginated list of notes for a company. Notes are ordered by ID descending (newest first). Each note includes the `added_by` field showing who created it. Also returns note sync fields configuration.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contact_cats`\n\n_Enforced by `CompanyPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Companies"
         ],
@@ -73,6 +73,15 @@
             "schema": {
               "type": "integer",
               "default": 1
+            }
+          },
+          {
+            "name": "include_id",
+            "in": "query",
+            "description": "Id of a note that must appear in the response even when it falls outside the current page. When it is not already on the page it is returned separately as `included_note`, scoped to this company.",
+            "required": false,
+            "schema": {
+              "type": "integer"
             }
           }
         ],
@@ -252,7 +261,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

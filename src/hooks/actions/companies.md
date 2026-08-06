@@ -86,6 +86,16 @@ add_action('fluent_crm/company_deleted', function($companyId) {
 
 ## Status, Type & Category Changes
 
+::: warning Only fires from the bulk actions
+All three are dispatched from the Companies list bulk actions
+(`change_company_status`, `change_company_type`, `change_company_category`), once per company whose
+value actually changed. Editing a company on its profile screen does not fire them.
+
+The slug in the hook name is the raw new value, so a category such as `Alternative Dispute
+Resolution` produces `fluent_crm/company_category_to_Alternative Dispute Resolution`. Build the hook
+name from the same value rather than guessing at a slugified form.
+:::
+
 ### `fluent_crm/company_status_to_{$status}`
 
 This dynamic action fires when a company's status is changed.
@@ -126,11 +136,12 @@ add_action('fluent_crm/company_type_to_customer', function($company, $oldType) {
 
 ### `fluent_crm/company_category_to_{$category}`
 
-This dynamic action fires when a company's industry/category is changed.
+This dynamic action fires when a company's industry/category is changed. The value is stored in the
+company's `industry` column despite the hook's `category` wording.
 
 **Parameters**
-- `$company` [Company Model](/database/models/company)
-- `$oldCategory` string - previous category
+- `$company` [Company Model](/database/models/company) - already saved with the new `industry`
+- `$oldCategory` string - previous `industry` value
 
 **Usage:**
 ```php
@@ -140,6 +151,62 @@ add_action('fluent_crm/company_category_to_technology', function($company, $oldC
 ```
 
 **Source:** `app/Http/Controllers/CompanyController.php`
+
+---
+
+## Contact Attachment
+
+::: warning Suppressed by silent imports
+Like the contact tag/list hooks, both hooks below are skipped when the
+`FLUENTCRM_DISABLE_TAG_LIST_EVENTS` constant is defined — the CSV importer and the WP-user importer
+both define it. They also fire only for companies that were actually added or removed, so
+re-attaching an already-attached company is silent.
+:::
+
+### `fluentcrm_contact_added_to_companies`
+
+This action runs when one or more companies have been attached to a contact via
+`Subscriber::attachCompanies()`. It receives only the company IDs that were **newly** attached in
+that call. FluentCampaign Pro's *Company Applied* automation trigger listens on this hook.
+
+**Parameters**
+- `$attachedCompanyIds` Array - IDs of the companies that were attached to the contact
+- `$subscriber` [Subscriber Model](/database/models/subscriber)
+
+::: tip Parameter order
+Unlike the modern `fluent_crm/contact_added_to_*` tag/list hooks, the IDs come **first** and the
+subscriber second — there is no `fluent_crm/`-prefixed counterpart for companies.
+:::
+
+**Usage:**
+```php
+add_action('fluentcrm_contact_added_to_companies', function($attachedCompanyIds, $subscriber) {
+   // Companies were attached to the contact
+}, 10, 2);
+```
+
+**Source:** `app/Functions/helpers.php` (fired from `app/Models/Subscriber.php`)
+
+---
+
+### `fluentcrm_contact_removed_from_companies`
+
+This action runs when one or more companies have been detached from a contact via
+`Subscriber::detachCompanies()`. It receives only the company IDs that were actually removed.
+FluentCampaign Pro's *Company Removed* automation trigger listens on this hook.
+
+**Parameters**
+- `$detachedCompanyIds` Array - IDs of the companies that were removed from the contact
+- `$subscriber` [Subscriber Model](/database/models/subscriber)
+
+**Usage:**
+```php
+add_action('fluentcrm_contact_removed_from_companies', function($detachedCompanyIds, $subscriber) {
+   // Companies were removed from the contact
+}, 10, 2);
+```
+
+**Source:** `app/Functions/helpers.php` (fired from `app/Models/Subscriber.php`)
 
 ---
 

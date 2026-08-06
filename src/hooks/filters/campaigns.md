@@ -10,7 +10,8 @@ These filter hooks let you customize campaign data, processing behavior, and sch
 
 ### `fluent_crm/campaign_data`
 
-Filter the [Campaign](/database/models/campaign) data object before it is returned to the editor.
+Filter the [Campaign](/database/models/campaign) model right before the campaign-detail endpoint
+returns it. Runs on read only — it does not affect what is stored or sent.
 
 **Parameters**
 - `$campaign` [Campaign Model](/database/models/campaign)
@@ -30,10 +31,11 @@ add_filter('fluent_crm/campaign_data', function($campaign) {
 
 ### `fluent_crm/campaign_processing_stat_chunk`
 
-Filter the number of subscribers to process per iteration when checking campaign delivery stats.
+Filter how many emails are processed per pass when the campaign screen polls for delivery stats.
+Despite the name, this actually sends email — the stat endpoint drives the processor.
 
 **Parameters**
-- `$chunk` INT - Default `30`
+- `$chunk` INT - Default `30`. Values below `1` are clamped to `1`.
 - `$campaign` [Campaign Model](/database/models/campaign)
 
 **Usage:**
@@ -49,10 +51,10 @@ add_filter('fluent_crm/campaign_processing_stat_chunk', function($chunk, $campai
 
 ### `fluent_crm/campaign_processing_stat_runtime_seconds`
 
-Filter the max seconds to run the campaign stat-check loop per request.
+Filter the max seconds the campaign stat-check request may spend processing emails.
 
 **Parameters**
-- `$seconds` INT - Default `10`
+- `$seconds` INT - Default `10`. Values below `1` are clamped to `1`.
 - `$campaign` [Campaign Model](/database/models/campaign)
 
 **Usage:**
@@ -68,18 +70,24 @@ add_filter('fluent_crm/campaign_processing_stat_runtime_seconds', function($seco
 
 ### `fluent_crm/five_minute_campaign_processing_chunk`
 
-Filter the number of campaign emails to process during the 5-minute cron batch.
+Filter the number of campaign emails materialized per chunk during the 5-minute cron batch.
 
 **Parameters**
-- `$chunk` INT - Default `20`
-- `$campaign` [Campaign Model](/database/models/campaign) - The first campaign in queue
+- `$chunk` INT - Default `50`. Values below `1` are clamped to `1`.
+- `$campaign` [Campaign Model](/database/models/campaign) - the campaign being processed
 
 **Usage:**
 ```php
 add_filter('fluent_crm/five_minute_campaign_processing_chunk', function($chunk, $campaign) {
-    return 50;
+    return 100;
 }, 10, 2);
 ```
+
+::: tip
+The run-time budget for this loop is not filterable here — it is
+[`fluent_crm/max_run_time`](/hooks/filters/admin-and-dashboard#fluent-crm-max-run-time) minus 5
+seconds.
+:::
 
 **Source:** `app/Hooks/Handlers/Scheduler.php`
 

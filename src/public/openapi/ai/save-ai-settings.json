@@ -1,0 +1,189 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/ai/settings": {
+      "post": {
+        "operationId": "saveAiSettings",
+        "summary": "POST Save AI Settings",
+        "description": "Persist the AI writing-assistant configuration.\n\nEverything is nested under a single `settings` object. API-key handling has three cases: an empty `api_key` **clears** the stored key, a value starting with `****` is treated as the masked value from `GET /ai/settings` and **keeps** the stored key, and any other value **replaces** it.\n\nCredentials are stored in the WordPress option `_fluent_ai_creds`; the enable flag and custom prompt go to the FluentCRM option `_ai_writing_settings`.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `AiPolicy::saveSettings()`._\n\n<!-- /fc:access -->",
+        "tags": [
+          "AI"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "settings": {
+                    "type": "object",
+                    "description": "AI configuration payload.",
+                    "properties": {
+                      "is_enabled": {
+                        "type": "string",
+                        "description": "Turn AI features on or off. Any value other than `yes` is stored as `no`.",
+                        "enum": [
+                          "yes",
+                          "no"
+                        ],
+                        "default": "no"
+                      },
+                      "provider": {
+                        "type": "string",
+                        "description": "AI provider. Selecting `wordpress` requires WordPress 7.0 or newer.",
+                        "enum": [
+                          "wordpress",
+                          "open_ai",
+                          "claude",
+                          "gemini"
+                        ]
+                      },
+                      "model": {
+                        "type": "string",
+                        "description": "Model id, or `auto` to use the provider default. Empty is coerced to `auto`.",
+                        "default": "auto"
+                      },
+                      "api_key": {
+                        "type": "string",
+                        "description": "Provider API key. Leave empty to clear, or resend the masked value to keep the stored key."
+                      },
+                      "custom_prompt": {
+                        "type": "string",
+                        "description": "Additional instructions appended to the system prompt on every request."
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "settings"
+                ]
+              },
+              "example": {
+                "settings": {
+                  "is_enabled": "yes",
+                  "provider": "open_ai",
+                  "model": "auto",
+                  "api_key": "sk-your-real-key",
+                  "custom_prompt": "Always write in British English."
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Configuration saved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Confirmation message."
+                    }
+                  }
+                },
+                "example": {
+                  "message": "AI configuration saved successfully."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid provider, or `wordpress` was selected on a site older than WordPress 7.0.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

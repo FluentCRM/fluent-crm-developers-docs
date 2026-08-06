@@ -1,0 +1,371 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/subscribers-export": {
+      "get": {
+        "operationId": "exportContactsPageGet",
+        "summary": "GET Fetch Contact Export Page",
+        "description": "<Badge type=\"warning\" text=\"Pro\" />\n\nFetch one page of contact-export rows. The admin export runs by calling this repeatedly and assembling the CSV client-side, which is what keeps a six-figure export from timing out in a single request.\n\n**Paging is fixed at 500 rows per request** and cannot be changed. Keep requesting while `has_more` is true, incrementing `page`.\n\n`total` and `headers` are returned **only on page 1** \u2014 capture them on the first call, because later pages carry just `page`, `rows`, and `has_more`.\n\nThe maximum page is 200, a hard ceiling of 100,000 rows per export; beyond that the endpoint returns 400.\n\n`filter_type` selects one of two mutually exclusive branches: `simple` reads `tags`, `lists`, and `statuses`, while `advanced` reads `advanced_filters` and ignores the others.\n\nThis is the same handler as `POST /subscribers-export`, with parameters read from the query string. Array parameters must be sent in bracket form (`columns[]=email`). For anything but a small column list, prefer the POST form \u2014 long selections overflow practical URL length limits.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contacts_export`\n\n_Enforced by `ExportPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "tags": [
+          "Export"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "columns[]",
+            "in": "query",
+            "description": "Contact columns to export. Required.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "custom_fields[]",
+            "in": "query",
+            "description": "Custom field keys to add as columns.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "commerce_columns[]",
+            "in": "query",
+            "description": "Commerce columns to append. Forces `has_commerce` on.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "1-based export page. Page size is fixed at 500; maximum page is 200.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Cap on total rows across all pages.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Rows to skip before the first exported row.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "filter_type",
+            "in": "query",
+            "description": "Which filtering branch to use.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "simple",
+              "enum": [
+                "simple",
+                "advanced"
+              ]
+            }
+          },
+          {
+            "name": "tags[]",
+            "in": "query",
+            "description": "Tag ids (simple filtering only).",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "name": "lists[]",
+            "in": "query",
+            "description": "List ids (simple filtering only).",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "name": "statuses[]",
+            "in": "query",
+            "description": "Contact statuses (simple filtering only).",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "advanced_filters",
+            "in": "query",
+            "description": "JSON-encoded filter groups (advanced filtering only).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "contact_ids[]",
+            "in": "query",
+            "description": "Export only these contacts.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "name": "company_ids[]",
+            "in": "query",
+            "description": "Restrict to these companies.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search term applied to the contact query.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "description": "Column to sort by.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "id"
+            }
+          },
+          {
+            "name": "sort_type",
+            "in": "query",
+            "description": "Sort direction.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "DESC",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          },
+          {
+            "name": "has_commerce",
+            "in": "query",
+            "description": "Restrict to contacts that have commerce data.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "One page of export rows.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "description": "The page that was returned."
+                    },
+                    "total": {
+                      "type": "integer",
+                      "description": "Total rows the export will produce. **Page 1 only.**"
+                    },
+                    "headers": {
+                      "type": "array",
+                      "description": "Column labels for the CSV header row. **Page 1 only.**",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "rows": {
+                      "type": "array",
+                      "description": "Flattened contact rows, aligned to `headers`.",
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "has_more": {
+                      "type": "boolean",
+                      "description": "True while further pages remain."
+                    }
+                  }
+                },
+                "example": {
+                  "page": 1,
+                  "total": 12867,
+                  "headers": [
+                    "Email",
+                    "First Name",
+                    "Last Name",
+                    "Status",
+                    "Tags"
+                  ],
+                  "rows": [
+                    [
+                      "john@example.com",
+                      "John",
+                      "Doe",
+                      "subscribed",
+                      "VIP Customer"
+                    ]
+                  ],
+                  "has_more": true
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "`columns` was empty or not an array, or `page` exceeded the 200-page maximum.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No contacts matched the export query.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "get": {
         "operationId": "listTags",
         "summary": "GET List Tags",
-        "description": "Retrieve a paginated list of tags. Optionally includes subscriber counts and a separate array of all tags for dropdown/select usage.",
+        "description": "Retrieve a paginated list of tags. Optionally includes subscriber counts and a separate array of all tags for dropdown/select usage.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contact_cats`\n\n_Enforced by `TagPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Tags"
         ],
@@ -174,7 +174,7 @@
                     },
                     "all_tags": {
                       "type": "array",
-                      "description": "Only present when `all_tags` query parameter is truthy. A flat array of all tags.",
+                      "description": "Only present when `all_tags` query parameter is truthy. A flat array of all tags. Returned **only** when the request sends `all_tags`. Contains every tag, unpaginated, for use in pickers.",
                       "items": {
                         "type": "object",
                         "properties": {
@@ -300,7 +300,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

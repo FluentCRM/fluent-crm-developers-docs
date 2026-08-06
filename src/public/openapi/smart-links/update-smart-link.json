@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "put": {
         "operationId": "updateSmartLink",
         "summary": "PUT Update Smart Link",
-        "description": "Update an existing smart link's title, target URL, actions, and notes. Requires FluentCampaign Pro.",
+        "description": "Update an existing smart link's title, target URL, actions, and notes. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contacts`\n\n_Enforced by `SmartLinksPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Smart Links"
         ],
@@ -127,6 +127,34 @@
                           "null"
                         ],
                         "description": "Updated notes."
+                      }
+                    }
+                  },
+                  "auto_login": {
+                    "type": "string",
+                    "description": "Log the contact into WordPress when the link is followed. Stored under `actions.auto_login`.",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "default": "no"
+                  },
+                  "detach_actions": {
+                    "type": "object",
+                    "properties": {
+                      "tags": {
+                        "type": "array",
+                        "description": "Tag ids to REMOVE from the contact when the link is followed.",
+                        "items": {
+                          "type": "integer"
+                        }
+                      },
+                      "lists": {
+                        "type": "array",
+                        "description": "List ids to REMOVE from the contact when the link is followed.",
+                        "items": {
+                          "type": "integer"
+                        }
                       }
                     }
                   }
@@ -337,7 +365,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

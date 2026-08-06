@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "post": {
         "operationId": "importCompaniesCSV",
         "summary": "POST Import Companies from CSV",
-        "description": "Import companies from a previously uploaded CSV file. Processes up to 100 records per request for batch importing. Use the `importing_page` parameter to paginate through large files. Supports field mapping via the `map` parameter, optional updating of existing companies (matched by name), and automatic owner creation from the CSV data.",
+        "description": "Import companies from a previously uploaded CSV file. Processes up to 100 records per request for batch importing. Use the `importing_page` parameter to paginate through large files. Supports field mapping via the `map` parameter, optional updating of existing companies (matched by name), and automatic owner creation from the CSV data.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contact_cats`\n\n_Enforced by `CompanyPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Companies"
         ],
@@ -246,7 +246,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

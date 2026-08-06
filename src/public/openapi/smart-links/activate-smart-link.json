@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "post": {
         "operationId": "activateSmartLink",
         "summary": "POST Activate Smart Links Module",
-        "description": "Activate the Smart Links module by running database migrations to create the `fc_smart_links` table. This must be called before using any other Smart Links endpoints if the module has not been activated yet. Requires FluentCampaign Pro.",
+        "description": "Activate the Smart Links module by running database migrations to create the `fc_smart_links` table. This must be called before using any other Smart Links endpoints if the module has not been activated yet. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contacts`\n\n_Enforced by `SmartLinksPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Smart Links"
         ],
@@ -90,7 +90,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

@@ -1,0 +1,237 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/email-patterns/wp-format": {
+      "get": {
+        "operationId": "listEmailPatternsWpFormat",
+        "summary": "GET List Patterns In wp_block Format",
+        "description": "Return every pattern shaped like a WordPress `wp_block` post.\n\nThis exists so the Gutenberg email editor can intercept its own reusable-block requests and be served FluentCRM patterns instead \u2014 it is a compatibility bridge, not the endpoint you want for general integration work. Use `GET /email-patterns` for that.\n\nTwo differences from the core `wp_block` shape are worth knowing: the response is a **bare array** with no envelope and no pagination, and the four date fields serialise as objects (`{ \"date\": \u2026, \"timezone_type\": \u2026, \"timezone\": \u2026 }`) rather than ISO strings, because the raw model timestamps are passed straight through.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `EmailPatternPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "tags": [
+          "Email Patterns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Every pattern, newest first.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WpBlockPattern"
+                  }
+                },
+                "example": [
+                  {
+                    "id": 179,
+                    "date": {
+                      "date": "2026-03-31 06:07:42.000000",
+                      "timezone_type": 1,
+                      "timezone": "+00:00"
+                    },
+                    "date_gmt": {
+                      "date": "2026-03-31 06:07:42.000000",
+                      "timezone_type": 1,
+                      "timezone": "+00:00"
+                    },
+                    "modified": {
+                      "date": "2026-04-12 09:17:04.000000",
+                      "timezone_type": 1,
+                      "timezone": "+00:00"
+                    },
+                    "modified_gmt": {
+                      "date": "2026-04-12 09:17:04.000000",
+                      "timezone_type": 1,
+                      "timezone": "+00:00"
+                    },
+                    "slug": "fluentcrm/hemes-179",
+                    "status": "publish",
+                    "type": "wp_block",
+                    "link": "",
+                    "title": {
+                      "raw": "Hemes"
+                    },
+                    "content": {
+                      "raw": "<!-- wp:paragraph --><p>Welcome aboard.</p><!-- /wp:paragraph -->",
+                      "protected": false
+                    },
+                    "meta": {},
+                    "wp_pattern_sync_status": "",
+                    "wp_pattern_category": [
+                      12
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "WpBlockPattern": {
+        "type": "object",
+        "description": "A pattern rendered in WordPress `wp_block` REST shape.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Row id in `fc_meta`."
+          },
+          "date": {
+            "type": "string",
+            "description": "Creation date."
+          },
+          "date_gmt": {
+            "type": "string",
+            "description": "Creation date, same value as `date`."
+          },
+          "modified": {
+            "type": "string",
+            "description": "Last modification date."
+          },
+          "modified_gmt": {
+            "type": "string",
+            "description": "Last modification date, same value as `modified`."
+          },
+          "slug": {
+            "type": "string",
+            "description": "Pattern slug."
+          },
+          "status": {
+            "type": "string",
+            "description": "Always `publish`.",
+            "enum": [
+              "publish"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "description": "Always `wp_block`.",
+            "enum": [
+              "wp_block"
+            ]
+          },
+          "link": {
+            "type": "string",
+            "description": "Always an empty string \u2014 patterns have no public permalink."
+          },
+          "title": {
+            "type": "object",
+            "properties": {
+              "raw": {
+                "type": "string",
+                "description": "Pattern title."
+              }
+            }
+          },
+          "content": {
+            "type": "object",
+            "properties": {
+              "raw": {
+                "type": "string",
+                "description": "Block markup."
+              },
+              "protected": {
+                "type": "boolean",
+                "description": "Always false."
+              }
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {}
+          },
+          "wp_pattern_sync_status": {
+            "type": "string",
+            "description": "Sync status, or an empty string."
+          },
+          "wp_pattern_category": {
+            "type": "array",
+            "description": "Category ids this pattern belongs to.",
+            "items": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

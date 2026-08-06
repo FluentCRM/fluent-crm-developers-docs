@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "post": {
         "operationId": "bulkActionCampaigns",
         "summary": "POST Bulk Action Campaigns",
-        "description": "Perform a bulk action on multiple campaigns. Supported actions: `delete_campaigns` to permanently delete selected campaigns and all associated data, `apply_labels` to attach labels to selected campaigns. Use `select_all` to apply the action to all campaigns.",
+        "description": "Perform a bulk action on multiple campaigns. Supported actions: `delete_campaigns` to permanently delete selected campaigns and all associated data, `apply_labels` to attach labels to selected campaigns. Use `select_all` to apply the action to all campaigns.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_delete`\n\n_Enforced by `CampaignPolicy::handleBulkAction()`._\n\n<!-- /fc:access -->",
         "tags": [
           "Campaigns"
         ],
@@ -160,7 +160,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

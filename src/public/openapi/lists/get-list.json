@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getList",
         "summary": "GET Get List",
-        "description": "Retrieve a single contact list by its ID.",
+        "description": "Retrieve a single contact list by its ID.\n\nThe list object is returned **at the top level** \u2014 there is no `list` wrapper key. A missing id yields `null` rather than a 404.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contact_cats`\n\n_Enforced by `ListPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Lists"
         ],
@@ -55,21 +55,53 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "list": {
-                      "$ref": "#/components/schemas/ContactList"
+                    "id": {
+                      "type": "integer",
+                      "description": "List id."
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "List name."
+                    },
+                    "slug": {
+                      "type": "string",
+                      "description": "URL-friendly unique identifier."
+                    },
+                    "description": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Optional description. Null when never set."
+                    },
+                    "is_public": {
+                      "type": "string",
+                      "description": "`\"1\"` when the list may be shown on public preference pages, `\"0\"` otherwise. Returned as a string, not a boolean.",
+                      "enum": [
+                        "0",
+                        "1"
+                      ]
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "description": "Creation timestamp.",
+                      "format": "date-time"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "description": "Last update timestamp.",
+                      "format": "date-time"
                     }
                   }
                 },
                 "example": {
-                  "list": {
-                    "id": 1,
-                    "title": "Newsletter",
-                    "slug": "newsletter",
-                    "description": "Main newsletter subscribers",
-                    "is_public": 0,
-                    "created_at": "2024-01-15 10:30:00",
-                    "updated_at": "2024-01-15 10:30:00"
-                  }
+                  "id": 1,
+                  "title": "Community Members",
+                  "slug": "community-members",
+                  "description": null,
+                  "is_public": "0",
+                  "created_at": "2024-03-27 00:52:39",
+                  "updated_at": "2024-03-27 00:52:39"
                 }
               }
             }
@@ -150,7 +182,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

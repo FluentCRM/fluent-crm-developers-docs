@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "post": {
         "operationId": "bulkActionCompanies",
         "summary": "POST Bulk Action on Companies",
-        "description": "Perform a bulk action on multiple companies. Supports deleting companies, changing status, changing type, and changing industry category. Companies can be selected by explicit IDs or by filter criteria (search + inline_filters). When using filter criteria, processes up to 50 companies per request in batches -- use `last_id` for pagination across multiple requests.",
+        "description": "Perform a bulk action on multiple companies. Supports deleting companies, changing status, changing type, and changing industry category. Companies can be selected by explicit IDs or by filter criteria (search + inline_filters). When using filter criteria, processes up to 50 companies per request in batches -- use `last_id` for pagination across multiple requests.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contact_cats_delete` or `fcrm_manage_contact_cats` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `CompanyPolicy::handleBulkActions()`._\n\n<!-- /fc:access -->",
         "tags": [
           "Companies"
         ],
@@ -198,7 +198,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

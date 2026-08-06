@@ -27,7 +27,7 @@
       "put": {
         "operationId": "updateCustomFieldGroupName",
         "summary": "PUT Update Custom Field Group Name",
-        "description": "Rename a custom field group. All custom fields currently assigned to the old group name will be updated to use the new group name. Both names are sanitized server-side.",
+        "description": "Rename a custom field group. All custom fields currently assigned to the old group name will be updated to use the new group name. Both names are sanitized server-side.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `CustomFieldsPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Custom Fields"
         ],

@@ -8,13 +8,18 @@ description: "Action hooks for email template CRUD operations in FluentCRM."
 
 These action hooks fire when email templates are created, updated, or duplicated.
 
+::: warning Argument order is not consistent
+`created` and `duplicated` pass the template **ID first**; `updated` passes the posted **data
+first** and the model second. Check each signature rather than assuming a shared shape.
+:::
+
 ### `fluent_crm/email_template_created`
 
 This action runs after an email template has been created.
 
 **Parameters**
 - `$templateId` INT - Created Template ID
-- `$templateData` Array - Template Data as Array
+- `$templateData` Array - the posted template data, before it was split into post fields and post meta
 
 **Usage:**
 ```php
@@ -23,6 +28,8 @@ add_action('fluent_crm/email_template_created', function($templateId, $templateD
 }, 10, 2);
 ```
 
+**Source:** `app/Http/Controllers/TemplateController.php`
+
 ---
 
 ### `fluent_crm/email_template_duplicated`
@@ -30,15 +37,17 @@ add_action('fluent_crm/email_template_created', function($templateId, $templateD
 This action runs after an email template has been duplicated.
 
 **Parameters**
-- `$templateId` INT - Created Template ID
-- `$oldTemplateData` Array - Original Template Data as Array
+- `$newTemplateId` INT - the ID of the new copy
+- `$template` [Template Model](/database/models/template) - the original template that was copied, not an array
 
 **Usage:**
 ```php
-add_action('fluent_crm/email_template_duplicated', function($templateId, $oldTemplateData) {
-   // Do your stuff here
+add_action('fluent_crm/email_template_duplicated', function($newTemplateId, $template) {
+   // $template is the ORIGINAL; $newTemplateId is the copy
 }, 10, 2);
 ```
+
+**Source:** `app/Http/Controllers/TemplateController.php`
 
 ---
 
@@ -47,12 +56,14 @@ add_action('fluent_crm/email_template_duplicated', function($templateId, $oldTem
 This action runs after an email template has been updated.
 
 **Parameters**
-- `$templateData` array - Update Data as key value pair
-- `$template` [Template Model](/database/models/template)
+- `$templateData` Array - the posted update data as key/value pairs
+- `$template` [Template Model](/database/models/template) - re-read after the update, so it holds the saved values
 
 **Usage:**
 ```php
 add_action('fluent_crm/email_template_updated', function($templateData, $template) {
-   // Do your stuff here
+   // Note the order: data first, model second
 }, 10, 2);
 ```
+
+**Source:** `app/Http/Controllers/TemplateController.php`

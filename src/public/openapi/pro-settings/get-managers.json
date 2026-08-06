@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getManagers",
         "summary": "GET List Managers",
-        "description": "Retrieve a paginated list of FluentCRM managers. Managers are WordPress users who have been assigned FluentCRM-specific permissions (roles). Also returns the full list of available permissions.",
+        "description": "Retrieve a paginated list of FluentCRM managers. Managers are WordPress users who have been assigned FluentCRM-specific permissions (roles). Also returns the full list of available permissions.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `SettingsPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Pro Settings"
         ],
@@ -188,7 +188,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

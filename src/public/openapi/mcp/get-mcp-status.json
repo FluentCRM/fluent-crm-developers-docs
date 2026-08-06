@@ -1,0 +1,228 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/mcp/status": {
+      "get": {
+        "operationId": "getMcpStatus",
+        "summary": "GET MCP Status",
+        "description": "Report everything the Settings \u2192 MCP screen needs to decide what to render: whether an adapter is installed and active, which one is providing it, how many abilities are registered, and whether the kill-switch is on.\n\nAn adapter can come from two places \u2014 the standalone adapter plugin or a bundled adapter inside FluentHub \u2014 and `adapter_provider` tells you which one won (`plugin`, `toolkit`, or an empty string when neither is active).\n\n`tools_count` is 0 whenever the WordPress Abilities API is missing, since there is nowhere to register abilities.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `SettingsPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "tags": [
+          "MCP"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current MCP integration status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "adapter_installed": {
+                      "type": "boolean",
+                      "description": "True when either the standalone adapter or FluentHub is present on disk."
+                    },
+                    "adapter_active": {
+                      "type": "boolean",
+                      "description": "True when an adapter runtime is actually available to serve MCP requests."
+                    },
+                    "adapter_provider": {
+                      "type": "string",
+                      "description": "Which source is providing the active adapter.",
+                      "enum": [
+                        "plugin",
+                        "toolkit",
+                        ""
+                      ]
+                    },
+                    "standalone_adapter_installed": {
+                      "type": "boolean",
+                      "description": "True when the standalone adapter plugin is present."
+                    },
+                    "toolkit_installed": {
+                      "type": "boolean",
+                      "description": "True when FluentHub is present."
+                    },
+                    "toolkit_active": {
+                      "type": "boolean",
+                      "description": "True when FluentHub is loaded."
+                    },
+                    "toolkit_adapter_available": {
+                      "type": "boolean",
+                      "description": "True when the loaded FluentHub build bundles an MCP adapter."
+                    },
+                    "adapter_runtime_available": {
+                      "type": "boolean",
+                      "description": "True when the adapter runtime classes are loadable."
+                    },
+                    "adapter_version": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Detected standalone adapter version, if any."
+                    },
+                    "toolkit_version": {
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "description": "Detected FluentHub version, if any."
+                    },
+                    "abilities_api_loaded": {
+                      "type": "boolean",
+                      "description": "True when `wp_register_ability()` exists."
+                    },
+                    "endpoint_url": {
+                      "type": "string",
+                      "description": "Full URL of the MCP JSON-RPC endpoint."
+                    },
+                    "tools_count": {
+                      "type": "integer",
+                      "description": "Number of registered FluentCRM abilities. 0 when the Abilities API is absent."
+                    },
+                    "mcp_enabled": {
+                      "type": "boolean",
+                      "description": "The kill-switch. Defaults to true; toggled by `POST /mcp/toggle`."
+                    },
+                    "pro_active": {
+                      "type": "boolean",
+                      "description": "True when FluentCampaign Pro is active, which adds further abilities."
+                    },
+                    "app_passwords_url": {
+                      "type": "string",
+                      "description": "Admin URL of the Application Passwords section."
+                    },
+                    "plugins_url": {
+                      "type": "string",
+                      "description": "Admin URL of the Plugins screen."
+                    },
+                    "can_auto_install_adapter": {
+                      "type": "boolean",
+                      "description": "True when a handler opted into background installation via the `fluent_toolkit/can_auto_install` filter."
+                    },
+                    "toolkit_download_url": {
+                      "type": "string",
+                      "description": "Where to download FluentHub manually."
+                    },
+                    "current_user_login": {
+                      "type": "string",
+                      "description": "Login of the requesting user, pre-filled into the generated snippets."
+                    },
+                    "is_local_dev": {
+                      "type": "boolean",
+                      "description": "Heuristic local-development detection \u2014 a dev TLD, `localhost`, or a private/loopback IP. Filterable via `fluent_crm/mcp_is_local_dev`."
+                    }
+                  }
+                },
+                "example": {
+                  "adapter_installed": true,
+                  "adapter_active": true,
+                  "adapter_provider": "plugin",
+                  "standalone_adapter_installed": true,
+                  "toolkit_installed": true,
+                  "toolkit_active": true,
+                  "toolkit_adapter_available": true,
+                  "adapter_runtime_available": true,
+                  "adapter_version": "0.5.0",
+                  "toolkit_version": "2.1.0",
+                  "abilities_api_loaded": true,
+                  "endpoint_url": "https://yourdomain.com/wp-json/fluent-crm/mcp",
+                  "tools_count": 29,
+                  "mcp_enabled": true,
+                  "pro_active": true,
+                  "app_passwords_url": "https://yourdomain.com/wp-admin/profile.php#application-passwords-section",
+                  "plugins_url": "https://yourdomain.com/wp-admin/plugins.php",
+                  "can_auto_install_adapter": true,
+                  "toolkit_download_url": "https://github.com/WPManageNinja/fluent-toolkit",
+                  "current_user_login": "site-admin",
+                  "is_local_dev": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

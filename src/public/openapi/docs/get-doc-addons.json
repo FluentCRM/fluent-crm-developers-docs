@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getDocAddons",
         "summary": "GET Get Addons",
-        "description": "Retrieve the list of recommended companion plugins (Fluent Forms, Fluent SMTP, Fluent Support) with their installation status. Optionally includes experimental feature settings.",
+        "description": "Retrieve the list of recommended companion plugins (Fluent Forms, Fluent SMTP, Fluent Support) with their installation status. Optionally includes experimental feature settings.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_view_dashboard`\n\n_Enforced by `ReportPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Docs"
         ],
@@ -70,7 +70,7 @@
                     },
                     "experimental_features": {
                       "type": "object",
-                      "description": "Only present when `with[]=experimental_features` is passed. Contains experimental feature settings.",
+                      "description": "Only present when `with[]=experimental_features` is passed. Contains experimental feature settings. Returned **only** when `with[]=experimental_features` is requested.",
                       "additionalProperties": true
                     }
                   }
@@ -179,7 +179,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

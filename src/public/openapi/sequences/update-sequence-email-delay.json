@@ -1,0 +1,236 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/sequences/{id}/email/{email_id}/delay": {
+      "patch": {
+        "operationId": "updateSequenceEmailDelay",
+        "summary": "PATCH Update Sequence Email Delay",
+        "description": "<Badge type=\"warning\" text=\"Pro\" />\n\nChange only the wait time before a sequence email sends, without touching its subject, body, or any other setting. This is what drag-to-reorder in the sequence builder calls.\n\nThe email is looked up scoped to the sequence in the path, so an id from another sequence returns 404 rather than being edited.\n\nAn unrecognised `delay_unit` silently falls back to `days` rather than erroring. Note that `Months` is **capitalised** in the accepted list \u2014 `months` is not recognised and will be treated as `days`.\n\nThe value is written to `settings.timings` on the email record.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "tags": [
+          "Sequences"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Sequence id.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "email_id",
+            "in": "path",
+            "description": "Sequence email id. Must belong to the sequence above.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "delay": {
+                    "type": "string",
+                    "description": "How long to wait, as a number.",
+                    "default": "0"
+                  },
+                  "delay_unit": {
+                    "type": "string",
+                    "description": "Unit for `delay`. Unrecognised values fall back to `days`. `Months` is capitalised.",
+                    "enum": [
+                      "minutes",
+                      "hours",
+                      "days",
+                      "weeks",
+                      "Months"
+                    ],
+                    "default": "days"
+                  }
+                }
+              },
+              "example": {
+                "delay": "3",
+                "delay_unit": "days"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Wait time updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Confirmation message."
+                    },
+                    "email": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "description": "Sequence email id."
+                        },
+                        "parent_id": {
+                          "type": "integer",
+                          "description": "Owning sequence id."
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "Email title."
+                        },
+                        "settings": {
+                          "type": "object",
+                          "properties": {
+                            "timings": {
+                              "type": "object",
+                              "properties": {
+                                "delay": {
+                                  "type": "string",
+                                  "description": "Stored delay value."
+                                },
+                                "delay_unit": {
+                                  "type": "string",
+                                  "description": "Stored delay unit."
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Wait time has been updated",
+                  "email": {
+                    "id": 41,
+                    "parent_id": 38,
+                    "title": "Day 5 follow-up",
+                    "settings": {
+                      "timings": {
+                        "delay": "3",
+                        "delay_unit": "days"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The requested resource does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed \u2014 the response message names the offending field.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "delete": {
         "operationId": "deleteRestKey",
         "summary": "DELETE REST API Key",
-        "description": "Delete a WordPress application password used for REST API access. Requires the `manage_options` capability. The target user must have FluentCRM access.",
+        "description": "Delete a WordPress application password used for REST API access. Requires the `manage_options` capability. The target user must have FluentCRM access.\n\n<!-- fc:access -->\n\n**Required capability:** `manage_options`\n\nThe policy also re-asserts `verifyRequest()`, so the caller must additionally hold `fcrm_manage_settings`.\n\n_Enforced by `SettingsPolicy::deleteRestKey()`._\n\n<!-- /fc:access -->",
         "tags": [
           "Settings"
         ],
@@ -139,7 +139,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

@@ -1,0 +1,172 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/email-patterns/do-bulk-action": {
+      "post": {
+        "operationId": "bulkActionEmailPatterns",
+        "summary": "POST Bulk Delete Email Patterns",
+        "description": "Delete several patterns in one request. `delete_patterns` is the only supported action \u2014 anything else is rejected.\n\nThere are two selection modes. By default the ids in `pattern_ids` are deleted. When `select_all` is truthy the id list is ignored and **every pattern matching `search` is deleted** \u2014 with an empty `search`, that is every pattern on the site.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_delete`\n\n_Enforced by `EmailPatternPolicy::handleBulkAction()`._\n\n<!-- /fc:access -->",
+        "tags": [
+          "Email Patterns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "action_name": {
+                    "type": "string",
+                    "description": "Must be `delete_patterns`.",
+                    "enum": [
+                      "delete_patterns"
+                    ]
+                  },
+                  "select_all": {
+                    "type": "boolean",
+                    "description": "When truthy, delete everything matching `search` and ignore `pattern_ids`.",
+                    "default": false
+                  },
+                  "search": {
+                    "type": "string",
+                    "description": "Search term applied in `select_all` mode. Empty means no filter \u2014 every pattern is deleted."
+                  },
+                  "pattern_ids": {
+                    "type": "array",
+                    "description": "Pattern ids to delete. Required unless `select_all` is truthy.",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "required": [
+                  "action_name"
+                ]
+              },
+              "example": {
+                "action_name": "delete_patterns",
+                "pattern_ids": [
+                  178,
+                  179
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Patterns deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Confirmation message including how many rows were removed."
+                    }
+                  }
+                },
+                "example": {
+                  "message": "2 pattern(s) deleted successfully"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "`action_name` is not `delete_patterns`, or no patterns were selected.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

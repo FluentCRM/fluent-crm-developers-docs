@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "get": {
         "operationId": "globalSearch",
         "summary": "GET Global Search",
-        "description": "Search across subscribers, campaigns, funnels, and companies simultaneously. Results are permission-scoped: only entities the current user has access to are returned. Returns up to 100 results per category by default (filterable via hook).",
+        "description": "Search across subscribers, campaigns, funnels, and companies simultaneously. Results are permission-scoped: only entities the current user has access to are returned. Returns up to 100 results per category by default (filterable via hook).\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts` or `fcrm_read_emails` or `fcrm_read_funnels` or `fcrm_manage_contact_cats` \u2014 which one applies depends on the action being performed.\n\nNo route policy; each result section is filtered by its own capability inside the controller.\n\n<!-- /fc:access -->",
         "tags": [
           "Global Search"
         ],
@@ -254,7 +254,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

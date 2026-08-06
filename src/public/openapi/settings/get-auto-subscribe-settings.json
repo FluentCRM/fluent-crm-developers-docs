@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getAutoSubscribeSettings",
         "summary": "GET Auto Subscribe Settings",
-        "description": "Retrieve auto-subscribe settings for user registration, comments, user syncing, and role-based tagging. Optionally includes form field definitions. When WooCommerce is active, also returns checkout form subscribe settings.",
+        "description": "Retrieve auto-subscribe settings for user registration, comments, user syncing, and role-based tagging. Optionally includes form field definitions. When WooCommerce is active, also returns checkout form subscribe settings.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `SettingsPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Settings"
         ],
@@ -79,27 +79,42 @@
                     },
                     "registration_fields": {
                       "type": "object",
-                      "description": "Form field definitions for registration settings (only when `with[]=fields`)."
+                      "description": "Form field definitions for registration settings (only when `with[]=fields`). Field definitions for the registration-form opt-in."
                     },
                     "comment_fields": {
                       "type": "object",
-                      "description": "Form field definitions for comment settings (only when `with[]=fields`)."
+                      "description": "Form field definitions for comment settings (only when `with[]=fields`). Field definitions for the comment-form opt-in."
                     },
                     "user_syncing_fields": {
                       "type": "object",
-                      "description": "Form field definitions for user syncing settings (only when `with[]=fields`)."
+                      "description": "Form field definitions for user syncing settings (only when `with[]=fields`). Field definitions for WordPress user syncing."
                     },
                     "role_based_tagging_settings_fields": {
                       "type": "object",
-                      "description": "Form field definitions for role-based tagging (only when `with[]=fields`)."
+                      "description": "Form field definitions for role-based tagging (only when `with[]=fields`). Field definitions for role-based tagging."
                     },
                     "woo_checkout_fields": {
                       "type": "object",
-                      "description": "WooCommerce checkout subscribe form fields (only when WooCommerce is active)."
+                      "description": "WooCommerce checkout subscribe form fields (only when WooCommerce is active). Present **only** when WooCommerce is active."
                     },
                     "woo_checkout_settings": {
                       "type": "object",
-                      "description": "WooCommerce checkout subscribe settings (only when WooCommerce is active)."
+                      "description": "WooCommerce checkout subscribe settings (only when WooCommerce is active). Present **only** when WooCommerce is active."
+                    },
+                    "date_time_settings": {
+                      "type": "object",
+                      "properties": {},
+                      "description": "Date and time formatting options used by the opt-in screens."
+                    },
+                    "fluent_cart_checkout_settings": {
+                      "type": "object",
+                      "properties": {},
+                      "description": "FluentCart checkout opt-in configuration. Present **only** when FluentCart is active."
+                    },
+                    "fluent_cart_checkout_fields": {
+                      "type": "object",
+                      "properties": {},
+                      "description": "Field definitions for the FluentCart checkout opt-in form. Present **only** when FluentCart is active."
                     }
                   }
                 },
@@ -156,7 +171,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

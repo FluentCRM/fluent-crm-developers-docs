@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "delete": {
         "operationId": "removeSequenceSubscribers",
         "summary": "DELETE Remove Sequence Subscribers",
-        "description": "Remove subscribers from an email sequence. Subscribers can be identified by tracker IDs or subscriber IDs. Removes the sequence tracker records for the specified subscribers. Requires FluentCampaign Pro.",
+        "description": "Remove subscribers from an email sequence. Subscribers can be identified by tracker IDs or subscriber IDs. Removes the sequence tracker records for the specified subscribers. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_delete`\n\n_Enforced by `SequencePolicy::deleteSubscribes()`._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Sequences"
         ],
@@ -133,7 +133,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

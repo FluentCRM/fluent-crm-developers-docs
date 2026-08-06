@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getSmartCodes",
         "summary": "GET Get Smart Codes",
-        "description": "Retrieve all available smartcodes grouped by category. Smartcodes are placeholder tokens (e.g., `{{contact.first_name}}`) that get replaced with actual values when emails are sent. Groups include contact fields, custom fields, and general codes like business name and unsubscribe URLs.",
+        "description": "Retrieve all available smartcodes grouped by category. Smartcodes are placeholder tokens (e.g., `{{contact.first_name}}`) that get replaced with actual values when emails are sent. Groups include contact fields, custom fields, and general codes like business name and unsubscribe URLs.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_templates`\n\n_Enforced by `TemplatePolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Templates"
         ],

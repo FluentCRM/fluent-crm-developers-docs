@@ -1,0 +1,342 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/reports/automations": {
+      "get": {
+        "operationId": "getAutomationReports",
+        "summary": "GET Automation Reports",
+        "description": "Paginated performance summary for every **published** automation, newest first. Drafts are excluded.\n\nThe four progression counts (`total_subscribers`, `completed_count`, `in_progress_count`, `last_run_at`) are produced by a single grouped aggregate across the whole page rather than per-row queries, so page size does not multiply query count.\n\n::: warning\nThis endpoint's aggregate is built with `selectRaw()`, which bypasses the prefix-adding query grammar. It is one of the two seed cases in the plugin's test suite \u2014 see `tests/smoke/routes.manifest.php`.\n:::\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_view_dashboard`\n\n_Enforced by `ReportPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "tags": [
+          "Reports"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Automations per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 15
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated automation reports.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "automations": {
+                      "type": "object",
+                      "description": "Standard paginator over published automations.",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of matching rows."
+                        },
+                        "per_page": {
+                          "type": "integer",
+                          "description": "Rows per page."
+                        },
+                        "current_page": {
+                          "type": "integer",
+                          "description": "Current page number."
+                        },
+                        "last_page": {
+                          "type": "integer",
+                          "description": "Number of the final page."
+                        },
+                        "from": {
+                          "type": "integer",
+                          "description": "Index of the first row on this page."
+                        },
+                        "to": {
+                          "type": "integer",
+                          "description": "Index of the last row on this page."
+                        },
+                        "next_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "URL of the next page, or null."
+                        },
+                        "prev_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "URL of the previous page, or null."
+                        },
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/AutomationReport"
+                          }
+                        }
+                      }
+                    },
+                    "overview": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "Number of published automations."
+                        },
+                        "subscribers": {
+                          "type": "integer",
+                          "description": "Distinct contact enrolments across every published automation."
+                        },
+                        "completed": {
+                          "type": "integer",
+                          "description": "Enrolments that finished."
+                        },
+                        "in_progress": {
+                          "type": "integer",
+                          "description": "Enrolments still running."
+                        }
+                      }
+                    },
+                    "top_automations": {
+                      "type": "array",
+                      "description": "The five most-triggered automations, cached for five minutes alongside `overview`.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Funnel id, returned as a string."
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "Automation name."
+                          },
+                          "trigger_name": {
+                            "type": "string",
+                            "description": "Starting hook."
+                          },
+                          "trigger_count": {
+                            "type": "integer",
+                            "description": "Total enrolments."
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "automations": {
+                    "current_page": 1,
+                    "per_page": 15,
+                    "total": 4,
+                    "last_page": 1,
+                    "from": 1,
+                    "to": 4,
+                    "next_page_url": null,
+                    "prev_page_url": null,
+                    "data": [
+                      {
+                        "id": 11,
+                        "type": "funnels",
+                        "title": "New Form Submission (Fluent Forms)",
+                        "trigger_name": "fluentform_submission_inserted",
+                        "status": "published",
+                        "conditions": {
+                          "run_only_one": "yes"
+                        },
+                        "settings": {
+                          "form_id": "1",
+                          "subscription_status": "subscribed"
+                        },
+                        "created_by": "1",
+                        "created_at": "2026-05-14 09:38:47",
+                        "updated_at": "2026-05-14 09:39:46",
+                        "total_subscribers": 1,
+                        "completed_count": 1,
+                        "in_progress_count": 0,
+                        "last_run_at": "2026-05-14 09:41:02",
+                        "recent_subscribers": []
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "AutomationReport": {
+        "type": "object",
+        "description": "A published automation with its rolled-up progression counts.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Funnel id."
+          },
+          "type": {
+            "type": "string",
+            "description": "Always `funnels`."
+          },
+          "title": {
+            "type": "string",
+            "description": "Automation name."
+          },
+          "trigger_name": {
+            "type": "string",
+            "description": "Hook that starts the automation, e.g. `fluentform_submission_inserted`."
+          },
+          "status": {
+            "type": "string",
+            "description": "Only `published` automations are returned.",
+            "enum": [
+              "published"
+            ]
+          },
+          "conditions": {
+            "type": "object",
+            "properties": {}
+          },
+          "settings": {
+            "type": "object",
+            "properties": {}
+          },
+          "created_by": {
+            "type": "string",
+            "description": "WordPress user id of the author."
+          },
+          "created_at": {
+            "type": "string",
+            "description": "Creation timestamp.",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "Last update timestamp.",
+            "format": "date-time"
+          },
+          "total_subscribers": {
+            "type": "integer",
+            "description": "Distinct contacts that have ever entered this automation."
+          },
+          "completed_count": {
+            "type": "integer",
+            "description": "Contacts whose run finished."
+          },
+          "in_progress_count": {
+            "type": "integer",
+            "description": "Contacts still moving through it."
+          },
+          "last_run_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Most recent step execution, or null if it has never run."
+          },
+          "recent_subscribers": {
+            "type": "array",
+            "description": "A short preview of the latest contacts to enter.",
+            "items": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

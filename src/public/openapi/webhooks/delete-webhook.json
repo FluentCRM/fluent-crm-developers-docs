@@ -27,7 +27,7 @@
       "delete": {
         "operationId": "deleteWebhook",
         "summary": "DELETE Delete Webhook",
-        "description": "Permanently delete a webhook by ID. This removes the webhook and its configuration. The webhook URL will no longer accept incoming data.",
+        "description": "Permanently delete a webhook by ID. This removes the webhook and its configuration. The webhook URL will no longer accept incoming data.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `WebhookPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Webhooks"
         ],

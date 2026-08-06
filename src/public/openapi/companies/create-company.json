@@ -27,7 +27,7 @@
       "post": {
         "operationId": "createCompany",
         "summary": "POST Create Company",
-        "description": "Create a new company. The company name must be unique. If a website is provided and the `company_auto_logo` experimental feature is enabled, the logo will be automatically fetched from the website's favicon/apple-touch-icon. Optionally attach the company to an existing contact via `intended_contact_id`.",
+        "description": "Create a new company. The company name must be unique. If a website is provided and the `company_auto_logo` experimental feature is enabled, the logo will be automatically fetched from the website's favicon/apple-touch-icon. Optionally attach the company to an existing contact via `intended_contact_id`.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contact_cats`\n\n_Enforced by `CompanyPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Companies"
         ],

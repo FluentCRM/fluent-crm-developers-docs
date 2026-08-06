@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getFunnelSubscribers",
         "summary": "GET Get Funnel Subscribers",
-        "description": "Retrieve a paginated list of subscribers enrolled in a specific automation funnel. Includes subscriber details, sequence progress, and metrics. Supports filtering by search, status, and sequence ID. Optionally includes the funnel object and sequence list.",
+        "description": "Retrieve a paginated list of subscribers enrolled in a specific automation funnel. Includes subscriber details, sequence progress, and metrics. Supports filtering by search, status, and sequence ID. Optionally includes the funnel object and sequence list.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],
@@ -363,11 +363,12 @@
                             "$ref": "#/components/schemas/FunnelLabel"
                           }
                         }
-                      }
+                      },
+                      "description": "Returned **only** when the matching `with[]` value is requested."
                     },
                     "sequences": {
                       "type": "array",
-                      "description": "List of funnel sequences ordered by position. Only included when `with[]` contains `sequences`.",
+                      "description": "List of funnel sequences ordered by position. Only included when `with[]` contains `sequences`. Returned **only** when the matching `with[]` value is requested.",
                       "items": {
                         "type": "object",
                         "properties": {

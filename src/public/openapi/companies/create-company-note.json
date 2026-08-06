@@ -27,7 +27,7 @@
       "post": {
         "operationId": "createCompanyNote",
         "summary": "POST Create Company Note",
-        "description": "Add a new note to a company. If `created_at` is not provided, it defaults to the current WordPress time. Fires the `fluent_crm/company_note_added` action hook after creation.",
+        "description": "Add a new note to a company. If `created_at` is not provided, it defaults to the current WordPress time. Fires the `fluent_crm/company_note_added` action hook after creation.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contact_cats`\n\n_Enforced by `CompanyPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Companies"
         ],

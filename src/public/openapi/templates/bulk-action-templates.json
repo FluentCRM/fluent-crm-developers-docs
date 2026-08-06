@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "post": {
         "operationId": "bulkActionTemplates",
         "summary": "POST Bulk Action Templates",
-        "description": "Perform a bulk action on multiple email templates. Supports changing the status of templates or permanently deleting them. When `select_all` is 'true', the action is applied to all templates regardless of the provided IDs.",
+        "description": "Perform a bulk action on multiple email templates. Supports changing the status of templates or permanently deleting them. When `select_all` is 'true', the action is applied to all templates regardless of the provided IDs.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_delete`\n\n_Enforced by `TemplatePolicy::handleBulkAction()`._\n\n<!-- /fc:access -->",
         "tags": [
           "Templates"
         ],
@@ -162,7 +162,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

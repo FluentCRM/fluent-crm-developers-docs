@@ -1,0 +1,139 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/reports/email-unsubs": {
+      "get": {
+        "operationId": "getEmailUnsubStats",
+        "summary": "GET Email Unsubscribe Stats",
+        "description": "Daily unsubscribe counts for a date range, ready to plot as a time series.\n\n`stats` is a **map keyed by date** (`YYYY-MM-DD`), not an array. Every day in the range is present, including days with no unsubscribes, so the series has no gaps.\n\n`date_range` is a two-element array: `date_range[0]` is the start and `date_range[1]` the end. Omitting it falls back to the reporting service's default window.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_view_dashboard`\n\n_Enforced by `ReportPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "tags": [
+          "Reports"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "date_range[]",
+            "in": "query",
+            "description": "Two-element range as `[from, to]`, each `YYYY-MM-DD`. Omit for the default window.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Unsubscribes per day.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "stats": {
+                      "type": "object",
+                      "description": "Date-keyed counts. Every day in the range is present, zero-filled.",
+                      "additionalProperties": {
+                        "type": "integer"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "stats": {
+                    "2026-08-01": 3,
+                    "2026-08-02": 0,
+                    "2026-08-03": 1,
+                    "2026-08-04": 0
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

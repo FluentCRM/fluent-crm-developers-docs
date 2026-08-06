@@ -1,0 +1,229 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/email-patterns": {
+      "post": {
+        "operationId": "createEmailPattern",
+        "summary": "POST Create Email Pattern",
+        "description": "Create a pattern. `title` and `content` are both required and validated before anything is written.\n\nThe slug is generated server-side as `fluentcrm/<sanitised-title>-<uniqid>` and cannot be supplied. `content` is filtered through `wp_kses_post()`, so disallowed markup is stripped rather than rejected.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `EmailPatternPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "tags": [
+          "Email Patterns"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Pattern name. Required."
+                  },
+                  "content": {
+                    "type": "string",
+                    "description": "Block markup. Required."
+                  },
+                  "category": {
+                    "type": "string",
+                    "description": "Category name. Free text \u2014 the category does not have to exist."
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Optional description."
+                  },
+                  "sync_status": {
+                    "type": "string",
+                    "description": "Sync status stored verbatim.",
+                    "default": "unsynced"
+                  }
+                },
+                "required": [
+                  "title",
+                  "content"
+                ]
+              },
+              "example": {
+                "title": "Hero with CTA",
+                "content": "<!-- wp:heading --><h2>Big news</h2><!-- /wp:heading -->",
+                "category": "My Patterns",
+                "description": "Headline plus a call-to-action button.",
+                "sync_status": "unsynced"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pattern created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Confirmation message."
+                    },
+                    "pattern": {
+                      "$ref": "#/components/schemas/EmailPattern"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Pattern saved successfully",
+                  "pattern": {
+                    "id": 180,
+                    "slug": "fluentcrm/hero-with-cta-68f0a1",
+                    "title": "Hero with CTA",
+                    "content": "<!-- wp:heading --><h2>Big news</h2><!-- /wp:heading -->",
+                    "category": "My Patterns",
+                    "description": "Headline plus a call-to-action button.",
+                    "sync_status": "unsynced",
+                    "created_at": "2026-08-04 09:12:00",
+                    "updated_at": "2026-08-04 09:12:00"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "`title` or `content` missing.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "EmailPattern": {
+        "type": "object",
+        "description": "An email block pattern.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Row id in `fc_meta`."
+          },
+          "slug": {
+            "type": "string",
+            "description": "Generated slug, always prefixed `fluentcrm/`."
+          },
+          "title": {
+            "type": "string",
+            "description": "Pattern name."
+          },
+          "content": {
+            "type": "string",
+            "description": "Block markup, filtered through `wp_kses_post()`."
+          },
+          "category": {
+            "type": "string",
+            "description": "Category name. Empty string when uncategorised."
+          },
+          "description": {
+            "type": "string",
+            "description": "Optional description."
+          },
+          "sync_status": {
+            "type": "string",
+            "description": "`synced` for a fully synced pattern, otherwise `unsynced` or an empty string."
+          },
+          "created_at": {
+            "type": "string",
+            "description": "Creation timestamp, or an empty string.",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "Last update timestamp, or an empty string.",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

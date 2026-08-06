@@ -29,7 +29,13 @@ add_filter('fluentcrm_funnel_triggers', function($triggers) {
 });
 ```
 
-**Source:** `app/Http/Controllers/FunnelController.php`, `app/Http/Controllers/DashboardController.php`
+::: tip
+This runs anywhere the trigger catalogue is assembled — the funnel editor, the dashboard, the MCP
+context tools and the Pro data exporter. Register triggers unconditionally rather than gating on the
+current screen.
+:::
+
+**Source:** `app/Http/Controllers/FunnelController.php`, `app/Http/Controllers/DashboardController.php`, `app/Modules/MCP/Tools/FunnelTools.php`, `app/Modules/MCP/Tools/ContextTools.php`, `fluentcampaign-pro/app/Hooks/Handlers/DataExporter.php`
 
 ---
 
@@ -54,7 +60,13 @@ add_filter('fluentcrm_funnel_blocks', function($blocks, $funnel) {
 }, 10, 2);
 ```
 
-**Source:** `app/Http/Controllers/FunnelController.php`
+::: warning
+`$funnel` is `null` when the MCP context tools build the block catalogue with no funnel in scope, and
+a plain `stdClass` cast rather than a Funnel model when the Pro data exporter calls it. Guard before
+reading properties off it.
+:::
+
+**Source:** `app/Http/Controllers/FunnelController.php`, `app/Modules/MCP/Tools/ContextTools.php`, `fluentcampaign-pro/app/Hooks/Handlers/DataExporter.php`
 
 ---
 
@@ -82,7 +94,7 @@ add_filter('fluentcrm_funnel_block_fields', function($fields, $funnel) {
 }, 10, 2);
 ```
 
-**Source:** `app/Http/Controllers/FunnelController.php`
+**Source:** `app/Http/Controllers/FunnelController.php`, `fluentcampaign-pro/app/Hooks/Handlers/DataExporter.php`
 
 ---
 
@@ -154,7 +166,9 @@ add_filter('fluent_crm/funnel_label_color', function($colors) {
 
 ### `fluent_crm/funnel_subscriber_statuses`
 
-Filter which funnel-subscriber statuses should be processed each cycle.
+Filter which funnel-subscriber statuses the processor picks up each cycle. Only rows on a
+`published` funnel of type `funnels` whose `next_execution_time` is due are considered — this filter
+narrows that set by status.
 
 **Parameters**
 - `$statuses` Array - Default `['active']`
@@ -176,7 +190,7 @@ add_filter('fluent_crm/funnel_subscriber_statuses', function($statuses) {
 Filter the maximum number of funnel subscribers processed in a single processor run.
 
 **Parameters**
-- `$limit` INT - Default `200`
+- `$limit` INT - Default `200`. Values below `1` are clamped to `1`.
 
 **Usage:**
 ```php
@@ -194,7 +208,7 @@ add_filter('fluent_crm/funnel_processor_batch_limit', function($limit) {
 Filter the hard time limit (seconds) for the funnel processor per run.
 
 **Parameters**
-- `$seconds` INT - Default `55`
+- `$seconds` INT - Default `55`. Values below `1` are clamped to `1`.
 
 **Usage:**
 ```php
@@ -215,7 +229,7 @@ Filter the computed delay (in seconds) for a funnel sequence step. This applies 
 - `$waitTimeSeconds` INT - Computed delay in seconds
 - `$settings` Array - Step settings
 - `$sequence` Object - Sequence data
-- `$funnelSubId` INT - Funnel subscriber ID
+- `$funnelSubId` INT - Funnel subscriber ID; may be `0`/empty for a step evaluated outside a contact's run
 
 **Usage:**
 ```php
@@ -252,7 +266,7 @@ add_filter('fluentcrm_funnel_will_process_user_registration', function($willProc
 }, 10, 4);
 ```
 
-**Source:** Various trigger files in `app/Services/Funnel/Triggers/`
+**Source:** Every trigger class that implements a `willProcess()` gate — `app/Services/Funnel/Triggers/`, `app/Services/ExternalIntegrations/FluentCart/Triggers/`, and the Pro integration triggers under `fluentcampaign-pro/app/Services/Integrations/`
 
 ---
 
@@ -298,15 +312,21 @@ add_filter('fluentcrm_funnel_sequence_saving_my_action', function($sequence, $fu
 
 ### `fluent_crm/webhook_ssl_verify`
 
-Control whether SSL is verified when making outgoing webhook requests from a funnel action.
+Control whether SSL is verified for the **Send Test Webhook** request fired from the funnel editor.
+
+::: warning
+This does not affect live webhook sends. The HTTP webhook automation action verifies SSL through
+Fluent Forms' `ff_webhook_ssl_verify` filter, which defaults to `false`. Filter that hook instead if
+you need to change verification for real automation traffic.
+:::
 
 **Parameters**
-- `$verify` Boolean - Default `false`
+- `$verify` Boolean - Default `true`
 
 **Usage:**
 ```php
 add_filter('fluent_crm/webhook_ssl_verify', function($verify) {
-    return true; // Enforce SSL verification
+    return false; // Skip verification when testing against a self-signed endpoint
 });
 ```
 
@@ -320,7 +340,16 @@ add_filter('fluent_crm/webhook_ssl_verify', function($verify) {
 
 ### `fluentcrm_automation_condition_groups`
 
-Filter the available condition groups for automation rules.
+Filter the available condition groups for automation rules. Fired by the Pro conditional block and
+by the abandoned-cart automation triggers, including the FluentCart abandoned-cart driver that ships
+in core.
+
+::: tip
+This hook only registers the group in the UI. At run time, a group that is not one of the built-in
+ones is evaluated through
+[`fluentcrm_automation_conditions_assess_{$groupName}`](#fluentcrm-automation-conditions-assess-groupname) —
+implement that too, or your group always passes.
+:::
 
 **Parameters**
 - `$groups` Array - condition group definitions
@@ -337,7 +366,7 @@ add_filter('fluentcrm_automation_condition_groups', function($groups, $funnel) {
 }, 10, 2);
 ```
 
-**Source:** `fluentcampaign-pro/app/Services/Funnel/Conditions/FunnelCondition.php`
+**Source:** `fluentcampaign-pro/app/Services/Funnel/Conditions/FunnelCondition.php`, `fluentcampaign-pro/app/Modules/AbandonCart/Woo/AbandonCartAutomationTrigger.php`, `app/Modules/AbandonCart/Drivers/FluentCart/FluentCartAutomationTrigger.php`
 
 ---
 
@@ -366,14 +395,21 @@ add_filter('fluentcrm_automation_custom_conditions', function($conditions, $funn
 
 ### `fluentcrm_automation_custom_condition_assert_{$propertyName}`
 
-Dynamic filter to evaluate a custom automation condition. Return `true` or `false` to pass or fail the condition.
+Dynamic filter to evaluate a custom automation condition. Return `true` or `false` to pass or fail
+the condition. It is also consulted by the abandoned-cart runner when it re-evaluates conditions.
+
+::: warning
+The default is `true`, so an unhandled property name passes the condition rather than failing it.
+When the abandoned-cart runner calls this filter, `$sequence` and `$funnelSubscriberId` are both
+`null` — guard for that before dereferencing them.
+:::
 
 **Parameters**
-- `$result` Boolean - default condition result
+- `$result` Boolean - Default `true`
 - `$condition` Array - condition config
 - `$subscriber` [Subscriber Model](/database/models/subscriber)
-- `$sequence` Object - sequence data
-- `$funnelSubscriberId` INT - funnel subscriber ID
+- `$sequence` FunnelSequence Model - `null` when called from the abandoned-cart runner
+- `$funnelSubscriberId` INT - funnel subscriber ID; `null` when called from the abandoned-cart runner
 
 **Usage:**
 ```php
@@ -382,24 +418,80 @@ add_filter('fluentcrm_automation_custom_condition_assert_has_membership', functi
 }, 10, 3);
 ```
 
-**Source:** `fluentcampaign-pro/app/Services/Funnel/Conditions/FunnelCondition.php`
+**Source:** `fluentcampaign-pro/app/Services/Funnel/Conditions/FunnelCondition.php`, `app/Modules/AbandonCart/AbandonCartRunner.php`
+
+---
+
+### `fluentcrm_automation_conditions_assess_{$groupName}`
+
+Dynamic filter that evaluates one **condition group** of an automation conditional split for a
+contact. Return `true` to pass the group, `false` to fail it. The dynamic portion, `$groupName`, is
+the `value` the group was registered under on
+[`fluentcrm_automation_condition_groups`](#fluentcrm-automation-condition-groups).
+
+The built-in groups — `subscriber`, `custom_fields`, `segment`, `activities`, `event_tracking` and
+`other` — are assessed internally and never reach this filter (single conditions inside `other` go
+through
+[`fluentcrm_automation_custom_condition_assert_{$propertyName}`](#fluentcrm-automation-custom-condition-assert-propertyname)
+instead, keyed by the condition's `data_key`). Everything else is dispatched here, which is how the
+Pro integrations (WooCommerce, EDD, LearnDash, LifterLMS, TutorLMS, PMPro, RCP, Wishlist Member,
+AffiliateWP) and the core FluentCart integration plug in their purchase/enrollment conditions.
+Within one condition set every group must pass (AND); multiple condition sets are OR-ed, and the
+contact goes down the "No" path of the split only when every set fails.
+
+::: warning
+The default is `true`, so a group name nobody handles passes silently. And as with
+`fluentcrm_automation_custom_condition_assert_{$propertyName}`: when the abandoned-cart runner calls
+this filter, `$sequence` and `$funnelSubscriberId` are both `null` — guard for that before
+dereferencing them. Most implementations register with `10, 3` and ignore the last two arguments
+entirely.
+:::
+
+**Parameters**
+- `$result` Boolean - Default `true`
+- `$group` Array - the conditions of this group, each carrying `data_key`, `operator` and `value` (plus `property`, `extra_value` and `data_value` where set)
+- `$subscriber` [Subscriber Model](/database/models/subscriber)
+- `$sequence` FunnelSequence Model - the conditional split step; `null` when called from the abandoned-cart runner
+- `$funnelSubscriberId` INT - funnel subscriber ID; `null` when called from the abandoned-cart runner
+
+**Usage:**
+```php
+add_filter('fluentcrm_automation_conditions_assess_my_group', function($result, $group, $subscriber) {
+    foreach ($group as $condition) {
+        if (!my_plugin_condition_matches($condition, $subscriber)) {
+            return false;
+        }
+    }
+    return true;
+}, 10, 3);
+```
+
+**Source:** `fluentcampaign-pro/app/Services/Funnel/Conditions/FunnelCondition.php`, `app/Modules/AbandonCart/AbandonCartRunner.php`
 
 ---
 
 ### `fluent_crm/funnel_ab_test_is_b`
 
-Determines whether a subscriber falls into the B variant of an automation A/B test.
+Determines whether a contact falls into the B variant of an automation A/B test. The unfiltered value
+is a weighted coin flip using the step's `path_a` / `path_b` split percentages (both default `50`).
+
+::: warning
+The third argument is the **sequence again**, not the funnel subscriber — `FunnelABTesting::handle()`
+passes `$sequence` for both. The contact and the funnel-subscriber id are not exposed to this filter,
+so per-contact bucketing (for example, a stable hash of the contact id) is not possible here. Read
+`$sequence->settings` for the split percentages.
+:::
 
 **Parameters**
-- `$isB` Boolean - whether this subscriber gets variant B
-- `$sequence` Object - sequence step data
-- `$funnelSub` Object - funnel subscriber data
+- `$isB` Boolean - whether this contact gets variant B
+- `$sequence` FunnelSequence Model - the A/B test step
+- `$sequence` FunnelSequence Model - the same object again
 
 **Usage:**
 ```php
-add_filter('fluent_crm/funnel_ab_test_is_b', function($isB, $sequence, $funnelSub) {
+add_filter('fluent_crm/funnel_ab_test_is_b', function($isB, $sequence) {
     return $isB;
-}, 10, 3);
+}, 10, 2);
 ```
 
 **Source:** `fluentcampaign-pro/app/Services/Funnel/Conditions/FunnelABTesting.php`
@@ -430,11 +522,18 @@ add_filter('fluent_crm/event_tracking_condition_groups', function($groups) {
 
 ### `fluent_crm/http_webhook_body`
 
-Filter the request body sent to external webhooks in HTTP webhook automation actions.
+Filter the request body sent to external webhooks in HTTP webhook automation actions. Smart codes in
+the configured body have already been parsed for the contact when this runs.
+
+::: tip
+An empty body short-circuits the step before this filter — the step is marked `skipped` with a
+"No valid body data found" note. Use this filter to enrich a body, not to create one from nothing.
+On a `GET` step, the returned array becomes the query string rather than a request body.
+:::
 
 **Parameters**
-- `$body` Array - request body
-- `$sequence` Object - sequence step data
+- `$body` Array - request body, never empty
+- `$sequence` FunnelSequence Model - the webhook step
 - `$subscriber` [Subscriber Model](/database/models/subscriber)
 
 **Usage:**

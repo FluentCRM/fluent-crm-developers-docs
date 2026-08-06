@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getContactCustomFields",
         "summary": "GET Get Contact Custom Fields",
-        "description": "Retrieve all globally defined custom contact fields. Optionally include field type definitions and field group information by passing the `with[]` parameter.",
+        "description": "Retrieve all globally defined custom contact fields. Optionally include field type definitions and field group information by passing the `with[]` parameter.\n\nBy default the response contains only `fields`. Request `field_types` and/or `field_groups` through `with[]` to get the metadata needed to render a field editor.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `CustomFieldsPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Custom Fields"
         ],
@@ -71,7 +71,7 @@
                     },
                     "field_types": {
                       "type": "object",
-                      "description": "Available field type definitions (only included when `with[]=field_types`).",
+                      "description": "Available field type definitions. Returned **only** when `with[]=field_types` is requested.",
                       "additionalProperties": {
                         "type": "object",
                         "properties": {
@@ -99,7 +99,7 @@
                     },
                     "field_groups": {
                       "type": "array",
-                      "description": "Available field groups (only included when `with[]=field_groups`).",
+                      "description": "Available field group definitions. Returned **only** when `with[]=field_groups` is requested.",
                       "items": {
                         "type": "object",
                         "properties": {
@@ -267,7 +267,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "post": {
         "operationId": "createSmsCampaign",
         "summary": "POST Create SMS Campaign",
-        "description": "Create a new SMS campaign. The campaign is created in `draft` status. The message content allows only anchor (`<a>`) tags for links; all other HTML is stripped. **PRO** (requires FluentCampaign Pro SMS module).",
+        "description": "Create a new SMS campaign. The campaign is created in `draft` status. The message content allows only anchor (`<a>`) tags for links; all other HTML is stripped. **PRO** (requires FluentCampaign Pro SMS module).\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\nRoute exists only while the SMS module is enabled; the policy returns false otherwise.\n\n_Enforced by `SMSPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro **with the SMS module enabled**. While SMS is switched off the route is not registered at all and returns a 404.\n\n<!-- /fc:access -->",
         "tags": [
           "SMS"
         ],
@@ -180,7 +180,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

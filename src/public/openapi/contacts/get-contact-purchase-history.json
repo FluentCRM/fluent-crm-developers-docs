@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getContactPurchaseHistory",
         "summary": "GET Get Contact Purchase History",
-        "description": "Retrieve purchase/order history for a contact from a specific commerce provider. The data is fetched via the `fluent_crm/purchase_history_{provider}` filter hook, so the response structure depends on the active commerce integration (e.g., WooCommerce, EDD).",
+        "description": "Retrieve purchase/order history for a contact from a specific commerce provider. The data is fetched via the `fluent_crm/purchase_history_{provider}` filter hook, so the response structure depends on the active commerce integration (e.g., WooCommerce, EDD).\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts`\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Contacts"
         ],
@@ -155,7 +155,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

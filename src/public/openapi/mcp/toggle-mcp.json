@@ -1,0 +1,167 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/mcp/toggle": {
+      "post": {
+        "operationId": "toggleMcp",
+        "summary": "POST Toggle MCP Tools",
+        "description": "Flip the MCP kill-switch, stored as the FluentCRM option `mcp_enabled`.\n\nWith it off, the adapter stops reporting FluentCRM abilities \u2014 the endpoint stays reachable but advertises nothing. The change takes effect on the **next** request, because the guard that reads it runs during ability registration.\n\n`mcp_enabled` is permissive about types: the strings `yes`, `true`, and `1` all enable, any other string disables, and a non-string is cast to boolean.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `SettingsPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "tags": [
+          "MCP"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "mcp_enabled": {
+                    "type": "string",
+                    "description": "Whether MCP tools should be advertised. `yes`, `true`, or `1` enable; any other string disables.",
+                    "enum": [
+                      "yes",
+                      "no",
+                      "true",
+                      "false",
+                      "1",
+                      "0"
+                    ]
+                  }
+                },
+                "required": [
+                  "mcp_enabled"
+                ]
+              },
+              "example": {
+                "mcp_enabled": "no"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Kill-switch updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "description": "Always true on success."
+                    },
+                    "mcp_enabled": {
+                      "type": "boolean",
+                      "description": "The resolved state that was stored."
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Message describing the new state."
+                    }
+                  }
+                },
+                "example": {
+                  "ok": true,
+                  "mcp_enabled": false,
+                  "message": "MCP tools disabled. The adapter will no longer report FluentCRM abilities."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed \u2014 the response message names the offending field.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

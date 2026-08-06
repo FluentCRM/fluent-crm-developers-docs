@@ -1,0 +1,178 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/ai/test": {
+      "post": {
+        "operationId": "testAiConnection",
+        "summary": "POST Test AI Connection",
+        "description": "Verify provider credentials by issuing a real, minimal completion request (15-second timeout).\n\nIf `api_key` is empty or still masked, the saved key is used instead \u2014 so the settings screen can test an existing configuration without re-entering the secret. Every provider except `wordpress` requires a key to be present.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `AiPolicy::testConnection()`._\n\n<!-- /fc:access -->",
+        "tags": [
+          "AI"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "settings": {
+                    "type": "object",
+                    "description": "Credentials to test.",
+                    "properties": {
+                      "provider": {
+                        "type": "string",
+                        "description": "Provider to test.",
+                        "enum": [
+                          "wordpress",
+                          "open_ai",
+                          "claude",
+                          "gemini"
+                        ]
+                      },
+                      "model": {
+                        "type": "string",
+                        "description": "Model id, or `auto`.",
+                        "default": "auto"
+                      },
+                      "api_key": {
+                        "type": "string",
+                        "description": "API key. Omit or send the masked value to test the saved key."
+                      }
+                    },
+                    "required": [
+                      "provider",
+                      "model"
+                    ]
+                  }
+                },
+                "required": [
+                  "settings"
+                ]
+              },
+              "example": {
+                "settings": {
+                  "provider": "open_ai",
+                  "model": "auto",
+                  "api_key": "****Ab12"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The provider accepted the credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Success message."
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Connection successful! Your API key is valid."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Provider or model missing, provider unrecognised, API key absent, or the provider rejected the request. The provider's own error text is passed through in `message`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

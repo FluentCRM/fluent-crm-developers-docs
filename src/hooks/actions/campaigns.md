@@ -24,7 +24,7 @@ add_action('fluent_crm/campaign_created', function($campaign) {
 });
 ```
 
-**Source:** `app/Http/Controllers/CampaignController.php`
+**Source:** `app/Http/Controllers/CampaignController.php`, `app/Modules/MCP/Tools/CampaignTools.php`
 
 ---
 
@@ -43,7 +43,7 @@ add_action('fluent_crm/campaign_data_updated', function($campaign, $postedData) 
 }, 10, 2);
 ```
 
-**Source:** `app/Http/Controllers/CampaignController.php`
+**Source:** `app/Http/Controllers/CampaignController.php`, `app/Modules/MCP/Tools/CampaignTools.php`
 
 ---
 
@@ -62,7 +62,7 @@ add_action('fluent_crm/update_campaign_compose', function($data, $campaign) {
 }, 10, 2);
 ```
 
-**Source:** `app/Http/Controllers/CampaignController.php`
+**Source:** `app/Http/Controllers/CampaignController.php`, `app/Hooks/Handlers/FunnelHandler.php`
 
 ---
 
@@ -99,7 +99,7 @@ add_action('fluent_crm/campaign_deleted', function($campaignId) {
 });
 ```
 
-**Source:** `app/Http/Controllers/CampaignController.php`
+**Source:** `app/Http/Controllers/CampaignController.php`, `app/Modules/MCP/Tools/CampaignTools.php`, `fluentcampaign-pro/app/Http/Controllers/RecurringCampaignController.php`
 
 ---
 
@@ -118,7 +118,7 @@ add_action('fluent_crm/campaign_duplicated', function($newCampaign, $oldCampaign
 }, 10, 2);
 ```
 
-**Source:** `app/Http/Controllers/CampaignController.php`
+**Source:** `app/Http/Controllers/CampaignController.php`, `app/Modules/MCP/Tools/CampaignTools.php`
 
 ---
 
@@ -175,7 +175,7 @@ add_action('fluent_crm/campaign_scheduled', function($campaign, $scheduleAt) {
 }, 10, 2);
 ```
 
-**Source:** `app/Http/Controllers/CampaignController.php`
+**Source:** `app/Http/Controllers/CampaignController.php`, `app/Modules/MCP/Tools/CampaignTools.php`
 
 ---
 
@@ -193,7 +193,7 @@ add_action('fluent_crm/campaign_set_send_now', function($campaign) {
 });
 ```
 
-**Source:** `app/Http/Controllers/CampaignController.php`
+**Source:** `app/Http/Controllers/CampaignController.php`, `app/Modules/MCP/Tools/CampaignTools.php`
 
 ---
 
@@ -212,6 +212,39 @@ add_action('fluent_crm/campaign_processing_start', function($campaign) {
 ```
 
 **Source:** `app/Http/Controllers/CampaignController.php`
+
+---
+
+### `fluent_crm/campaign_processing_failed`
+
+This action fires when a scheduled campaign's recipient selection cannot be resolved while its
+emails are being materialized — typically a dynamic segment whose provider is no longer registered
+(FluentCampaign Pro deactivated, license lapsed) or a deleted segment. Before the hook fires, the
+campaign has been moved from `processing` back to `draft`, its half-created email rows have been
+deleted, and a human-readable explanation has been stored in the `_processing_error` campaign meta.
+
+::: warning The only programmatic failure signal
+Nothing is emailed to the site admin when this happens — the campaign just sits in draft with an
+error note in the UI. If you need alerting (Slack, email, monitoring), this hook is the place to
+attach it.
+:::
+
+**Parameters**
+- `$campaign` [Campaign Model](/database/models/campaign) - already reverted to `status = 'draft'`
+- `$reason` String - failure reason code; currently always `'recipients_unresolvable'`
+
+**Usage:**
+```php
+add_action('fluent_crm/campaign_processing_failed', function($campaign, $reason) {
+   wp_mail(
+       get_option('admin_email'),
+       'FluentCRM campaign failed: ' . $campaign->title,
+       'Reason: ' . $reason . '. The campaign was moved back to draft.'
+   );
+}, 10, 2);
+```
+
+**Source:** `app/Services/CampaignProcessor.php`
 
 ---
 
@@ -248,6 +281,42 @@ add_action('fluentcrm_sending_emails_done', function($campaignEmails) {
 ```
 
 **Source:** `app/Services/Libs/Mailer/BaseHandler.php`
+
+---
+
+## Email Link Redirect
+
+### `fluentcrm_email_url_click`
+
+This action fires on every tracked email link click, immediately before the visitor is redirected to
+the destination URL. By the time it runs, all click bookkeeping has already happened: the click
+counter and open flag on the email row are updated, the click metric row is recorded, and
+[`fluent_crm/email_url_clicked`](/hooks/actions/contact-activity#fluent-crm-email-url-clicked) has
+fired (for attributable clicks).
+
+::: warning Fires even for unattributed clicks
+Unlike `fluent_crm/email_url_clicked`, this hook also fires when the click could **not** be tied to
+a contact — a missing/invalid `mid`, a failed security-token check, or an anonymized click. In those
+cases `$mailId` may be `false` or point to an email whose metrics were not updated. It only requires
+that the short URL resolved and a destination URL exists.
+
+Your callback runs after `nocache_headers()` and right before `wp_redirect()` + `exit` — do not
+produce output, and keep it fast: every tracked click in every email waits on it.
+:::
+
+**Parameters**
+- `$redirectUrl` String - the final destination URL the visitor is being redirected to (UTM parameters already appended)
+- `$mailId` Integer|false - the `fc_campaign_emails` row ID from the `mid` query parameter, or `false` when absent
+- `$urlData` Object - the raw `fc_url_stores` row as a plain `stdClass` (not a [UrlStores Model](/database/models/url-store) instance): `id`, `url` (the original long URL), `short`, plus a transient `url_token` property when the click carried a security hash
+
+**Usage:**
+```php
+add_action('fluentcrm_email_url_click', function($redirectUrl, $mailId, $urlData) {
+   // Log the click before the redirect happens
+}, 10, 3);
+```
+
+**Source:** `app/Hooks/Handlers/RedirectionHandler.php`
 
 ---
 

@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getContact",
         "summary": "GET Get Contact",
-        "description": "Retrieve a single contact by ID or email. Supports eager-loading related data like stats, custom values, custom field definitions, and commerce stats via the `with[]` parameter.",
+        "description": "Retrieve a single contact by ID or email. Supports eager-loading related data like stats, custom values, custom field definitions, and commerce stats via the `with[]` parameter.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts`\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Contacts"
         ],
@@ -136,7 +136,7 @@
                     },
                     "custom_fields": {
                       "type": "array",
-                      "description": "Custom field definitions (only when `with[]` includes `custom_fields`).",
+                      "description": "Custom field definitions (only when `with[]` includes `custom_fields`). Returned **only** when the request asks for custom fields.",
                       "items": {
                         "type": "object",
                         "properties": {

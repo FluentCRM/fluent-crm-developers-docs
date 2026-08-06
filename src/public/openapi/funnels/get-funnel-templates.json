@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getFunnelTemplates",
         "summary": "GET Get Funnel Templates",
-        "description": "Retrieve available funnel templates from the remote template repository. Returns templates filtered by active plugin dependencies, all templates, and allowed dependency categories.",
+        "description": "Retrieve available funnel templates from the remote template repository. Returns templates filtered by active plugin dependencies, all templates, and allowed dependency categories.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],
@@ -169,7 +169,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

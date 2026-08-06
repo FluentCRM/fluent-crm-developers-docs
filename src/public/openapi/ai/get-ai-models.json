@@ -1,0 +1,192 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/ai/models": {
+      "post": {
+        "operationId": "getAiModels",
+        "summary": "POST List Models For Provider",
+        "description": "List the model options FluentCRM offers for a provider, so the settings screen can populate its model dropdown after the provider changes.\n\nThis is a **POST** even though it only reads: the provider is sent inside the same `settings` envelope the other AI endpoints use.\n\nModel lists are maintained in FluentCRM, not fetched from the provider, so the call does not need a valid API key and makes no outbound request.\n\n<!-- fc:access -->\n\n**Required capability:** `manage_options`\n\n_Enforced by `AiPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "tags": [
+          "AI"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "settings": {
+                    "type": "object",
+                    "description": "Provider selector.",
+                    "properties": {
+                      "provider": {
+                        "type": "string",
+                        "description": "Provider whose models should be listed.",
+                        "enum": [
+                          "wordpress",
+                          "open_ai",
+                          "claude",
+                          "gemini"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "provider"
+                    ]
+                  }
+                },
+                "required": [
+                  "settings"
+                ]
+              },
+              "example": {
+                "settings": {
+                  "provider": "claude"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Available models for the requested provider.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "models": {
+                      "type": "array",
+                      "description": "Model options in dropdown order. `auto` resolves to the provider default at call time.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Model identifier to store in `settings.model`."
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "Human-readable label."
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "models": [
+                    {
+                      "id": "auto",
+                      "title": "Auto (Recommended)"
+                    },
+                    {
+                      "id": "claude-opus-4-7",
+                      "title": "claude-opus-4-7"
+                    },
+                    {
+                      "id": "claude-sonnet-4-6",
+                      "title": "claude-sonnet-4-6"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Missing or unrecognised `settings.provider`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

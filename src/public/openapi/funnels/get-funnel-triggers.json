@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getFunnelTriggers",
         "summary": "GET Get Funnel Triggers",
-        "description": "Retrieve all available funnel trigger definitions. Returns a map of trigger names to their configuration objects including labels, categories, and descriptions.",
+        "description": "Retrieve all available funnel trigger definitions. Returns a map of trigger names to their configuration objects including labels, categories, and descriptions.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],

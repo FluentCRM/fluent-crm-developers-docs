@@ -27,7 +27,7 @@
       "get": {
         "operationId": "listAllTemplates",
         "summary": "GET List All Templates",
-        "description": "Retrieve all published email templates (non-paginated) along with available smartcodes. Useful for template selection dropdowns where all published templates are needed at once.",
+        "description": "Retrieve all published email templates (non-paginated) along with available smartcodes. Useful for template selection dropdowns where all published templates are needed at once.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_templates`\n\n_Enforced by `TemplatePolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Templates"
         ],

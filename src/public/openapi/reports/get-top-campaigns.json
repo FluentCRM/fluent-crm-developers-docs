@@ -1,0 +1,195 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/reports/top-campaigns": {
+      "get": {
+        "operationId": "getTopCampaigns",
+        "summary": "GET Top Campaigns",
+        "description": "<Badge type=\"warning\" text=\"Pro\" />\n\nBest-performing sent campaigns, ranked by open rate, click rate, or volume.\n\nOnly rows where **all** of the following hold are counted: campaign status `archived`, campaign type `campaign`, and email status `sent`. Recurring campaigns, sequence emails, and automation emails are therefore excluded by design.\n\n`open_rate` and `click_rate` are percentages computed in SQL and come back as **strings** with full decimal precision (for example `\"84.7134\"`), as does `total_sent`. Round them client-side.\n\nAn unrecognised `sort_by` silently falls back to `open_rate` rather than erroring.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `SettingsPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "tags": [
+          "Reports"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "sort_by",
+            "in": "query",
+            "description": "Ranking metric. Unrecognised values fall back to `open_rate`.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "open_rate",
+              "enum": [
+                "open_rate",
+                "click_rate",
+                "total_sent"
+              ]
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Maximum number of campaigns to return.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ranked campaigns.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "campaigns": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Campaign id, returned as a string."
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "Campaign title."
+                          },
+                          "updated_at": {
+                            "type": "string",
+                            "description": "Last update timestamp.",
+                            "format": "date-time"
+                          },
+                          "total_sent": {
+                            "type": "string",
+                            "description": "Number of sent emails, as a string."
+                          },
+                          "open_rate": {
+                            "type": "string",
+                            "description": "Open rate percentage with full decimal precision."
+                          },
+                          "click_rate": {
+                            "type": "string",
+                            "description": "Click rate percentage with full decimal precision."
+                          }
+                        }
+                      }
+                    },
+                    "available": {
+                      "type": "boolean",
+                      "description": "Always true \u2014 present so the dashboard can tell a Pro-enabled response from a Free stub."
+                    }
+                  }
+                },
+                "example": {
+                  "campaigns": [
+                    {
+                      "id": "17",
+                      "title": "Join the private group",
+                      "updated_at": "2024-11-19 18:23:58",
+                      "total_sent": "628",
+                      "open_rate": "84.7134",
+                      "click_rate": "66.5605"
+                    },
+                    {
+                      "id": "3",
+                      "title": "0.61 release notes",
+                      "updated_at": "2024-04-03 22:56:10",
+                      "total_sent": "318",
+                      "open_rate": "76.4151",
+                      "click_rate": "15.4088"
+                    }
+                  ],
+                  "available": true
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

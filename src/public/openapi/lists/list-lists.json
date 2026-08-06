@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "get": {
         "operationId": "listLists",
         "summary": "GET List Lists",
-        "description": "Retrieve a paginated list of contact lists. Optionally includes subscriber counts and a separate array of all lists for dropdown/select usage.",
+        "description": "Retrieve a paginated list of contact lists. Optionally includes subscriber counts and a separate array of all lists for dropdown/select usage.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contact_cats`\n\n_Enforced by `ListPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Lists"
         ],
@@ -113,6 +113,18 @@
             "schema": {
               "type": "boolean"
             }
+          },
+          {
+            "name": "with[]",
+            "in": "query",
+            "description": "Extra data to include. `subscribersCount` adds per-list contact counts via one grouped pivot query.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           }
         ],
         "responses": {
@@ -183,7 +195,7 @@
                     },
                     "all_lists": {
                       "type": "array",
-                      "description": "Only present when `all_lists` query parameter is truthy. A flat array of all lists.",
+                      "description": "Only present when `all_lists` query parameter is truthy. A flat array of all lists. Returned **only** when the request sends `all_lists`. Contains every list, unpaginated, for use in pickers.",
                       "items": {
                         "type": "object",
                         "properties": {
@@ -328,7 +340,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

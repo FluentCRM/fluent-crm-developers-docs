@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getDynamicSegmentSubscribers",
         "summary": "GET Get Dynamic Segment Subscribers",
-        "description": "Retrieve a paginated list of subscribers belonging to a specific dynamic segment. Supports sorting, searching, and optional custom field inclusion. Requires FluentCampaign Pro.",
+        "description": "Retrieve a paginated list of subscribers belonging to a specific dynamic segment. Supports sorting, searching, and optional custom field inclusion. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contact_cats`\n\n_Enforced by `DynamicSegmentPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Dynamic Segments"
         ],
@@ -126,6 +126,42 @@
             "schema": {
               "type": "integer",
               "default": 1
+            }
+          },
+          {
+            "name": "tags[]",
+            "in": "query",
+            "description": "Restrict the segment's contacts to these tag ids.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "name": "lists[]",
+            "in": "query",
+            "description": "Restrict the segment's contacts to these list ids.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "name": "statuses[]",
+            "in": "query",
+            "description": "Restrict the segment's contacts to these subscription statuses.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           }
         ],
@@ -372,7 +408,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

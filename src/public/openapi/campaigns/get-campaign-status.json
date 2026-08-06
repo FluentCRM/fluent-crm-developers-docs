@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getCampaignStatus",
         "summary": "GET Get Campaign Status",
-        "description": "Get the comprehensive status and analytics of a campaign. This is the primary endpoint for the campaign status/reporting page. Returns campaign details, email delivery statistics broken down by status, sent count, open/click analytics (for archived campaigns), and A/B subject line performance. For working campaigns, it also manages stuck email recovery and automatic archival.",
+        "description": "Get the comprehensive status and analytics of a campaign. This is the primary endpoint for the campaign status/reporting page. Returns campaign details, email delivery statistics broken down by status, sent count, open/click analytics (for archived campaigns), and A/B subject line performance. For working campaigns, it also manages stuck email recovery and automatic archival.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Campaigns"
         ],
@@ -262,7 +262,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

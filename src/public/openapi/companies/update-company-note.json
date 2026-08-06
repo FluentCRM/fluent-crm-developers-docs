@@ -27,7 +27,7 @@
       "put": {
         "operationId": "updateCompanyNote",
         "summary": "PUT Update Company Note",
-        "description": "Update an existing note on a company. Only the `title`, `description`, `type`, and `created_at` fields can be updated. Fires the `fluent_crm/company_note_updated` action hook after the update.",
+        "description": "Update an existing note on a company. Only the `title`, `description`, `type`, and `created_at` fields can be updated. Fires the `fluent_crm/company_note_updated` action hook after the update.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contact_cats`\n\n_Enforced by `CompanyPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Companies"
         ],

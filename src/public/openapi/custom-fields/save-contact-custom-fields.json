@@ -27,7 +27,7 @@
       "put": {
         "operationId": "saveContactCustomFields",
         "summary": "PUT Save Contact Custom Fields",
-        "description": "Save (replace) all custom contact field definitions. This overwrites the entire set of custom fields. Each field without a `slug` will have one auto-generated from its label. Duplicate slugs are deduplicated automatically.",
+        "description": "Save (replace) all custom contact field definitions. This overwrites the entire set of custom fields. Each field without a `slug` will have one auto-generated from its label. Duplicate slugs are deduplicated automatically.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `CustomFieldsPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Custom Fields"
         ],

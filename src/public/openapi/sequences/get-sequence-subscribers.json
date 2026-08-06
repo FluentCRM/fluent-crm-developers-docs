@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getSequenceSubscribers",
         "summary": "GET Get Sequence Subscribers",
-        "description": "Retrieve a paginated list of subscribers enrolled in a specific email sequence. Each record includes the sequence tracker data and the associated subscriber. Requires FluentCampaign Pro.",
+        "description": "Retrieve a paginated list of subscribers enrolled in a specific email sequence. Each record includes the sequence tracker data and the associated subscriber. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Sequences"
         ],
@@ -64,6 +64,53 @@
             "schema": {
               "type": "integer",
               "default": 1
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search the enrolled contacts.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filter by enrolment status. `all` is treated as no filter.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "description": "Column to sort by. Anything outside the allowed set falls back to `id`.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "id",
+              "enum": [
+                "id",
+                "created_at",
+                "status"
+              ]
+            }
+          },
+          {
+            "name": "sort_type",
+            "in": "query",
+            "description": "Sort direction. Anything other than `ASC` is treated as `DESC`.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "DESC",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
             }
           }
         ],
@@ -113,6 +160,42 @@
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/SequenceTracker"
+                      }
+                    },
+                    "first_page_url": {
+                      "type": "string",
+                      "description": "URL of the first page."
+                    },
+                    "last_page_url": {
+                      "type": "string",
+                      "description": "URL of the last page."
+                    },
+                    "path": {
+                      "type": "string",
+                      "description": "Base path the paginator built its URLs from."
+                    },
+                    "links": {
+                      "type": "array",
+                      "description": "Rendered pagination links.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "url": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "Target page URL, or null for a disabled control."
+                          },
+                          "label": {
+                            "type": "string",
+                            "description": "Link label."
+                          },
+                          "active": {
+                            "type": "boolean",
+                            "description": "True for the current page."
+                          }
+                        }
                       }
                     }
                   }

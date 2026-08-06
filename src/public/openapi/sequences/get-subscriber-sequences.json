@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getSubscriberSequences",
         "summary": "GET Get Subscriber Sequences",
-        "description": "Retrieve all email sequences that a specific subscriber is enrolled in, including their tracking status, last/next sequence email details. Returns paginated sequence tracker records. Requires FluentCampaign Pro.",
+        "description": "Retrieve all email sequences that a specific subscriber is enrolled in, including their tracking status, last/next sequence email details. Returns paginated sequence tracker records. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Sequences"
         ],

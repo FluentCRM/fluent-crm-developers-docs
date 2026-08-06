@@ -122,3 +122,4 @@ src/.vitepress/cache
 .github
 yarn.lock
 package-lock.json
+.gstack/

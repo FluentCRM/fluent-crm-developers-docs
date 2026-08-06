@@ -167,17 +167,23 @@ add_filter('fluent_crm/double_optin_email_subject', function($subject, $subscrib
 
 ### `fluent_crm/double_optin_email_body`
 
-Filter the double optin confirmation email body HTML.
+Filter the double optin confirmation email body HTML. Smart codes have already been parsed by
+`fluent_crm/parse_campaign_email_text` when this runs.
+
+::: warning
+This fires **before** the `#activate_link#` placeholder is swapped for the real confirmation URL.
+Keep that token in whatever you return, or the contact gets an email with no way to confirm.
+:::
 
 **Parameters**
-- `$body` String - Email body HTML
+- `$body` String - Email body HTML, still containing the `#activate_link#` placeholder
 - `$subscriber` [Subscriber Model](/database/models/subscriber)
 
 **Usage:**
 ```php
 add_filter('fluent_crm/double_optin_email_body', function($body, $subscriber) {
-    // Customize the DOI email body
-    return $body;
+    // Keep #activate_link# intact — it becomes the confirmation URL
+    return $body . '<p>Questions? Just reply to this email.</p>';
 }, 10, 2);
 ```
 
@@ -190,7 +196,7 @@ add_filter('fluent_crm/double_optin_email_body', function($body, $subscriber) {
 Filter the double optin confirmation email pre-header text.
 
 **Parameters**
-- `$preHeader` String - Pre-header text
+- `$preHeader` String - Pre-header text; an empty string when no pre-header is configured
 - `$subscriber` [Subscriber Model](/database/models/subscriber)
 
 **Usage:**
@@ -230,6 +236,7 @@ $labels = [
     'update'          => __('Update info', 'fluent-crm'),
     'address_heading' => __('Address Information', 'fluent-crm'),
     'list_label'      => __('Mailing List Groups', 'fluent-crm'),
+    'custom_fields'   => __('Custom Fields', 'fluent-crm'),
 ];
 ```
 
@@ -279,7 +286,7 @@ add_filter('fluent_crm/show_unsubscribe_on_pref', function($show) {
 });
 ```
 
-**Source:** `app/Hooks/Handlers/PrefFormHandler.php`
+**Source:** `app/Views/external/manage_subscription_form.php`
 
 ---
 
@@ -427,16 +434,21 @@ add_filter('fluent_crm/will_make_auto_login', function($willMakeLogin, $contact)
 
 ### `fluent_crm/enable_high_level_auto_login`
 
-Control whether admin or editor-level users can be auto-logged in via smart links. Disabled by default for security.
+Control whether a user who holds the `publish_posts` capability — authors, editors and
+administrators — can be auto-logged in via a smart link. Disabled by default for security.
+
+This is only reached after `fluent_crm/will_make_auto_login` has already allowed the login, so it
+acts as a second gate specifically for privileged accounts.
 
 **Parameters**
 - `$shouldEnable` Boolean - Default `false`
+- `$contact` [Subscriber Model](/database/models/subscriber) - the contact behind the smart link
 
 **Usage:**
 ```php
-add_filter('fluent_crm/enable_high_level_auto_login', function($shouldEnable) {
+add_filter('fluent_crm/enable_high_level_auto_login', function($shouldEnable, $contact) {
     return false; // Keep disabled for safety
-});
+}, 10, 2);
 ```
 
 **Source:** `fluentcampaign-pro/app/Hooks/Handlers/SmartLinkHandler.php`
@@ -447,7 +459,9 @@ add_filter('fluent_crm/enable_high_level_auto_login', function($shouldEnable) {
 
 ### `fluent_crm/bounced_email_store`
 
-Control whether a bounced email should be stored as a new unsubscribed contact in the system.
+Control whether a bounce report for an address that is **not yet a contact** creates one. Return
+`false` to ignore bounces for unknown addresses. Bounces for existing contacts are always applied and
+never consult this filter.
 
 **Parameters**
 - `$store` Boolean - Default `true`
@@ -465,15 +479,17 @@ add_filter('fluent_crm/bounced_email_store', function($store) {
 
 ### `fluent_crm/soft_bounce_limit`
 
-Filter the number of soft bounces before a contact is permanently marked as bounced.
+Filter the number of soft bounces a contact may accumulate before being marked `bounced`. The
+running count is stored in the `_soft_bounce_count` contact meta; once it reaches the limit, the next
+soft bounce flips the contact's status.
 
 **Parameters**
-- `$limit` INT - Default `3`
+- `$limit` INT - Default `5`
 
 **Usage:**
 ```php
 add_filter('fluent_crm/soft_bounce_limit', function($limit) {
-    return 5; // Allow more soft bounces before marking as bounced
+    return 10; // Allow more soft bounces before marking as bounced
 });
 ```
 

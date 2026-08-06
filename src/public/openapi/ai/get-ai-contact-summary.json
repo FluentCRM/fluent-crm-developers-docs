@@ -1,0 +1,222 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/ai/contact-summary": {
+      "post": {
+        "operationId": "getAiContactSummary",
+        "summary": "POST Get Or Generate Contact Summary",
+        "description": "Read, generate, or regenerate the AI summary shown on a contact profile.\n\nThe two flags decide which of three behaviours you get:\n\n| `generate` | `regenerate` | Behaviour |\n|---|---|---|\n| `no` | `no` | Return the cached summary if one exists for the current site locale, otherwise return an empty `summary` and `cached: false`. Makes no provider call. |\n| `yes` | `no` | Return the cache when valid, otherwise generate and cache a new summary. |\n| any | `yes` | Ignore the cache and generate a fresh summary. |\n\nSummaries are cached in subscriber meta under `_ai_contact_summary` and are keyed to the **site** language (Settings \u2192 General \u2192 Site Language), not the admin user's profile language. A cached summary generated under a different locale is treated as a miss. Summaries cached before locale tracking existed are reused only while the site locale is English.\n\nGeneration blocks for up to 45 seconds.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts`\n\n_Enforced by `AiPolicy::contactSummary()`._\n\n<!-- /fc:access -->",
+        "tags": [
+          "AI"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "subscriber_id": {
+                    "type": "integer",
+                    "description": "Contact to summarise. Required and must be non-zero."
+                  },
+                  "generate": {
+                    "type": "string",
+                    "description": "Send `yes` to generate when the cache misses.",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "default": "no"
+                  },
+                  "regenerate": {
+                    "type": "string",
+                    "description": "Send `yes` to bypass the cache and force a fresh summary.",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "default": "no"
+                  }
+                },
+                "required": [
+                  "subscriber_id"
+                ]
+              },
+              "example": {
+                "subscriber_id": 948,
+                "generate": "yes",
+                "regenerate": "no"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The cached or freshly generated summary.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "summary": {
+                      "type": "object",
+                      "description": "Summary payload. An empty object when nothing is cached and generation was not requested.",
+                      "properties": {
+                        "content": {
+                          "type": "string",
+                          "description": "Markdown summary text."
+                        },
+                        "generated_at": {
+                          "type": "string",
+                          "description": "Generation timestamp in site time.",
+                          "format": "date-time"
+                        },
+                        "provider": {
+                          "type": "string",
+                          "description": "Provider used."
+                        },
+                        "model": {
+                          "type": "string",
+                          "description": "Model configured at generation time."
+                        },
+                        "locale": {
+                          "type": "string",
+                          "description": "Site locale the summary was written for, e.g. `en_US`."
+                        },
+                        "counts": {
+                          "type": "object",
+                          "properties": {}
+                        }
+                      }
+                    },
+                    "cached": {
+                      "type": "boolean",
+                      "description": "True when the response came from subscriber meta rather than a fresh provider call."
+                    }
+                  }
+                },
+                "example": {
+                  "summary": {
+                    "content": "Long-standing customer, highly engaged with product release emails...",
+                    "generated_at": "2026-08-04 11:42:10",
+                    "provider": "open_ai",
+                    "model": "auto",
+                    "locale": "en_US",
+                    "counts": {
+                      "emails": 42,
+                      "opens": 31,
+                      "clicks": 12
+                    }
+                  },
+                  "cached": true
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "`subscriber_id` missing or zero, AI disabled, or the provider returned an error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No contact exists with that id.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "post": {
         "operationId": "createForm",
         "summary": "POST Create Form",
-        "description": "Create a new Fluent Form with FluentCRM integration pre-configured. The form is created from a template and automatically gets a FluentCRM integration feed with the specified tags and list. Requires Fluent Forms to be installed.",
+        "description": "Create a new Fluent Form with FluentCRM integration pre-configured. The form is created from a template and automatically gets a FluentCRM integration feed with the specified tags and list. Requires Fluent Forms to be installed.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_forms`\n\n_Enforced by `FormsPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Forms"
         ],
@@ -205,7 +205,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

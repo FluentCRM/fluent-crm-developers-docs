@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getLicenseStatus",
         "summary": "GET License Status",
-        "description": "Retrieve the current FluentCRM Pro license status. The license key is partially masked for security (first 4 and last 4 characters visible). If the license is expired, a renewal URL is included.",
+        "description": "Retrieve the current FluentCRM Pro license status. The license key is partially masked for security (first 4 and last 4 characters visible). If the license is expired, a renewal URL is included.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `SettingsPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Pro Settings"
         ],
@@ -69,7 +69,27 @@
                     },
                     "error": {
                       "type": "boolean",
-                      "description": "Present and true if there was an error checking license status."
+                      "description": "Present and true if there was an error checking license status. Present **only** when the licence check failed; absent on a valid licence."
+                    },
+                    "variation_id": {
+                      "type": "string",
+                      "description": "Identifier of the purchased licence variation."
+                    },
+                    "variation_title": {
+                      "type": "string",
+                      "description": "Human-readable licence tier, e.g. `50 Sites Lifetime License`."
+                    },
+                    "expires": {
+                      "type": "string",
+                      "description": "Expiry date, or `lifetime` for a perpetual licence."
+                    },
+                    "activation_hash": {
+                      "type": "string",
+                      "description": "Hash identifying this site's activation."
+                    },
+                    "is_expired": {
+                      "type": "boolean",
+                      "description": "True when the licence has lapsed."
                     }
                   }
                 },
@@ -115,7 +135,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

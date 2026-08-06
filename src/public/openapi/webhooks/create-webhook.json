@@ -27,7 +27,7 @@
       "post": {
         "operationId": "createWebhook",
         "summary": "POST Create Webhook",
-        "description": "Create a new webhook for receiving contact data. Supports both standard contact webhooks and SMS webhooks (requires Fluent Campaign Pro). For standard webhooks, `name` and `status` are required. For SMS webhooks, set `type` to `sms_webhook` and provide `sms_provider`. A unique URL is generated automatically.",
+        "description": "Create a new webhook for receiving contact data. Supports both standard contact webhooks and SMS webhooks (requires Fluent Campaign Pro). For standard webhooks, `name` and `status` are required. For SMS webhooks, set `type` to `sms_webhook` and provide `sms_provider`. A unique URL is generated automatically.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `WebhookPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Webhooks"
         ],

@@ -1,0 +1,173 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/reports/contacts-by-status": {
+      "get": {
+        "operationId": "getContactsByStatus",
+        "summary": "GET Contacts By Status",
+        "description": "Contact counts grouped by subscription status.\n\nEvery known status is always present \u2014 statuses with no contacts are returned with a count of 0 rather than omitted \u2014 and they come back in a fixed display order: `subscribed`, `unsubscribed`, `pending`, `bounced`, `complained`, `spammed`, `transactional`. That makes the response safe to render directly without filling gaps.\n\n`total` is the sum across all statuses, i.e. every contact on the site.\n\nTakes no parameters.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_view_dashboard`\n\n_Enforced by `ReportPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "tags": [
+          "Reports"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Counts per status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "stats": {
+                      "type": "array",
+                      "description": "One row per status, in fixed display order.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "status": {
+                            "type": "string",
+                            "description": "Contact status.",
+                            "enum": [
+                              "subscribed",
+                              "unsubscribed",
+                              "pending",
+                              "bounced",
+                              "complained",
+                              "spammed",
+                              "transactional"
+                            ]
+                          },
+                          "count": {
+                            "type": "integer",
+                            "description": "Number of contacts with that status. 0 when none."
+                          }
+                        }
+                      }
+                    },
+                    "total": {
+                      "type": "integer",
+                      "description": "Total contacts across every status."
+                    }
+                  }
+                },
+                "example": {
+                  "stats": [
+                    {
+                      "status": "subscribed",
+                      "count": 11770
+                    },
+                    {
+                      "status": "unsubscribed",
+                      "count": 1096
+                    },
+                    {
+                      "status": "pending",
+                      "count": 1
+                    },
+                    {
+                      "status": "bounced",
+                      "count": 0
+                    },
+                    {
+                      "status": "complained",
+                      "count": 0
+                    },
+                    {
+                      "status": "spammed",
+                      "count": 0
+                    },
+                    {
+                      "status": "transactional",
+                      "count": 0
+                    }
+                  ],
+                  "total": 12867
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

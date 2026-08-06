@@ -27,7 +27,7 @@
       "post": {
         "operationId": "duplicateRecurringCampaign",
         "summary": "POST Duplicate Recurring Campaign",
-        "description": "Create a duplicate of an existing recurring campaign. The new campaign is created in draft status with a title prefixed by `[Duplicate]` and suffixed with the current date. All email content, UTM settings, design template, and labels are copied to the new campaign. Requires FluentCampaign Pro.",
+        "description": "Create a duplicate of an existing recurring campaign. The new campaign is created in draft status with a title prefixed by `[Duplicate]` and suffixed with the current date. All email content, UTM settings, design template, and labels are copied to the new campaign. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Recurring Campaigns"
         ],

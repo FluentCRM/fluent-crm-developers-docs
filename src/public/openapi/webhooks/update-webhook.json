@@ -27,7 +27,7 @@
       "put": {
         "operationId": "updateWebhook",
         "summary": "PUT Update Webhook",
-        "description": "Update an existing webhook's configuration. SMS webhooks cannot be edited; they must be deleted and recreated instead. The webhook's `id` and `url` fields are immutable and cannot be changed through this endpoint.",
+        "description": "Update an existing webhook's configuration. SMS webhooks cannot be edited; they must be deleted and recreated instead. The webhook's `id` and `url` fields are immutable and cannot be changed through this endpoint.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `WebhookPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Webhooks"
         ],

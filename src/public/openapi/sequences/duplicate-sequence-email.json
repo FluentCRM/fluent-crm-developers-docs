@@ -27,7 +27,7 @@
       "post": {
         "operationId": "duplicateSequenceEmail",
         "summary": "POST Duplicate Sequence Email",
-        "description": "Create a duplicate of an existing sequence email within the same sequence. The duplicated email title is prefixed with `[Duplicate]`. Visual builder designs are also copied. Requires FluentCampaign Pro.",
+        "description": "Create a duplicate of an existing sequence email within the same sequence. The duplicated email title is prefixed with `[Duplicate]`. Visual builder designs are also copied. Requires FluentCampaign Pro.\n\nThe duplicate is created from the stored record, not from the request: only `email_id` is read. The copy's title is the original's prefixed with `[Duplicate] `.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Sequences"
         ],
@@ -79,6 +79,28 @@
                     "updated_at": "2024-03-01 10:00:00"
                   }
                 }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email_id": {
+                    "type": "integer",
+                    "description": "Id of the sequence email to duplicate. Required \u2014 a missing or zero value returns 422. The id is resolved scoped to the sequence in the path, so an email from another sequence returns 404."
+                  }
+                },
+                "required": [
+                  "email_id"
+                ]
+              },
+              "example": {
+                "email_id": 41
               }
             }
           }

@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "post": {
         "operationId": "importWpUsers",
         "summary": "POST Import WordPress Users",
-        "description": "Import WordPress users as FluentCRM contacts. Processes users in batches (default 100 per request). Call repeatedly with incrementing `page` until `has_more` is `false`. Assigns tags, lists, and status to imported contacts.",
+        "description": "Import WordPress users as FluentCRM contacts. Processes users in batches (default 100 per request). Call repeatedly with incrementing `page` until `has_more` is `false`. Assigns tags, lists, and status to imported contacts.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contacts`\n\n_Enforced by `ImportUserPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Import"
         ],
@@ -214,7 +214,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

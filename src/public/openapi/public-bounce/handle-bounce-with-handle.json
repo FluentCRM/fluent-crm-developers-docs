@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -17,104 +17,388 @@
       }
     }
   ],
-  "security": [
-    {
-      "ApplicationPasswords": []
-    }
-  ],
+  "security": [],
   "paths": {
     "/public/bounce_handler/{service_name}/handle/{security_code}": {
-      "post": {
-        "operationId": "handleBounceWithHandle",
-        "summary": "POST Handle Bounce (with /handle/ path)",
-        "description": "Webhook endpoint for email service providers to report bounces, complaints, and unsubscribes. This is the variant with `/handle/` in the path. Accepts any HTTP method. Validates the security code and processes the bounce event for supported services. Custom services can be handled via the `fluent_crm_handle_bounce_{service_name}` filter.",
+      "get": {
+        "operationId": "handleBounceWithHandleGet",
+        "summary": "GET Handle Bounce Webhook",
+        "description": "_Same handler as `POST /public/bounce_handler/{service_name}/handle/{security_code}` \u2014 documented separately because the route accepts any HTTP method._\n\n::: warning PUBLIC ENDPOINT\nThis route is **unauthenticated**. It is called by your email service provider, which cannot present WordPress credentials, so the security code in the URL is the only thing authorising the request. Treat that code as a secret and rotate it if it leaks.\n:::\n\nReceives bounce and complaint webhooks from a transactional email provider and updates the affected contacts' statuses.\n\nThis is the **`/handle/` form** of the webhook URL, for providers that reject a URL ending in what looks like a token. It behaves identically to the short form.\n\n**Accepts any HTTP method.** The route is registered with `any()`, so `GET`, `POST`, `PUT`, `PATCH`, and `DELETE` all reach the same handler \u2014 providers differ in what they send, and none of them are turned away. `POST` is what every supported provider actually uses.\n\nRecognised `service_name` values: `mailgun`, `pepipost`, `postmark`, `sendgrid`, `sparkpost`, `elasticemail`, `postalserver`, `smtp2go`, `brevo`, `tosend`.\n\nTwo behaviours are easy to misread:\n\n- An **unrecognised** `service_name` does not error. It is handed to the `fluent_crm_handle_bounce_{service_name}` filter so add-ons can implement their own provider, and returns `success: 0` when nothing handles it. **The security code is not checked on this path** \u2014 validating it is the custom handler's responsibility.\n- A **wrong security code** on a recognised service returns HTTP **200** with `{\"status\": false}`, not a 401 or 403. Check the body, not the status code.\n\nThe security code is generated on first use and stored as the FluentCRM option `_fc_bounce_key`. Both path segments are constrained to alphanumerics and dashes.\n\n<!-- fc:access -->\n\n**Authentication:** none \u2014 this is a public endpoint.\n\n<!-- /fc:access -->",
         "tags": [
-          "Public"
+          "Bounce Handler"
         ],
         "security": [],
         "parameters": [
           {
             "name": "service_name",
             "in": "path",
-            "description": "Email service provider name.",
+            "description": "Email service sending the webhook. Unrecognised values are routed to the custom-handler filter.",
             "required": true,
             "schema": {
-              "type": "string",
-              "enum": [
-                "mailgun",
-                "pepipost",
-                "postmark",
-                "sendgrid",
-                "sparkpost",
-                "elasticemail",
-                "postalserver",
-                "smtp2go",
-                "brevo",
-                "tosend"
-              ]
+              "type": "string"
             }
           },
           {
             "name": "security_code",
             "in": "path",
-            "description": "Security code for webhook authentication. Must match the stored bounce key.",
+            "description": "Secret from FluentCRM's bounce-handler settings. Compared with `hash_equals()`.",
             "required": true,
             "schema": {
               "type": "string"
             }
           }
         ],
-        "requestBody": {
-          "description": "Bounce event payload. The structure varies by email service provider.",
-          "required": false,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "additionalProperties": true,
-                "description": "Provider-specific bounce/complaint payload."
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
-            "description": "Bounce processed successfully.",
+            "description": "Always 200 while the route matches. Read `success` / `status` in the body to tell a recorded webhook from a rejected one.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BounceResponse"
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/BounceResult"
+                    },
+                    {
+                      "$ref": "#/components/schemas/BounceRejected"
+                    }
+                  ]
                 },
-                "example": {
-                  "success": 1,
-                  "message": "recorded",
-                  "service": "mailgun",
-                  "result": "bounced",
-                  "time": 1709312400
+                "examples": {
+                  "recorded": {
+                    "summary": "Valid code, recognised service",
+                    "value": {
+                      "success": 1,
+                      "message": "recorded",
+                      "service": "mailgun",
+                      "result": "processed",
+                      "time": 1785000000
+                    }
+                  },
+                  "badSecurityCode": {
+                    "summary": "Recognised service, wrong security code",
+                    "value": {
+                      "status": false,
+                      "message": "Invalid Data or Security Code"
+                    }
+                  },
+                  "unknownService": {
+                    "summary": "Unrecognised service with no custom handler",
+                    "value": {
+                      "success": 0,
+                      "message": "",
+                      "service": "acme-mail",
+                      "result": "",
+                      "time": 1785000000
+                    }
+                  }
                 }
               }
             }
+          }
+        }
+      },
+      "post": {
+        "operationId": "handleBounceWithHandlePost",
+        "summary": "POST Handle Bounce Webhook",
+        "description": "::: warning PUBLIC ENDPOINT\nThis route is **unauthenticated**. It is called by your email service provider, which cannot present WordPress credentials, so the security code in the URL is the only thing authorising the request. Treat that code as a secret and rotate it if it leaks.\n:::\n\nReceives bounce and complaint webhooks from a transactional email provider and updates the affected contacts' statuses.\n\nThis is the **`/handle/` form** of the webhook URL, for providers that reject a URL ending in what looks like a token. It behaves identically to the short form.\n\n**Accepts any HTTP method.** The route is registered with `any()`, so `GET`, `POST`, `PUT`, `PATCH`, and `DELETE` all reach the same handler \u2014 providers differ in what they send, and none of them are turned away. `POST` is what every supported provider actually uses.\n\nRecognised `service_name` values: `mailgun`, `pepipost`, `postmark`, `sendgrid`, `sparkpost`, `elasticemail`, `postalserver`, `smtp2go`, `brevo`, `tosend`.\n\nTwo behaviours are easy to misread:\n\n- An **unrecognised** `service_name` does not error. It is handed to the `fluent_crm_handle_bounce_{service_name}` filter so add-ons can implement their own provider, and returns `success: 0` when nothing handles it. **The security code is not checked on this path** \u2014 validating it is the custom handler's responsibility.\n- A **wrong security code** on a recognised service returns HTTP **200** with `{\"status\": false}`, not a 401 or 403. Check the body, not the status code.\n\nThe security code is generated on first use and stored as the FluentCRM option `_fc_bounce_key`. Both path segments are constrained to alphanumerics and dashes.\n\n<!-- fc:access -->\n\n**Authentication:** none \u2014 this is a public endpoint.\n\n<!-- /fc:access -->",
+        "tags": [
+          "Bounce Handler"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "service_name",
+            "in": "path",
+            "description": "Email service sending the webhook. Unrecognised values are routed to the custom-handler filter.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           },
-          "401": {
-            "description": "Invalid security code.",
+          {
+            "name": "security_code",
+            "in": "path",
+            "description": "Secret from FluentCRM's bounce-handler settings. Compared with `hash_equals()`.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Always 200 while the route matches. Read `success` / `status` in the body to tell a recorded webhook from a rejected one.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "boolean",
-                      "description": "Always false on authentication failure."
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/BounceResult"
                     },
-                    "message": {
-                      "type": "string",
-                      "description": "Error message."
+                    {
+                      "$ref": "#/components/schemas/BounceRejected"
+                    }
+                  ]
+                },
+                "examples": {
+                  "recorded": {
+                    "summary": "Valid code, recognised service",
+                    "value": {
+                      "success": 1,
+                      "message": "recorded",
+                      "service": "mailgun",
+                      "result": "processed",
+                      "time": 1785000000
+                    }
+                  },
+                  "badSecurityCode": {
+                    "summary": "Recognised service, wrong security code",
+                    "value": {
+                      "status": false,
+                      "message": "Invalid Data or Security Code"
+                    }
+                  },
+                  "unknownService": {
+                    "summary": "Unrecognised service with no custom handler",
+                    "value": {
+                      "success": 0,
+                      "message": "",
+                      "service": "acme-mail",
+                      "result": "",
+                      "time": 1785000000
                     }
                   }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "handleBounceWithHandlePut",
+        "summary": "PUT Handle Bounce Webhook",
+        "description": "_Same handler as `POST /public/bounce_handler/{service_name}/handle/{security_code}` \u2014 documented separately because the route accepts any HTTP method._\n\n::: warning PUBLIC ENDPOINT\nThis route is **unauthenticated**. It is called by your email service provider, which cannot present WordPress credentials, so the security code in the URL is the only thing authorising the request. Treat that code as a secret and rotate it if it leaks.\n:::\n\nReceives bounce and complaint webhooks from a transactional email provider and updates the affected contacts' statuses.\n\nThis is the **`/handle/` form** of the webhook URL, for providers that reject a URL ending in what looks like a token. It behaves identically to the short form.\n\n**Accepts any HTTP method.** The route is registered with `any()`, so `GET`, `POST`, `PUT`, `PATCH`, and `DELETE` all reach the same handler \u2014 providers differ in what they send, and none of them are turned away. `POST` is what every supported provider actually uses.\n\nRecognised `service_name` values: `mailgun`, `pepipost`, `postmark`, `sendgrid`, `sparkpost`, `elasticemail`, `postalserver`, `smtp2go`, `brevo`, `tosend`.\n\nTwo behaviours are easy to misread:\n\n- An **unrecognised** `service_name` does not error. It is handed to the `fluent_crm_handle_bounce_{service_name}` filter so add-ons can implement their own provider, and returns `success: 0` when nothing handles it. **The security code is not checked on this path** \u2014 validating it is the custom handler's responsibility.\n- A **wrong security code** on a recognised service returns HTTP **200** with `{\"status\": false}`, not a 401 or 403. Check the body, not the status code.\n\nThe security code is generated on first use and stored as the FluentCRM option `_fc_bounce_key`. Both path segments are constrained to alphanumerics and dashes.\n\n<!-- fc:access -->\n\n**Authentication:** none \u2014 this is a public endpoint.\n\n<!-- /fc:access -->",
+        "tags": [
+          "Bounce Handler"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "service_name",
+            "in": "path",
+            "description": "Email service sending the webhook. Unrecognised values are routed to the custom-handler filter.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "security_code",
+            "in": "path",
+            "description": "Secret from FluentCRM's bounce-handler settings. Compared with `hash_equals()`.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Always 200 while the route matches. Read `success` / `status` in the body to tell a recorded webhook from a rejected one.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/BounceResult"
+                    },
+                    {
+                      "$ref": "#/components/schemas/BounceRejected"
+                    }
+                  ]
                 },
-                "example": {
-                  "status": false,
-                  "message": "Invalid Data or Security Code"
+                "examples": {
+                  "recorded": {
+                    "summary": "Valid code, recognised service",
+                    "value": {
+                      "success": 1,
+                      "message": "recorded",
+                      "service": "mailgun",
+                      "result": "processed",
+                      "time": 1785000000
+                    }
+                  },
+                  "badSecurityCode": {
+                    "summary": "Recognised service, wrong security code",
+                    "value": {
+                      "status": false,
+                      "message": "Invalid Data or Security Code"
+                    }
+                  },
+                  "unknownService": {
+                    "summary": "Unrecognised service with no custom handler",
+                    "value": {
+                      "success": 0,
+                      "message": "",
+                      "service": "acme-mail",
+                      "result": "",
+                      "time": 1785000000
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "handleBounceWithHandlePatch",
+        "summary": "PATCH Handle Bounce Webhook",
+        "description": "_Same handler as `POST /public/bounce_handler/{service_name}/handle/{security_code}` \u2014 documented separately because the route accepts any HTTP method._\n\n::: warning PUBLIC ENDPOINT\nThis route is **unauthenticated**. It is called by your email service provider, which cannot present WordPress credentials, so the security code in the URL is the only thing authorising the request. Treat that code as a secret and rotate it if it leaks.\n:::\n\nReceives bounce and complaint webhooks from a transactional email provider and updates the affected contacts' statuses.\n\nThis is the **`/handle/` form** of the webhook URL, for providers that reject a URL ending in what looks like a token. It behaves identically to the short form.\n\n**Accepts any HTTP method.** The route is registered with `any()`, so `GET`, `POST`, `PUT`, `PATCH`, and `DELETE` all reach the same handler \u2014 providers differ in what they send, and none of them are turned away. `POST` is what every supported provider actually uses.\n\nRecognised `service_name` values: `mailgun`, `pepipost`, `postmark`, `sendgrid`, `sparkpost`, `elasticemail`, `postalserver`, `smtp2go`, `brevo`, `tosend`.\n\nTwo behaviours are easy to misread:\n\n- An **unrecognised** `service_name` does not error. It is handed to the `fluent_crm_handle_bounce_{service_name}` filter so add-ons can implement their own provider, and returns `success: 0` when nothing handles it. **The security code is not checked on this path** \u2014 validating it is the custom handler's responsibility.\n- A **wrong security code** on a recognised service returns HTTP **200** with `{\"status\": false}`, not a 401 or 403. Check the body, not the status code.\n\nThe security code is generated on first use and stored as the FluentCRM option `_fc_bounce_key`. Both path segments are constrained to alphanumerics and dashes.\n\n<!-- fc:access -->\n\n**Authentication:** none \u2014 this is a public endpoint.\n\n<!-- /fc:access -->",
+        "tags": [
+          "Bounce Handler"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "service_name",
+            "in": "path",
+            "description": "Email service sending the webhook. Unrecognised values are routed to the custom-handler filter.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "security_code",
+            "in": "path",
+            "description": "Secret from FluentCRM's bounce-handler settings. Compared with `hash_equals()`.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Always 200 while the route matches. Read `success` / `status` in the body to tell a recorded webhook from a rejected one.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/BounceResult"
+                    },
+                    {
+                      "$ref": "#/components/schemas/BounceRejected"
+                    }
+                  ]
+                },
+                "examples": {
+                  "recorded": {
+                    "summary": "Valid code, recognised service",
+                    "value": {
+                      "success": 1,
+                      "message": "recorded",
+                      "service": "mailgun",
+                      "result": "processed",
+                      "time": 1785000000
+                    }
+                  },
+                  "badSecurityCode": {
+                    "summary": "Recognised service, wrong security code",
+                    "value": {
+                      "status": false,
+                      "message": "Invalid Data or Security Code"
+                    }
+                  },
+                  "unknownService": {
+                    "summary": "Unrecognised service with no custom handler",
+                    "value": {
+                      "success": 0,
+                      "message": "",
+                      "service": "acme-mail",
+                      "result": "",
+                      "time": 1785000000
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "handleBounceWithHandleDelete",
+        "summary": "DELETE Handle Bounce Webhook",
+        "description": "_Same handler as `POST /public/bounce_handler/{service_name}/handle/{security_code}` \u2014 documented separately because the route accepts any HTTP method._\n\n::: warning PUBLIC ENDPOINT\nThis route is **unauthenticated**. It is called by your email service provider, which cannot present WordPress credentials, so the security code in the URL is the only thing authorising the request. Treat that code as a secret and rotate it if it leaks.\n:::\n\nReceives bounce and complaint webhooks from a transactional email provider and updates the affected contacts' statuses.\n\nThis is the **`/handle/` form** of the webhook URL, for providers that reject a URL ending in what looks like a token. It behaves identically to the short form.\n\n**Accepts any HTTP method.** The route is registered with `any()`, so `GET`, `POST`, `PUT`, `PATCH`, and `DELETE` all reach the same handler \u2014 providers differ in what they send, and none of them are turned away. `POST` is what every supported provider actually uses.\n\nRecognised `service_name` values: `mailgun`, `pepipost`, `postmark`, `sendgrid`, `sparkpost`, `elasticemail`, `postalserver`, `smtp2go`, `brevo`, `tosend`.\n\nTwo behaviours are easy to misread:\n\n- An **unrecognised** `service_name` does not error. It is handed to the `fluent_crm_handle_bounce_{service_name}` filter so add-ons can implement their own provider, and returns `success: 0` when nothing handles it. **The security code is not checked on this path** \u2014 validating it is the custom handler's responsibility.\n- A **wrong security code** on a recognised service returns HTTP **200** with `{\"status\": false}`, not a 401 or 403. Check the body, not the status code.\n\nThe security code is generated on first use and stored as the FluentCRM option `_fc_bounce_key`. Both path segments are constrained to alphanumerics and dashes.\n\n<!-- fc:access -->\n\n**Authentication:** none \u2014 this is a public endpoint.\n\n<!-- /fc:access -->",
+        "tags": [
+          "Bounce Handler"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "service_name",
+            "in": "path",
+            "description": "Email service sending the webhook. Unrecognised values are routed to the custom-handler filter.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "security_code",
+            "in": "path",
+            "description": "Secret from FluentCRM's bounce-handler settings. Compared with `hash_equals()`.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Always 200 while the route matches. Read `success` / `status` in the body to tell a recorded webhook from a rejected one.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/BounceResult"
+                    },
+                    {
+                      "$ref": "#/components/schemas/BounceRejected"
+                    }
+                  ]
+                },
+                "examples": {
+                  "recorded": {
+                    "summary": "Valid code, recognised service",
+                    "value": {
+                      "success": 1,
+                      "message": "recorded",
+                      "service": "mailgun",
+                      "result": "processed",
+                      "time": 1785000000
+                    }
+                  },
+                  "badSecurityCode": {
+                    "summary": "Recognised service, wrong security code",
+                    "value": {
+                      "status": false,
+                      "message": "Invalid Data or Security Code"
+                    }
+                  },
+                  "unknownService": {
+                    "summary": "Unrecognised service with no custom handler",
+                    "value": {
+                      "success": 0,
+                      "message": "",
+                      "service": "acme-mail",
+                      "result": "",
+                      "time": 1785000000
+                    }
+                  }
                 }
               }
             }
@@ -147,32 +431,41 @@
           }
         }
       },
-      "BounceResponse": {
+      "BounceResult": {
         "type": "object",
         "properties": {
           "success": {
             "type": "integer",
-            "description": "1 if the bounce was processed successfully, 0 otherwise.",
-            "enum": [
-              0,
-              1
-            ]
+            "description": "`1` when the payload was recorded, `0` when it was not."
           },
           "message": {
             "type": "string",
-            "description": "Result message."
+            "description": "`recorded` on success; an empty string from the unknown-service filter path."
           },
           "service": {
             "type": "string",
-            "description": "The email service name that was processed."
+            "description": "The service name from the path, echoed back."
           },
           "result": {
             "type": "string",
-            "description": "Processing result details."
+            "description": "Service-specific result from the webhook handler."
           },
           "time": {
             "type": "integer",
-            "description": "Unix timestamp when the bounce was processed."
+            "description": "Unix timestamp of processing."
+          }
+        }
+      },
+      "BounceRejected": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "boolean",
+            "description": "Always false."
+          },
+          "message": {
+            "type": "string",
+            "description": "`Invalid Data or Security Code`."
           }
         }
       }
@@ -182,7 +475,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

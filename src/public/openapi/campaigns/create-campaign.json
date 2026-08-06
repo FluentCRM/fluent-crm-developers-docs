@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "post": {
         "operationId": "createCampaign",
         "summary": "POST Create Campaign",
-        "description": "Create a new email campaign. If no title is provided, an auto-generated unique title (e.g., 'Untitled', 'Untitled 2') is assigned. The campaign is created in draft status and returned with its template and subjects relations loaded.",
+        "description": "Create a new email campaign. If no title is provided, an auto-generated unique title (e.g., 'Untitled', 'Untitled 2') is assigned. The campaign is created in draft status and returned with its template and subjects relations loaded.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Campaigns"
         ],
@@ -46,6 +46,16 @@
                   "title": {
                     "type": "string",
                     "description": "Campaign title. Must be unique across all campaigns. If omitted or empty, an auto-generated title is assigned."
+                  },
+                  "design_template": {
+                    "type": "string",
+                    "description": "Design engine for the new campaign. Falls back to the site default when omitted.",
+                    "enum": [
+                      "simple",
+                      "raw_classic",
+                      "classic",
+                      "visual_builder"
+                    ]
                   }
                 }
               },
@@ -185,7 +195,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

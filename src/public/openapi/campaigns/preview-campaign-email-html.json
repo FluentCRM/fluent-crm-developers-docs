@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "post": {
         "operationId": "previewCampaignEmailHtml",
         "summary": "POST Preview Campaign Email HTML",
-        "description": "Generate a rendered HTML preview of a campaign email. Can preview either a saved campaign (by campaign_id) or unsaved campaign data passed in the request body. SmartCodes and template rendering are applied. Optionally preview as a specific contact.",
+        "description": "Generate a rendered HTML preview of a campaign email. Can preview either a saved campaign (by campaign_id) or unsaved campaign data passed in the request body. SmartCodes and template rendering are applied. Optionally preview as a specific contact.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Campaigns"
         ],
@@ -147,7 +147,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

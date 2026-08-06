@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getCompany",
         "summary": "GET Get Company",
-        "description": "Retrieve a single company by its ID, or by an alternate field (`name`, `email`, or `phone`) using the `find_by` and `find_by_value` query parameters. The response includes the eager-loaded `owner` relation (with stats if available) and the computed `contacts_count`.",
+        "description": "Retrieve a single company by its ID, or by an alternate field (`name`, `email`, or `phone`) using the `find_by` and `find_by_value` query parameters. The response includes the eager-loaded `owner` relation (with stats if available) and the computed `contacts_count`.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contact_cats`\n\n_Enforced by `CompanyPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Companies"
         ],

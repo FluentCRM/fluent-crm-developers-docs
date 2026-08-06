@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getDoubleOptinSettings",
         "summary": "GET Double Opt-in Settings",
-        "description": "Retrieve the double opt-in email settings. Can return global settings or list-specific settings when a `list_id` is provided. Optionally includes form field definitions when `with[]=settings_fields` is specified.",
+        "description": "Retrieve the double opt-in email settings. Can return global settings or list-specific settings when a `list_id` is provided. Optionally includes form field definitions when `with[]=settings_fields` is specified.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `SettingsPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Settings"
         ],
@@ -141,11 +141,11 @@
                         "yes",
                         "no"
                       ],
-                      "description": "Whether global double opt-in is enabled for this list (only returned when list_id is provided)."
+                      "description": "Whether global double opt-in is enabled for this list (only returned when list_id is provided). Present when a list context is supplied; reflects that list's `global_double_optin` meta, defaulting to `yes`."
                     },
                     "settings_fields": {
                       "type": "object",
-                      "description": "Form field definitions for the settings UI (only when `with[]=settings_fields`)."
+                      "description": "Form field definitions for the settings UI (only when `with[]=settings_fields`). Field definitions for rendering the settings form."
                     }
                   }
                 },
@@ -204,7 +204,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

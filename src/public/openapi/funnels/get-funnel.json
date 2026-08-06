@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getFunnel",
         "summary": "GET Get Funnel",
-        "description": "Retrieve a single automation funnel by ID. Optionally includes blocks, block fields, funnel sequences, and composer context smart codes via the `with[]` parameter.",
+        "description": "Retrieve a single automation funnel by ID. Optionally includes blocks, block fields, funnel sequences, and composer context smart codes via the `with[]` parameter.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],
@@ -168,21 +168,21 @@
                     },
                     "blocks": {
                       "type": "object",
-                      "description": "Available funnel action blocks. Only included when `with[]` contains `blocks`.",
+                      "description": "Available funnel action blocks. Only included when `with[]` contains `blocks`. Returned **only** when `with[]=blocks` is requested.",
                       "additionalProperties": {
                         "type": "object"
                       }
                     },
                     "block_fields": {
                       "type": "object",
-                      "description": "Field configurations for funnel blocks. Only included when `with[]` contains `block_fields`.",
+                      "description": "Field configurations for funnel blocks. Only included when `with[]` contains `block_fields`. Returned **only** when `with[]=blocks` is requested.",
                       "additionalProperties": {
                         "type": "object"
                       }
                     },
                     "funnel_sequences": {
                       "type": "array",
-                      "description": "Formatted funnel sequence tree. Only included when `with[]` contains `funnel_sequences`.",
+                      "description": "Formatted funnel sequence tree. Only included when `with[]` contains `funnel_sequences`. Returned **only** when `with[]=funnel_sequences` is requested.",
                       "items": {
                         "type": "object",
                         "properties": {
@@ -283,7 +283,7 @@
                     },
                     "composer_context_codes": {
                       "type": "array",
-                      "description": "Smart codes available in the funnel context. Only included when `with[]` contains `block_fields`.",
+                      "description": "Smart codes available in the funnel context. Only included when `with[]` contains `block_fields`. Returned **only** when `with[]=blocks` is requested. Populated by the `fluent_crm_funnel_context_smart_codes` filter.",
                       "items": {
                         "type": "object"
                       }

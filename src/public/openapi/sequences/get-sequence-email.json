@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getSequenceEmail",
         "summary": "GET Get Sequence Email",
-        "description": "Retrieve a single sequence email by ID within a sequence. Optionally include the parent sequence data. If email_id is 0, returns an empty template for creating a new email. For visual builder emails, the `_visual_builder_design` field is included. Requires FluentCampaign Pro.",
+        "description": "Retrieve a single sequence email by ID within a sequence. Optionally include the parent sequence data. If email_id is 0, returns an empty template for creating a new email. For visual builder emails, the `_visual_builder_design` field is included. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Sequences"
         ],

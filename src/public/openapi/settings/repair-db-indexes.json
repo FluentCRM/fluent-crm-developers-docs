@@ -1,0 +1,219 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/setting/db-index-health/repair": {
+      "post": {
+        "operationId": "repairDbIndexes",
+        "summary": "POST Repair Database Indexes",
+        "description": "Add any missing critical indexes.\n\nThe work runs **inline**, not in the background, so on a large site the request can take a while. The `ALTER`s are idempotent and prefer a non-blocking online build.\n\nThree of the outcomes are 200 responses and only one of them means work was done \u2014 check the flags before reporting success:\n\n| Condition | Response |\n|---|---|\n| Nothing was broken | 200, \u201cAll database indexes are healthy.\u201d No `repaired` key. |\n| Another repair is in flight | 200 with `pending: true`. Deliberately **not** an error \u2014 a second tab is already doing the work. |\n| Repair succeeded | 200 with `repaired` listing the index names that were added. |\n| Repair failed | 422 with `failed`, usually insufficient database privileges. |\n\nA five-minute transient lock prevents concurrent admin tabs from stacking overlapping `ALTER` statements on the same tables.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `SettingsPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Repair finished, was unnecessary, or is already running.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Outcome description."
+                    },
+                    "pending": {
+                      "type": "boolean",
+                      "description": "Present and true only when another repair already holds the lock."
+                    },
+                    "repaired": {
+                      "type": "array",
+                      "description": "Index names that were added. Present only when a repair actually ran.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "indexes": {
+                      "type": "array",
+                      "description": "Index health after the attempt.",
+                      "items": {
+                        "$ref": "#/components/schemas/DbIndexHealth"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Database indexes repaired successfully.",
+                  "repaired": [
+                    "fc_cam_cid_status"
+                  ],
+                  "indexes": [
+                    {
+                      "type": "index",
+                      "table": "fc_campaign_emails",
+                      "title": "Campaign Emails Sending Index",
+                      "columns": [
+                        {
+                          "name": "campaign_id"
+                        },
+                        {
+                          "name": "status"
+                        }
+                      ],
+                      "name": "fc_cam_cid_status",
+                      "status": "yes"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "One or more indexes could not be created. The response carries `failed` and the current `indexes` health.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "DbIndexHealth": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Index name as it exists in MySQL."
+          },
+          "title": {
+            "type": "string",
+            "description": "Human-readable description of what the index is for."
+          },
+          "table": {
+            "type": "string",
+            "description": "Table the index belongs to, without the site prefix."
+          },
+          "type": {
+            "type": "string",
+            "description": "Index kind.",
+            "enum": [
+              "index",
+              "unique"
+            ]
+          },
+          "columns": {
+            "type": "array",
+            "description": "Columns covered, in order. `sub_part` is present when the index uses a prefix length.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Column name."
+                },
+                "sub_part": {
+                  "type": "integer",
+                  "description": "Prefix length, when the index covers only the first N characters."
+                }
+              }
+            }
+          },
+          "cleanup": {
+            "type": "string",
+            "description": "Cleanup routine that must run before a unique index can be added, when duplicate rows would block it."
+          },
+          "status": {
+            "type": "string",
+            "description": "`yes` when the index is present and correct.",
+            "enum": [
+              "yes",
+              "no"
+            ]
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

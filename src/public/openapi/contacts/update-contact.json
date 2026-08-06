@@ -27,7 +27,7 @@
       "put": {
         "operationId": "updateContact",
         "summary": "PUT Update Contact",
-        "description": "Update an existing contact's fields, custom values, tags, and lists. Supports attaching and detaching tags/lists in a single request. The `subscriber` object or individual fields can be passed in the request body.",
+        "description": "Update an existing contact's fields, custom values, tags, and lists. Supports attaching and detaching tags/lists in a single request. The `subscriber` object or individual fields can be passed in the request body.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contacts`\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Contacts"
         ],

@@ -1,0 +1,220 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/reports/contacts-by-tags": {
+      "get": {
+        "operationId": "getContactsByTags",
+        "summary": "GET Contacts By Tags",
+        "description": "Paginated contact counts per tag, most-used first.\n\nA LEFT JOIN is used, so tags with no contacts are included with a count of 0 rather than dropped.\n\n`contact_count` is a SQL aggregate and comes back as a **string**, not a number.\n\nThe pivot join is constrained to `object_type = 'FluentCrm\\App\\Models\\Tag'` \u2014 `fc_subscriber_pivot` is shared between tags and lists, so the discriminator is what keeps list memberships out of these counts.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_view_dashboard`\n\n_Enforced by `ReportPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "tags": [
+          "Reports"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Tags per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated tag counts.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tags": {
+                      "type": "object",
+                      "description": "Standard paginator over tags, ordered by contact count descending.",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of matching rows."
+                        },
+                        "per_page": {
+                          "type": "integer",
+                          "description": "Rows per page."
+                        },
+                        "current_page": {
+                          "type": "integer",
+                          "description": "Current page number."
+                        },
+                        "last_page": {
+                          "type": "integer",
+                          "description": "Number of the final page."
+                        },
+                        "from": {
+                          "type": "integer",
+                          "description": "Index of the first row on this page."
+                        },
+                        "to": {
+                          "type": "integer",
+                          "description": "Index of the last row on this page."
+                        },
+                        "next_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "URL of the next page, or null."
+                        },
+                        "prev_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "URL of the previous page, or null."
+                        },
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer",
+                                "description": "Tag id."
+                              },
+                              "title": {
+                                "type": "string",
+                                "description": "Tag name."
+                              },
+                              "contact_count": {
+                                "type": "string",
+                                "description": "Number of contacts carrying the tag, as a string."
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "tags": {
+                    "current_page": 1,
+                    "per_page": 20,
+                    "total": 16,
+                    "last_page": 1,
+                    "from": 1,
+                    "to": 16,
+                    "next_page_url": null,
+                    "prev_page_url": null,
+                    "data": [
+                      {
+                        "id": 10,
+                        "title": "FluentCRM Members",
+                        "contact_count": "2347"
+                      },
+                      {
+                        "id": 16,
+                        "title": "FluentCart Purchased",
+                        "contact_count": "2028"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

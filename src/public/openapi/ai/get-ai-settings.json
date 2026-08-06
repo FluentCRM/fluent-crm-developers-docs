@@ -1,0 +1,164 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/ai/settings": {
+      "get": {
+        "operationId": "getAiSettings",
+        "summary": "GET AI Settings",
+        "description": "Return the saved AI writing-assistant configuration.\n\nThe stored API key is **never** returned in clear text \u2014 it is masked to `****` followed by its last four characters. Sending that masked value back to `POST /ai/settings` keeps the existing key; sending an empty string clears it.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `AiPolicy::getSettings()`._\n\n<!-- /fc:access -->",
+        "tags": [
+          "AI"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current AI configuration.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "settings": {
+                      "type": "object",
+                      "properties": {
+                        "is_enabled": {
+                          "type": "string",
+                          "description": "Whether AI features are switched on.",
+                          "enum": [
+                            "yes",
+                            "no"
+                          ]
+                        },
+                        "provider": {
+                          "type": "string",
+                          "description": "Configured AI provider.",
+                          "enum": [
+                            "wordpress",
+                            "open_ai",
+                            "claude",
+                            "gemini"
+                          ]
+                        },
+                        "model": {
+                          "type": "string",
+                          "description": "Configured model id, or `auto` to let FluentCRM pick the provider default."
+                        },
+                        "api_key": {
+                          "type": "string",
+                          "description": "API key, masked to `****` plus the last four characters. Not returned in clear text."
+                        },
+                        "custom_prompt": {
+                          "type": "string",
+                          "description": "Extra system-prompt text appended to every generation request."
+                        }
+                      }
+                    },
+                    "has_wordpress_ai": {
+                      "type": "boolean",
+                      "description": "True when the site runs WordPress 7.0 or newer, which ships the built-in AI provider."
+                    },
+                    "connectors_url": {
+                      "type": "string",
+                      "description": "Admin URL of the WordPress connectors screen, used to configure the `wordpress` provider."
+                    }
+                  }
+                },
+                "example": {
+                  "settings": {
+                    "is_enabled": "yes",
+                    "provider": "open_ai",
+                    "model": "auto",
+                    "api_key": "****Ab12",
+                    "custom_prompt": ""
+                  },
+                  "has_wordpress_ai": false,
+                  "connectors_url": "https://yourdomain.com/wp-admin/options-connectors.php"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

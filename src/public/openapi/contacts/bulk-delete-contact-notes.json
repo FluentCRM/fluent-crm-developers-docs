@@ -1,0 +1,177 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/subscribers/{id}/notes/bulk-delete": {
+      "post": {
+        "operationId": "bulkDeleteContactNotes",
+        "summary": "POST Bulk Delete Contact Notes",
+        "description": "Delete several notes from one contact in a single request.\n\nDeletion is **scoped to the contact in the path**: ids that belong to a different contact are filtered out before anything is removed, so this cannot be used to reach another contact's notes. Because those ids are dropped rather than rejected, the reported count can be lower than the number of ids you sent \u2014 check `message` to see how many rows were actually removed.\n\nAt most **200** ids per request; more returns a 422.\n\nEach deletion fires `fluent_crm/note_delete`.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contacts_delete`\n\n_Enforced by `SubscriberPolicy::bulkDeleteNotes()`._\n\n<!-- /fc:access -->",
+        "tags": [
+          "Contacts"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Contact (subscriber) id.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "note_ids": {
+                    "type": "array",
+                    "description": "Note ids to delete. Required, and capped at 200 per request. Ids belonging to a different contact are silently skipped.",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "required": [
+                  "note_ids"
+                ]
+              },
+              "example": {
+                "note_ids": [
+                  1201,
+                  1202,
+                  1203
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Notes deleted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Confirmation message stating how many notes were removed."
+                    }
+                  }
+                },
+                "example": {
+                  "message": "3 notes deleted"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The requested resource does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "`note_ids` was empty, or more than 200 ids were supplied.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

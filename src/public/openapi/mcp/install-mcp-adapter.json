@@ -1,0 +1,147 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/mcp/install-adapter": {
+      "post": {
+        "operationId": "installMcpAdapter",
+        "summary": "POST Install MCP Adapter",
+        "description": "Attempt a one-click install of FluentHub, which supplies the MCP adapter.\n\nAutomatic installation only happens when something has opted in through the `fluent_toolkit/can_auto_install` filter. On a stock install nothing does, so the endpoint returns a 422 pointing at the manual download instead \u2014 that is the expected response, not a fault.\n\nWhen auto-install is available the call fires `fluent_toolkit/do_auto_install`, clears the plugin cache, and re-checks the result. The `message` distinguishes all four outcomes: installed and active, installed but the build has no bundled adapter, installed but not activatable, and install failed.\n\n<!-- fc:access -->\n\n**Required capability:** `install_plugins`\n\nThe policy also re-asserts `verifyRequest()`, so the caller must additionally hold `fcrm_manage_settings`.\n\n_Enforced by `SettingsPolicy::installAdapter()`._\n\n<!-- /fc:access -->",
+        "tags": [
+          "MCP"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Installation attempted. Read `message` for the outcome.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "is_installed": {
+                      "type": "boolean",
+                      "description": "True when the standalone adapter or FluentHub is now present."
+                    },
+                    "adapter_active": {
+                      "type": "boolean",
+                      "description": "True when an adapter runtime is now available."
+                    },
+                    "toolkit_active": {
+                      "type": "boolean",
+                      "description": "True when FluentHub is loaded."
+                    },
+                    "toolkit_adapter_available": {
+                      "type": "boolean",
+                      "description": "True when the loaded FluentHub build bundles an adapter."
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Human-readable outcome, including next steps when something is still missing."
+                    }
+                  }
+                },
+                "example": {
+                  "is_installed": true,
+                  "adapter_active": true,
+                  "toolkit_active": true,
+                  "toolkit_adapter_available": true,
+                  "message": "FluentHub installed and activated. Reload the page to register FluentCRM MCP tools."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The user cannot install plugins, or automatic installation is unavailable. The response carries `toolkit_download_url` for the manual route.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

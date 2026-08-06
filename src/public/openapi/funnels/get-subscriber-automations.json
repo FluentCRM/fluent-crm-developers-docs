@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getSubscriberAutomations",
         "summary": "GET Get Subscriber Automations",
-        "description": "Retrieve a paginated list of all automation funnels a specific subscriber/contact is enrolled in, including the associated funnel details and sequence progress.",
+        "description": "Retrieve a paginated list of all automation funnels a specific subscriber/contact is enrolled in, including the associated funnel details and sequence progress.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],

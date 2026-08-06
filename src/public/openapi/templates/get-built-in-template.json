@@ -1,0 +1,187 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/templates/built-in-template": {
+      "post": {
+        "operationId": "getBuiltInTemplate",
+        "summary": "POST Fetch A Built-In Template",
+        "description": "Download one of the hosted starter templates and return its content **without** saving it as a local template. Use it to preview or insert a design; persist it afterwards with `POST /templates` if the user keeps it.\n\n`file` is validated against an allowlist before any request is made: the URL must be **HTTPS** and its host must be `fluentcrm.com`, `wpmanageninja.com` (with or without `www.`), or the host named by the `FC_TEMPLATE_API_DOMAIN` constant. Anything else is rejected outright \u2014 this endpoint cannot be used to fetch arbitrary URLs.\n\nThe outbound request enforces TLS verification, a 20-second timeout, **no redirects**, and a 1 MB response cap. The payload must declare `is_fc_template: \"yes\"` and carry usable content, or the call fails.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_templates`\n\n_Enforced by `TemplatePolicy::getBuiltInTemplate()`._\n\n<!-- /fc:access -->",
+        "tags": [
+          "Templates"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "description": "HTTPS URL of the template JSON on an allowlisted host.",
+                    "format": "uri"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              },
+              "example": {
+                "file": "https://fluentcrm.com/templates/newsletter-basic.json"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The downloaded template, not yet saved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Confirmation message."
+                    },
+                    "template": {
+                      "type": "object",
+                      "properties": {
+                        "post_title": {
+                          "type": "string",
+                          "description": "Template name."
+                        },
+                        "post_content": {
+                          "type": "string",
+                          "description": "Email body markup."
+                        },
+                        "email_subject": {
+                          "type": "string",
+                          "description": "Default subject line."
+                        },
+                        "design_template": {
+                          "type": "string",
+                          "description": "Design engine the template targets.",
+                          "enum": [
+                            "simple",
+                            "raw_classic",
+                            "classic",
+                            "visual_builder"
+                          ]
+                        },
+                        "_visual_builder_design": {
+                          "type": "object",
+                          "properties": {}
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Template has been inserted",
+                  "template": {
+                    "post_title": "Basic Newsletter",
+                    "post_content": "<!-- wp:paragraph --><p>Hello {{contact.first_name}}</p><!-- /wp:paragraph -->",
+                    "email_subject": "Your monthly update",
+                    "design_template": "simple"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "`file` was missing, not HTTPS, or not on an allowlisted host; the download failed; or the payload was not a valid FluentCRM template.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

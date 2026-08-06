@@ -27,7 +27,7 @@
       "put": {
         "operationId": "updateLabel",
         "summary": "PUT Update Label",
-        "description": "Update an existing label's slug, title, and color. The label must exist or a 404 error is returned. All fields are sanitized server-side.",
+        "description": "Update an existing label's slug, title, and color. The label must exist or a 404 error is returned. All fields are sanitized server-side.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `CustomFieldsPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Labels"
         ],

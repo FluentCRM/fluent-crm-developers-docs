@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "post": {
         "operationId": "installFluentSmtp",
         "summary": "POST Install FluentSMTP Plugin",
-        "description": "Install and activate the FluentSMTP plugin from the WordPress plugin repository. Requires the `install_plugins` capability. If already installed but inactive, it will be activated.",
+        "description": "Install and activate the FluentSMTP plugin from the WordPress plugin repository. Requires the `install_plugins` capability. If already installed but inactive, it will be activated.\n\n<!-- fc:access -->\n\n**Required capability:** `install_plugins`\n\nThe policy also re-asserts `verifyRequest()`, so the caller must additionally hold `fcrm_manage_settings`.\n\n_Enforced by `SettingsPolicy::handleFluentSmtpInstall()`._\n\n<!-- /fc:access -->",
         "tags": [
           "Settings"
         ],
@@ -117,7 +117,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

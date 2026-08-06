@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "delete": {
         "operationId": "deleteFunnelSubscribers",
         "summary": "DELETE Delete Funnel Subscribers",
-        "description": "Remove one or more subscribers from a specific automation funnel by their subscriber/contact IDs. Deletes the funnel subscriber records and associated metrics.",
+        "description": "Remove one or more subscribers from a specific automation funnel by their subscriber/contact IDs. Deletes the funnel subscriber records and associated metrics.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_delete_funnels`\n\n_Enforced by `FunnelPolicy::deleteSubscribers()`._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],
@@ -145,7 +145,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

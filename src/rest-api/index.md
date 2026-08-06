@@ -1,10 +1,12 @@
 # FluentCRM REST API
 
-Complete REST API documentation for FluentCRM — covering **319 endpoints** across 28 modules, including FluentCampaign Pro.
+Complete reference for every FluentCRM REST endpoint — **363 endpoints across 32 modules**, covering FluentCRM, FluentCampaign Pro, and the Pro SMS module.
+
+Every page is generated from the plugin's own route table and verified against live responses, so what you read here is what the code does.
 
 ## Base URL
 
-All API requests use this base URL:
+All requests use this base URL:
 
 ```
 https://yourdomain.com/wp-json/fluent-crm/v2
@@ -12,114 +14,153 @@ https://yourdomain.com/wp-json/fluent-crm/v2
 
 ## Authentication
 
-FluentCRM uses **WordPress Application Passwords** for REST API authentication. Pass credentials via the `Authorization` header using Basic auth:
+FluentCRM uses **WordPress Application Passwords**. Pass them via the `Authorization` header using Basic auth:
 
 ```bash
 curl -X GET "https://yourdomain.com/wp-json/fluent-crm/v2/subscribers" \
   -H "Authorization: Basic $(echo -n 'username:application_password' | base64)"
 ```
 
-See [Authentication](/rest-api/authentication) for setup instructions.
+See [Authentication](/rest-api/authentication) for how to create a dedicated manager account and generate keys.
 
-## Interactive Playground
+The one exception is the [bounce handler](/rest-api/operations/public-bounce/handle-bounce), which is deliberately public — it is called by your email provider, which cannot present WordPress credentials.
 
-Every endpoint page includes an **interactive playground** where you can:
-1. Enter your WordPress domain in the Server URL field
-2. Add your Application Password credentials
-3. Fill in parameters and execute live requests
-4. View real-time responses
+## Permissions
 
-::: warning
-Use test/staging sites only. API requests make permanent changes to your data.
-:::
+Every endpoint page states the **capability that route actually enforces**, and which policy method enforces it. FluentCRM's capabilities are module-scoped rather than one blanket permission:
 
-## API Modules
+| Capability | Grants |
+|---|---|
+| `fcrm_read_contacts` / `fcrm_manage_contacts` | Read / write contacts |
+| `fcrm_manage_contacts_delete` | Delete contacts |
+| `fcrm_manage_contacts_export` | Export contacts |
+| `fcrm_manage_contact_cats` | Tags, lists, companies |
+| `fcrm_manage_contact_cats_delete` | Delete tags, lists, companies |
+| `fcrm_read_emails` / `fcrm_manage_emails` | Read / write campaigns and emails |
+| `fcrm_manage_email_delete` | Delete emails |
+| `fcrm_manage_email_templates` | Email templates |
+| `fcrm_read_funnels` / `fcrm_write_funnels` | Read / write automations |
+| `fcrm_delete_funnels` | Delete automations |
+| `fcrm_manage_forms` | Form integrations |
+| `fcrm_view_dashboard` | Reports and dashboard |
+| `fcrm_manage_settings` | Settings — the highest FluentCRM permission |
 
-### Core Resources
+A handful of routes require a **core WordPress** capability instead — `install_plugins` for the MCP adapter installer, plus `manage_options` and `list_users` elsewhere. Those are called out on the pages concerned.
+
+## Modules
+
+### Contacts & Segmentation
 
 | Module | Endpoints | Description |
 |--------|-----------|-------------|
-| [Contacts](/rest-api/operations/contacts/list-contacts) | 31 | Create, update, delete contacts; manage notes, emails, tracking events |
-| [Tags](/rest-api/operations/tags/list-tags) | 7 | Organize contacts with tags |
+| [Contacts](/rest-api/operations/contacts/list-contacts) | 32 | Create, update, delete contacts; notes, emails, tracking events, purchase history |
+| [Tags](/rest-api/operations/tags/list-tags) | 7 | Organise contacts with tags |
 | [Lists](/rest-api/operations/lists/list-lists) | 7 | Group contacts into mailing lists |
-| [Companies](/rest-api/operations/companies/list-companies) | 19 | Manage companies, attach contacts, notes, custom fields |
-| [Custom Fields](/rest-api/operations/custom-fields/get-contact-custom-fields) | 3 | Define and manage custom contact fields |
-| [Labels](/rest-api/operations/labels/list-labels) | 4 | Global labels for campaigns, funnels, and sequences |
+| [Companies](/rest-api/operations/companies/list-companies) | 21 | Companies, attached contacts, notes, custom fields |
+| [Custom Fields](/rest-api/operations/custom-fields/get-contact-custom-fields) | 3 | Define contact custom fields |
+| [Labels](/rest-api/operations/labels/list-labels) | 4 | Global labels for campaigns, funnels, sequences |
 
 ### Email & Campaigns
 
 | Module | Endpoints | Description |
 |--------|-----------|-------------|
-| [Campaigns](/rest-api/operations/campaigns/list-campaigns) | 32 | Create, schedule, send, and analyze email campaigns |
-| [Templates](/rest-api/operations/templates/list-templates) | 11 | Email templates, smart codes, global styles |
-| [Sequences](/rest-api/operations/sequences/list-sequences) | 18 | Automated email sequences (Pro) |
-| [Recurring Campaigns](/rest-api/operations/recurring-campaigns/list-recurring-campaigns) | 14 | Recurring/automated campaigns (Pro) |
+| [Campaigns](/rest-api/operations/campaigns/list-campaigns) | 32 | Create, schedule, send, and analyse email campaigns |
+| [Templates](/rest-api/operations/templates/list-templates) | 12 | Email templates, smart codes, global styles |
+| [Email Patterns](/rest-api/operations/email-patterns/list-email-patterns) | 11 | Reusable block patterns for the Gutenberg email editor |
+| [Sequences](/rest-api/operations/sequences/list-sequences) | 19 | Automated email sequences <Badge type="warning" text="Pro" /> |
+| [Recurring Campaigns](/rest-api/operations/recurring-campaigns/list-recurring-campaigns) | 14 | Scheduled recurring campaigns <Badge type="warning" text="Pro" /> |
+| [Campaigns Pro](/rest-api/operations/campaigns-pro/resend-failed-emails) | 7 | Resend failed emails, tag actions, dynamic content <Badge type="warning" text="Pro" /> |
+| [SMS](/rest-api/operations/sms/list-sms-campaigns) | 25 | SMS campaigns and messages <Badge type="warning" text="Pro" /> |
 
 ### Automation & Analytics
 
 | Module | Endpoints | Description |
 |--------|-----------|-------------|
-| [Funnels](/rest-api/operations/funnels/list-funnels) | 31 | Marketing automation funnels with triggers, actions, benchmarks |
-| [Reports](/rest-api/operations/reports/get-dashboard-stats) | 14 | Dashboard stats, email performance, contact growth |
-| [Webhooks](/rest-api/operations/webhooks/list-webhooks) | 5 | Incoming webhook endpoints for data collection |
-| [Dynamic Segments](/rest-api/operations/dynamic-segments/list-dynamic-segments) | 9 | Smart contact segments with dynamic conditions (Pro) |
+| [Funnels (Automations)](/rest-api/operations/funnels/list-funnels) | 32 | Automations with triggers, actions, benchmarks, and step reporting |
+| [Reports](/rest-api/operations/reports/get-dashboard-stats) | 25 | Dashboard stats, email performance, contact growth, automation reports |
+| [Dynamic Segments](/rest-api/operations/dynamic-segments/list-dynamic-segments) | 9 | Condition-driven contact segments <Badge type="warning" text="Pro" /> |
+| [Commerce Reports](/rest-api/operations/commerce-reports/get-commerce-reports) | 2 | WooCommerce / EDD revenue reporting <Badge type="warning" text="Pro" /> |
+| [Smart Links](/rest-api/operations/smart-links/list-smart-links) | 5 | Trackable links that apply tags and lists <Badge type="warning" text="Pro" /> |
+
+### Data In & Out
+
+| Module | Endpoints | Description |
+|--------|-----------|-------------|
+| [Import](/rest-api/operations/import/upload-csv-import) | 6 | CSV upload, WP users import, third-party drivers |
+| [Export](/rest-api/operations/export/export-contacts-page) | 2 | Paged contact export <Badge type="warning" text="Pro" /> |
+| [Migrators](/rest-api/operations/migrators/get-migrator-drivers) | 5 | Migrate from Mailchimp, ActiveCampaign, and others |
+| [Webhooks](/rest-api/operations/webhooks/list-webhooks) | 4 | Inbound webhooks that create and update contacts |
+| [Forms](/rest-api/operations/forms/list-forms) | 5 | Fluent Forms integration and entries |
+| [Bounce Handler](/rest-api/operations/public-bounce/handle-bounce) | 2 | Public provider webhook for bounces and complaints |
 
 ### Administration
 
 | Module | Endpoints | Description |
 |--------|-----------|-------------|
-| [Settings](/rest-api/operations/settings/get-settings) | 38 | Global settings, double opt-in, integrations, compliance |
-| [Import](/rest-api/operations/import/upload-csv-import) | 6 | CSV upload, WP users import, third-party drivers |
-| [Users](/rest-api/operations/users/list-users) | 2 | WordPress user listing and roles |
-| [Forms](/rest-api/operations/forms/list-forms) | 5 | Fluent Forms integration |
-| [Migrators](/rest-api/operations/migrators/get-migrator-drivers) | 5 | Migrate from Mailchimp, ActiveCampaign, etc. |
+| [Settings](/rest-api/operations/settings/get-settings) | 41 | Global settings, double opt-in, compliance, system logs, DB health |
+| [Pro Settings](/rest-api/operations/pro-settings/get-license-status) | 11 | Licence, managers, SMS configuration <Badge type="warning" text="Pro" /> |
+| [AI](/rest-api/operations/ai/get-ai-settings) | 7 | AI writing assistant configuration and generation |
+| [MCP](/rest-api/operations/mcp/get-mcp-status) | 4 | Model Context Protocol bridge for AI agents |
+| [Users](/rest-api/operations/users/list-users) | 2 | WordPress user and role lookup |
 | [Abandon Carts](/rest-api/operations/abandon-carts/list-abandoned-carts) | 3 | Abandoned cart tracking and recovery |
-
-### Pro Features
-
-| Module | Endpoints | Description |
-|--------|-----------|-------------|
-| [Smart Links](/rest-api/operations/smart-links/list-smart-links) | 5 | Trackable action links (Pro) |
-| [Campaigns Pro](/rest-api/operations/campaigns-pro/resend-failed-emails) | 7 | Resend emails, tag actions, dynamic content (Pro) |
-| [Pro Settings](/rest-api/operations/pro-settings/get-license-status) | 11 | License, managers, SMS settings (Pro) |
-| [Commerce Reports](/rest-api/operations/commerce-reports/get-commerce-reports) | 2 | WooCommerce/EDD revenue reports (Pro) |
-| [SMS](/rest-api/operations/sms/list-sms-campaigns) | 24 | SMS campaigns, messages, subscriber SMS (Pro) |
-
-### Other
-
-| Module | Endpoints | Description |
-|--------|-----------|-------------|
-| [Global Search](/rest-api/operations/global-search/global-search) | 1 | Search across contacts, campaigns, funnels |
-| [Docs](/rest-api/operations/docs/list-docs) | 3 | In-app documentation and addons |
-| [Bounce Handler](/rest-api/operations/public-bounce/handle-bounce-with-handle) | 2 | Public webhook for email bounce processing |
+| [Docs & Addons](/rest-api/operations/docs/list-docs) | 3 | In-app documentation and addon status |
+| [Global Search](/rest-api/operations/global-search/global-search) | 1 | Search contacts, campaigns, and automations at once |
 
 ## Response Format
 
-FluentCRM returns JSON responses. Paginated endpoints use the Laravel pagination format:
+Most endpoints return a JSON object keyed by the resource name. Paginated collections use the framework's paginator envelope:
 
 ```json
 {
-  "data": [{ "id": 1, "email": "john@example.com", ... }],
-  "total": 150,
-  "per_page": 15,
-  "current_page": 1,
-  "last_page": 10
+  "subscribers": {
+    "total": 150,
+    "per_page": 15,
+    "current_page": 1,
+    "last_page": 10,
+    "from": 1,
+    "to": 15,
+    "next_page_url": "/wp-json/fluent-crm/v2/subscribers?page=2",
+    "prev_page_url": null,
+    "data": [{ "id": 1, "email": "john@example.com" }]
+  }
 }
 ```
 
-## Error Handling
+::: tip Not every collection is a paginator
+Some endpoints deliberately return a plain `limit`-capped array with no page metadata — the option and picker endpoints, for example. Others return counts as **strings**, because the value comes straight from a SQL aggregate. Each page documents what that endpoint really returns.
+:::
 
-Standard HTTP status codes with descriptive error messages:
+## Conditional Response Keys
+
+Many endpoints return extra keys only when you ask for them, usually through a `with[]` parameter: `GET /funnels` returns `triggers` only with `with[]=triggers`, `GET /tags` returns `all_tags` only when `all_tags` is sent, and so on. Anything conditional is marked as such in its property description — do not rely on a key being present unless the description says it always is.
+
+## Error Handling
 
 | Code | Meaning |
 |------|---------|
 | `200` | Success |
 | `400` | Bad request — missing or invalid parameters |
-| `401` | Unauthorized — invalid or missing credentials |
-| `403` | Forbidden — insufficient permissions |
-| `404` | Not found — resource doesn't exist |
-| `422` | Validation error — check the error message for details |
+| `401` | Not authenticated — missing or invalid credentials |
+| `403` | Authenticated, but the user lacks the required capability |
+| `404` | Resource not found |
+| `422` | Validation failed — the message names the offending field |
+
+::: warning Check the body, not just the status
+A few endpoints signal failure inside a `200` response. The bounce handler returns `{"status": false}` on a bad security code, and `POST /setting/db-index-health/repair` returns `200` with `pending: true` when another repair already holds the lock.
+:::
+
+## Method Override
+
+The admin app sends `PUT`, `PATCH`, and `DELETE` as `POST` with an `X-HTTP-Method-Override` header. Direct API clients can use the real verbs — the override exists for environments that block them.
+
+## Interactive Playground
+
+Every endpoint page includes a playground where you can enter your domain and credentials, fill in parameters, and execute live requests.
+
+::: danger Use a staging site
+The playground issues real requests. Mutating endpoints permanently change your data, and campaign endpoints can send real email.
+:::
 
 ## What's Next?
 
-Start with [Authentication](/rest-api/authentication) to set up your API access, then explore any module above.
+Start with [Authentication](/rest-api/authentication), then pick a module above.

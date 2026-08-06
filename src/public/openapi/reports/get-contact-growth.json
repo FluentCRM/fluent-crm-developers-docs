@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getContactGrowth",
         "summary": "GET Contact Growth",
-        "description": "Retrieve subscriber growth statistics over a date range. Returns a date-keyed object where each key is a date (or month label) and the value is the count of new subscribed contacts on that date. The frequency (daily, weekly, monthly) is automatically determined by the length of the date range.",
+        "description": "Retrieve subscriber growth statistics over a date range. Returns a date-keyed object where each key is a date (or month label) and the value is the count of new subscribed contacts on that date. The frequency (daily, weekly, monthly) is automatically determined by the length of the date range.\n\nThe response is chart-ready: `data_sets` holds one series per range, and each series' `data` is a **map keyed by period label**, not an array. A second series is appended only when `compare_type` is set to something other than `no_comparison` and resolves to a valid window.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_view_dashboard`\n\n_Enforced by `ReportPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Reports"
         ],
@@ -53,6 +53,55 @@
             },
             "style": "form",
             "explode": true
+          },
+          {
+            "name": "tag_id",
+            "in": "query",
+            "description": "Restrict growth to contacts carrying this tag.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "list_id",
+            "in": "query",
+            "description": "Restrict growth to contacts on this list.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "compare_type",
+            "in": "query",
+            "description": "Adds a second comparison series. `custom` additionally requires `compare_range`; `no_comparison` and unrecognised values return a single series.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "no_comparison",
+                "previous_period",
+                "previous_month",
+                "previous_quarter",
+                "previous_year",
+                "custom"
+              ]
+            }
+          },
+          {
+            "name": "compare_range[]",
+            "in": "query",
+            "description": "Explicit `[from, to]` comparison window. Used only when `compare_type` is `custom`, and ignored unless both entries are present.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           }
         ],
         "responses": {
@@ -63,21 +112,76 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "stats": {
-                      "type": "object",
-                      "description": "Date-keyed object. Keys are `YYYY-MM-DD` (daily/weekly) or `Mon YYYY` (monthly). Values are subscriber counts.",
-                      "additionalProperties": {
-                        "type": "integer"
+                    "data_sets": {
+                      "type": "array",
+                      "description": "One entry for the current range, plus a second when `compare_type` requests a comparison.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string",
+                            "description": "Series name \u2014 `Current Range` or `Compare Range`."
+                          },
+                          "data": {
+                            "type": "object",
+                            "description": "Counts keyed by period label, e.g. `\"Mar 2024\": 262`. Bucket size is chosen from the range width.",
+                            "additionalProperties": {
+                              "type": "integer"
+                            }
+                          },
+                          "range": {
+                            "type": "array",
+                            "description": "The `[from, to]` window this series covers.",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "backgroundColor": {
+                            "type": "string",
+                            "description": "Chart fill colour."
+                          },
+                          "borderColor": {
+                            "type": "string",
+                            "description": "Chart line colour."
+                          },
+                          "fill": {
+                            "type": "boolean",
+                            "description": "Whether the chart area under the line is filled."
+                          }
+                        }
+                      }
+                    },
+                    "current_range": {
+                      "type": "array",
+                      "description": "The resolved `[from, to]` window. Defaults to the last 30 days, derived from the SITE-LOCAL clock because `created_at` is written in site time.",
+                      "items": {
+                        "type": "string"
                       }
                     }
                   }
                 },
                 "example": {
-                  "stats": {
-                    "2024-01-01": 5,
-                    "2024-01-02": 12,
-                    "2024-01-03": 3
-                  }
+                  "data_sets": [
+                    {
+                      "label": "Current Range",
+                      "data": {
+                        "Mar 2024": 262,
+                        "Apr 2024": 143,
+                        "May 2024": 867
+                      },
+                      "range": [
+                        "2024-03-01",
+                        "2024-05-31"
+                      ],
+                      "backgroundColor": "#335CFF",
+                      "borderColor": "#335CFF",
+                      "fill": true
+                    }
+                  ],
+                  "current_range": [
+                    "2024-03-01",
+                    "2024-05-31"
+                  ]
                 }
               }
             }
@@ -116,7 +220,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

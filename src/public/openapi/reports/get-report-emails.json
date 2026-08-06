@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getReportEmails",
         "summary": "GET Report Emails",
-        "description": "Retrieve a paginated list of campaign emails with their associated subscriber and campaign data. Optionally filter by email status. When requesting page 1, the response also includes a breakdown of email counts grouped by status.",
+        "description": "Retrieve a paginated list of campaign emails with their associated subscriber and campaign data. Optionally filter by email status. When requesting page 1, the response also includes a breakdown of email counts grouped by status.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `ReportPolicy::getEmails()`._\n\n<!-- /fc:access -->",
         "tags": [
           "Reports"
         ],
@@ -64,6 +64,27 @@
             "schema": {
               "type": "integer",
               "default": 15
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search across the recipient contact and the campaign.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "types[]",
+            "in": "query",
+            "description": "Filter by email type. Values are expanded server-side, so a broad type also matches its narrower variants.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           }
         ],
@@ -163,6 +184,14 @@
                           "type": "null"
                         }
                       ]
+                    },
+                    "types": {
+                      "type": "array",
+                      "description": "Email types available as filter options.",
+                      "items": {
+                        "type": "object",
+                        "properties": {}
+                      }
                     }
                   }
                 },
@@ -240,7 +269,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

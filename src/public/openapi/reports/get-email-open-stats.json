@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "FluentCRM API",
-    "description": "Complete REST API documentation for FluentCRM — a self-hosted email marketing and CRM plugin for WordPress.",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
     "version": "1.0.0"
   },
   "servers": [
@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getEmailOpenStats",
         "summary": "GET Email Open Stats",
-        "description": "Retrieve email open statistics over a date range. Returns a date-keyed object where each key is a date (or month label) and the value is the count of emails opened on that date. The frequency (daily, weekly, monthly) is automatically determined by the length of the date range.",
+        "description": "Retrieve email open statistics over a date range. Returns a date-keyed object where each key is a date (or month label) and the value is the count of emails opened on that date. The frequency (daily, weekly, monthly) is automatically determined by the length of the date range.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_view_dashboard`\n\n_Enforced by `ReportPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Reports"
         ],
@@ -53,6 +53,16 @@
             },
             "style": "form",
             "explode": true
+          },
+          {
+            "name": "campaign_id",
+            "in": "query",
+            "description": "Restrict the series to a single campaign. Omit or send 0 for site-wide totals.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
           }
         ],
         "responses": {
@@ -116,7 +126,7 @@
         "type": "apiKey",
         "in": "header",
         "name": "Authorization",
-        "description": "WordPress Application Passwords — use Basic auth with your WordPress username and an application password in the format: username:application_password"
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
       }
     }
   }

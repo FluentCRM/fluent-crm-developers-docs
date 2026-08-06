@@ -1,0 +1,269 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/reports/automations/{id}/steps": {
+      "get": {
+        "operationId": "getAutomationStepReport",
+        "summary": "GET Automation Step Report",
+        "description": "Funnel-shaped drop-off report for a single automation: how many contacts reached each step, and how many were lost between steps.\n\n`stats` always opens with a synthetic **Entrance** row (`sequence_id: 0`, `type: \"root\"`) holding the distinct entrant count, which every later step is measured against. Steps that no contact has reached are omitted entirely, so `stats` is not a complete list of the automation's steps.\n\n`percent` is clamped to 100 while `percent_text` keeps the uncapped value, so a step re-entered by the same contact can read above 100 in the label but not in the bar.\n\n**`stats` is an empty array when the automation has no steps** \u2014 that is a valid response, not an error.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_view_dashboard`\n\n_Enforced by `ReportPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "tags": [
+          "Reports"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Funnel (automation) id.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The automation and its per-step funnel.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "funnel": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer",
+                          "description": "Funnel id."
+                        },
+                        "type": {
+                          "type": "string",
+                          "description": "Always `funnels`."
+                        },
+                        "title": {
+                          "type": "string",
+                          "description": "Automation name."
+                        },
+                        "trigger_name": {
+                          "type": "string",
+                          "description": "Starting hook."
+                        },
+                        "status": {
+                          "type": "string",
+                          "description": "Automation status.",
+                          "enum": [
+                            "draft",
+                            "published"
+                          ]
+                        },
+                        "conditions": {
+                          "type": "object",
+                          "properties": {}
+                        },
+                        "settings": {
+                          "type": "object",
+                          "properties": {}
+                        },
+                        "created_by": {
+                          "type": "string",
+                          "description": "Author's WordPress user id."
+                        },
+                        "created_at": {
+                          "type": "string",
+                          "description": "Creation timestamp.",
+                          "format": "date-time"
+                        },
+                        "updated_at": {
+                          "type": "string",
+                          "description": "Last update timestamp.",
+                          "format": "date-time"
+                        }
+                      }
+                    },
+                    "stats": {
+                      "type": "array",
+                      "description": "One row per reached step, preceded by the Entrance row. Empty when the automation has no steps.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string",
+                            "description": "Step name, or \u201cEntrance\u201d for the root row."
+                          },
+                          "count": {
+                            "type": "integer",
+                            "description": "Contacts that reached this step."
+                          },
+                          "sequence_id": {
+                            "type": "integer",
+                            "description": "Step id, or 0 for the Entrance row."
+                          },
+                          "type": {
+                            "type": "string",
+                            "description": "Step type, or `root` for the Entrance row."
+                          },
+                          "percent": {
+                            "type": "integer",
+                            "description": "Share of entrants that reached this step, clamped to 100."
+                          },
+                          "percent_text": {
+                            "type": "integer",
+                            "description": "Same share, uncapped."
+                          },
+                          "previous_step_count": {
+                            "type": "integer",
+                            "description": "Count at the preceding step."
+                          },
+                          "drop_count": {
+                            "type": "integer",
+                            "description": "Contacts lost since the preceding step."
+                          },
+                          "drop_percent": {
+                            "type": "integer",
+                            "description": "Percentage lost since the preceding step."
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "funnel": {
+                    "id": 1,
+                    "type": "funnels",
+                    "title": "Login and Add to Community",
+                    "trigger_name": "wp_login",
+                    "status": "draft",
+                    "conditions": {
+                      "run_multiple": "no"
+                    },
+                    "settings": {
+                      "subscription_status": "subscribed"
+                    },
+                    "created_by": "1",
+                    "created_at": "2024-03-27 00:54:06",
+                    "updated_at": "2024-09-27 21:21:24"
+                  },
+                  "stats": [
+                    {
+                      "label": "Entrance",
+                      "count": 120,
+                      "sequence_id": 0,
+                      "type": "root",
+                      "percent": 100,
+                      "percent_text": 100,
+                      "previous_step_count": 120,
+                      "drop_count": 0,
+                      "drop_percent": 0
+                    },
+                    {
+                      "label": "Send Welcome Email",
+                      "count": 96,
+                      "sequence_id": 42,
+                      "type": "action",
+                      "percent": 80,
+                      "percent_text": 80,
+                      "previous_step_count": 120,
+                      "drop_count": 24,
+                      "drop_percent": 20
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The requested resource does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

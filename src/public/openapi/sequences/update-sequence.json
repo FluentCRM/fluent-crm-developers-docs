@@ -27,7 +27,7 @@
       "put": {
         "operationId": "updateSequence",
         "summary": "PUT Update Sequence",
-        "description": "Update an existing email sequence's title, settings, or mailer configuration. If mailer settings are changed, they are propagated to all sequence emails. Requires FluentCampaign Pro.",
+        "description": "Update an existing email sequence's title, settings, or mailer configuration. If mailer settings are changed, they are propagated to all sequence emails. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Sequences"
         ],

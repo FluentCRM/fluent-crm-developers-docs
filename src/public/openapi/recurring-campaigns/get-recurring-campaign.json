@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getRecurringCampaign",
         "summary": "GET Get Recurring Campaign",
-        "description": "Retrieve a single recurring campaign by ID. Returns the full campaign object including settings, email content, and all metadata. Requires FluentCampaign Pro.",
+        "description": "Retrieve a single recurring campaign by ID. Returns the full campaign object including settings, email content, and all metadata. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Recurring Campaigns"
         ],

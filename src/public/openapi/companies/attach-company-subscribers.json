@@ -27,7 +27,7 @@
       "post": {
         "operationId": "attachCompanySubscribers",
         "summary": "POST Attach Subscribers to Companies",
-        "description": "Attach one or more contacts (subscribers) to one or more companies. Creates the many-to-many relationship between contacts and companies. Uses the `FluentCrmApi('companies')->attachContactsByIds()` method internally.",
+        "description": "Attach one or more contacts (subscribers) to one or more companies. Creates the many-to-many relationship between contacts and companies. Uses the `FluentCrmApi('companies')->attachContactsByIds()` method internally.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contact_cats`\n\n_Enforced by `CompanyPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Companies"
         ],

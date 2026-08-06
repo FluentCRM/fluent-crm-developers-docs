@@ -27,7 +27,7 @@
       "put": {
         "operationId": "updateCompany",
         "summary": "PUT Update Company",
-        "description": "Update an existing company. The company name must remain unique across all companies. If the `id` is `0`, the request is treated as a create operation. URL fields (`website`, `linkedin_url`, `facebook_url`, `twitter_url`) are auto-prefixed with `https://` if no scheme is provided and validated as URLs.",
+        "description": "Update an existing company. The company name must remain unique across all companies. If the `id` is `0`, the request is treated as a create operation. URL fields (`website`, `linkedin_url`, `facebook_url`, `twitter_url`) are auto-prefixed with `https://` if no scheme is provided and validated as URLs.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contact_cats`\n\n_Enforced by `CompanyPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Companies"
         ],

@@ -1,0 +1,178 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/mcp/config-snippet": {
+      "get": {
+        "operationId": "getMcpConfigSnippet",
+        "summary": "GET MCP Client Config Snippet",
+        "description": "Generate a copy-paste configuration snippet for a specific MCP client.\n\nEvery client authenticates with WordPress Application Passwords. The snippet contains **placeholders**, never real credentials \u2014 `<base64(your-username:application-password)>`, `<your-username>`, and `<your-application-password>` \u2014 which the Settings screen swaps for the values the user types in. Nothing secret is ever returned by this endpoint.\n\nSupported `client` values:\n\n| Value | Output |\n|---|---|\n| `claude-code` | A `claude mcp add` command over HTTP transport. **The default** \u2014 an unrecognised value also lands here. |\n| `claude-desktop` | JSON for `claude_desktop_config.json`. Claude Desktop cannot speak HTTP MCP directly, so this routes through the `@automattic/mcp-wordpress-remote` npx proxy. |\n| `cursor` | JSON for Cursor's native HTTP MCP support. |\n| `codex` | Step-by-step instructions for OpenAI Codex's custom-MCP screen. |\n| `generic` | Raw URL, auth header, and a ready-to-run `curl` test. |\n\nFor `claude-desktop` on a local install, `NODE_TLS_REJECT_UNAUTHORIZED=0` is added to the snippet so the npx proxy tolerates a self-signed Valet/MAMP/Local certificate. That is decided by `local_dev` when supplied, and by auto-detection otherwise.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `SettingsPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "tags": [
+          "MCP"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "client",
+            "in": "query",
+            "description": "Target MCP client. Unrecognised values fall back to `claude-code`.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "claude-code",
+              "enum": [
+                "claude-code",
+                "claude-desktop",
+                "cursor",
+                "codex",
+                "generic"
+              ]
+            }
+          },
+          {
+            "name": "local_dev",
+            "in": "query",
+            "description": "Override local-development detection. `yes`/`1`/`true` force it on, `no`/`0`/`false` force it off, and omitting it uses auto-detection.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no",
+                "1",
+                "0",
+                "true",
+                "false"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The generated snippet and its instructions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "client": {
+                      "type": "string",
+                      "description": "The client the snippet was generated for, after fallback."
+                    },
+                    "snippet": {
+                      "type": "string",
+                      "description": "Copy-paste configuration containing credential placeholders."
+                    },
+                    "instructions": {
+                      "type": "string",
+                      "description": "Where to put the snippet and what to do afterwards."
+                    },
+                    "endpoint": {
+                      "type": "string",
+                      "description": "The MCP JSON-RPC endpoint URL."
+                    },
+                    "app_passwords_url": {
+                      "type": "string",
+                      "description": "Admin URL for creating an application password."
+                    },
+                    "is_local_dev": {
+                      "type": "boolean",
+                      "description": "The local-development flag that was applied."
+                    }
+                  }
+                },
+                "example": {
+                  "client": "claude-code",
+                  "snippet": "claude mcp add \\\n  --transport http \\\n  fluent-crm https://yourdomain.com/wp-json/fluent-crm/mcp \\\n  --header \"Authorization: Basic <base64(your-username:application-password)>\"",
+                  "instructions": "Fill in your username and application password above, then paste the command into your terminal. Run `claude` and the FluentCRM tools will appear under MCP servers.",
+                  "endpoint": "https://yourdomain.com/wp-json/fluent-crm/mcp",
+                  "app_passwords_url": "https://yourdomain.com/wp-admin/profile.php#application-passwords-section",
+                  "is_local_dev": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

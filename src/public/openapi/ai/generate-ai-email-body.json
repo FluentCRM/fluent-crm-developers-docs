@@ -1,0 +1,226 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/ai/generate-email-body": {
+      "post": {
+        "operationId": "generateAiEmailBody",
+        "summary": "POST Generate Email Body",
+        "description": "Generate a complete email \u2014 subject suggestions, preview text, and body \u2014 from a short brief. This is what the \u201cWrite with AI\u201d button in the campaign editors calls.\n\n`tone` and `length` are validated against a fixed list and silently fall back to `friendly` / `medium` when the value is not recognised, so an unexpected value never fails the request.\n\nBody sanitisation depends on `context.output_format`: `gutenberg_blocks` is filtered with `filter_block_content()`, anything else with `wp_kses_post()`.\n\nThe call blocks for up to 45 seconds while the provider responds.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `AiPolicy::generateEmailBody()`._\n\n<!-- /fc:access -->",
+        "tags": [
+          "AI"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "prompt": {
+                    "type": "string",
+                    "description": "What the email should say. Required."
+                  },
+                  "tone": {
+                    "type": "string",
+                    "description": "Writing tone. Unrecognised values fall back to `friendly`.",
+                    "enum": [
+                      "friendly",
+                      "professional",
+                      "casual",
+                      "persuasive",
+                      "educational"
+                    ],
+                    "default": "friendly"
+                  },
+                  "audience": {
+                    "type": "string",
+                    "description": "Free-text description of who the email is for."
+                  },
+                  "length": {
+                    "type": "string",
+                    "description": "Target length. Unrecognised values fall back to `medium`.",
+                    "enum": [
+                      "short",
+                      "medium",
+                      "long"
+                    ],
+                    "default": "medium"
+                  },
+                  "cta": {
+                    "type": "string",
+                    "description": "Call to action to work into the body."
+                  },
+                  "context": {
+                    "type": "object",
+                    "description": "Editor context. Accepts an object or a JSON-encoded string.",
+                    "properties": {
+                      "output_format": {
+                        "type": "string",
+                        "description": "Requested body format. `gutenberg_blocks` returns block markup; anything else returns HTML.",
+                        "enum": [
+                          "gutenberg_blocks",
+                          "html"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "prompt"
+                ]
+              },
+              "example": {
+                "prompt": "Announce our spring sale, 20% off everything, ends Sunday.",
+                "tone": "persuasive",
+                "audience": "Existing customers who bought in the last year",
+                "length": "short",
+                "cta": "Shop the sale",
+                "context": {
+                  "output_format": "html"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Generated email content.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email_body": {
+                      "type": "string",
+                      "description": "Generated body, sanitised according to `context.output_format`."
+                    },
+                    "subject_suggestions": {
+                      "type": "array",
+                      "description": "Candidate subject lines, best first.",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "preview_text": {
+                      "type": "string",
+                      "description": "Suggested preheader text."
+                    },
+                    "provider": {
+                      "type": "string",
+                      "description": "Provider that produced the content."
+                    },
+                    "model": {
+                      "type": "string",
+                      "description": "Resolved model id."
+                    }
+                  }
+                },
+                "example": {
+                  "email_body": "<p>Spring is here \u2014 and so is 20% off everything.</p>",
+                  "subject_suggestions": [
+                    "20% off everything \u2014 ends Sunday",
+                    "Your spring sale starts now"
+                  ],
+                  "preview_text": "Ends Sunday. No code needed.",
+                  "provider": "open_ai",
+                  "model": "gpt-5.4"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "`prompt` missing, AI not configured, or the provider returned an error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

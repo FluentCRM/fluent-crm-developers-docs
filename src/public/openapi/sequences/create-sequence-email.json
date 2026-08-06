@@ -27,7 +27,7 @@
       "post": {
         "operationId": "createSequenceEmail",
         "summary": "POST Create Sequence Email",
-        "description": "Create a new email within an email sequence. The email data is passed inside an `email` object. The title is automatically set from the email_subject. Mailer settings are inherited from the parent sequence. Requires FluentCampaign Pro.",
+        "description": "Create a new email within an email sequence. The email data is passed inside an `email` object. The title is automatically set from the email_subject. Mailer settings are inherited from the parent sequence. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Sequences"
         ],
@@ -162,6 +162,10 @@
                       "_visual_builder_design": {
                         "type": "object",
                         "description": "Visual builder design data (only when `design_template` is `visual_builder`)."
+                      },
+                      "title": {
+                        "type": "string",
+                        "description": "Accepted but ignored \u2014 the server overwrites `title` with `email_subject` before saving, so the email's title always mirrors its subject."
                       }
                     }
                   }
