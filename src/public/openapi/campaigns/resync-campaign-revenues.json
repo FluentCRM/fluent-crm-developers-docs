@@ -47,6 +47,27 @@
             }
           }
         ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "auto": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "default": "no",
+                    "description": "Set to `yes` for a non-destructive recount (the campaign report sends this automatically on load). It is skipped when any stored order is not attributed in a currently active commerce plugin, never clears the stored record, and returns no `total` in either case. Omit it for the manual re-sync, which rebuilds the record from active sources and clears it when no attributed orders are found."
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Revenue re-synced successfully or no revenue/orders found.",
