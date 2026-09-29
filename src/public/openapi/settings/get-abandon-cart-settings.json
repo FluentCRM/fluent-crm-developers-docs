@@ -86,6 +86,23 @@
                     "fluent_cartOptions": {
                       "type": "object",
                       "properties": {}
+                    },
+                    "wooOptions": {
+                      "type": "object",
+                      "description": "WooCommerce status options used by abandoned-cart recovery settings.",
+                      "properties": {
+                        "all_statuses": {
+                          "type": "object",
+                          "description": "Available WooCommerce order statuses keyed by status slug."
+                        },
+                        "paid_statuses": {
+                          "type": "array",
+                          "description": "WooCommerce statuses treated as paid/recovered.",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      }
                     }
                   },
                   "additionalProperties": true

@@ -1,0 +1,177 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/whatsapp/templates/validate": {
+      "post": {
+        "operationId": "validateWhatsAppTemplate",
+        "summary": "POST Validate WhatsApp Template",
+        "description": "Validate a WhatsApp template payload without submitting it to the provider. **PRO** (requires FluentCampaign Pro WhatsApp module).\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `SMSPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro **with the SMS module enabled**. While SMS is switched off the route is not registered at all and returns a 404.\n\n<!-- /fc:access -->",
+        "tags": [
+          "WhatsApp"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Template name."
+                  },
+                  "body_text": {
+                    "type": "string",
+                    "description": "Template body text."
+                  },
+                  "header_text": {
+                    "type": "string",
+                    "description": "Optional header text."
+                  },
+                  "footer_text": {
+                    "type": "string",
+                    "description": "Optional footer text."
+                  },
+                  "buttons": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    },
+                    "description": "Template buttons."
+                  },
+                  "variables": {
+                    "type": "object",
+                    "description": "Template variable examples."
+                  }
+                },
+                "required": [
+                  "name",
+                  "body_text"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Template validation result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Blocking validation errors."
+                    },
+                    "warnings": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Non-blocking validation warnings."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed \u2014 the response message names the offending field.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

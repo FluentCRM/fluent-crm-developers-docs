@@ -23,74 +23,69 @@
     }
   ],
   "paths": {
-    "/sms/messages": {
-      "delete": {
-        "operationId": "deleteSmsMessages",
-        "summary": "DELETE Delete SMS Messages",
-        "description": "Delete multiple SMS messages by their IDs. **PRO** (requires FluentCampaign Pro SMS module).\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_delete`\n\nRoute exists only while the SMS module is enabled; the policy returns false otherwise.\n\n_Enforced by `SMSPolicy::deleteMessages()`._\n\n**Requires:** FluentCampaign Pro **with the SMS module enabled**. While SMS is switched off the route is not registered at all and returns a 404.\n\n<!-- /fc:access -->",
+    "/whatsapp/templates/sync": {
+      "post": {
+        "operationId": "syncWhatsAppTemplates",
+        "summary": "POST Sync WhatsApp Templates",
+        "description": "Sync WhatsApp templates from the configured provider into FluentCRM. **PRO** (requires FluentCampaign Pro WhatsApp module).\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `SMSPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro **with the SMS module enabled**. While SMS is switched off the route is not registered at all and returns a 404.\n\n<!-- /fc:access -->",
         "tags": [
-          "SMS"
+          "WhatsApp"
         ],
         "security": [
           {
             "ApplicationPasswords": []
           }
         ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "required": [
-                  "ids"
-                ],
-                "properties": {
-                  "ids": {
-                    "type": "array",
-                    "description": "Array of SMS message IDs to delete.",
-                    "items": {
-                      "type": "integer"
-                    }
-                  }
-                }
-              },
-              "example": {
-                "ids": [
-                  101,
-                  102,
-                  103
-                ]
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
-            "description": "Messages deleted successfully.",
+            "description": "Templates synced from the provider.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
                     "message": {
-                      "type": "string"
+                      "type": "string",
+                      "description": "Success message."
                     },
-                    "deleted_count": {
+                    "synced": {
                       "type": "integer",
-                      "description": "Number of messages actually deleted."
+                      "description": "Number of templates seen in the provider catalogue."
                     }
                   }
-                },
-                "example": {
-                  "message": "3 SMS messages deleted successfully",
-                  "deleted_count": 3
                 }
               }
             }
           },
-          "400": {
-            "description": "No SMS message IDs provided."
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed \u2014 the response message names the offending field.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }

@@ -1,0 +1,311 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/whatsapp/subscribers/{id}/messages": {
+      "get": {
+        "operationId": "getSubscriberWhatsAppMessages",
+        "summary": "GET Subscriber WhatsApp Messages",
+        "description": "Retrieve paginated WhatsApp message history for a specific subscriber/contact. **PRO** (requires FluentCampaign Pro WhatsApp module).\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `SMSPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro **with the SMS module enabled**. While SMS is switched off the route is not registered at all and returns a 404.\n\n<!-- /fc:access -->",
+        "tags": [
+          "WhatsApp"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Subscriber/contact ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Rows per page.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "filter_type",
+            "in": "query",
+            "description": "Optional UI filter key for future filtering.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated WhatsApp messages for the subscriber.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "messages": {
+                      "type": "object",
+                      "description": "Paginated result set.",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "Total number of matching rows."
+                        },
+                        "per_page": {
+                          "type": "integer",
+                          "description": "Rows per page."
+                        },
+                        "current_page": {
+                          "type": "integer",
+                          "description": "Current page number."
+                        },
+                        "last_page": {
+                          "type": "integer",
+                          "description": "Number of the final page."
+                        },
+                        "from": {
+                          "type": "integer",
+                          "description": "Index of the first row on this page."
+                        },
+                        "to": {
+                          "type": "integer",
+                          "description": "Index of the last row on this page."
+                        },
+                        "next_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "URL of the next page, or null."
+                        },
+                        "prev_page_url": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "URL of the previous page, or null."
+                        },
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/WhatsAppMessage"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The requested resource does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "WhatsAppMessage": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Message row ID."
+          },
+          "subscriber_id": {
+            "type": "integer",
+            "description": "Subscriber/contact ID."
+          },
+          "campaign_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Campaign ID when sent by a campaign."
+          },
+          "sms_type": {
+            "type": "string",
+            "description": "Message type, such as campaign, automation, incoming, or custom-whatsapp."
+          },
+          "channel": {
+            "type": "string",
+            "description": "Message channel.",
+            "enum": [
+              "whatsapp"
+            ]
+          },
+          "direction": {
+            "type": "string",
+            "description": "Direction of the message.",
+            "enum": [
+              "outbound",
+              "inbound"
+            ]
+          },
+          "mobile_number": {
+            "type": "string",
+            "description": "Recipient or sender phone number."
+          },
+          "message_content": {
+            "type": "string",
+            "description": "Stored message text."
+          },
+          "status": {
+            "type": "string",
+            "description": "Message status."
+          },
+          "delivery_status": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Provider delivery status."
+          },
+          "provider_message_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Provider message ID."
+          },
+          "template_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Template row ID for template sends."
+          },
+          "sent_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Send timestamp."
+          },
+          "delivered_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Delivery timestamp."
+          },
+          "read_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Read receipt timestamp."
+          },
+          "created_at": {
+            "type": "string",
+            "description": "Creation timestamp."
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "Update timestamp."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

@@ -1,0 +1,250 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/whatsapp/templates": {
+      "get": {
+        "operationId": "listWhatsAppTemplates",
+        "summary": "GET WhatsApp Templates",
+        "description": "List stored WhatsApp message templates and review-status counts. **PRO** (requires FluentCampaign Pro WhatsApp module).\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `SMSPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro **with the SMS module enabled**. While SMS is switched off the route is not registered at all and returns a 404.\n\n<!-- /fc:access -->",
+        "tags": [
+          "WhatsApp"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Optional provider review status filter, for example APPROVED or PENDING.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "approved_only",
+            "in": "query",
+            "description": "Return only approved templates when truthy.",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "WhatsApp templates and status counts.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "templates": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/WhatsAppTemplate"
+                      }
+                    },
+                    "supports_sync": {
+                      "type": "boolean",
+                      "description": "Whether the current provider supports template sync."
+                    },
+                    "counts": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "Total template count."
+                        },
+                        "approved": {
+                          "type": "integer",
+                          "description": "Approved template count."
+                        },
+                        "pending": {
+                          "type": "integer",
+                          "description": "Pending template count."
+                        },
+                        "rejected": {
+                          "type": "integer",
+                          "description": "Rejected template count."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "WhatsAppTemplate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Template row ID."
+          },
+          "channel": {
+            "type": "string",
+            "description": "Template channel.",
+            "enum": [
+              "whatsapp"
+            ]
+          },
+          "provider": {
+            "type": "string",
+            "description": "Provider slug."
+          },
+          "name": {
+            "type": "string",
+            "description": "Provider template name."
+          },
+          "language": {
+            "type": "string",
+            "description": "Template language code."
+          },
+          "category": {
+            "type": "string",
+            "description": "Template category."
+          },
+          "status": {
+            "type": "string",
+            "description": "Provider review status."
+          },
+          "header_text": {
+            "type": "string",
+            "description": "Header text, when present."
+          },
+          "body_text": {
+            "type": "string",
+            "description": "Template body text."
+          },
+          "footer_text": {
+            "type": "string",
+            "description": "Footer text, when present."
+          },
+          "buttons": {
+            "type": "array",
+            "description": "Template buttons.",
+            "items": {
+              "type": "object"
+            }
+          },
+          "variables": {
+            "type": "object",
+            "description": "Template variable examples or defaults."
+          },
+          "provider_template_id": {
+            "type": "string",
+            "description": "Provider-side template ID."
+          },
+          "rejection_reason": {
+            "type": "string",
+            "description": "Provider rejection reason, when present."
+          },
+          "last_synced_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Last provider sync timestamp."
+          },
+          "created_by": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "WordPress user ID that created the row."
+          },
+          "created_at": {
+            "type": "string",
+            "description": "Creation timestamp."
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "Update timestamp."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}
