@@ -205,7 +205,13 @@
                           "sent": 1195,
                           "failed": 5,
                           "clicks": 320,
-                          "views": 840
+                          "views": 840,
+                          "revenue": {
+                            "label": "Revenue (usd)",
+                            "total": "1,240.00",
+                            "currency": "usd",
+                            "orders": 12
+                          }
                         },
                         "next_step": "3",
                         "labels": [

@@ -127,6 +127,22 @@
                     ],
                     "description": "If `yes`, forces status update on existing contacts."
                   },
+                  "existing_only": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "description": "If `yes`, only contacts already in the CRM are updated; rows for other emails are ignored and returned in `not_in_crm_contacts`. Implies `update`. Default `no`."
+                  },
+                  "keep_existing_data": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "description": "If `yes`, a mapped field on an existing contact is only written when its current value is empty, so the file cannot overwrite names or other data already in the CRM. Applies to contact fields, a mapped `full_name`, and custom fields; `status` follows `new_status` / `force_update_status`. Default `no`."
+                  },
                   "delimiter": {
                     "type": "string",
                     "enum": [
@@ -248,6 +264,18 @@
                     "offset": {
                       "type": "integer",
                       "description": "Record offset for this batch."
+                    },
+                    "not_in_crm": {
+                      "type": "integer",
+                      "description": "Rows in this chunk ignored because the email is not in the CRM (only with `existing_only=yes`)."
+                    },
+                    "not_in_crm_contacts": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "format": "email"
+                      },
+                      "description": "Emails in this chunk ignored because they are not in the CRM (only with `existing_only=yes`)."
                     }
                   }
                 },
