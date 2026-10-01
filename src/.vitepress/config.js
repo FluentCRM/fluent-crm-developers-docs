@@ -189,6 +189,10 @@ export default withMermaid(defineConfig({
                         link: '/modules/contact-profile-section',
                     },
                     {
+                        text: 'Admin Top Menu',
+                        link: '/modules/admin-menu',
+                    },
+                    {
                         text: 'Extending REST API',
                         link: '/modules/extending-rest-api',
                     },
