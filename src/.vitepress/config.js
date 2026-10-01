@@ -191,6 +191,10 @@ export default withMermaid(defineConfig({
                         link: '/modules/contact-profile-section',
                     },
                     {
+                        text: 'Admin Top Menu',
+                        link: '/modules/admin-menu',
+                    },
+                    {
                         text: 'Event Tracking',
                         link: '/modules/event-tracking',
                     }

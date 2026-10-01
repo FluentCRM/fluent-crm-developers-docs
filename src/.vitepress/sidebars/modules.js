@@ -31,6 +31,7 @@ export default [
             { text: 'Event Tracking', link: '/modules/event-tracking' },
             { text: 'Contact Profile Section', link: '/modules/contact-profile-section' },
             { text: 'Company Profile Section', link: '/modules/company-profile-section' },
+            { text: 'Admin Top Menu', link: '/modules/admin-menu' },
         ]
     }
 ]

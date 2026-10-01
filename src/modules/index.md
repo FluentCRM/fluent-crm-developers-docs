@@ -18,6 +18,7 @@ FluentCRM is built to be extended from a separate plugin. This page lists every 
 | Add a goal contacts must reach | Custom benchmark | [Benchmark](/modules/benchmark) |
 | Add a tab to the contact profile | Profile section | [Contact Profile Section](/modules/contact-profile-section) |
 | Add a tab to the company profile | Profile section | [Company Profile Section](/modules/company-profile-section) |
+| Add an item to the FluentCRM top menu | Menu hook + optional Vue screen | [Admin Top Menu](/modules/admin-menu) |
 | Add a dynamic placeholder to emails | Smart code | [Smart Codes](/modules/smart-code) |
 | Record custom contact activity | Event tracking | [Event Tracking](/modules/event-tracking) |
 | Add my own REST endpoints | Routes, controllers, policies | [Extending the REST API](/rest-api/extending/) |
