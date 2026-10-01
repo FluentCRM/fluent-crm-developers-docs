@@ -60,7 +60,7 @@ function rawMarkdownPlugin() {
 }
 
 export default defineConfig({
-    ignoreDeadLinks: true,
+    ignoreDeadLinks: false,
 
     // Keep base64 for client-side "Copy for LLM"
     transformPageData(pageData) {

@@ -92,10 +92,10 @@ FluentCRM provides 200+ hooks for extending functionality:
 The REST API provides full programmatic access to all CRM data. All endpoints require authentication.
 
 - **[Authentication](/rest-api/authentication)** — Cookie-based (wp_nonce) or Application Passwords
-- **[Contacts API](/rest-api/contacts)** — CRUD operations on subscribers
-- **[Campaigns API](/rest-api/campaigns)** — Create and manage email campaigns
-- **[Tags](/rest-api/tags) & [Lists](/rest-api/lists)** — Manage segmentation
-- **[Webhooks](/rest-api/webhooks)** — Inbound data via webhook endpoints
+- **[Contacts API](/rest-api/operations/contacts/list-contacts)** — CRUD operations on subscribers
+- **[Campaigns API](/rest-api/operations/campaigns/list-campaigns)** — Create and manage email campaigns
+- **[Tags](/rest-api/operations/tags/list-tags) & [Lists](/rest-api/operations/lists/list-lists)** — Manage segmentation
+- **[Webhooks](/rest-api/operations/webhooks/list-webhooks)** — Inbound data via webhook endpoints
 
 See the full [REST API Reference](/rest-api/).
 
@@ -123,7 +123,7 @@ FluentCRM includes helper classes and global functions:
 - **[Global Functions](/global-functions/)** — `fluentcrm_get_option()`, `fluentCrmApi()`, contact creation helpers
 - **[Arr Helper](/helpers/arr)** — Array manipulation utilities
 - **[Str Helper](/helpers/str)** — String manipulation utilities
-- **[Service Helper](/helpers/service_helper)** — CRM service utilities
+- **[Core Helper](/helpers/helper)** — Contact, email, SmartCode and template utilities
 
 ## Development Setup
 
