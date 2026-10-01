@@ -180,6 +180,57 @@ add_filter('fluentcrm_profile_sections', function($sections) {
 
 ---
 
+### `fluent_crm/profile_section_{$sectionId}`
+
+<Badge type="tip" text="Since 3.2.1" />
+
+Supplies the content of a custom contact profile section when its tab is opened. `{$sectionId}` is the section ID sent as `section_provider` by the profile screen.
+
+::: warning Deprecated predecessor
+`fluencrm_profile_section_{$sectionId}` (note the missing "t" in the prefix) still runs first through `apply_filters_deprecated()` and logs a deprecation notice. Move existing callbacks to this name.
+:::
+
+**Parameters**
+- `$content` Array - `heading` (string) and `content_html` (string); both start empty
+- `$subscriber` [Subscriber Model](/database/models/subscriber)
+
+**Usage:**
+```php
+add_filter('fluent_crm/profile_section_my_section', function ($content, $subscriber) {
+    return [
+        'heading'      => __('Memberships', 'my-plugin'),
+        'content_html' => '<p>' . esc_html($subscriber->email) . '</p>',
+    ];
+}, 10, 2);
+```
+
+::: danger Escape your output
+`content_html` is rendered as raw HTML in the admin UI. Escape any subscriber-authored data with `esc_html()` or `wp_kses_post()` before returning it.
+:::
+
+**Source:** `app/Http/Controllers/SubscriberController.php`
+
+---
+
+### `fluent_crm/profile_section_save_{$sectionId}`
+
+<Badge type="tip" text="Since 3.2.1" />
+
+Handles saving data posted from a custom profile section. Return a truthy value on success; a falsy return makes the request fail with an error.
+
+::: warning Deprecated predecessor
+`fluencrm_profile_section_save_{$sectionId}` still runs first through `apply_filters_deprecated()` and logs a deprecation notice.
+:::
+
+**Parameters**
+- `$response` Mixed - starts as an empty string (or whatever a legacy callback returned)
+- `$data` Array - the `data` field of the request
+- `$subscriber` [Subscriber Model](/database/models/subscriber)
+
+**Source:** `app/Http/Controllers/SubscriberController.php`
+
+---
+
 ### `fluent_crm/subscriber_top_widgets`
 
 Filter the array of "top" widgets shown above the timeline on a contact profile. The incoming array
