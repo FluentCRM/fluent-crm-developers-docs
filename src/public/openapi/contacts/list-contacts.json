@@ -54,7 +54,7 @@
           {
             "name": "search",
             "in": "query",
-            "description": "Smart search. Every word must appear in the first name, last name or email (word order does not matter). Free text is detected as an email (contains `@`; a full address is an exact match), a phone number (6+ digits, formatting ignored) or a contact ID (`#123`). Quoted text (`\"timothy cook\"`) matches a phrase in the full name or email. Scope to one field with `key:value` or `key:\"quoted value\"`; keys: `id` (comma-separated IDs), `email`, `name`, `first`/`first_name`, `last`/`last_name`, `phone`, `address`, `city`, `state`, `zip`/`postal_code`, `country`, `source`, or any contact custom-field slug. All terms combine with AND. An unknown key is searched as plain text and reported in `search_meta.unknown`.",
+            "description": "Smart search. Every word must appear in the first name, last name or email (word order does not matter). Free text is detected as an email (contains `@`; a full address is an exact match), a number of 6+ digits (matched against phone, formatting ignored, and email) or a contact ID (`#123`). Quoted text (`\"timothy cook\"`) matches a phrase in the full name or email. Scope to one field with `key:value`, `key:\"quoted value\"` or `key: value`; keys: `id` (comma-separated IDs), `email`, `name`, `first`/`first_name`, `last`/`last_name`, `phone`, `address`, `city`, `state`, `zip`/`postal_code`, `country`, `source`, or any contact custom-field slug. A key with no value matches no contacts. All terms combine with AND; at most 20 terms are read. An unknown key is searched as plain text and reported in `search_meta.unknown`.",
             "required": false,
             "schema": {
               "type": "string"
@@ -63,7 +63,7 @@
           {
             "name": "sort_by",
             "in": "query",
-            "description": "Column to sort by, or `relevance` for best match first (ties by newest). With a `search` and the default `id` + `DESC`, results are ordered by relevance; any other column sort is honoured as given.",
+            "description": "Column to sort by, or `relevance` to order a search by best match (exact email, exact full name in either order, name prefix, then the rest; ties newest first). `relevance` is opt-in: `id` always means id order. Without a search, or for one-character, ID-only and field-scoped searches, `relevance` falls back to newest first.",
             "required": false,
             "schema": {
               "type": "string",
@@ -294,6 +294,10 @@
                       ],
                       "description": "How `search` was understood, or `null` when there is no search.",
                       "properties": {
+                        "custom_fields": {
+                          "type": "boolean",
+                          "description": "True when free text was also matched against custom-field values (`search_custom_fields` on and free text present)."
+                        },
                         "mode": {
                           "type": "string",
                           "enum": [
