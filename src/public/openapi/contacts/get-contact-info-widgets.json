@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getContactInfoWidgets",
         "summary": "GET Get Contact Info Widgets",
-        "description": "Retrieve info widgets for a contact's profile page. Returns top widgets (like commerce stats) and other widgets registered by plugins. Optionally fetches a single specific widget when `by_widget` is provided.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts`\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Retrieve info widgets for a contact's profile page. Returns top widgets (like commerce stats) and other widgets registered by plugins. Optionally fetches a single specific widget when `by_widget` is provided.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts` or `fcrm_manage_contacts` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Contacts"
         ],

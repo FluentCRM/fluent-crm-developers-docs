@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getFunnelAllActivities",
         "summary": "GET Get All Funnel Activities",
-        "description": "Retrieve a paginated list of all funnel subscriber activities across all funnels. Each activity includes the subscriber, funnel, sequences, and metrics. Supports filtering by search and status.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Retrieve a paginated list of all funnel subscriber activities across all funnels. Each activity includes the subscriber, funnel, sequences, and metrics. Supports filtering by search and status.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels` or `fcrm_write_funnels` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],

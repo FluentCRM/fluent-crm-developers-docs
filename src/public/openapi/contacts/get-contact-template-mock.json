@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getContactTemplateMock",
         "summary": "GET Get Contact Template Mock",
-        "description": "Get a template mock/scaffold for composing a custom email to a contact. Returns default email campaign structure with empty fields ready to be filled.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts`\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Get a template mock/scaffold for composing a custom email to a contact. Returns default email campaign structure with empty fields ready to be filled.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts` or `fcrm_manage_contacts` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Contacts"
         ],

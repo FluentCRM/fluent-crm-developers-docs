@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getContactFormSubmissions",
         "summary": "GET Get Contact Form Submissions",
-        "description": "Retrieve form submissions for a contact from a specific form provider. The data is fetched via the `fluentcrm_get_form_submissions_{provider}` filter hook, so the response structure depends on the active form integration (e.g., Fluent Forms).\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts`\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Retrieve form submissions for a contact from a specific form provider. The data is fetched via the `fluentcrm_get_form_submissions_{provider}` filter hook, so the response structure depends on the active form integration (e.g., Fluent Forms).\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts` or `fcrm_manage_contacts` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Contacts"
         ],

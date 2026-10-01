@@ -616,7 +616,7 @@ Individual messages inside a thread.
 
 ### fc_sms_campaigns
 
-SMS campaigns.
+Messaging campaigns. Despite the name this table is still live: the `MessageCampaign` model stores campaigns for **both** channels here, with the channel kept on the row.
 
 | Column | Type | Null | Default | Extra |
 |---|---|---|---|---|
@@ -641,7 +641,11 @@ SMS campaigns.
 
 ### fc_sms_messages
 
-SMS messages sent for a campaign.
+::: warning Legacy table
+Since Messaging (3.2.0), new messages are written to [`fc_message_threads`](#fc-message-threads) and [`fc_messages`](#fc-messages). This table is the source for the one-time, batched migration (`GET`/`POST /messaging/migration`) and is kept so history is not lost; the `LegacyMessage` model reads it. Do not write to it.
+:::
+
+SMS messages sent for a campaign (legacy).
 
 | Column | Type | Null | Default | Extra |
 |---|---|---|---|---|

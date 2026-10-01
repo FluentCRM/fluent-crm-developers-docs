@@ -27,7 +27,7 @@
       "post": {
         "operationId": "draftCampaignRecipients",
         "summary": "POST Draft Campaign Recipients",
-        "description": "Save recipient selection settings for a campaign and calculate the estimated recipient count. Supports filtering by list/tag, dynamic segment, or advanced filters. Clears any previously processed campaign emails and resets the campaign to draft status.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Save recipient selection settings for a campaign and calculate the estimated recipient count. Supports filtering by list/tag, dynamic segment, or advanced filters. Clears any previously processed campaign emails and resets the campaign to draft status.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Campaigns"
         ],

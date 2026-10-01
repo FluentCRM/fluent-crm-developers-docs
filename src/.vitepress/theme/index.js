@@ -2,6 +2,8 @@ import DefaultTheme from 'vitepress/theme'
 import ExplainBlock from '../components/ExplainBlock.vue'
 import LlmBar from '../components/LlmBar.vue'
 import ZoomBox from '../components/ZoomBox.vue'
+import ApiSiteBar from '../components/ApiSiteBar.vue'
+import { getSite, rewriteApiUrl } from './apiSite.js'
 import { theme, useOpenapi } from 'vitepress-openapi/client'
 import 'vitepress-openapi/dist/style.css'
 import './vars.css'
@@ -13,7 +15,7 @@ export default {
     extends: DefaultTheme,
     Layout() {
         return h(DefaultTheme.Layout, null, {
-            'doc-before': () => h(LlmBar)
+            'doc-before': () => [h(LlmBar), h(ApiSiteBar)]
         })
     },
     enhanceApp({ app, router, siteData }) {
@@ -24,16 +26,18 @@ export default {
         theme.enhanceApp({ app, router, siteData })
 
         if (typeof window !== 'undefined') {
-            // Intercept fetch for playground — rewrite server URL and handle auth
+            // Intercept fetch for playground — point requests at the reader's own
+            // site (see apiSite.js) and turn a bare "user:app-password" into Basic auth.
             const originalFetch = window.fetch
             window.fetch = function (...args) {
                 let [input, init] = args
 
                 if (typeof input === 'string' && input.includes('/wp-json/fluent-crm/v2')) {
-                    const customServer = localStorage.getItem('fluentcrm-api-server')
-                    if (customServer) {
-                        input = input.replace(/https?:\/\/[^/]+/, customServer.replace(/\/$/, ''))
+                    const site = getSite()
+                    if (!site && /\{website\}|%7Bwebsite%7D|YourWebsite\.com/i.test(input)) {
+                        return Promise.reject(new TypeError('Enter your website in the "Try it on your website" box above the request first.'))
                     }
+                    input = rewriteApiUrl(input, site)
 
                     if (init?.headers) {
                         const headers = new Headers(init.headers)

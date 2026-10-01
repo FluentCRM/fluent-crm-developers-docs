@@ -27,7 +27,7 @@
       "get": {
         "operationId": "listSequences",
         "summary": "GET List Sequences",
-        "description": "Retrieve a paginated list of email sequences. Optionally include statistics (email count, subscriber count, revenue) for each sequence. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "Retrieve a paginated list of email sequences. Optionally include statistics (email count, subscriber count, revenue) for each sequence. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Sequences"
         ],

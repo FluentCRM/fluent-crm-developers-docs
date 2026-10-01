@@ -27,7 +27,7 @@
       "delete": {
         "operationId": "deleteSmartLink",
         "summary": "DELETE Delete Smart Link",
-        "description": "Permanently delete a smart link by its ID. The short URL will no longer redirect contacts. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contacts`\n\n_Enforced by `SmartLinksPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "Permanently delete a smart link by its ID. The short URL will no longer redirect contacts. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings` or `fcrm_manage_contacts` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SmartLinksPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Smart Links"
         ],

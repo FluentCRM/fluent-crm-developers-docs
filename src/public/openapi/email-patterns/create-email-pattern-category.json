@@ -27,7 +27,7 @@
       "post": {
         "operationId": "createEmailPatternCategory",
         "summary": "POST Create Pattern Category",
-        "description": "Create a pattern category, or return the existing one when the slug already exists \u2014 the call is idempotent, so a repeat request is safe and returns the original record rather than an error.\n\nThe slug is derived from `name` via `sanitize_title()`. The response is a bare WordPress-term-shaped object with no `message` envelope.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `EmailPatternPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Create a pattern category, or return the existing one when the slug already exists \u2014 the call is idempotent, so a repeat request is safe and returns the original record rather than an error.\n\nThe slug is derived from `name` via `sanitize_title()`. The response is a bare WordPress-term-shaped object with no `message` envelope.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `EmailPatternPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Email Patterns"
         ],

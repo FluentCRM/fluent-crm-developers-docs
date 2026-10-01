@@ -1,3 +1,8 @@
+---
+title: FluentCRM CLI
+description: "WP-CLI commands for FluentCRM: syncing, sending emails, license management and automation simulation."
+---
+
 # FluentCRM CLI
 
 <Badge type="tip" vertical="top" text="FluentCRM Core" /> <Badge type="warning" vertical="top" text="Advanced" />
@@ -62,8 +67,12 @@ wp fluent_crm reset_db
 
 Sends pending campaign emails via CLI, bypassing cron/Action Scheduler. Designed for high-volume sending on servers with adequate RAM (8GB+ recommended). Requires at least 500 pending emails to start.
 
+::: warning Needs the multi-threading experiment
+The command only runs when **Multi-threaded email sending** is enabled under Settings → Experimental. With it off, `cli_send` exits with code 1 without sending anything.
+:::
+
 ```bash
-wp fluent_crm cli_send [--force=yes] [--silent=yes] [--run_time=<seconds>] [--offset=<count>] [--min_pending=<count>]
+wp fluent_crm cli_send [--force=yes] [--silent=yes] [--run_time=<seconds>] [--modulo=<n>] [--remainder=<n>] [--min_pending=<count>] [--option_key=<key>]
 ```
 
 | Argument | Default | Description |
@@ -71,7 +80,9 @@ wp fluent_crm cli_send [--force=yes] [--silent=yes] [--run_time=<seconds>] [--of
 | `--force` | — | Skip confirmation prompt |
 | `--silent` | — | Suppress output (useful for cron scripts) |
 | `--run_time` | `50` | Max seconds to run before stopping |
-| `--offset` | `200` | Where in the pending queue this worker starts reading. Used to spread multiple parallel workers across the queue so they don't compete for the same emails (the per-batch size itself is fixed internally) |
+| `--modulo` | `2` | Partition size: this worker claims rows where `id % modulo = remainder`. Maximum 100. See the tip below for running several workers |
+| `--remainder` | `0` | Which partition this worker owns. Must be **even** (the web worker owns the odd ids) |
+| `--offset` | — | **Deprecated and ignored.** Use `--modulo` / `--remainder` |
 | `--min_pending` | `300` | Stop when pending count drops below this |
 | `--option_key` | `fluentcrm_is_sending_cli_emails` | WordPress option key used as the mutex lock. Give each parallel worker a unique value so they run independently |
 
@@ -82,7 +93,7 @@ wp fluent_crm cli_send [--force=yes] [--silent=yes] [--run_time=<seconds>] [--of
 ```
 
 ::: tip Running multiple senders in parallel
-To send faster, run several workers at once — each with a unique `--option_key` and a staggered `--offset`. Emails are claimed atomically, so workers never send duplicates. See [Email Sending Speed](/modules/email-sending-speed#step-3-parallel-sending-with-wp-cli-high-volume) for a complete cron-based setup and how to choose the number of workers.
+To send faster, run several workers at once — each with a unique `--option_key` and its own partition: for N workers use `--modulo=2N` with a distinct even `--remainder` each (N=2 → `4/0` and `4/2`; N=3 → `6/0`, `6/2`, `6/4`). Emails are claimed atomically, so workers never send duplicates. See [Email Sending Speed](/modules/email-sending-speed#step-3-parallel-sending-with-wp-cli-high-volume) for a complete cron-based setup and how to choose the number of workers.
 :::
 
 ---

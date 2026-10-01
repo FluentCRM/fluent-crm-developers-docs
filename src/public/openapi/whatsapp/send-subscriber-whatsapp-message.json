@@ -27,7 +27,7 @@
       "post": {
         "operationId": "sendSubscriberWhatsAppMessage",
         "summary": "POST Send Subscriber WhatsApp Message",
-        "description": "Send a one-off WhatsApp session message or approved template to a subscriber/contact. Session messages require an open 24-hour WhatsApp window. **PRO** (requires FluentCampaign Pro WhatsApp module).\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `SMSPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro **with the SMS module enabled**. While SMS is switched off the route is not registered at all and returns a 404.\n\n<!-- /fc:access -->",
+        "description": "Send one WhatsApp message to a contact right now through the configured provider, and record it on the contact's thread (a failed attempt is recorded as `failed` with the provider's error in meta). Checks, in order: contact exists, has a `phone`, and has not opted out / bounced on WhatsApp (`fcrm_manage_emails` callers still cannot override consent), then a configured driver.\n\n**Two modes, chosen by `message_type`** (default `session`; any value other than `template` is treated as session):\n- `template`: requires an APPROVED template of the **current provider**, looked up by `template_name` (+ optional `template_language` to pin a variant). The provider must support templates. `template_variables` maps each body placeholder position to a FluentCRM smartcode string (for example `{\"1\": \"{{contact.first_name|there}}\"}`) which is resolved for this contact. It is refused with 422 when a placeholder is unmapped or resolves to empty with no fallback, or when the template has a header variable or a dynamic-URL button (not supported yet). Works at any time, inside or outside the window.\n- `session`: free-form `message` text (smartcodes are parsed). Allowed only while the 24-hour window is open; otherwise 422 `The 24-hour reply window is closed for this contact. Send an approved template instead.`\n\nAll failures are 422 with a `message`. Note: the session branch does not reject an empty `message`.\n\n**PRO** (FluentCampaign Pro). The route exists only while the Messaging module (the `messaging_module` experimental setting) is switched on, and the policy answers 403 unless at least one channel (SMS or WhatsApp) is active.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `MessagePolicy::sendCustomMessage()`._\n\n**Requires:** FluentCampaign Pro **with the Messaging module enabled**. While no messaging channel (SMS or WhatsApp) is switched on the route is not registered at all and returns a 404.\n\n<!-- /fc:access -->",
         "tags": [
           "WhatsApp"
         ],
@@ -40,7 +40,7 @@
           {
             "name": "id",
             "in": "path",
-            "description": "Subscriber/contact ID.",
+            "description": "Contact (subscriber) ID.",
             "required": true,
             "schema": {
               "type": "integer"
@@ -56,47 +56,49 @@
                 "properties": {
                   "message_type": {
                     "type": "string",
+                    "description": "Send mode.",
                     "enum": [
                       "session",
                       "template"
                     ],
-                    "description": "Send a free-form session message or an approved template.",
                     "default": "session"
                   },
                   "message": {
                     "type": "string",
-                    "description": "Session message body."
+                    "description": "Free-form body for session sends."
                   },
                   "template_name": {
                     "type": "string",
-                    "description": "Approved provider template name."
+                    "description": "Approved template name (template mode)."
                   },
                   "template_language": {
                     "type": "string",
-                    "description": "Template language variant."
+                    "description": "Template language variant, for example en_US (template mode, optional)."
                   },
-                  "components": {
-                    "type": "array",
-                    "items": {
-                      "type": "object"
-                    },
-                    "description": "Provider template components/parameters."
+                  "template_variables": {
+                    "type": "object",
+                    "description": "Placeholder position to smartcode map (template mode).",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
                   }
-                },
-                "required": [
-                  "message_type"
-                ]
+                }
               },
               "example": {
-                "message_type": "session",
-                "message": "Thanks for reaching out. How can we help?"
+                "message_type": "template",
+                "template_name": "order_update",
+                "template_language": "en_US",
+                "template_variables": {
+                  "1": "{{contact.first_name|there}}",
+                  "2": "#1001"
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Message sent through the configured WhatsApp provider.",
+            "description": "Message sent and recorded.",
             "content": {
               "application/json": {
                 "schema": {
@@ -104,8 +106,35 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "Success message."
+                      "description": "Message sent."
+                    },
+                    "wa_message": {
+                      "$ref": "#/components/schemas/WhatsAppMessage",
+                      "description": "The stored message row, so the panel can reconcile its optimistic bubble by id."
                     }
+                  }
+                },
+                "example": {
+                  "message": "Message sent.",
+                  "wa_message": {
+                    "id": 91,
+                    "thread_id": 7,
+                    "direction": "outbound",
+                    "content": "Hi {{1}}, your order {{2}} has shipped.",
+                    "message_type": "text",
+                    "ref_type": "custom",
+                    "ref_id": null,
+                    "status": "sent",
+                    "provider_message_id": "wamid.HBgM...",
+                    "sent_at": "2026-10-01 08:00:00",
+                    "timestamp": "2026-10-01T08:00:00+00:00",
+                    "meta": {
+                      "template_id": 12
+                    },
+                    "media": [],
+                    "created_by": 1,
+                    "created_at": "2026-10-01 08:00:00",
+                    "updated_at": "2026-10-01 08:00:00"
                   }
                 }
               }
@@ -142,7 +171,7 @@
             }
           },
           "422": {
-            "description": "Validation failed \u2014 the response message names the offending field.",
+            "description": "Contact not found, no phone number, not opted in, provider not configured, no approved template, unmapped/empty variable, window closed, or the provider rejected the send.",
             "content": {
               "application/json": {
                 "schema": {
@@ -176,6 +205,168 @@
                 "description": "HTTP status code"
               }
             }
+          }
+        }
+      },
+      "WhatsAppMessage": {
+        "type": "object",
+        "description": "A row of fc_messages with the extra fields the profile chat panel reads.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Message ID."
+          },
+          "thread_id": {
+            "type": "integer",
+            "description": "Conversation thread ID (fc_message_threads)."
+          },
+          "direction": {
+            "type": "string",
+            "description": "Message direction.",
+            "enum": [
+              "outbound",
+              "inbound"
+            ]
+          },
+          "content": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Stored message text."
+          },
+          "message_content": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Alias of content for the chat panel."
+          },
+          "message_type": {
+            "type": "string",
+            "description": "template when the row recorded a template send, otherwise text.",
+            "enum": [
+              "template",
+              "text"
+            ]
+          },
+          "template_name": {
+            "type": "string",
+            "description": "Template name for template sends, otherwise an empty string."
+          },
+          "ref_type": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "campaign, automation, inbox, custom, or null for inbound messages."
+          },
+          "ref_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Campaign or automation ID when ref_type points at one."
+          },
+          "status": {
+            "type": "string",
+            "description": "Queue/delivery status.",
+            "enum": [
+              "scheduling",
+              "scheduled",
+              "pending",
+              "processing",
+              "sent",
+              "delivered",
+              "read",
+              "failed",
+              "cancelled",
+              "received"
+            ]
+          },
+          "provider_message_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Provider message ID."
+          },
+          "scheduled_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Scheduled send time (site timezone)."
+          },
+          "sent_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Send time (site timezone)."
+          },
+          "timestamp": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "ISO 8601 timestamp with offset of sent_at, falling back to created_at."
+          },
+          "meta": {
+            "type": "object",
+            "description": "Stored metadata: template_id, template_name, attachments, error_message and so on."
+          },
+          "media": {
+            "type": "array",
+            "description": "Attachments lifted out of meta.attachments.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "description": "Attachment type, such as image or document."
+                },
+                "url": {
+                  "type": "string",
+                  "description": "Local URL; empty when the file was not downloaded to the site."
+                },
+                "mime_type": {
+                  "type": "string",
+                  "description": "MIME type."
+                },
+                "filename": {
+                  "type": "string",
+                  "description": "File name when known."
+                },
+                "caption": {
+                  "type": "string",
+                  "description": "Caption."
+                },
+                "filesize": {
+                  "type": "integer",
+                  "description": "Size in bytes."
+                },
+                "stored": {
+                  "type": "boolean",
+                  "description": "Whether the file is stored locally."
+                }
+              }
+            }
+          },
+          "created_by": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "WordPress user who sent it, when outbound and manual."
+          },
+          "created_at": {
+            "type": "string",
+            "description": "Creation timestamp."
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "Update timestamp."
           }
         }
       }

@@ -27,7 +27,7 @@
       "post": {
         "operationId": "previewCampaignEmailHtml",
         "summary": "POST Preview Campaign Email HTML",
-        "description": "Generate a rendered HTML preview of a campaign email. Can preview either a saved campaign (by campaign_id) or unsaved campaign data passed in the request body. SmartCodes and template rendering are applied. Optionally preview as a specific contact.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Generate a rendered HTML preview of a campaign email. Can preview either a saved campaign (by campaign_id) or unsaved campaign data passed in the request body. SmartCodes and template rendering are applied. Optionally preview as a specific contact.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Campaigns"
         ],

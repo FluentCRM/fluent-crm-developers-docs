@@ -27,7 +27,7 @@
       "post": {
         "operationId": "syncFunnelNewSteps",
         "summary": "POST Sync Funnel New Steps",
-        "description": "Sync completed subscribers to newly added steps in a funnel. Requires the funnel to be in `published` status and FluentCRM Pro to be active. Re-enrolls completed subscribers that stopped before the latest steps.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_write_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Sync completed subscribers to newly added steps in a funnel. Requires the funnel to be in `published` status and FluentCRM Pro to be active. Re-enrolls completed subscribers that stopped before the latest steps.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels` or `fcrm_write_funnels` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],

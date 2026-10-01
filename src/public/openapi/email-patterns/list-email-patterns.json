@@ -27,7 +27,7 @@
       "get": {
         "operationId": "listEmailPatterns",
         "summary": "GET List Email Patterns",
-        "description": "List saved email block patterns, newest first.\n\nNote the response envelope: `patterns` carries only `data` and `total`, **not** the full paginator. Page through it with `page` and `per_page` and use `total` to work out how many pages there are.\n\n`search` matches against the serialised pattern value, so it hits the title, content, category, and description at once. LIKE wildcards in the term are escaped and matched literally.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `EmailPatternPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "List saved email block patterns, newest first.\n\nNote the response envelope: `patterns` carries only `data` and `total`, **not** the full paginator. Page through it with `page` and `per_page` and use `total` to work out how many pages there are.\n\n`search` matches against the serialised pattern value, so it hits the title, content, category, and description at once. LIKE wildcards in the term are escaped and matched literally.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `EmailPatternPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Email Patterns"
         ],

@@ -27,7 +27,7 @@
       "post": {
         "operationId": "unScheduleCampaign",
         "summary": "POST Un-Schedule Campaign",
-        "description": "Cancel a scheduled campaign and revert it to draft status. Only campaigns with status `scheduled`, `pending-scheduled`, or `processing` (before the scheduled time) can be un-scheduled. All associated campaign emails are deleted.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Cancel a scheduled campaign and revert it to draft status. Only campaigns with status `scheduled`, `pending-scheduled`, or `processing` (before the scheduled time) can be un-scheduled. All associated campaign emails are deleted.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Campaigns"
         ],

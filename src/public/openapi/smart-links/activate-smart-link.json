@@ -27,7 +27,7 @@
       "post": {
         "operationId": "activateSmartLink",
         "summary": "POST Activate Smart Links Module",
-        "description": "Activate the Smart Links module by running database migrations to create the `fc_smart_links` table. This must be called before using any other Smart Links endpoints if the module has not been activated yet. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contacts`\n\n_Enforced by `SmartLinksPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "Activate the Smart Links module by running database migrations to create the `fc_smart_links` table. This must be called before using any other Smart Links endpoints if the module has not been activated yet. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings` or `fcrm_manage_contacts` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SmartLinksPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Smart Links"
         ],

@@ -1,3 +1,8 @@
+---
+title: ContactsQuery Helper
+description: "Build filtered, sorted and paginated contact queries with the ContactsQuery service."
+---
+
 # Contacts Query
 
 `FluentCrm\App\Services\ContactsQuery`

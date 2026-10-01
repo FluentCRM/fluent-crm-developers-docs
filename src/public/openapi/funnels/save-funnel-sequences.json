@@ -27,7 +27,7 @@
       "post": {
         "operationId": "saveFunnelSequences",
         "summary": "POST Save Funnel Sequences",
-        "description": "Save or update the sequences (action steps) for a specific automation funnel. This replaces all existing sequences with the provided data and returns the formatted sequence tree with conditional branches.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_write_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Save or update the sequences (action steps) for a specific automation funnel. This replaces all existing sequences with the provided data and returns the formatted sequence tree with conditional branches.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels` or `fcrm_write_funnels` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],

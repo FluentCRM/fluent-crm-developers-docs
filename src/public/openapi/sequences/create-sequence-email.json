@@ -27,7 +27,7 @@
       "post": {
         "operationId": "createSequenceEmail",
         "summary": "POST Create Sequence Email",
-        "description": "Create a new email within an email sequence. The email data is passed inside an `email` object. The title is automatically set from the email_subject. Mailer settings are inherited from the parent sequence. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "Create a new email within an email sequence. The email data is passed inside an `email` object. The title is automatically set from the email_subject. Mailer settings are inherited from the parent sequence. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Sequences"
         ],

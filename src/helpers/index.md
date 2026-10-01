@@ -1,3 +1,8 @@
+---
+title: Helper Classes
+description: "Overview of the helper classes FluentCRM exposes to developers."
+---
+
 # Helper Classes
 
 FluentCRM provides several service classes that you can use to build advanced functionalities in your plugin or addon. These classes are used extensively by FluentCRM itself and are available for third-party developers.

@@ -27,7 +27,7 @@
       "post": {
         "operationId": "forceAdvanceFunnelSubscriber",
         "summary": "POST Force Advance Funnel Subscriber",
-        "description": "Force a subscriber to advance to a specific sequence step in the funnel. The subscriber must be in `active` or `waiting` status (not `completed`, `cancelled`, or `pending`). If the subscriber is currently waiting on a benchmark, the benchmark is marked as skipped. The subscriber is then advanced to the target sequence and processing continues.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_write_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Force a subscriber to advance to a specific sequence step in the funnel. The subscriber must be in `active` or `waiting` status (not `completed`, `cancelled`, or `pending`). If the subscriber is currently waiting on a benchmark, the benchmark is marked as skipped. The subscriber is then advanced to the target sequence and processing continues.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels` or `fcrm_write_funnels` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],

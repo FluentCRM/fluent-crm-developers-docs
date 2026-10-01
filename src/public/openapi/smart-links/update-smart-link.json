@@ -27,7 +27,7 @@
       "put": {
         "operationId": "updateSmartLink",
         "summary": "PUT Update Smart Link",
-        "description": "Update an existing smart link's title, target URL, actions, and notes. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contacts`\n\n_Enforced by `SmartLinksPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "Update an existing smart link's title, target URL, actions, and notes. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings` or `fcrm_manage_contacts` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SmartLinksPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Smart Links"
         ],

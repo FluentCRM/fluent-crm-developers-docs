@@ -1,5 +1,11 @@
 export default [
     {
+        text: 'Hooks Reference',
+        items: [
+            { text: 'Overview', link: '/hooks/' },
+        ]
+    },
+    {
         text: 'Action Hooks',
         collapsed: false,
         items: [
@@ -14,7 +20,9 @@ export default [
             { text: 'Frontend Pages', link: '/hooks/actions/frontend-pages' },
             { text: 'Integrations', link: '/hooks/actions/integrations' },
             { text: 'Sequences & Recurring', link: '/hooks/actions/sequences' },
-            { text: 'SMS Campaigns', link: '/hooks/actions/sms' },
+            { text: 'Messaging (SMS & WhatsApp)', link: '/hooks/actions/sms' },
+            { text: 'MCP', link: '/hooks/actions/mcp' },
+            { text: 'Settings & System', link: '/hooks/actions/settings-and-system' },
         ]
     },
     {
@@ -31,7 +39,16 @@ export default [
             { text: 'Companies', link: '/hooks/filters/companies' },
             { text: 'Block Email Editor', link: '/hooks/filters/block-editor' },
             { text: 'Webhooks & Integrations', link: '/hooks/filters/webhooks-and-integrations' },
-            { text: 'SMS Campaigns', link: '/hooks/filters/sms' },
+            { text: 'Messaging (SMS & WhatsApp)', link: '/hooks/filters/sms' },
+            { text: 'MCP', link: '/hooks/filters/mcp' },
+            { text: 'Settings & System', link: '/hooks/filters/settings-and-system' },
+        ]
+    },
+    {
+        text: 'Reference',
+        collapsed: false,
+        items: [
+            { text: 'Legacy Hook Renames', link: '/hook_changes' },
         ]
     }
 ]

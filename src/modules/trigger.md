@@ -71,6 +71,7 @@ The parent constructor calls `register()`, which hooks into the FluentCRM funnel
 - Adds your trigger to the `fluentcrm_funnel_triggers` filter
 - Registers `handle()` on the `fluentcrm_funnel_start_{triggerName}` action
 - Registers `prepareEditorDetails()` on the `fluentcrm_funnel_editor_details_{triggerName}` filter
+- Registers a `fluentcrm_funnel_arg_num_{triggerName}` filter that raises the number of arguments passed to `handle()` to at least `$actionArgNum`
 
 ### 2. getTrigger()
 

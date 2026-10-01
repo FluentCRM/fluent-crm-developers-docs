@@ -1,6 +1,11 @@
+---
+title: FluentCRM REST API
+description: "Complete FluentCRM REST API reference: every endpoint across contacts, campaigns, automations, Messaging (SMS and WhatsApp), reports and settings."
+---
+
 # FluentCRM REST API
 
-Complete reference for every FluentCRM REST endpoint — **363 endpoints across 32 modules**, covering FluentCRM, FluentCampaign Pro, and the Pro SMS module.
+Complete reference for every FluentCRM REST endpoint — **369 endpoints across 33 modules**, covering FluentCRM, FluentCampaign Pro, and the Pro Messaging module (SMS and WhatsApp).
 
 Every page is generated from the plugin's own route table and verified against live responses, so what you read here is what the code does.
 
@@ -70,13 +75,14 @@ A handful of routes require a **core WordPress** capability instead — `install
 | [Sequences](/rest-api/operations/sequences/list-sequences) | 19 | Automated email sequences <Badge type="warning" text="Pro" /> |
 | [Recurring Campaigns](/rest-api/operations/recurring-campaigns/list-recurring-campaigns) | 14 | Scheduled recurring campaigns <Badge type="warning" text="Pro" /> |
 | [Campaigns Pro](/rest-api/operations/campaigns-pro/resend-failed-emails) | 7 | Resend failed emails, tag actions, dynamic content <Badge type="warning" text="Pro" /> |
-| [SMS](/rest-api/operations/sms/list-sms-campaigns) | 25 | SMS campaigns and messages <Badge type="warning" text="Pro" /> |
+| [Messaging](/rest-api/operations/messaging/list-campaigns) | 12 | Send messages, campaigns (create, update, schedule, status), conversation history and the activity log <Badge type="warning" text="Pro" /> |
+| [WhatsApp](/rest-api/operations/whatsapp/list-whatsapp-templates) | 4 | WhatsApp templates, sending a template or free-text message, per-contact message history <Badge type="warning" text="Pro" /> |
 
 ### Automation & Analytics
 
 | Module | Endpoints | Description |
 |--------|-----------|-------------|
-| [Funnels (Automations)](/rest-api/operations/funnels/list-funnels) | 32 | Automations with triggers, actions, benchmarks, and step reporting |
+| [Funnels (Automations)](/rest-api/operations/funnels/list-funnels) | 33 | Automations with triggers, actions, benchmarks, and step reporting |
 | [Reports](/rest-api/operations/reports/get-dashboard-stats) | 25 | Dashboard stats, email performance, contact growth, automation reports |
 | [Dynamic Segments](/rest-api/operations/dynamic-segments/list-dynamic-segments) | 9 | Condition-driven contact segments <Badge type="warning" text="Pro" /> |
 | [Commerce Reports](/rest-api/operations/commerce-reports/get-commerce-reports) | 2 | WooCommerce / EDD revenue reporting <Badge type="warning" text="Pro" /> |
@@ -87,7 +93,7 @@ A handful of routes require a **core WordPress** capability instead — `install
 | Module | Endpoints | Description |
 |--------|-----------|-------------|
 | [Import](/rest-api/operations/import/upload-csv-import) | 6 | CSV upload, WP users import, third-party drivers |
-| [Export](/rest-api/operations/export/export-contacts-page) | 2 | Paged contact export <Badge type="warning" text="Pro" /> |
+| [Export](/rest-api/operations/export/export-contacts-page) | 11 | Paged contact export plus file downloads for notes, companies, sequences, templates, campaigns and segments <Badge type="warning" text="Pro" /> |
 | [Migrators](/rest-api/operations/migrators/get-migrator-drivers) | 5 | Migrate from Mailchimp, ActiveCampaign, and others |
 | [Webhooks](/rest-api/operations/webhooks/list-webhooks) | 4 | Inbound webhooks that create and update contacts |
 | [Forms](/rest-api/operations/forms/list-forms) | 5 | Fluent Forms integration and entries |
@@ -98,13 +104,21 @@ A handful of routes require a **core WordPress** capability instead — `install
 | Module | Endpoints | Description |
 |--------|-----------|-------------|
 | [Settings](/rest-api/operations/settings/get-settings) | 41 | Global settings, double opt-in, compliance, system logs, DB health |
-| [Pro Settings](/rest-api/operations/pro-settings/get-license-status) | 11 | Licence, managers, SMS configuration <Badge type="warning" text="Pro" /> |
+| [Pro Settings](/rest-api/operations/pro-settings/get-license-status) | 8 | Licence and managers <Badge type="warning" text="Pro" /> |
 | [AI](/rest-api/operations/ai/get-ai-settings) | 7 | AI writing assistant configuration and generation |
 | [MCP](/rest-api/operations/mcp/get-mcp-status) | 4 | Model Context Protocol bridge for AI agents |
 | [Users](/rest-api/operations/users/list-users) | 2 | WordPress user and role lookup |
 | [Abandon Carts](/rest-api/operations/abandon-carts/list-abandoned-carts) | 3 | Abandoned cart tracking and recovery |
 | [Docs & Addons](/rest-api/operations/docs/list-docs) | 3 | In-app documentation and addon status |
 | [Global Search](/rest-api/operations/global-search/global-search) | 1 | Search contacts, campaigns, and automations at once |
+
+## Try it from this site
+
+Every endpoint page has a **Try it on your website** box above the request. Enter your site once (`example.com`, `http://localhost:10010`, or a full URL) and the playground sends requests there; it is remembered in your browser. Authenticate with `username:application_password` in the Authorization field. Requests come straight from your browser, so your site has to answer cross-origin requests (CORS) — on a local or staging site, test with `curl` if the browser blocks the call.
+
+## Extending the REST API
+
+Registering your own endpoints under `fluent-crm/v2` — routes, controllers, policies — is covered in [Extending the REST API](/rest-api/extending/).
 
 ## Response Format
 

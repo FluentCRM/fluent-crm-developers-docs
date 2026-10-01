@@ -27,7 +27,7 @@
       "post": {
         "operationId": "bulkActionSequences",
         "summary": "POST Bulk Action Sequences",
-        "description": "Permanently delete multiple email sequences in bulk. Removes all associated sequence emails, campaign emails, URL metrics, and campaign metadata. Use `select_all` to delete all sequences. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "Permanently delete multiple email sequences in bulk. Removes all associated sequence emails, campaign emails, URL metrics, and campaign metadata. Use `select_all` to delete all sequences. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_delete`\n\n_Enforced by `SequencePolicy::handleSequenceBulkDelete()`._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Sequences"
         ],

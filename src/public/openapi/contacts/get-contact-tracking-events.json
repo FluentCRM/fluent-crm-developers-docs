@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getContactTrackingEvents",
         "summary": "GET Get Contact Tracking Events",
-        "description": "Retrieve a paginated list of tracking events for a contact. Requires the `event_tracking` experimental feature to be enabled.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts`\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Retrieve a paginated list of tracking events for a contact. Requires the `event_tracking` experimental feature to be enabled.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts` or `fcrm_manage_contacts` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Contacts"
         ],

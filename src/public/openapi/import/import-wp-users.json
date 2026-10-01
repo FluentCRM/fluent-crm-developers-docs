@@ -27,7 +27,7 @@
       "post": {
         "operationId": "importWpUsers",
         "summary": "POST Import WordPress Users",
-        "description": "Import WordPress users as FluentCRM contacts. Processes users in batches (default 100 per request). Call repeatedly with incrementing `page` until `has_more` is `false`. Assigns tags, lists, and status to imported contacts.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contacts`\n\n_Enforced by `ImportUserPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Import WordPress users as FluentCRM contacts. Processes users in batches (default 100 per request). Call repeatedly with incrementing `page` until `has_more` is `false`. Assigns tags, lists, and status to imported contacts.\n\n<!-- fc:access -->\n\n**Required capability:** `list_users`\n\nThe policy also re-asserts `verifyRequest()`, so the caller must additionally hold `fcrm_manage_contacts`.\n\n_Enforced by `ImportUserPolicy::importUsers()`._\n\n<!-- /fc:access -->",
         "tags": [
           "Import"
         ],

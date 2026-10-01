@@ -27,7 +27,7 @@
       "post": {
         "operationId": "sendCampaignTestEmail",
         "summary": "POST Send Campaign Test Email",
-        "description": "Send a test email for a campaign. Can send a test from either a saved campaign (by campaign_id) or from unsaved campaign data passed in the request body. The email subject is prefixed with 'TEST: '. If no email address is provided, it sends to the current user's email.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Send a test email for a campaign. Can send a test from either a saved campaign (by campaign_id) or from unsaved campaign data passed in the request body. The email subject is prefixed with 'TEST: '. If no email address is provided, it sends to the current user's email.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Campaigns"
         ],

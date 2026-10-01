@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getDynamicPosts",
         "summary": "GET Dynamic Posts",
-        "description": "Retrieve WordPress posts for use in dynamic email content blocks. Supports filtering by post type, taxonomy terms, date range, and custom ordering. Returns post data along with available post types. Used by the email builder's dynamic post block.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "Retrieve WordPress posts for use in dynamic email content blocks. Supports filtering by post type, taxonomy terms, date range, and custom ordering. Returns post data along with available post types. Used by the email builder's dynamic post block.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Campaigns Pro"
         ],

@@ -27,7 +27,7 @@
       "get": {
         "operationId": "searchContacts",
         "summary": "GET Search Contacts",
-        "description": "Search contacts by name or email. Returns a lightweight object of contacts keyed by ID, suitable for dropdowns and autocomplete widgets. Optionally loads default contacts when no search term is provided.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts`\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Search contacts by name or email. Returns a lightweight object of contacts keyed by ID, suitable for dropdowns and autocomplete widgets. Optionally loads default contacts when no search term is provided.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts` or `fcrm_manage_contacts` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Contacts"
         ],

@@ -1,3 +1,8 @@
+---
+title: Array Helper (Arr)
+description: "Arr static helper methods available in FluentCRM, from the bundled framework."
+---
+
 # Array Helper (Arr)
 
 - Class with Namespace: `FluentCrm\Framework\Support\Arr`

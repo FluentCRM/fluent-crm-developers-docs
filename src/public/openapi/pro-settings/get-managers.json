@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getManagers",
         "summary": "GET List Managers",
-        "description": "Retrieve a paginated list of FluentCRM managers. Managers are WordPress users who have been assigned FluentCRM-specific permissions (roles). Also returns the full list of available permissions.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `SettingsPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "Retrieve a paginated list of FluentCRM managers. Managers are WordPress users who have been assigned FluentCRM-specific permissions (roles). Also returns the full list of available permissions.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings` or `manage_options` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `ManagerPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Pro Settings"
         ],

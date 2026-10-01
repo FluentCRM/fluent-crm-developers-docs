@@ -27,7 +27,7 @@
       "put": {
         "operationId": "updateCampaignTitle",
         "summary": "PUT Update Campaign Title",
-        "description": "Update only the title of a campaign. For scheduled campaigns, optionally update the scheduled time as well. When the scheduled time changes, all unsent email records are rescheduled to the new time.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Update only the title of a campaign. For scheduled campaigns, optionally update the scheduled time as well. When the scheduled time changes, all unsent email records are rescheduled to the new time.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Campaigns"
         ],

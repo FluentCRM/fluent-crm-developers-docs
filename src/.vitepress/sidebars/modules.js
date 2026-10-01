@@ -24,16 +24,6 @@ export default [
         ]
     },
     {
-        text: 'REST API',
-        collapsed: false,
-        items: [
-            { text: 'Extending REST API', link: '/modules/extending-rest-api' },
-            { text: 'Routing', link: '/modules/rest-api-routing' },
-            { text: 'Controllers', link: '/modules/rest-api-controllers' },
-            { text: 'Policies & Permissions', link: '/modules/rest-api-policies' },
-        ]
-    },
-    {
         text: 'Extension Points',
         collapsed: false,
         items: [

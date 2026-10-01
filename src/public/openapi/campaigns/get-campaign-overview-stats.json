@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getCampaignOverviewStats",
         "summary": "GET Get Campaign Overview Stats",
-        "description": "Get overview statistics for a campaign including sent count, email status breakdown, and open/click analytics. This is a lighter-weight alternative to the full campaign status endpoint, suitable for dashboard widgets or summary views.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Get overview statistics for a campaign including sent count, email status breakdown, and open/click analytics. This is a lighter-weight alternative to the full campaign status endpoint, suitable for dashboard widgets or summary views.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Campaigns"
         ],

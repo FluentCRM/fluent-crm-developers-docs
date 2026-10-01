@@ -466,7 +466,7 @@ add_filter('fluentcrm_dynamic_segments', function($segments) {
 
 ::: warning
 Also fired from core by `OptionsController`, which builds segment options for the admin UI even when
-FluentCRM Pro is not installed. Register segments unconditionally rather than gating on the Pro
+FluentCampaign Pro is not installed. Register segments unconditionally rather than gating on the Pro
 controller being loaded.
 :::
 
@@ -494,7 +494,7 @@ add_filter('fluentcrm_dynamic_segment_high_value_customers', function($data, $se
 }, 10, 3);
 ```
 
-**Source:** `app/Models/Campaign.php`, `fluentcampaign-pro/app/Http/Controllers/DynamicSegmentController.php`, `fluentcampaign-pro/app/Hooks/Handlers/DynamicSegment.php`, `fluentcampaign-pro/app/Modules/SMS/Models/SMSCampaign.php`
+**Source:** `app/Models/Campaign.php`, `fluentcampaign-pro/app/Http/Controllers/DynamicSegmentController.php`, `fluentcampaign-pro/app/Hooks/Handlers/DynamicSegment.php`, `fluentcampaign-pro/app/Modules/Messaging/Models/MessageCampaign.php`
 
 ---
 
@@ -745,7 +745,7 @@ stored.
 
 ::: tip
 These hooks are shared by both abandoned-cart drivers. The WooCommerce driver lives in
-FluentCRM Pro; the FluentCart driver ships in core. A callback affects whichever drivers are active.
+FluentCampaign Pro; the FluentCart driver ships in core. A callback affects whichever drivers are active.
 :::
 
 ### `fluent_crm/ab_cart_cookie_validity`

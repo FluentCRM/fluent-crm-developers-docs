@@ -1,0 +1,454 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/messaging/threads/{id}/messages": {
+      "post": {
+        "operationId": "sendMessagingThreadMessage",
+        "summary": "POST Send Thread Message",
+        "description": "Send a message into an existing conversation from the Inbox, on the thread's own channel. The send runs inline (no queue); the message row is written as `pending` before the provider is called and updated to `sent` or `failed`, so a request that dies leaves a record. On a provider failure the response is 422 and still carries `sent_message` (with `status: failed` and `error_message`).\n\n**Text** (`message_type` omitted or `text`): `content` is required (422 `Write a message first.` when blank).\n- **SMS**: always allowed (no session window).\n- **WhatsApp 24-hour rule**: free-form text is accepted only while the contact's last inbound message is less than 24 hours old (`session.has_active_session`). Outside the window the call returns **409** `This WhatsApp conversation is outside its 24-hour window, so only an approved template can be sent.` Send a template instead.\n\n**Template** (`message_type = template`): WhatsApp only (422 on SMS threads). Needs `template_name` and optionally `template_language` (or `language`); the template must be approved for the current provider (422 `Pick an approved template.`). Variables in `template_variables` are rendered against the thread's linked contact. The thread needs a phone number, and the provider must support templates (409 otherwise). Templates are allowed inside or outside the 24-hour window. The stored message `content` is the template body text.\n\n409 is also returned when Pro is inactive or the channel is not configured/active. This endpoint does not check the thread's consent `status`; the profile-level `POST /messaging/subscribers/{id}/send` does. **PRO** (FluentCampaign Pro Messaging module).\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `InboxPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro **with the Messaging module enabled**. While no messaging channel (SMS or WhatsApp) is switched on the route is not registered at all and returns a 404.\n\n<!-- /fc:access -->",
+        "tags": [
+          "Messaging"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Message thread ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message_type": {
+                    "type": "string",
+                    "description": "`text` (default) or `template`.",
+                    "enum": [
+                      "text",
+                      "template"
+                    ],
+                    "default": "text"
+                  },
+                  "content": {
+                    "type": "string",
+                    "description": "Message body. Required for text messages; ignored for templates."
+                  },
+                  "template_name": {
+                    "type": "string",
+                    "description": "Approved WhatsApp template name (template messages)."
+                  },
+                  "template_language": {
+                    "type": "string",
+                    "description": "Template language code, e.g. `en_US`. Alias: `language`. When omitted the first approved template with that name is used."
+                  },
+                  "template_variables": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "description": "Values for the template's placeholders, passed to the template renderer."
+                  }
+                }
+              },
+              "example": {
+                "message_type": "text",
+                "content": "Yes, it ships today."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Message sent.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sent_message": {
+                      "$ref": "#/components/schemas/ThreadMessage"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "`Message sent.`"
+                    }
+                  }
+                },
+                "example": {
+                  "sent_message": {
+                    "id": 301,
+                    "thread_id": 12,
+                    "direction": "outbound",
+                    "message_type": "text",
+                    "content": "Yes, it ships today.",
+                    "template_name": "",
+                    "media": [],
+                    "status": "sent",
+                    "error_message": "",
+                    "created_at": "2026-09-29 14:20:00"
+                  },
+                  "message": "Message sent."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The requested resource does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Empty content, invalid/unapproved template, template sent on SMS, or the provider rejected the send (body then includes `sent_message` with `status: failed`).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Outside the WhatsApp 24-hour window (text), channel unavailable, or provider has no template support.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "MessageThread": {
+        "type": "object",
+        "description": "A conversation: one phone number on one channel. Unique on (channel, phone_number).",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Thread ID."
+          },
+          "channel": {
+            "type": "string",
+            "description": "Channel slug.",
+            "enum": [
+              "sms",
+              "whatsapp"
+            ]
+          },
+          "phone_number": {
+            "type": "string",
+            "description": "The conversation's phone number, as stored."
+          },
+          "profile_name": {
+            "type": "string",
+            "description": "WhatsApp profile name from the thread meta, or an empty string."
+          },
+          "wa_id": {
+            "type": "string",
+            "description": "WhatsApp ID from the thread meta, or an empty string."
+          },
+          "status": {
+            "type": "string",
+            "description": "Consent status of this number on this channel.",
+            "enum": [
+              "subscribed",
+              "unsubscribed",
+              "pending",
+              "bounced"
+            ]
+          },
+          "unread_count": {
+            "type": "integer",
+            "description": "Inbound messages after the last-seen cursor (stored cache)."
+          },
+          "updated_at": {
+            "type": "string",
+            "nullable": true,
+            "description": "Time of the newest message activity (`Y-m-d H:i:s`). Marking a thread seen or changing consent does not touch it."
+          },
+          "session": {
+            "$ref": "#/components/schemas/MessageSession"
+          },
+          "subscriber": {
+            "$ref": "#/components/schemas/MessageThreadContact"
+          },
+          "last_message": {
+            "$ref": "#/components/schemas/MessageThreadPreview"
+          }
+        }
+      },
+      "MessageSession": {
+        "type": "object",
+        "description": "WhatsApp 24-hour customer-service window, derived from the newest inbound message. SMS threads always report an open window with a null expiry.",
+        "properties": {
+          "has_active_session": {
+            "type": "boolean",
+            "description": "True while free-form messages may be sent. Always true for SMS. For WhatsApp, true only if the contact's last inbound message is less than 24 hours old."
+          },
+          "expires_at": {
+            "type": "string",
+            "nullable": true,
+            "description": "When the window closes (`Y-m-d H:i:s`, site time). Null for SMS and for WhatsApp threads with no inbound message. For a WhatsApp thread whose window already closed this is the time it closed."
+          }
+        }
+      },
+      "MessageThreadContact": {
+        "type": "object",
+        "nullable": true,
+        "description": "The linked CRM contact, or null when the number is not a contact.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Contact ID."
+          },
+          "full_name": {
+            "type": "string",
+            "description": "Contact full name."
+          },
+          "email": {
+            "type": "string",
+            "description": "Contact email."
+          },
+          "phone": {
+            "type": "string",
+            "description": "Contact phone."
+          },
+          "photo": {
+            "type": "string",
+            "description": "Avatar URL."
+          },
+          "status": {
+            "type": "string",
+            "description": "Contact subscription status (email-level), e.g. `subscribed`."
+          },
+          "lists": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List titles. Only present on single-thread payloads (`thread` objects), not on the conversation rail."
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Tag titles. Only present on single-thread payloads."
+          }
+        }
+      },
+      "MessageThreadPreview": {
+        "type": "object",
+        "nullable": true,
+        "description": "Preview of the thread's newest message. Populated on the list endpoint only; always null on single-thread payloads.",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Message content, or the first attachment's caption / filename when the content is empty."
+          },
+          "direction": {
+            "type": "string",
+            "description": "`inbound` or `outbound`.",
+            "enum": [
+              "inbound",
+              "outbound"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "description": "Message status.",
+            "enum": [
+              "scheduling",
+              "scheduled",
+              "pending",
+              "processing",
+              "sent",
+              "delivered",
+              "read",
+              "failed",
+              "cancelled",
+              "received"
+            ]
+          },
+          "message_type": {
+            "type": "string",
+            "description": "`text`, `media` or `template`.",
+            "enum": [
+              "text",
+              "media",
+              "template"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "nullable": true,
+            "description": "Message `created_at`, `Y-m-d H:i:s`."
+          }
+        }
+      },
+      "ThreadMessage": {
+        "type": "object",
+        "description": "One message in a thread, as shaped for the Inbox.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Message ID."
+          },
+          "thread_id": {
+            "type": "integer",
+            "description": "Parent thread ID."
+          },
+          "direction": {
+            "type": "string",
+            "description": "`inbound` (from the contact) or `outbound`.",
+            "enum": [
+              "inbound",
+              "outbound"
+            ]
+          },
+          "message_type": {
+            "type": "string",
+            "description": "Derived, not stored: `media` when the meta holds attachments, `template` when it references a template, otherwise `text`.",
+            "enum": [
+              "text",
+              "media",
+              "template"
+            ]
+          },
+          "content": {
+            "type": "string",
+            "nullable": true,
+            "description": "Message body. For a template send this is the template's body text, not the rendered variables."
+          },
+          "template_name": {
+            "type": "string",
+            "description": "Template name for template messages, else an empty string."
+          },
+          "media": {
+            "type": "array",
+            "description": "Attachment objects from the message meta (shape depends on the provider, typically `type`, `url`, `filename`, `caption`).",
+            "items": {
+              "type": "object"
+            }
+          },
+          "status": {
+            "type": "string",
+            "description": "Delivery status.",
+            "enum": [
+              "scheduling",
+              "scheduled",
+              "pending",
+              "processing",
+              "sent",
+              "delivered",
+              "read",
+              "failed",
+              "cancelled",
+              "received"
+            ]
+          },
+          "error_message": {
+            "type": "string",
+            "description": "The provider's refusal reason for a failed message, else an empty string."
+          },
+          "created_at": {
+            "type": "string",
+            "nullable": true,
+            "description": "Effective message time, `Y-m-d H:i:s`: `sent_at`, falling back to `scheduled_at`, then `created_at`."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}
