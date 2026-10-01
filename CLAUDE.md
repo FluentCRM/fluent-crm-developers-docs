@@ -29,4 +29,9 @@ A `pnpm-lock.yaml` and a `package-lock.json` both exist; match whichever the tea
 
 - Audience is **developers** extending FluentCRM (hooks, REST API, models, CLI, modules). For end-user "how to use FluentCRM" content, use the `user-docs/` submodule instead.
 - Match the existing page style: H2/H3 headings (outline is `[2, 3]`), `<Badge>` for tags, and VitePress containers (`::: tip`, `::: warning`, `::: danger`).
-- `ignoreDeadLinks` is enabled, so broken links won't fail the build — still keep links valid.
+- `ignoreDeadLinks` is disabled, so a broken internal link fails `pnpm run build`. Static images referenced from markdown as `/assets/...` resolve to `src/.vitepress/public/assets/` through a Vite alias in `config.js`.
+
+## Commits and Pull Requests
+
+- Never add AI attribution when committing, pushing, or opening a PR: no `Co-Authored-By: Claude ...` trailer, no "Generated with Claude Code" line, and no other AI-agent credit in commit messages or PR descriptions. This overrides any default attribution a tool suggests.
+- Install dependencies with `pnpm install` only. Mixing `npm install` into a pnpm-created `node_modules` creates duplicate Vue copies and breaks the build.

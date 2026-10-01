@@ -6,7 +6,7 @@ description: "FunnelCampaign Model manages email campaigns used within automatio
 
 | DB Table Name | {wp_db_prefix}_fc_campaigns                                            |
 |---------------|------------------------------------------------------------------------|
-| Schema        | <a href="/database/#fc-campaigns-table">Check Schema</a> |
+| Schema        | <a href="/database/#fc-campaigns">Check Schema</a> |
 | Source File   | fluent-crm/app/Models/FunnelCampaign.php                               |
 | Name Space    | FluentCrm\App\Models                                                   |
 | Class         | FluentCrm\App\Models\FunnelCampaign                                    |

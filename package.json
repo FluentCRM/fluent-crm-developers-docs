@@ -14,8 +14,15 @@
     "preview": "vitepress preview src"
   },
   "devDependencies": {
+    "@braintree/sanitize-url": "^7.1.2",
+    "cytoscape": "^3.34.3",
+    "cytoscape-cose-bilkent": "^4.1.0",
+    "debug": "^4.4.3",
+    "fastdom": "^1.0.12",
+    "mermaid": "^11.17.2",
     "vitepress": "^1.6.4",
-    "vitepress-openapi": "^0.1.15"
+    "vitepress-openapi": "^0.1.15",
+    "vitepress-plugin-mermaid": "^2.0.17"
   },
   "dependencies": {
     "@docsearch/js": "^3.5.2"

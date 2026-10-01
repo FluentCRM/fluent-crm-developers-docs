@@ -6,7 +6,7 @@ description: "Campaign URL Matrix Model"
 
 | DB Table Name | {wp_db_prefix}_fc_campaign_url_metrics                                   |
 |---------------|--------------------------------------------------------------------------|
-| Schema        | <a href="/database/#fc-subscribers-table">Check Schema</a> |
+| Schema        | <a href="/database/#fc-campaign-url-metrics">Check Schema</a> |
 | Source File   | fluent-crm/app/Models/CampaignUrlMetric.php                                       |
 | Name Space    | FluentCrm\App\Models                                                     |
 | Class         | FluentCrm\App\Models\CampaignUrlMetric                                            |

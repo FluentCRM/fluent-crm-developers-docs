@@ -6,7 +6,7 @@ description: "Subscriber Pivot Model manages the many-to-many relationships betw
 
 | DB Table Name | {wp_db_prefix}_fc_subscriber_pivot                                            |
 |---------------|-------------------------------------------------------------------------------|
-| Schema        | <a href="/database/#fc-subscriber-pivot-table">Check Schema</a> |
+| Schema        | <a href="/database/#fc-subscriber-pivot">Check Schema</a> |
 | Source File   | fluent-crm/app/Models/SubscriberPivot.php                                     |
 | Name Space    | FluentCrm\App\Models                                                          |
 | Class         | FluentCrm\App\Models\SubscriberPivot                                          |

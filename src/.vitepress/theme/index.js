@@ -1,6 +1,7 @@
 import DefaultTheme from 'vitepress/theme'
 import ExplainBlock from '../components/ExplainBlock.vue'
 import LlmBar from '../components/LlmBar.vue'
+import ZoomBox from '../components/ZoomBox.vue'
 import { theme, useOpenapi } from 'vitepress-openapi/client'
 import 'vitepress-openapi/dist/style.css'
 import './vars.css'
@@ -17,6 +18,7 @@ export default {
     },
     enhanceApp({ app, router, siteData }) {
         app.component('ExplainBlock', ExplainBlock)
+        app.component('ZoomBox', ZoomBox)
 
         // Register OpenAPI theme components
         theme.enhanceApp({ app, router, siteData })

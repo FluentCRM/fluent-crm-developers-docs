@@ -6,7 +6,7 @@ description: "Explore the Subscriber Model in FluentCRM, designed to manage and 
 
 | DB Table Name | {wp_db_prefix}_fc_subscribers                                            |
 |---------------|--------------------------------------------------------------------------|
-| Schema        | <a href="/database/#fc-subscribers-table">Check Schema</a> |
+| Schema        | <a href="/database/#fc-subscribers">Check Schema</a> |
 | Source File   | fluent-crm/app/Models/Subscriber.php                                     |
 | Name Space    | FluentCrm\App\Models                                                     |
 | Class         | FluentCrm\App\Models\Subscriber                                          |
