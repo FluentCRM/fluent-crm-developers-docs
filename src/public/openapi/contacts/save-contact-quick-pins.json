@@ -1,0 +1,429 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/subscribers/quick-pins": {
+      "post": {
+        "operationId": "saveContactQuickPins",
+        "summary": "POST Save Contact Quick Pins",
+        "description": "Replace the current user's pinned quick filters: lists and tags shown as one-click tabs above the contact list. A per-user preference stored in user meta; it changes nothing other users see. Pins of unknown types, missing lists or tags, and duplicates are dropped; at most 8 are kept, in the order given.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts`\n\n_Enforced by `SubscriberPolicy::saveQuickPins()`: a user's own list preference, so read access is enough._\n\n<!-- /fc:access -->",
+        "tags": [
+          "Contacts"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "pins"
+                ],
+                "properties": {
+                  "pins": {
+                    "type": "array",
+                    "maxItems": 8,
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "list",
+                            "tag"
+                          ]
+                        },
+                        "id": {
+                          "type": "integer"
+                        }
+                      }
+                    },
+                    "description": "Pins in display order. An empty array removes all pins."
+                  }
+                }
+              },
+              "example": {
+                "pins": [
+                  {
+                    "type": "list",
+                    "id": 5
+                  },
+                  {
+                    "type": "tag",
+                    "id": 12
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pins saved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "pins": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "list",
+                              "tag"
+                            ]
+                          },
+                          "id": {
+                            "type": "integer"
+                          }
+                        }
+                      },
+                      "description": "The pins as stored, after sanitizing."
+                    }
+                  }
+                },
+                "example": {
+                  "pins": [
+                    {
+                      "type": "list",
+                      "id": 5
+                    },
+                    {
+                      "type": "tag",
+                      "id": 12
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The user cannot read contacts."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "Contact": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the contact."
+          },
+          "user_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Associated WordPress user ID."
+          },
+          "hash": {
+            "type": "string",
+            "description": "Unique hash for the contact."
+          },
+          "contact_owner": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "User ID of the contact owner."
+          },
+          "company_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Primary company ID."
+          },
+          "prefix": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Name prefix (e.g., Mr, Mrs, Ms)."
+          },
+          "first_name": {
+            "type": "string",
+            "description": "Contact first name."
+          },
+          "last_name": {
+            "type": "string",
+            "description": "Contact last name."
+          },
+          "full_name": {
+            "type": "string",
+            "description": "Full name (computed from first_name and last_name)."
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Contact email address."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "subscribed",
+              "pending",
+              "unsubscribed",
+              "bounced",
+              "complained"
+            ],
+            "description": "Contact subscription status."
+          },
+          "contact_type": {
+            "type": "string",
+            "enum": [
+              "lead",
+              "customer"
+            ],
+            "description": "Contact type."
+          },
+          "address_line_1": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Address line 1."
+          },
+          "address_line_2": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Address line 2."
+          },
+          "postal_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Postal/zip code."
+          },
+          "city": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "City."
+          },
+          "state": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "State or province."
+          },
+          "country": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Two-letter country code."
+          },
+          "ip": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "IP address."
+          },
+          "latitude": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Latitude coordinate."
+          },
+          "longitude": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "Longitude coordinate."
+          },
+          "phone": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Phone number."
+          },
+          "timezone": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Timezone identifier."
+          },
+          "date_of_birth": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Date of birth (YYYY-MM-DD)."
+          },
+          "source": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Source of the contact."
+          },
+          "life_time_value": {
+            "type": "number",
+            "description": "Lifetime value of the contact."
+          },
+          "last_activity": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Timestamp of last activity."
+          },
+          "total_points": {
+            "type": "integer",
+            "description": "Total engagement points."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the contact was created."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the contact was last updated."
+          },
+          "photo": {
+            "type": "string",
+            "description": "Gravatar URL."
+          },
+          "tags": {
+            "type": "array",
+            "description": "Tags assigned to the contact.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "slug": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "lists": {
+            "type": "array",
+            "description": "Lists the contact belongs to.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "slug": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "stats": {
+            "type": "object",
+            "description": "Contact statistics (only included when requested via `with[]` parameter).",
+            "properties": {
+              "emails": {
+                "type": "integer"
+              },
+              "opens": {
+                "type": "integer"
+              },
+              "clicks": {
+                "type": "integer"
+              },
+              "total_points": {
+                "type": "integer"
+              },
+              "last_activity": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

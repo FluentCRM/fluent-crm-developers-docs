@@ -83,6 +83,20 @@
             }
           },
           {
+            "name": "search_custom_fields",
+            "in": "query",
+            "description": "Set to `yes` to also match `search` against custom-field values, as the contact list does when that option is on.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "true",
+                "1"
+              ]
+            }
+          },
+          {
             "name": "tags[]",
             "in": "query",
             "description": "Tag IDs filter (simple mode).",

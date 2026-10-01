@@ -121,6 +121,20 @@
             }
           },
           {
+            "name": "with_status_counts",
+            "in": "query",
+            "description": "Set to `1` (or `true`/`yes`) to also return `status_counts`: contacts per status for the current filters and search, ignoring the status filter itself. Simple filter mode only.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1",
+                "true",
+                "yes"
+              ]
+            }
+          },
+          {
             "name": "tags[]",
             "in": "query",
             "description": "Filter by tag IDs (simple filter mode only).",
@@ -358,6 +372,22 @@
                           },
                           "description": "Keys that are not search fields; their tokens were searched as plain text."
                         }
+                      }
+                    },
+                    "status_counts": {
+                      "type": "object",
+                      "description": "Only with `with_status_counts` in simple mode. Contacts per status (every known status present, zero-filled), counted with all current filters except the status filter, so picking a status never changes the other numbers.",
+                      "additionalProperties": {
+                        "type": "integer"
+                      },
+                      "example": {
+                        "subscribed": 12509,
+                        "pending": 2,
+                        "unsubscribed": 1274,
+                        "transactional": 0,
+                        "bounced": 0,
+                        "complained": 0,
+                        "spammed": 0
                       }
                     }
                   }

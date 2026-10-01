@@ -18,6 +18,7 @@ export default [
             { text: 'Get Contact Info Widgets <badge type="tip">GET</badge>', link: '/rest-api/operations/contacts/get-contact-info-widgets' },
             { text: 'Get Contact Notes <badge type="tip">GET</badge>', link: '/rest-api/operations/contacts/get-contact-notes' },
             { text: 'Get Contact Prev/Next IDs <badge type="tip">GET</badge>', link: '/rest-api/operations/contacts/get-contact-prev-next-ids' },
+            { text: 'Save Contact Quick Pins <badge type="warning">POST</badge>', link: '/rest-api/operations/contacts/save-contact-quick-pins' },
             { text: 'Get Contact Purchase History <badge type="tip">GET</badge>', link: '/rest-api/operations/contacts/get-contact-purchase-history' },
             { text: 'Get Contact Support Tickets <badge type="tip">GET</badge>', link: '/rest-api/operations/contacts/get-contact-support-tickets' },
             { text: 'Get Contact Template Mock <badge type="tip">GET</badge>', link: '/rest-api/operations/contacts/get-contact-template-mock' },

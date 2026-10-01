@@ -121,6 +121,13 @@
                       "advanced_filters": {
                         "type": "string",
                         "description": "JSON-encoded advanced filter groups."
+                      },
+                      "search_custom_fields": {
+                        "type": "string",
+                        "enum": [
+                          "yes"
+                        ],
+                        "description": "`yes` to also match `search` against custom-field values, so a select-all action covers the same contacts the list showed."
                       }
                     }
                   },
