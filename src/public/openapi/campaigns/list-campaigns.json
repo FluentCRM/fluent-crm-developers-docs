@@ -27,7 +27,7 @@
       "get": {
         "operationId": "listCampaigns",
         "summary": "GET List Campaigns",
-        "description": "Retrieve a paginated list of email campaigns. Supports filtering by status, search term, labels, and sorting. Optionally includes campaign statistics.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Retrieve a paginated list of email campaigns. Supports filtering by status, search term, labels, and sorting. Optionally includes campaign statistics.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Campaigns"
         ],

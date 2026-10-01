@@ -1,0 +1,384 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/messaging/subscribers/{id}/logs": {
+      "get": {
+        "operationId": "getMessagingSubscriberLogs",
+        "summary": "GET Get Subscriber Message Logs",
+        "description": "Paginated message history of one contact on one channel, for the contact-profile SMS / WhatsApp tabs. It reads the contact's thread on the channel; a contact never messaged on that channel simply gets an empty list. Rows are sorted by the effective time (`sent_at`, else `scheduled_at`, else `created_at`) then ID, in `order`. A missing contact returns HTTP 422 with `code: 404` in the body (the controller passes 404 inside the payload, not as the HTTP status). Replaces `GET /sms/subscribers/{id}/logs`. **PRO** (FluentCampaign Pro Messaging module).\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `MessagePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro **with the Messaging module enabled**. While no messaging channel (SMS or WhatsApp) is switched on the route is not registered at all and returns a 404.\n\n<!-- /fc:access -->",
+        "tags": [
+          "Messaging"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Subscriber (contact) ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "description": "Channel to scope the request to. Unknown or missing values fall back to `sms`.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "sms",
+              "enum": [
+                "sms",
+                "whatsapp"
+              ]
+            }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "`campaign` or `automation` (by `ref_type`), `incoming` (inbound), or `custom_sms` (outbound with no campaign/automation ref). Any other value behaves like `custom_sms`; `all` disables filtering.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "all",
+              "enum": [
+                "all",
+                "campaign",
+                "automation",
+                "incoming",
+                "custom_sms"
+              ]
+            }
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Sort direction. Anything other than `desc` sorts ascending.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "asc",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Rows per page (not clamped).",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated message logs.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "logs": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/MessageLog"
+                          }
+                        },
+                        "total": {
+                          "type": "integer",
+                          "description": "Total rows."
+                        },
+                        "per_page": {
+                          "type": "integer",
+                          "description": "Rows per page."
+                        },
+                        "current_page": {
+                          "type": "integer",
+                          "description": "Current page."
+                        },
+                        "last_page": {
+                          "type": "integer",
+                          "description": "Last page number."
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "logs": {
+                    "data": [
+                      {
+                        "id": 301,
+                        "thread_id": 12,
+                        "direction": "outbound",
+                        "content": "Your order shipped!",
+                        "message": "Your order shipped!",
+                        "ref_type": "campaign",
+                        "ref_id": 5,
+                        "status": "delivered",
+                        "provider_message_id": "SMa1b2c3",
+                        "meta": {},
+                        "scheduled_at": null,
+                        "sent_at": "2026-09-01 10:01:00",
+                        "created_at": "2026-09-01 10:00:00",
+                        "updated_at": "2026-09-01 10:01:30",
+                        "from": "+14155550123",
+                        "date": "09/01/2026",
+                        "time": "10:01",
+                        "_date_time": "2026-09-01 10:01:00",
+                        "type": "campaign"
+                      }
+                    ],
+                    "total": 15,
+                    "per_page": 20,
+                    "current_page": 1,
+                    "last_page": 1
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The requested resource does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Contact not found (body carries `code: 404`).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "MessageLog": {
+        "type": "object",
+        "description": "A message row (`fc_messages`) extended with the profile-tab display fields.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Message ID."
+          },
+          "thread_id": {
+            "type": "integer",
+            "description": "Thread ID."
+          },
+          "direction": {
+            "type": "string",
+            "description": "`inbound` or `outbound`.",
+            "enum": [
+              "inbound",
+              "outbound"
+            ]
+          },
+          "content": {
+            "type": "string",
+            "nullable": true,
+            "description": "Message body."
+          },
+          "message": {
+            "type": "string",
+            "nullable": true,
+            "description": "Alias of `content`."
+          },
+          "ref_type": {
+            "type": "string",
+            "nullable": true,
+            "description": "`campaign`, `automation`, `inbox` or null.",
+            "enum": [
+              "campaign",
+              "automation",
+              "inbox"
+            ]
+          },
+          "ref_id": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Campaign ID when `ref_type` is `campaign`."
+          },
+          "status": {
+            "type": "string",
+            "description": "Message status.",
+            "enum": [
+              "scheduling",
+              "scheduled",
+              "pending",
+              "processing",
+              "sent",
+              "delivered",
+              "read",
+              "failed",
+              "cancelled",
+              "received"
+            ]
+          },
+          "provider_message_id": {
+            "type": "string",
+            "nullable": true,
+            "description": "Provider's message ID."
+          },
+          "meta": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Unserialized message meta (attachments, template info, error_message...)."
+          },
+          "scheduled_at": {
+            "type": "string",
+            "nullable": true,
+            "description": "Raw stored time."
+          },
+          "sent_at": {
+            "type": "string",
+            "nullable": true,
+            "description": "Raw stored time."
+          },
+          "created_at": {
+            "type": "string",
+            "nullable": true,
+            "description": "Raw stored time."
+          },
+          "updated_at": {
+            "type": "string",
+            "nullable": true,
+            "description": "Raw stored time."
+          },
+          "from": {
+            "type": "string",
+            "description": "The thread's phone number (empty when the contact has no thread). Despite the name this is the contact's number, for both directions."
+          },
+          "date": {
+            "type": "string",
+            "description": "`m/d/Y` of the effective time."
+          },
+          "time": {
+            "type": "string",
+            "description": "`H:i` of the effective time."
+          },
+          "_date_time": {
+            "type": "string",
+            "nullable": true,
+            "description": "Effective time: sent_at, else scheduled_at, else created_at."
+          },
+          "type": {
+            "type": "string",
+            "description": "Legacy type used by the profile tab chips.",
+            "enum": [
+              "incoming",
+              "campaign",
+              "automation",
+              "custom_sms"
+            ]
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

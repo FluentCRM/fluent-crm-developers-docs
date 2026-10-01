@@ -27,7 +27,7 @@
       "post": {
         "operationId": "changeRecurringCampaignStatus",
         "summary": "POST Change Recurring Campaign Status",
-        "description": "Change the status of a recurring campaign between `active` and `draft`. When activating a campaign, the email subject and body must already be set. The next scheduled send time is recalculated upon status change. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "Change the status of a recurring campaign between `active` and `draft`. When activating a campaign, the email subject and body must already be set. The next scheduled send time is recalculated upon status change. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Recurring Campaigns"
         ],

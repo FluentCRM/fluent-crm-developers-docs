@@ -1,0 +1,452 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/messaging/campaigns/{id}": {
+      "get": {
+        "operationId": "getMessagingCampaign",
+        "summary": "GET Get Messaging Campaign",
+        "description": "Return one campaign with the current site time as `server_time`. The campaign is passed through `fluent_crm/whatsapp_campaign_data` (WhatsApp) or `fluent_crm/sms_campaign_data` (SMS) so the channel can append data.\n\n**Channel:** this route does not take a `channel`; the channel is the one stored on the campaign (`sms` or `whatsapp`) and the matching channel hooks are fired. **PRO** \u2014 requires the FluentCampaign Pro Messaging module with at least one channel (SMS or WhatsApp) active.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `MessagePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro **with the Messaging module enabled**. While no messaging channel (SMS or WhatsApp) is switched on the route is not registered at all and returns a 404.\n\n<!-- /fc:access -->",
+        "tags": [
+          "Messaging"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Campaign id.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The campaign.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "campaign": {
+                      "$ref": "#/components/schemas/MessageCampaign"
+                    }
+                  }
+                },
+                "example": {
+                  "campaign": {
+                    "id": 12,
+                    "parent_id": null,
+                    "type": "campaign",
+                    "title": "Weekend flash sale",
+                    "slug": "weekend-flash-sale",
+                    "status": "draft",
+                    "message_content": "Hi {{contact.first_name}}, 20% off this weekend: https://example.com/sale",
+                    "sender_number": null,
+                    "recipients_count": 0,
+                    "sent_count": 0,
+                    "failed_count": 0,
+                    "delay": null,
+                    "scheduled_at": null,
+                    "settings": {
+                      "subscribers": [
+                        {
+                          "list": "all",
+                          "tag": "all"
+                        }
+                      ],
+                      "excludedSubscribers": [
+                        {
+                          "list": null,
+                          "tag": null
+                        }
+                      ],
+                      "sending_filter": "list_tag",
+                      "dynamic_segment": {
+                        "id": "",
+                        "slug": ""
+                      },
+                      "advanced_filters": [
+                        []
+                      ],
+                      "sending_type": "instant",
+                      "is_transactional": "no"
+                    },
+                    "channel": "sms",
+                    "created_by": 1,
+                    "created_at": "2026-09-30 10:15:00",
+                    "updated_at": "2026-09-30 10:15:00",
+                    "server_time": "2026-09-30 10:20:00"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The requested resource does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "MessageCampaign": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Campaign id."
+          },
+          "parent_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "description": "Always `campaign` for rows created through these routes."
+          },
+          "title": {
+            "type": "string",
+            "description": "Campaign title."
+          },
+          "slug": {
+            "type": "string",
+            "description": "Slug generated from the title."
+          },
+          "status": {
+            "type": "string",
+            "description": "Campaign status.",
+            "enum": [
+              "draft",
+              "pending-scheduled",
+              "processing",
+              "scheduled",
+              "working",
+              "paused",
+              "archived"
+            ]
+          },
+          "message_content": {
+            "type": "string",
+            "description": "Message body. For WhatsApp template campaigns the template drives the send; the body is kept for free-form (session) sends."
+          },
+          "sender_number": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "recipients_count": {
+            "type": "integer",
+            "description": "Recipients resolved for the campaign."
+          },
+          "sent_count": {
+            "type": "integer"
+          },
+          "failed_count": {
+            "type": "integer"
+          },
+          "delay": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "scheduled_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Date-time in the site timezone, `Y-m-d H:i:s`."
+          },
+          "settings": {
+            "$ref": "#/components/schemas/MessageCampaignSettings"
+          },
+          "channel": {
+            "type": "string",
+            "description": "Channel the campaign sends over.",
+            "enum": [
+              "sms",
+              "whatsapp"
+            ]
+          },
+          "created_by": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "created_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Date-time in the site timezone, `Y-m-d H:i:s`."
+          },
+          "updated_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Date-time in the site timezone, `Y-m-d H:i:s`."
+          },
+          "next_step": {
+            "description": "Only with `with[]=stats` on the list route: the wizard step to reopen at, or `false`."
+          },
+          "labels": {
+            "type": "array",
+            "description": "Only with `with[]=stats` on the list route.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "description": "Label id."
+                },
+                "slug": {
+                  "type": "string",
+                  "description": "Label slug."
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Label title."
+                },
+                "color": {
+                  "type": "string",
+                  "description": "Label color."
+                }
+              }
+            }
+          },
+          "server_time": {
+            "type": "string",
+            "description": "Only on the single-campaign route: current site time."
+          }
+        }
+      },
+      "MessageCampaignSettings": {
+        "type": "object",
+        "description": "Free-form campaign settings. Keys used by the module: `sending_filter` (`list_tag`, `dynamic_segment`, `advanced_filters` or `one_time`), `subscribers`, `excludedSubscribers`, `dynamic_segment`, `advanced_filters`, `sending_type` (`instant` or `schedule`), `is_transactional`, and `one_time_audience`. WhatsApp campaigns also use `template_id` (integer id of an approved WhatsApp template; required to schedule a one-time WhatsApp campaign) and `template_variables` (map of variable position to a FluentCRM smartcode string, e.g. `{\"1\": \"{{contact.first_name|there}}\"}`).",
+        "properties": {
+          "sending_filter": {
+            "type": "string",
+            "enum": [
+              "list_tag",
+              "dynamic_segment",
+              "advanced_filters",
+              "one_time"
+            ]
+          },
+          "sending_type": {
+            "type": "string",
+            "enum": [
+              "instant",
+              "schedule"
+            ]
+          },
+          "is_transactional": {
+            "type": "string",
+            "enum": [
+              "yes",
+              "no"
+            ]
+          },
+          "subscribers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "list": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "tag": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          },
+          "excludedSubscribers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "list": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "tag": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          },
+          "dynamic_segment": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": [
+                  "string",
+                  "integer"
+                ]
+              },
+              "slug": {
+                "type": "string"
+              }
+            }
+          },
+          "advanced_filters": {
+            "type": "array",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            }
+          },
+          "template_id": {
+            "type": "integer",
+            "description": "WhatsApp only. Id of the approved WhatsApp template to send."
+          },
+          "template_variables": {
+            "type": "object",
+            "description": "WhatsApp only. Position (`\"1\"`, `\"2\"`, ...) to smartcode string.",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "one_time_audience": {
+            "type": "object",
+            "description": "Present once a one-time audience is activated.",
+            "properties": {
+              "active_batch_id": {
+                "type": "string"
+              },
+              "accepted_count": {
+                "type": "integer"
+              },
+              "default_country": {
+                "type": "string"
+              },
+              "consent_user_id": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "consent_channel": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "consent_confirmed": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

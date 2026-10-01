@@ -27,7 +27,7 @@
       "post": {
         "operationId": "createFunnelFromTemplate",
         "summary": "POST Create Funnel from Template",
-        "description": "Create a new automation funnel from a remote template. The template content URL is fetched, and the funnel is created in `draft` status with all sequences imported. Labels from the template are also imported or matched to existing labels.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_write_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Create a new automation funnel from a remote template. The template content URL is fetched, and the funnel is created in `draft` status with all sequences imported. Labels from the template are also imported or matched to existing labels.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels` or `fcrm_write_funnels` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],

@@ -27,7 +27,7 @@
       "post": {
         "operationId": "sendContactDoubleOptin",
         "summary": "POST Send Contact Double Opt-in",
-        "description": "Send a double opt-in confirmation email to a contact. The contact should not already be in `subscribed` status.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contacts`\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Send a double opt-in confirmation email to a contact. The contact should not already be in `subscribed` status.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts` or `fcrm_manage_contacts` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Contacts"
         ],

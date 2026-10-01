@@ -133,7 +133,7 @@ It uses the [`cli_send` command](/cli/#cli-send) and a small cron-driven script.
 Each worker is launched with two distinguishing options so they cooperate instead of colliding:
 
 - `--option_key` — a unique lock name per worker, so each one runs independently.
-- `--offset` — where in the queue that worker starts reading, so workers don't all grab the same emails.
+- `--modulo` and `--remainder` — each worker claims only rows where `id % modulo = remainder`. For N workers use `--modulo=2N` with a distinct **even** remainder each (the web worker owns the odd ids). `--offset` is deprecated and ignored.
 
 FluentCRM also claims each email atomically, so **workers never send duplicates**, even if their ranges overlap as the queue drains.
 
@@ -146,18 +146,19 @@ FluentCRM also claims each email atomically, so **workers never send duplicates*
 # Launch parallel FluentCRM email senders only when there's a queue.
 WP="wp --path=/var/www/html"   # <-- set your WordPress path
 WORKERS=5                       # number of parallel senders (see tuning below)
-OFFSET_STEP=300                 # spacing between workers in the queue
+MODULO=$(( WORKERS * 2 ))       # 2N partitions; workers take the even ones
 
 # One lightweight check: how many emails are waiting?
 PENDING=$($WP eval 'echo \FluentCrm\App\Services\Helper::getUpcomingEmailCount();' 2>/dev/null)
 
 if [ "${PENDING:-0}" -ge 500 ]; then
   for i in $(seq 1 "$WORKERS"); do
-    OFFSET=$(( (i - 1) * OFFSET_STEP ))
+    REMAINDER=$(( (i - 1) * 2 ))
     $WP fluent_crm cli_send \
         --force=yes \
         --option_key="fc_send_${i}" \
-        --offset="${OFFSET}" \
+        --modulo="${MODULO}" \
+        --remainder="${REMAINDER}" \
         --min_pending=300 \
         --run_time=50 \
         --silent=yes &

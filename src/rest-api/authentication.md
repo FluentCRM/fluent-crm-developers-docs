@@ -1,3 +1,8 @@
+---
+title: Authentication
+description: "Authenticate FluentCRM REST API requests with WordPress Application Passwords or cookie plus nonce."
+---
+
 # Authentication
 
 FluentCRM uses WordPress REST API authentication. You'll need to create application credentials to access the API securely.
@@ -91,6 +96,19 @@ plain HTTP they are readable in transit. WordPress will not even expose Applicat
 non-SSL site.
 :::
 
+### Cookie authentication (inside WordPress admin)
+
+Code that runs in a logged-in WordPress session — admin screens, your own plugin's JavaScript — can skip Application Passwords and use the session cookie plus a REST nonce. Send the nonce from `wp_create_nonce('wp_rest')` in the `X-WP-Nonce` header; without it WordPress treats the request as unauthenticated.
+
+```js
+fetch('/wp-json/fluent-crm/v2/subscribers', {
+  credentials: 'same-origin',
+  headers: { 'X-WP-Nonce': wpApiSettings.nonce }
+}).then(r => r.json());
+```
+
+Use Application Passwords for anything outside the browser session (servers, scripts, integrations).
+
 ## Example API Call
 
 Here's a complete example of making an authenticated API request:
@@ -105,20 +123,25 @@ curl "https://yourdomain.com/wp-json/fluent-crm/v2/subscribers" \
 
 ```json
 {
-  "current_page": 1,
-  "per_page": 10,
-  "total": 150,
-  "data": [
-    {
-      "id": "1",
-      "first_name": "John",
-      "last_name": "Doe", 
-      "email": "john@example.com",
-      "status": "subscribed"
-    }
-  ]
+  "subscribers": {
+    "current_page": 1,
+    "per_page": 10,
+    "total": 150,
+    "data": [
+      {
+        "id": "1",
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "john@example.com",
+        "status": "subscribed"
+      }
+    ]
+  },
+  "custom": null
 }
 ```
+
+List endpoints wrap the paginator in a key named for the resource — see [Response Format](/rest-api/#response-format).
 
 ## Programming Language Examples
 

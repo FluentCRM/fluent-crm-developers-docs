@@ -27,7 +27,7 @@
       "post": {
         "operationId": "updateRecurringCampaignSettings",
         "summary": "POST Update Recurring Campaign Settings",
-        "description": "Update the title and settings (scheduling, sending conditions, subscriber targeting) for a recurring campaign. The title must be unique across all recurring campaigns. The next scheduled send time is recalculated based on the new scheduling settings. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "Update the title and settings (scheduling, sending conditions, subscriber targeting) for a recurring campaign. The title must be unique across all recurring campaigns. The next scheduled send time is recalculated based on the new scheduling settings. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Recurring Campaigns"
         ],

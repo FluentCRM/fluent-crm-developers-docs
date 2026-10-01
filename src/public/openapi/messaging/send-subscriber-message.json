@@ -1,0 +1,175 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/messaging/subscribers/{id}/send": {
+      "post": {
+        "operationId": "sendMessagingSubscriberMessage",
+        "summary": "POST Send Subscriber SMS",
+        "description": "Send a one-off **SMS** to a contact's phone number immediately (controller method `sendCustomSMS`). The send runs inline and the response reflects the real outcome rather than \"queued\". A `Custom SMS to {name}` campaign record is created and referenced so the send appears in campaign reporting; the message is recorded in the contact's SMS thread.\n\nThis endpoint is **SMS only**: it does not read a `channel` parameter. WhatsApp sends go through `POST /whatsapp/subscribers/{id}/send` (templates, 24-hour session) or, for an existing conversation, `POST /messaging/threads/{id}/messages`.\n\nChecks, in order: SMS channel enabled, contact exists, `message` present, contact has a phone, contact is `subscribed` for SMS (consent lives on threads), `message` at most 1600 characters. Every one of these failures is returned as **HTTP 422**; the body carries `{message, code}` where `code` is 400 (or 404 for a missing contact), so branch on the body `code`, not the HTTP status. If the provider rejects the message the response is 422 with the provider's text. If the message is still claimable (another worker owns it) the response is 200 with `Queued - it will be sent as soon as its queue worker runs.` Replaces `POST /sms/subscribers/{id}/send`. **PRO** (FluentCampaign Pro Messaging module).\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `MessagePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro **with the Messaging module enabled**. While no messaging channel (SMS or WhatsApp) is switched on the route is not registered at all and returns a 404.\n\n<!-- /fc:access -->",
+        "tags": [
+          "Messaging"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Subscriber (contact) ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string",
+                    "description": "SMS body, at most 1600 characters.",
+                    "maxLength": 1600
+                  },
+                  "from_number": {
+                    "type": "string",
+                    "description": "Accepted but currently ignored by the controller."
+                  }
+                },
+                "required": [
+                  "message"
+                ]
+              },
+              "example": {
+                "message": "Hi Jane, your order #1234 has shipped! Track it at https://example.com/track/1234"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "SMS sent (or queued).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "`SMS has been sent.` or the queued notice."
+                    }
+                  }
+                },
+                "example": {
+                  "message": "SMS has been sent."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The requested resource does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Any failed check above (body `code` 400 or 404), or the provider rejected the send (body `message` is the provider error).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

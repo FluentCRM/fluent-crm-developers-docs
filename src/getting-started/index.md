@@ -82,7 +82,7 @@ Automations (funnels) use three building blocks:
 
 ### Hook System
 
-FluentCRM provides 200+ hooks for extending functionality:
+FluentCRM provides 400+ hooks for extending functionality:
 
 - **[Action Hooks](/hooks/actions/)** — Run custom code when events occur (contact created, email sent, campaign completed, etc.)
 - **[Filter Hooks](/hooks/filters/)** — Modify data before it's used (email headers, contact statuses, admin menus, etc.)
@@ -91,7 +91,7 @@ FluentCRM provides 200+ hooks for extending functionality:
 
 The REST API provides full programmatic access to all CRM data. All endpoints require authentication.
 
-- **[Authentication](/rest-api/authentication)** — Cookie-based (wp_nonce) or Application Passwords
+- **[Authentication](/rest-api/authentication)** — Application Passwords, or cookie + `X-WP-Nonce` inside wp-admin
 - **[Contacts API](/rest-api/operations/contacts/list-contacts)** — CRUD operations on subscribers
 - **[Campaigns API](/rest-api/operations/campaigns/list-campaigns)** — Create and manage email campaigns
 - **[Tags](/rest-api/operations/tags/list-tags) & [Lists](/rest-api/operations/lists/list-lists)** — Manage segmentation
@@ -112,7 +112,7 @@ See the full [REST API Reference](/rest-api/).
 | Add a tab to the contact profile | [Profile Section Module](/modules/contact-profile-section) |
 | Add custom smart codes for emails | [Smart Code Module](/modules/smart-code) |
 | Track custom events on contacts | [Event Tracking Module](/modules/event-tracking) |
-| Add custom REST API endpoints | [Extending the REST API](/modules/extending-rest-api) |
+| Add custom REST API endpoints | [Extending the REST API](/rest-api/extending/) |
 | Customize the admin dashboard | [Dashboard Filters](/hooks/filters/admin-and-dashboard) |
 | Modify frontend pages (unsubscribe, DOI) | [Frontend Filters](/hooks/filters/frontend) |
 
@@ -128,7 +128,7 @@ FluentCRM includes helper classes and global functions:
 ## Development Setup
 
 **Requirements:**
-- WordPress 5.6+
+- WordPress 6.0+
 - PHP 7.4+
 - MySQL 5.6+ (InnoDB)
 
@@ -140,7 +140,7 @@ pnpm run build                 # Production build
 
 **Custom email editor** (only if modifying the Gutenberg editor):
 ```bash
-cd custom-editor && npm install && npm run build
+pnpm install && pnpm run guten:build   # from the plugin root
 ```
 
 ## Next Steps

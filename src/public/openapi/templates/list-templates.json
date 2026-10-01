@@ -27,7 +27,7 @@
       "get": {
         "operationId": "listTemplates",
         "summary": "GET List Templates",
-        "description": "Retrieve a paginated list of email templates. Supports filtering by status types and searching by title. Each template in the response includes its design template identifier.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_templates`\n\n_Enforced by `TemplatePolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Retrieve a paginated list of email templates. Supports filtering by status types and searching by title. Each template in the response includes its design template identifier.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `TemplatePolicy::templates()`._\n\n<!-- /fc:access -->",
         "tags": [
           "Templates"
         ],

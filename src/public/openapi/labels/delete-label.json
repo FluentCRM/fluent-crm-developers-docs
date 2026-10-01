@@ -27,7 +27,7 @@
       "delete": {
         "operationId": "deleteLabel",
         "summary": "DELETE Delete Label",
-        "description": "Permanently delete a label by ID. This removes the label from the `fc_terms` table. Any funnel associations referencing this label are not automatically removed by this endpoint.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `CustomFieldsPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Permanently delete a label by ID. This removes the label from the `fc_terms` table. Any funnel associations referencing this label are not automatically removed by this endpoint.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_delete`\n\n_Enforced by `CustomFieldsPolicy::delete()`._\n\n<!-- /fc:access -->",
         "tags": [
           "Labels"
         ],

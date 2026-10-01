@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getSubscriberWhatsAppMessages",
         "summary": "GET Subscriber WhatsApp Messages",
-        "description": "Retrieve paginated WhatsApp message history for a specific subscriber/contact. **PRO** (requires FluentCampaign Pro WhatsApp module).\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `SMSPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro **with the SMS module enabled**. While SMS is switched off the route is not registered at all and returns a 404.\n\n<!-- /fc:access -->",
+        "description": "Paginated WhatsApp conversation history for one contact, read from the contact's WhatsApp thread (`fc_message_threads` / `fc_messages`). A contact with no WhatsApp thread returns an empty page, not an error, and the contact ID is not checked for existence. Default order is **oldest first** (the chat panel loads the last page for the newest messages and pages backwards); pass `order=desc` for newest first. Ordering uses `COALESCE(sent_at, created_at)` with the ID as tie-break.\n\nThe same response also carries `stats` and `session`, so one poll refreshes the counters, the 24-hour window banner and the composer state.\n\n**PRO** (FluentCampaign Pro). The route exists only while the Messaging module (the `messaging_module` experimental setting) is switched on, and the policy answers 403 unless at least one channel (SMS or WhatsApp) is active.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `MessagePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro **with the Messaging module enabled**. While no messaging channel (SMS or WhatsApp) is switched on the route is not registered at all and returns a 404.\n\n<!-- /fc:access -->",
         "tags": [
           "WhatsApp"
         ],
@@ -40,7 +40,7 @@
           {
             "name": "id",
             "in": "path",
-            "description": "Subscriber/contact ID.",
+            "description": "Contact (subscriber) ID.",
             "required": true,
             "schema": {
               "type": "integer"
@@ -59,7 +59,7 @@
           {
             "name": "per_page",
             "in": "query",
-            "description": "Rows per page.",
+            "description": "Rows per page, 1-200; any other value falls back to 20.",
             "required": false,
             "schema": {
               "type": "integer",
@@ -67,18 +67,39 @@
             }
           },
           {
-            "name": "filter_type",
+            "name": "order",
             "in": "query",
-            "description": "Optional UI filter key for future filtering.",
+            "description": "Sort direction by message time.",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "asc",
+              "enum": [
+                "asc",
+                "desc"
+              ]
+            }
+          },
+          {
+            "name": "filter_type",
+            "in": "query",
+            "description": "Narrow the history; unknown values return everything.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "sent",
+                "received",
+                "campaign",
+                "custom",
+                "read"
+              ]
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Paginated WhatsApp messages for the subscriber.",
+            "description": "Messages, stats and session state.",
             "content": {
               "application/json": {
                 "schema": {
@@ -133,7 +154,123 @@
                           }
                         }
                       }
+                    },
+                    "stats": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "description": "All messages in the contact's WhatsApp thread."
+                        },
+                        "sent": {
+                          "type": "integer",
+                          "description": "Outbound messages that have a send timestamp."
+                        },
+                        "received": {
+                          "type": "integer",
+                          "description": "Inbound messages."
+                        },
+                        "campaign": {
+                          "type": "integer",
+                          "description": "Messages whose ref_type is campaign."
+                        },
+                        "read": {
+                          "type": "integer",
+                          "description": "Messages whose status is read."
+                        }
+                      }
+                    },
+                    "session": {
+                      "type": "object",
+                      "properties": {
+                        "has_active_session": {
+                          "type": "boolean",
+                          "description": "True when the contact sent an inbound message within the last 24 hours."
+                        },
+                        "last_inbound_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "Latest inbound message time, site-local wall clock."
+                        },
+                        "expires_at": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "When the window closes, site-local; null when closed."
+                        },
+                        "last_inbound_at_iso": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "last_inbound_at as ISO 8601 with offset."
+                        },
+                        "expires_at_iso": {
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "description": "expires_at as ISO 8601 with offset."
+                        },
+                        "inbound_count": {
+                          "type": "integer",
+                          "description": "Total inbound messages from the contact."
+                        }
+                      }
                     }
+                  }
+                },
+                "example": {
+                  "messages": {
+                    "total": 1,
+                    "per_page": 20,
+                    "current_page": 1,
+                    "last_page": 1,
+                    "from": 1,
+                    "to": 1,
+                    "next_page_url": null,
+                    "prev_page_url": null,
+                    "data": [
+                      {
+                        "id": 88,
+                        "thread_id": 7,
+                        "direction": "inbound",
+                        "content": "Is my order on the way?",
+                        "message_content": "Is my order on the way?",
+                        "message_type": "text",
+                        "template_name": "",
+                        "ref_type": null,
+                        "ref_id": null,
+                        "status": "received",
+                        "provider_message_id": "wamid.HBgM...",
+                        "scheduled_at": null,
+                        "sent_at": null,
+                        "timestamp": "2026-09-30T09:14:02+00:00",
+                        "meta": {},
+                        "media": [],
+                        "created_by": null,
+                        "created_at": "2026-09-30 09:14:02",
+                        "updated_at": "2026-09-30 09:14:02"
+                      }
+                    ]
+                  },
+                  "stats": {
+                    "total": 9,
+                    "sent": 5,
+                    "received": 4,
+                    "campaign": 2,
+                    "read": 3
+                  },
+                  "session": {
+                    "has_active_session": true,
+                    "last_inbound_at": "2026-09-30 09:14:02",
+                    "expires_at": "2026-10-01 09:14:02",
+                    "last_inbound_at_iso": "2026-09-30T09:14:02+00:00",
+                    "expires_at_iso": "2026-10-01T09:14:02+00:00",
+                    "inbound_count": 4
                   }
                 }
               }
@@ -199,59 +336,79 @@
       },
       "WhatsAppMessage": {
         "type": "object",
+        "description": "A row of fc_messages with the extra fields the profile chat panel reads.",
         "properties": {
           "id": {
             "type": "integer",
-            "description": "Message row ID."
+            "description": "Message ID."
           },
-          "subscriber_id": {
+          "thread_id": {
             "type": "integer",
-            "description": "Subscriber/contact ID."
-          },
-          "campaign_id": {
-            "type": [
-              "integer",
-              "null"
-            ],
-            "description": "Campaign ID when sent by a campaign."
-          },
-          "sms_type": {
-            "type": "string",
-            "description": "Message type, such as campaign, automation, incoming, or custom-whatsapp."
-          },
-          "channel": {
-            "type": "string",
-            "description": "Message channel.",
-            "enum": [
-              "whatsapp"
-            ]
+            "description": "Conversation thread ID (fc_message_threads)."
           },
           "direction": {
             "type": "string",
-            "description": "Direction of the message.",
+            "description": "Message direction.",
             "enum": [
               "outbound",
               "inbound"
             ]
           },
-          "mobile_number": {
-            "type": "string",
-            "description": "Recipient or sender phone number."
-          },
-          "message_content": {
-            "type": "string",
-            "description": "Stored message text."
-          },
-          "status": {
-            "type": "string",
-            "description": "Message status."
-          },
-          "delivery_status": {
+          "content": {
             "type": [
               "string",
               "null"
             ],
-            "description": "Provider delivery status."
+            "description": "Stored message text."
+          },
+          "message_content": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Alias of content for the chat panel."
+          },
+          "message_type": {
+            "type": "string",
+            "description": "template when the row recorded a template send, otherwise text.",
+            "enum": [
+              "template",
+              "text"
+            ]
+          },
+          "template_name": {
+            "type": "string",
+            "description": "Template name for template sends, otherwise an empty string."
+          },
+          "ref_type": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "campaign, automation, inbox, custom, or null for inbound messages."
+          },
+          "ref_id": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "description": "Campaign or automation ID when ref_type points at one."
+          },
+          "status": {
+            "type": "string",
+            "description": "Queue/delivery status.",
+            "enum": [
+              "scheduling",
+              "scheduled",
+              "pending",
+              "processing",
+              "sent",
+              "delivered",
+              "read",
+              "failed",
+              "cancelled",
+              "received"
+            ]
           },
           "provider_message_id": {
             "type": [
@@ -260,33 +417,74 @@
             ],
             "description": "Provider message ID."
           },
-          "template_id": {
+          "scheduled_at": {
             "type": [
-              "integer",
+              "string",
               "null"
             ],
-            "description": "Template row ID for template sends."
+            "description": "Scheduled send time (site timezone)."
           },
           "sent_at": {
             "type": [
               "string",
               "null"
             ],
-            "description": "Send timestamp."
+            "description": "Send time (site timezone)."
           },
-          "delivered_at": {
+          "timestamp": {
             "type": [
               "string",
               "null"
             ],
-            "description": "Delivery timestamp."
+            "description": "ISO 8601 timestamp with offset of sent_at, falling back to created_at."
           },
-          "read_at": {
+          "meta": {
+            "type": "object",
+            "description": "Stored metadata: template_id, template_name, attachments, error_message and so on."
+          },
+          "media": {
+            "type": "array",
+            "description": "Attachments lifted out of meta.attachments.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "description": "Attachment type, such as image or document."
+                },
+                "url": {
+                  "type": "string",
+                  "description": "Local URL; empty when the file was not downloaded to the site."
+                },
+                "mime_type": {
+                  "type": "string",
+                  "description": "MIME type."
+                },
+                "filename": {
+                  "type": "string",
+                  "description": "File name when known."
+                },
+                "caption": {
+                  "type": "string",
+                  "description": "Caption."
+                },
+                "filesize": {
+                  "type": "integer",
+                  "description": "Size in bytes."
+                },
+                "stored": {
+                  "type": "boolean",
+                  "description": "Whether the file is stored locally."
+                }
+              }
+            }
+          },
+          "created_by": {
             "type": [
-              "string",
+              "integer",
               "null"
             ],
-            "description": "Read receipt timestamp."
+            "description": "WordPress user who sent it, when outbound and manual."
           },
           "created_at": {
             "type": "string",

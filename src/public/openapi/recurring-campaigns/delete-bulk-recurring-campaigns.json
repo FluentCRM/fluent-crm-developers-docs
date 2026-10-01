@@ -27,7 +27,7 @@
       "post": {
         "operationId": "deleteBulkRecurringCampaigns",
         "summary": "POST Delete Bulk Recurring Campaigns",
-        "description": "Delete multiple recurring campaigns by their IDs. Also deletes all child email campaigns (recurring mails) and their associated campaign emails. Fires the `fluent_crm/campaign_deleted` action for each deleted campaign and child. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "Delete multiple recurring campaigns by their IDs. Also deletes all child email campaigns (recurring mails) and their associated campaign emails. Fires the `fluent_crm/campaign_deleted` action for each deleted campaign and child. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_delete`\n\n_Enforced by `SequencePolicy::deleteBulk()`._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Recurring Campaigns"
         ],

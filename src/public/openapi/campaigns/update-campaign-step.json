@@ -27,7 +27,7 @@
       "post": {
         "operationId": "updateCampaignStep",
         "summary": "POST Update Campaign Step",
-        "description": "Update the current wizard step for a campaign. This sets the `_next_config_step` campaign meta value, which tracks how far the user has progressed through the campaign setup wizard.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Update the current wizard step for a campaign. This sets the `_next_config_step` campaign meta value, which tracks how far the user has progressed through the campaign setup wizard.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Campaigns"
         ],

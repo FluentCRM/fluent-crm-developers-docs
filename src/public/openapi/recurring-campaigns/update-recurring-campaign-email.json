@@ -27,7 +27,7 @@
       "post": {
         "operationId": "updateRecurringCampaignEmail",
         "summary": "POST Update Recurring Campaign Email",
-        "description": "Update a child email within a recurring campaign. Supports two steps: `edit` for updating the email body, design template, and settings; and `review` for updating the email subject, scheduled time, status, and settings. When using the `review` step with `pending-scheduled` status, the parent recurring campaign must be active. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "Update a child email within a recurring campaign. Supports two steps: `edit` for updating the email body, design template, and settings; and `review` for updating the email subject, scheduled time, status, and settings. When using the `review` step with `pending-scheduled` status, the parent recurring campaign must be active. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Recurring Campaigns"
         ],

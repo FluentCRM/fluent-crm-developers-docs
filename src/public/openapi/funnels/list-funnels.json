@@ -27,7 +27,7 @@
       "get": {
         "operationId": "listFunnels",
         "summary": "GET List Funnels",
-        "description": "Retrieve a paginated list of automation funnels. Supports sorting, searching by title, and filtering by label IDs. Optionally includes trigger definitions.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Retrieve a paginated list of automation funnels. Supports sorting, searching by title, and filtering by label IDs. Optionally includes trigger definitions.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels` or `fcrm_write_funnels` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],

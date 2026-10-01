@@ -1,3 +1,8 @@
+---
+title: Sanitize Helper
+description: "Sanitization helper methods for FluentCRM input."
+---
+
 # Sanitize
 
 `FluentCrm\App\Services\Sanitize`

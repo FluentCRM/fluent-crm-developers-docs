@@ -27,7 +27,7 @@
       "post": {
         "operationId": "getAiModels",
         "summary": "POST List Models For Provider",
-        "description": "List the model options FluentCRM offers for a provider, so the settings screen can populate its model dropdown after the provider changes.\n\nThis is a **POST** even though it only reads: the provider is sent inside the same `settings` envelope the other AI endpoints use.\n\nModel lists are maintained in FluentCRM, not fetched from the provider, so the call does not need a valid API key and makes no outbound request.\n\n<!-- fc:access -->\n\n**Required capability:** `manage_options`\n\n_Enforced by `AiPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "List the model options FluentCRM offers for a provider, so the settings screen can populate its model dropdown after the provider changes.\n\nThis is a **POST** even though it only reads: the provider is sent inside the same `settings` envelope the other AI endpoints use.\n\nFor `wordpress`, `open_ai`, `claude` and `gemini` the model lists are maintained in FluentCRM, so no API key is needed and no outbound request is made. For `openrouter` the list is fetched live from OpenRouter using `settings.api_key` (or the saved key); a missing key or a failed fetch returns 422.\n\n<!-- fc:access -->\n\n**Required capability:** `manage_options`\n\n_Enforced by `AiPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "AI"
         ],
@@ -54,8 +54,13 @@
                           "wordpress",
                           "open_ai",
                           "claude",
-                          "gemini"
+                          "gemini",
+                          "openrouter"
                         ]
+                      },
+                      "api_key": {
+                        "type": "string",
+                        "description": "API key used to fetch the live model list. Read only when `provider` is `openrouter` (the only provider whose models are fetched remotely); ignored for other providers. If empty or a masked value starting with `****`, the saved OpenRouter key is used instead."
                       }
                     },
                     "required": [

@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getContactEmails",
         "summary": "GET Get Contact Emails",
-        "description": "Retrieve a paginated list of emails sent to a contact. Supports filtering by open/click status. Can also show FluentSMTP logs when the `tab` parameter is set to `fluentsmtp`.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts`\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Retrieve a paginated list of emails sent to a contact. Supports filtering by open/click status. Can also show FluentSMTP logs when the `tab` parameter is set to `fluentsmtp`.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts` or `fcrm_manage_contacts` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Contacts"
         ],

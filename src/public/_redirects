@@ -1,0 +1,4 @@
+/modules/extending-rest-api /rest-api/extending/ 301
+/modules/rest-api-routing /rest-api/extending/routing 301
+/modules/rest-api-controllers /rest-api/extending/controllers 301
+/modules/rest-api-policies /rest-api/extending/policies 301

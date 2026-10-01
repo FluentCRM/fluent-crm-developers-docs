@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getFunnelSyncableCounts",
         "summary": "GET Get Funnel Syncable Counts",
-        "description": "Get the count of subscribers who completed the funnel but stopped before the latest action step. These subscribers can potentially be synced to new steps added to the funnel. Only counts subscribers with `completed` funnel status and `subscribed` contact status.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Get the count of subscribers who completed the funnel but stopped before the latest action step. These subscribers can potentially be synced to new steps added to the funnel. Only counts subscribers with `completed` funnel status and `subscribed` contact status.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels` or `fcrm_write_funnels` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],

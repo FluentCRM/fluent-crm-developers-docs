@@ -27,7 +27,7 @@
       "post": {
         "operationId": "saveFunnelEmailAction",
         "summary": "POST Save Funnel Email Action",
-        "description": "Create or update a funnel email campaign associated with a specific funnel. If a campaign ID is provided and matches the funnel, it updates the existing campaign; otherwise, it creates a new one. Also handles visual builder design data.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_write_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Create or update a funnel email campaign associated with a specific funnel. If a campaign ID is provided and matches the funnel, it updates the existing campaign; otherwise, it creates a new one. Also handles visual builder design data.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels` or `fcrm_write_funnels` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],

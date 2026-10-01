@@ -60,6 +60,9 @@ Available transformers:
 | `strtolower` | Converts to lowercase |
 | `strtoupper` | Converts to uppercase |
 | `concat_first` | Prepends a string (e.g., <code v-pre>{{contact.first_name\|\|concat_first\|Hi}}</code> → "Hi John") |
+| `concat_last` | Appends a string with no space (e.g., <code v-pre>{{contact.first_name\|\|concat_last\|,}}</code> → "John,") |
+| `show_if` | Replaces the value with the given text when the value is not empty (e.g., <code v-pre>{{contact.first_name\|\|show_if\|Welcome back}}</code>) |
+| `urlencode` | URL-encodes the value, for use inside a link (e.g., <code v-pre>{{contact.email\|\|urlencode}}</code>) |
 
 ### Combining Default Values and Transformers
 

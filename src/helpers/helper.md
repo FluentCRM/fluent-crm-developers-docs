@@ -1,3 +1,8 @@
+---
+title: Helper Class
+description: "General-purpose FluentCRM Helper static methods."
+---
+
 # Core Helper Class
 
 `FluentCrm\App\Services\Helper`

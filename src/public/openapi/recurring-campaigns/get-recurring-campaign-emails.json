@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getRecurringCampaignEmails",
         "summary": "GET Get Recurring Campaign Emails",
-        "description": "Retrieve a paginated list of child email campaigns (recurring mails) for a recurring campaign. Non-draft emails are returned paginated. On the first page, draft emails are also included separately. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "Retrieve a paginated list of child email campaigns (recurring mails) for a recurring campaign. Non-draft emails are returned paginated. On the first page, draft emails are also included separately. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Recurring Campaigns"
         ],

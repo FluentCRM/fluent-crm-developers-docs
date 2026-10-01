@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getFunnelSubscribers",
         "summary": "GET Get Funnel Subscribers",
-        "description": "Retrieve a paginated list of subscribers enrolled in a specific automation funnel. Includes subscriber details, sequence progress, and metrics. Supports filtering by search, status, and sequence ID. Optionally includes the funnel object and sequence list.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Retrieve a paginated list of subscribers enrolled in a specific automation funnel. Includes subscriber details, sequence progress, and metrics. Supports filtering by search, status, and sequence ID. Optionally includes the funnel object and sequence list.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels` or `fcrm_write_funnels` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],

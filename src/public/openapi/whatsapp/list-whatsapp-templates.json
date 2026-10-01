@@ -27,7 +27,7 @@
       "get": {
         "operationId": "listWhatsAppTemplates",
         "summary": "GET WhatsApp Templates",
-        "description": "List stored WhatsApp message templates and review-status counts. **PRO** (requires FluentCampaign Pro WhatsApp module).\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `SMSPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro **with the SMS module enabled**. While SMS is switched off the route is not registered at all and returns a 404.\n\n<!-- /fc:access -->",
+        "description": "List the template catalogue stored in `fc_message_templates` (newest first) together with review-status counts. Despite the `whatsapp/` prefix the catalogue is shared by channels: `channel` defaults to `whatsapp`, and `sms` or `all` return the local SMS text templates as well. Rows of every provider are returned; each carries `is_selectable` / `disabled_reason`, and only templates of the currently configured provider are selectable.\n\n**Pagination is opt-in.** The response is paginated (20 per page, max 100) only when any of `channel`, `search`, `status`, `per_page` or `page` is sent; otherwise `templates` is a plain array of every row. `approved_only` forces `channel=whatsapp` and restricts rows to APPROVED templates of the current provider.\n\nA channel that is not active (or a call with no active channel at all) returns 422 `The selected messaging channel is not enabled.` Note that the default `channel=whatsapp` therefore fails on an SMS-only install.\n\n**PRO** (FluentCampaign Pro). The route exists only while the Messaging module (the `messaging_module` experimental setting) is switched on, and the policy answers 403 unless at least one channel (SMS or WhatsApp) is active.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_email_templates` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `MessagePolicy::index()`._\n\n**Requires:** FluentCampaign Pro **with the Messaging module enabled**. While no messaging channel (SMS or WhatsApp) is switched on the route is not registered at all and returns a 404.\n\n<!-- /fc:access -->",
         "tags": [
           "WhatsApp"
         ],
@@ -38,9 +38,24 @@
         ],
         "parameters": [
           {
+            "name": "channel",
+            "in": "query",
+            "description": "Template channel. Unknown values fall back to whatsapp.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "whatsapp",
+              "enum": [
+                "whatsapp",
+                "sms",
+                "all"
+              ]
+            }
+          },
+          {
             "name": "status",
             "in": "query",
-            "description": "Optional provider review status filter, for example APPROVED or PENDING.",
+            "description": "Review status filter; upper-cased before matching, for example APPROVED, PENDING, REJECTED, PAUSED, DISABLED.",
             "required": false,
             "schema": {
               "type": "string"
@@ -49,52 +64,212 @@
           {
             "name": "approved_only",
             "in": "query",
-            "description": "Return only approved templates when truthy.",
+            "description": "When truthy, return only APPROVED WhatsApp templates of the current provider.",
             "required": false,
             "schema": {
               "type": "boolean"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Substring match on name, category, status, provider or body text.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Rows per page (capped at 100). Sending it turns pagination on.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number. Sending it turns pagination on.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "WhatsApp templates and status counts.",
+            "description": "Templates and status counts.",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
                     "templates": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/WhatsAppTemplate"
-                      }
+                      "oneOf": [
+                        {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/MessageTemplate"
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "description": "Paginated result set, returned when any paging or filter parameter is sent.",
+                          "properties": {
+                            "total": {
+                              "type": "integer",
+                              "description": "Total number of matching rows."
+                            },
+                            "per_page": {
+                              "type": "integer",
+                              "description": "Rows per page."
+                            },
+                            "current_page": {
+                              "type": "integer",
+                              "description": "Current page number."
+                            },
+                            "last_page": {
+                              "type": "integer",
+                              "description": "Number of the final page."
+                            },
+                            "from": {
+                              "type": "integer",
+                              "description": "Index of the first row on this page."
+                            },
+                            "to": {
+                              "type": "integer",
+                              "description": "Index of the last row on this page."
+                            },
+                            "next_page_url": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "URL of the next page, or null."
+                            },
+                            "prev_page_url": {
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "description": "URL of the previous page, or null."
+                            },
+                            "data": {
+                              "type": "array",
+                              "items": {
+                                "$ref": "#/components/schemas/MessageTemplate"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "description": "Array when no paging/filter parameter was sent, paginator object otherwise."
                     },
                     "supports_sync": {
                       "type": "boolean",
-                      "description": "Whether the current provider supports template sync."
+                      "description": "True when the configured provider driver supports templates (sync, submit, delete)."
+                    },
+                    "current_provider": {
+                      "type": "string",
+                      "description": "Configured WhatsApp provider slug."
+                    },
+                    "current_provider_label": {
+                      "type": "string",
+                      "description": "Display label of the provider."
+                    },
+                    "provider_labels": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "string"
+                      },
+                      "description": "Provider slug to label map."
+                    },
+                    "last_synced_at": {
+                      "type": "string",
+                      "description": "Latest last_synced_at among WhatsApp rows in the result set; empty string if none or WhatsApp is not queried."
+                    },
+                    "has_inactive_provider_templates": {
+                      "type": "boolean",
+                      "description": "True when stored WhatsApp templates belong to a provider other than the current one."
                     },
                     "counts": {
                       "type": "object",
                       "properties": {
                         "total": {
                           "type": "integer",
-                          "description": "Total template count."
+                          "description": "Rows matching the filters."
                         },
                         "approved": {
                           "type": "integer",
-                          "description": "Approved template count."
+                          "description": "APPROVED rows."
                         },
                         "pending": {
                           "type": "integer",
-                          "description": "Pending template count."
+                          "description": "PENDING rows."
                         },
                         "rejected": {
                           "type": "integer",
-                          "description": "Rejected template count."
+                          "description": "REJECTED rows."
                         }
                       }
                     }
+                  }
+                },
+                "example": {
+                  "templates": [
+                    {
+                      "id": 12,
+                      "channel": "whatsapp",
+                      "provider": "meta_cloud",
+                      "name": "order_update",
+                      "language": "en_US",
+                      "category": "UTILITY",
+                      "status": "APPROVED",
+                      "header_text": "",
+                      "body_text": "Hi {{1}}, your order {{2}} has shipped.",
+                      "footer_text": "Reply STOP to opt out",
+                      "buttons": [
+                        {
+                          "type": "QUICK_REPLY",
+                          "text": "Track order"
+                        }
+                      ],
+                      "variables": {
+                        "1": "Jane",
+                        "2": "#1001"
+                      },
+                      "provider_template_id": "1029384756102938",
+                      "rejection_reason": "",
+                      "last_synced_at": "2026-09-30 10:00:00",
+                      "created_by": 1,
+                      "created_at": "2026-09-30 10:00:00",
+                      "updated_at": "2026-09-30 10:00:00",
+                      "provider_label": "Meta Cloud API",
+                      "current_provider": "meta_cloud",
+                      "current_provider_label": "Meta Cloud API",
+                      "is_current_provider": true,
+                      "is_selectable": true,
+                      "disabled_reason": ""
+                    }
+                  ],
+                  "supports_sync": true,
+                  "current_provider": "meta_cloud",
+                  "current_provider_label": "Meta Cloud API",
+                  "provider_labels": {
+                    "meta_cloud": "Meta Cloud API",
+                    "twilio_whatsapp": "Twilio WhatsApp"
+                  },
+                  "last_synced_at": "2026-09-30 10:00:00",
+                  "has_inactive_provider_templates": false,
+                  "counts": {
+                    "total": 1,
+                    "approved": 1,
+                    "pending": 0,
+                    "rejected": 0
                   }
                 }
               }
@@ -112,6 +287,16 @@
           },
           "403": {
             "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "The selected messaging channel is not enabled.",
             "content": {
               "application/json": {
                 "schema": {
@@ -148,8 +333,9 @@
           }
         }
       },
-      "WhatsAppTemplate": {
+      "MessageTemplate": {
         "type": "object",
+        "description": "A row of fc_message_templates. WhatsApp rows mirror a Meta/Twilio template; SMS rows (only returned when channel=sms or all) are local text bodies.",
         "properties": {
           "id": {
             "type": "integer",
@@ -159,36 +345,44 @@
             "type": "string",
             "description": "Template channel.",
             "enum": [
-              "whatsapp"
+              "whatsapp",
+              "sms"
             ]
           },
           "provider": {
             "type": "string",
-            "description": "Provider slug."
+            "description": "Provider slug the template belongs to (meta_cloud or twilio_whatsapp). Empty for SMS."
           },
           "name": {
             "type": "string",
-            "description": "Provider template name."
+            "description": "Template name. WhatsApp names are lowercase letters, digits and underscores."
           },
           "language": {
             "type": "string",
-            "description": "Template language code."
+            "description": "Language code, for example en_US. SMS rows always use en."
           },
           "category": {
             "type": "string",
-            "description": "Template category."
+            "description": "Meta category: MARKETING, UTILITY or AUTHENTICATION. Empty for SMS."
           },
           "status": {
             "type": "string",
-            "description": "Provider review status."
+            "description": "Review status.",
+            "enum": [
+              "PENDING",
+              "APPROVED",
+              "REJECTED",
+              "PAUSED",
+              "DISABLED"
+            ]
           },
           "header_text": {
             "type": "string",
-            "description": "Header text, when present."
+            "description": "Text header, when present."
           },
           "body_text": {
             "type": "string",
-            "description": "Template body text."
+            "description": "Body text with {{1}}, {{2}} placeholders."
           },
           "footer_text": {
             "type": "string",
@@ -196,36 +390,36 @@
           },
           "buttons": {
             "type": "array",
-            "description": "Template buttons.",
+            "description": "Buttons (QUICK_REPLY, URL, PHONE_NUMBER).",
             "items": {
               "type": "object"
             }
           },
           "variables": {
             "type": "object",
-            "description": "Template variable examples or defaults."
+            "description": "Example values for the placeholders, as submitted for review."
           },
           "provider_template_id": {
             "type": "string",
-            "description": "Provider-side template ID."
+            "description": "Provider-side template ID (Meta template id or Twilio Content SID)."
           },
           "rejection_reason": {
             "type": "string",
-            "description": "Provider rejection reason, when present."
+            "description": "Provider rejection reason, when rejected."
           },
           "last_synced_at": {
             "type": [
               "string",
               "null"
             ],
-            "description": "Last provider sync timestamp."
+            "description": "When the row was last confirmed against the provider."
           },
           "created_by": {
             "type": [
               "integer",
               "null"
             ],
-            "description": "WordPress user ID that created the row."
+            "description": "WordPress user ID that submitted the template."
           },
           "created_at": {
             "type": "string",
@@ -234,6 +428,30 @@
           "updated_at": {
             "type": "string",
             "description": "Update timestamp."
+          },
+          "provider_label": {
+            "type": "string",
+            "description": "Display label of the template's provider."
+          },
+          "current_provider": {
+            "type": "string",
+            "description": "Provider currently configured for WhatsApp."
+          },
+          "current_provider_label": {
+            "type": "string",
+            "description": "Display label of the current provider."
+          },
+          "is_current_provider": {
+            "type": "boolean",
+            "description": "True when the template belongs to the configured provider."
+          },
+          "is_selectable": {
+            "type": "boolean",
+            "description": "Whether the template may be picked for a send. Templates of another provider are not selectable."
+          },
+          "disabled_reason": {
+            "type": "string",
+            "description": "Why the template is not selectable; empty when it is."
           }
         }
       }

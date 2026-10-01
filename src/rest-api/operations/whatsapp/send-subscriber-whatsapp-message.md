@@ -1,6 +1,6 @@
 ---
-title: Send Subscriber WhatsApp Message
-description: "Send a one-off WhatsApp session message or approved template to a subscriber/contact. Session messages require an open 24-hour WhatsApp window. **PRO** (requires FluentCampaign Pro WhatsApp module)."
+title: Send WhatsApp Message to Contact
+description: "Send one WhatsApp message to a contact right now through the configured provider, and record it on the contact's thread (a failed attempt is recorded as `failed` with the provider's error in meta). Checks, in order: contact exists, has a `phone`, and has not opted out / bounced on WhatsApp (`fcrm_manage_emails` callers still cannot override consent), then a configured driver."
 outline: false
 aside: false
 ---

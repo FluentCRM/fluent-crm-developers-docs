@@ -7,6 +7,10 @@ description: "Learn how to add a custom profile section tab to the FluentCRM com
 
 <Badge type="tip" vertical="top" text="FluentCRM Core" /> <Badge type="warning" vertical="top" text="Intermediate" />
 
+::: info Company module required
+Companies are opt-in: enable **Company Module** under Settings → Experimental, otherwise there is no company profile page to extend.
+:::
+
 You can add custom tabs to the FluentCRM company profile page using the Extender API. This works the same way as [contact profile sections](/modules/contact-profile-section), but for company profiles.
 
 ## Basic Example

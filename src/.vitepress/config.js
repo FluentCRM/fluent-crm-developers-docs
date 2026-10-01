@@ -195,12 +195,8 @@ export default withMermaid(defineConfig({
                         link: '/modules/admin-menu',
                     },
                     {
-                        text: 'Extending REST API',
-                        link: '/modules/extending-rest-api',
-                    },
-                    {
                         text: 'Event Tracking',
-                        link: '/modules/event-tracking/',
+                        link: '/modules/event-tracking',
                     }
                 ],
             },
@@ -210,7 +206,11 @@ export default withMermaid(defineConfig({
             },
             {
                 text: 'REST API',
-                link: '/rest-api/',
+                items: [
+                    { text: 'API Reference', link: '/rest-api/' },
+                    { text: 'Authentication', link: '/rest-api/authentication' },
+                    { text: 'Extending the REST API', link: '/rest-api/extending/' },
+                ],
             },
         ],
 

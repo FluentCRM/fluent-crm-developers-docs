@@ -27,7 +27,7 @@
       "put": {
         "operationId": "updateFunnelStickyNote",
         "summary": "PUT Update Automation Sticky Note",
-        "description": "Save or clear the automation's sticky note \u2014 the plain-text memo pinned to the top right of the automation canvas.\n\nThere is no separate delete endpoint: sending empty or whitespace-only `content` **removes** the note and returns `sticky_note: null`. Content is plain text and is sanitised on the way in; it is stored in funnel meta, not on the funnel row.\n\nThe note belongs to the automation as a whole. It is not attached to any step.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_write_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Save or clear the automation's sticky note \u2014 the plain-text memo pinned to the top right of the automation canvas.\n\nThere is no separate delete endpoint: sending empty or whitespace-only `content` **removes** the note and returns `sticky_note: null`. Content is plain text and is sanitised on the way in; it is stored in funnel meta, not on the funnel row.\n\nThe note belongs to the automation as a whole. It is not attached to any step.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels` or `fcrm_write_funnels` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],

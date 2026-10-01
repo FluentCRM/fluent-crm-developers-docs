@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getAbandonCartReportSummary",
         "summary": "GET Get Abandon Cart Report Summary",
-        "description": "Retrieve a summary of abandoned cart metrics including recovered, processing, lost, draft, and opt-out revenue with counts. Also includes the overall recovery rate.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Retrieve a summary of abandoned cart metrics including recovered, processing, lost, draft, and opt-out revenue with counts. Also includes the overall recovery rate.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels` or `fcrm_write_funnels` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Abandon Carts"
         ],

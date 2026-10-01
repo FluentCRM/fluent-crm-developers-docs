@@ -27,7 +27,7 @@
       "post": {
         "operationId": "createOrUpdateSequenceEmail",
         "summary": "POST Create or Update Sequence Email",
-        "description": "A fallback route that creates or updates a sequence email based on the `route_method` parameter. Use `create` to create a new email or `update` to update an existing one. This endpoint exists as a workaround for routes that need to handle both operations. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "A fallback route that creates or updates a sequence email based on the `route_method` parameter. Use `create` to create a new email or `update` to update an existing one. This endpoint exists as a workaround for routes that need to handle both operations. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Sequences"
         ],

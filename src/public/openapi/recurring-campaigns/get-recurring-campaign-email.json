@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getRecurringCampaignEmail",
         "summary": "GET Get Recurring Campaign Email",
-        "description": "Retrieve a single child email from a recurring campaign. Returns both the parent recurring campaign and the specific email. If the email has a `scheduled` status and its scheduled time has passed, its status is automatically updated to `working`. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "Retrieve a single child email from a recurring campaign. Returns both the parent recurring campaign and the specific email. If the email has a `scheduled` status and its scheduled time has passed, its status is automatically updated to `working`. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Recurring Campaigns"
         ],

@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getContactNotes",
         "summary": "GET Get Contact Notes",
-        "description": "Retrieve a paginated list of notes for a contact. Supports searching notes by title. Each note includes the user who created it.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts`\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Retrieve a paginated list of notes for a contact. Supports searching notes by title. Each note includes the user who created it.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts` or `fcrm_manage_contacts` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Contacts"
         ],

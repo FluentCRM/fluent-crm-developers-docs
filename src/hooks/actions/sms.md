@@ -1,128 +1,16 @@
 ---
-description: "Action hooks for SMS campaigns in FluentCRM Pro — campaign lifecycle, sending, delivery, opt-in/out, and provider webhooks."
+description: "Action hooks for SMS campaigns in FluentCampaign Pro — campaign lifecycle, sending, delivery, and opt-in/out."
 ---
 
-# SMS Campaign Hooks
+# Messaging Hooks (SMS & WhatsApp)
 
-<Badge type="danger" vertical="top" text="FluentCRM Pro" /> <Badge type="warning" vertical="top" text="Intermediate" />
+<Badge type="danger" vertical="top" text="FluentCampaign Pro" /> <Badge type="warning" vertical="top" text="Intermediate" />
 
-These action hooks fire during SMS campaign lifecycle events, message sending, delivery tracking, and subscriber opt-in/out. All SMS hooks require FluentCRM Pro.
+These action hooks fire during messaging campaign lifecycle events, message sending, delivery tracking, and subscriber opt-in/out. All Messaging hooks require FluentCampaign Pro.
 
-## Provider Registration
-
-### `fluent_crm/register_sms_providers`
-
-Fires once while the SMS module boots, after the built-in Twilio and AWS drivers are registered.
-Instantiate your own driver here — `AbstractSMSDriver`'s constructor registers itself with
-`SMSDriverManager`, which is what feeds the provider dropdown and settings form.
-
-This runs before the module's `isActive()` check, so the settings screen always lists your driver
-even when SMS is not configured yet.
-
-**Parameters**
-
-_None._
-
-**Usage:**
-```php
-use FluentCampaign\App\Modules\SMS\Providers\AbstractSMSDriver;
-
-class MySMSDriver extends AbstractSMSDriver
-{
-    public function getSlug(): string
-    {
-        return 'my_sms_service';
-    }
-
-    public function getLabel(): string
-    {
-        return 'My SMS Service';
-    }
-
-    public function getFields(): array
-    {
-        return [
-            'api_key'    => ['type' => 'text', 'label' => 'API Key'],
-            'api_secret' => ['type' => 'password', 'label' => 'API Secret'],
-        ];
-    }
-
-    public function send(string $to, string $message, array $settings): array
-    {
-        // Return ['status' => 'success', 'provider_message_id' => '...'] on success,
-        // or ['status' => 'error', 'message' => '...'] on failure — the scheduler
-        // checks $result['status'] === 'success' to mark the message sent.
-    }
-}
-
-add_action('fluent_crm/register_sms_providers', function() {
-    new MySMSDriver();
-});
-```
-
-**Source:** `fluentcampaign-pro/app/Modules/SMS/SMSModule.php`
-
----
-
-### `fluent_crm/register_whatsapp_providers`
-
-WhatsApp counterpart of [`fluent_crm/register_sms_providers`](#fluent-crm-register-sms-providers).
-Fires while the SMS module boots, after the built-in WhatsApp drivers are registered. Instantiate
-your own driver here — `AbstractWhatsAppDriver`'s constructor registers itself with
-`WhatsAppDriverManager`, which is what feeds the WhatsApp provider dropdown and settings form.
-
-::: warning WhatsApp channel status
-The WhatsApp channel is feature-flagged off in current Pro builds — the `do_action()` call in
-`SMSModule::register()` is commented out and `WhatsAppHelper::isActive()` returns `false` — so this
-hook does not fire yet. It is documented here as the registration point for third-party drivers once
-the channel is enabled.
+::: info Channel-specific hook names
+Campaign lifecycle hooks are built from the channel: `fluent_crm/{channel}_campaign_created`, `_updated`, `_scheduled`, `_status_active`, `_duplicated`, `_archived`, `_deleted` and `_processing_start`, where `{channel}` is `sms` or `whatsapp`. Anything documented below as `sms_campaign_*` has a `whatsapp_campaign_*` twin with the same arguments.
 :::
-
-**Parameters**
-
-_None._
-
-**Usage:**
-```php
-use FluentCampaign\App\Modules\SMS\Providers\AbstractWhatsAppDriver;
-
-class MyWhatsAppDriver extends AbstractWhatsAppDriver
-{
-    public function getSlug(): string
-    {
-        return 'my_whatsapp_service';
-    }
-
-    public function getLabel(): string
-    {
-        return 'My WhatsApp Service';
-    }
-
-    public function getFields(): array
-    {
-        return [
-            'api_key'    => ['type' => 'text', 'label' => 'API Key', 'required' => true, 'default' => ''],
-            'api_secret' => ['type' => 'password', 'label' => 'API Secret', 'required' => true, 'default' => ''],
-        ];
-    }
-
-    public function send(string $to, string $message, array $settings): array
-    {
-        // Return ['status' => 'success', 'status_code' => 200, 'message' => '...',
-        // 'response' => $response, 'provider_message_id' => '...'] on success,
-        // or ['status' => 'error', 'message' => '...'] on failure — the scheduler
-        // checks $result['status'] === 'success' to mark the message sent.
-    }
-}
-
-add_action('fluent_crm/register_whatsapp_providers', function() {
-    new MyWhatsAppDriver();
-});
-```
-
-**Source:** `fluentcampaign-pro/app/Modules/SMS/SMSModule.php`
-
----
 
 ## Campaign Lifecycle
 
@@ -140,7 +28,7 @@ add_action('fluent_crm/sms_campaign_created', function($campaign) {
 });
 ```
 
-**Source:** `fluentcampaign-pro/app/Modules/SMS/Http/Controllers/SMSController.php`
+**Source:** `fluentcampaign-pro/app/Modules/Messaging/Http/Controllers/MessageController.php`
 
 ---
 
@@ -158,7 +46,7 @@ add_action('fluent_crm/sms_campaign_updated', function($campaign) {
 });
 ```
 
-**Source:** `fluentcampaign-pro/app/Modules/SMS/Http/Controllers/SMSController.php`
+**Source:** `fluentcampaign-pro/app/Modules/Messaging/Http/Controllers/MessageController.php`
 
 ---
 
@@ -182,7 +70,7 @@ add_action('fluent_crm/sms_campaign_status_active', function($smsCampaign) {
 });
 ```
 
-**Source:** `fluentcampaign-pro/app/Modules/SMS/Http/Controllers/SMSController.php`
+**Source:** `fluentcampaign-pro/app/Modules/Messaging/Http/Controllers/MessageController.php`
 
 ---
 
@@ -203,7 +91,7 @@ add_action('fluent_crm/sms_campaign_scheduled', function($smsCampaign, $schedule
 }, 10, 2);
 ```
 
-**Source:** `fluentcampaign-pro/app/Modules/SMS/Http/Controllers/SMSController.php`
+**Source:** `fluentcampaign-pro/app/Modules/Messaging/Http/Controllers/MessageController.php`
 
 ---
 
@@ -223,7 +111,7 @@ add_action('fluent_crm/sms_campaign_processing_start', function($campaign) {
 });
 ```
 
-**Source:** `fluentcampaign-pro/app/Modules/SMS/Http/Controllers/SMSController.php`
+**Source:** `fluentcampaign-pro/app/Modules/Messaging/Http/Controllers/MessageController.php`
 
 ---
 
@@ -242,7 +130,7 @@ add_action('fluent_crm/sms_campaign_duplicated', function($newCampaign, $oldCamp
 }, 10, 2);
 ```
 
-**Source:** `fluentcampaign-pro/app/Modules/SMS/Http/Controllers/SMSController.php`
+**Source:** `fluentcampaign-pro/app/Modules/Messaging/Http/Controllers/MessageController.php`
 
 ---
 
@@ -263,7 +151,7 @@ add_action('fluent_crm/sms_campaign_archived', function($smsCampaign) {
 });
 ```
 
-**Source:** `fluentcampaign-pro/app/Modules/SMS/Http/Controllers/SMSController.php`, `fluentcampaign-pro/app/Modules/SMS/SMSScheduler.php`
+**Source:** `fluentcampaign-pro/app/Modules/Messaging/Http/Controllers/MessageController.php`, `fluentcampaign-pro/app/Modules/Messaging/Handlers/MessageScheduler.php`
 
 ---
 
@@ -287,7 +175,7 @@ add_action('fluent_crm/sms_campaign_deleted', function($campaignId) {
 });
 ```
 
-**Source:** `fluentcampaign-pro/app/Modules/SMS/Http/Controllers/SMSController.php`
+**Source:** `fluentcampaign-pro/app/Modules/Messaging/Http/Controllers/MessageController.php`
 
 ---
 
@@ -310,7 +198,7 @@ add_action('fluent_crm/sms_sent', function($smsMessage, $result) {
 }, 10, 2);
 ```
 
-**Source:** `fluentcampaign-pro/app/Modules/SMS/SMSScheduler.php`
+**Source:** `fluentcampaign-pro/app/Modules/Messaging/Handlers/MessageScheduler.php`
 
 ---
 
@@ -331,7 +219,7 @@ add_action('fluent_crm/sms_failed', function($smsMessage, $errorMessage) {
 }, 10, 2);
 ```
 
-**Source:** `fluentcampaign-pro/app/Modules/SMS/SMSScheduler.php`
+**Source:** `fluentcampaign-pro/app/Modules/Messaging/Handlers/MessageScheduler.php`
 
 ---
 
@@ -355,7 +243,7 @@ add_action('fluent_crm/whatsapp_sent', function($smsMessage, $result) {
 }, 10, 2);
 ```
 
-**Source:** `fluentcampaign-pro/app/Modules/SMS/SMSScheduler.php`
+**Source:** `fluentcampaign-pro/app/Modules/Messaging/Handlers/MessageScheduler.php`
 
 ---
 
@@ -379,7 +267,7 @@ add_action('fluent_crm/whatsapp_failed', function($smsMessage, $errorMessage) {
 }, 10, 2);
 ```
 
-**Source:** `fluentcampaign-pro/app/Modules/SMS/SMSScheduler.php`
+**Source:** `fluentcampaign-pro/app/Modules/Messaging/Handlers/MessageScheduler.php`
 
 ---
 
@@ -401,7 +289,7 @@ add_action('fluent_crm/contact_sms_subscribed', function($subscriber, $data) {
 }, 10, 2);
 ```
 
-**Source:** `fluentcampaign-pro/app/Modules/SMS/SMSHelper.php`
+**Source:** `fluentcampaign-pro/app/Modules/Messaging/SMS/SMSHelper.php`
 
 ---
 
@@ -422,7 +310,7 @@ add_action('fluent_crm/contact_sms_unsubscribed', function($subscriber, $data) {
 }, 10, 2);
 ```
 
-**Source:** `fluentcampaign-pro/app/Modules/SMS/SMSHelper.php`
+**Source:** `fluentcampaign-pro/app/Modules/Messaging/SMS/SMSHelper.php`
 
 ---
 
@@ -445,7 +333,7 @@ add_action('fluent_crm/contact_whatsapp_subscribed', function($subscriber, $data
 }, 10, 2);
 ```
 
-**Source:** `fluentcampaign-pro/app/Modules/SMS/WhatsAppHelper.php`
+**Source:** `fluentcampaign-pro/app/Modules/Messaging/WhatsApp/WhatsAppHelper.php`
 
 ---
 
@@ -468,61 +356,112 @@ add_action('fluent_crm/contact_whatsapp_unsubscribed', function($subscriber, $da
 }, 10, 2);
 ```
 
-**Source:** `fluentcampaign-pro/app/Modules/SMS/WhatsAppHelper.php`
+**Source:** `fluentcampaign-pro/app/Modules/Messaging/WhatsApp/WhatsAppHelper.php`
 
 ---
 
-## Provider Webhooks
+## WhatsApp Inbound & Receipts
 
-### `fluent_crm_sms_custom_provider_webhook`
+### `fluent_crm/whatsapp_message_received`
 
-Generic webhook hook for custom SMS providers. Fires when an incoming webhook is received for a
-provider that has no built-in handler. The signature check has already passed and the payload is
-sanitized by the time this runs.
+Fires after an inbound WhatsApp message has been stored in its conversation thread. The messaging
+module ships no inbound automation trigger, so this is the extension point for reacting to
+messages contacts send you. It fires for every stored inbound message, including keyword replies
+such as `STOP` and `START`.
 
-::: warning
-Built-in providers never reach this hook. `twilio`, `twilio_whatsapp` and `meta_cloud` are routed to
-their own handlers in `SMSHandler`, so only providers registered through
-[`fluent_crm/register_sms_providers`](#fluent-crm-register-sms-providers) fire it.
+::: warning The contact may be null
+`$subscriber` is `null` when the sender's number does not match a CRM contact, which is the common
+case for a first contact. Always check it before use.
 :::
 
 **Parameters**
-- `$bodyData` Array - the sanitized webhook request body
-- `$provider` String - provider slug taken from the webhook URL
+- `$record` Message Model - the stored inbound message (`direction` is `inbound`, `status` is `received`)
+- `$subscriber` [Subscriber Model](/database/models/subscriber)|null - the contact who sent it, or `null` for an unknown number
+- `$data` Array - the raw, normalized provider payload for the message
 
 **Usage:**
 ```php
-add_action('fluent_crm_sms_custom_provider_webhook', function($bodyData, $provider) {
-    if ($provider === 'my_sms_service') {
-        // Handle delivery receipt, status update, etc.
+add_action('fluent_crm/whatsapp_message_received', function($record, $subscriber, $data) {
+    if (!$subscriber) {
+        return; // Unknown sender
     }
-}, 10, 2);
+
+    if (stripos($record->content, 'pricing') !== false) {
+        $subscriber->attachTags(['Asked About Pricing']);
+    }
+}, 10, 3);
 ```
 
-**Source:** `fluentcampaign-pro/app/Modules/SMS/SMSReceiver.php`
+**Source:** `fluentcampaign-pro/app/Modules/Messaging/WhatsApp/WhatsAppHelper.php`
 
 ---
 
-### `fluent_crm_sms_{$provider}_webhook`
+### `fluent_crm/whatsapp_message_{type}`
 
-Provider-specific webhook hook, fired immediately after
-`fluent_crm_sms_custom_provider_webhook`. The hook name includes the provider slug — for a driver
-whose `getSlug()` returns `my_sms_service`, the hook is `fluent_crm_sms_my_sms_service_webhook`.
+Delivery-receipt hook built from the receipt type. It fires when a provider status webhook reports
+that an outbound WhatsApp message was `delivered` or `read`, so the two concrete hooks are
+`fluent_crm/whatsapp_message_delivered` and `fluent_crm/whatsapp_message_read`. The WhatsApp funnel
+benchmarks listen on these. Other receipt types (such as `failed`) do not fire a hook of this form.
 
-::: warning
-Like the generic hook above, this only fires for custom providers. There is no
-`fluent_crm_sms_twilio_webhook` — Twilio, Twilio WhatsApp and Meta Cloud are handled by their
-built-in `SMSReceiver` methods and never reach this dispatcher.
-:::
+The hook fires after the message row has been updated, and fires even when an out-of-order receipt
+did not change the stored status (for example a late `delivered` arriving after `read`).
 
 **Parameters**
-- `$bodyData` Array - the sanitized webhook request body
+- `$message` Message Model - the outbound message, freshly reloaded after the receipt was applied
 
 **Usage:**
 ```php
-add_action('fluent_crm_sms_my_sms_service_webhook', function($bodyData) {
-    // Handle a delivery receipt or inbound reply from your own provider
+add_action('fluent_crm/whatsapp_message_read', function($message) {
+    // The contact has read the message
+    error_log('WhatsApp message #' . $message->id . ' was read');
 });
 ```
 
-**Source:** `fluentcampaign-pro/app/Modules/SMS/SMSReceiver.php`
+**Source:** `fluentcampaign-pro/app/Modules/Messaging/WhatsApp/WhatsAppReceiver.php`
+
+---
+
+## Webhooks & Conversations
+
+### `fluent_crm/messaging_webhook_rejected`
+
+Fires when a messaging provider webhook is rejected before it reaches a receiver (a missing or
+invalid provider, a missing or invalid webhook hash, a provider signature that does not verify, or a
+request to the retired Twilio URL, which answers 410). The provider only sees a bare
+HTTP error and nothing is written to the error log, so hook this when you need a trace of why a
+webhook was refused. The request ends right after the action runs.
+
+**Parameters**
+- `$reason` String - human-readable reason, also sent as the response body
+- `$provider` String - provider slug from the request; empty when the provider was the missing piece
+- `$status` Integer - HTTP status code being returned
+- `$detail` String - extra context for diagnostics only; never sent in the response
+
+**Usage:**
+```php
+add_action('fluent_crm/messaging_webhook_rejected', function($reason, $provider, $status, $detail) {
+    error_log(sprintf('Messaging webhook rejected (%s, HTTP %d): %s %s', $provider, $status, $reason, $detail));
+}, 10, 4);
+```
+
+**Source:** `fluentcampaign-pro/app/Modules/Messaging/Handlers/MessageHandler.php`
+
+---
+
+### `fluent_crm/messaging_thread_contact_linked`
+
+Fires after an inbox conversation that had no contact is attached to a CRM contact from the admin
+inbox. It does not fire when the conversation was already linked to that same contact.
+
+**Parameters**
+- `$thread` MessageThread Model - the conversation that was linked
+- `$contact` [Subscriber Model](/database/models/subscriber) - the contact it was linked to
+
+**Usage:**
+```php
+add_action('fluent_crm/messaging_thread_contact_linked', function($thread, $contact) {
+    // React to a conversation being matched to a contact
+}, 10, 2);
+```
+
+**Source:** `fluentcampaign-pro/app/Modules/Messaging/Http/Controllers/MessageThreadController.php`

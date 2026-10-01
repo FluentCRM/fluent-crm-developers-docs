@@ -57,7 +57,7 @@
                     },
                     "license_key": {
                       "type": "string",
-                      "description": "Partially masked license key (e.g., 'abcd****efgh')."
+                      "description": "Masked license key (first and last 4 characters visible). `activation_hash` is never returned."
                     },
                     "purchase_url": {
                       "type": "string",
@@ -65,7 +65,7 @@
                     },
                     "renew_url": {
                       "type": "string",
-                      "description": "URL to renew the license. Only present when status is 'expired'."
+                      "description": "URL to renew the license. Present when status is 'expired' or 'valid'."
                     },
                     "error": {
                       "type": "boolean",
@@ -83,16 +83,68 @@
                       "type": "string",
                       "description": "Expiry date, or `lifetime` for a perpetual licence."
                     },
-                    "activation_hash": {
+                    "account_url": {
                       "type": "string",
-                      "description": "Hash identifying this site's activation."
+                      "description": "URL of the customer's account area on the licensing store."
+                    },
+                    "support_url": {
+                      "type": "string",
+                      "description": "URL of the support page."
+                    },
+                    "license_key_masked": {
+                      "type": "string",
+                      "description": "Masked license key (first and last 4 characters visible). Same value as `license_key`."
+                    },
+                    "product_title": {
+                      "type": "string",
+                      "description": "Product name shown on the license screen."
+                    },
+                    "is_lifetime": {
+                      "type": "boolean",
+                      "description": "True when `expires` is `lifetime`."
+                    },
+                    "expires_human": {
+                      "type": "string",
+                      "description": "Expiry date formatted with the site's date format. Empty string for lifetime licenses or when no expiry date is known."
+                    },
+                    "days_remaining": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "description": "Whole days until expiry (negative once expired). null for lifetime licenses or when no expiry date is known."
+                    },
+                    "in_grace_period": {
+                      "type": "boolean",
+                      "description": "True when the license has expired but is still inside the post-expiry grace period."
+                    },
+                    "grace_period_days": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "description": "Length of the grace period in days. null unless an expiry date is known and a grace period applies."
+                    },
+                    "last_checked_human": {
+                      "type": "string",
+                      "description": "Relative time of the last remote license check, e.g. `5 mins ago`. Empty string if never checked."
                     }
                   }
                 },
                 "example": {
                   "status": "valid",
                   "license_key": "abcd************************efgh",
-                  "purchase_url": "https://fluentcrm.com/pricing/"
+                  "purchase_url": "https://fluentcrm.com/pricing/",
+                  "license_key_masked": "abcd************************efgh",
+                  "product_title": "FluentCRM Pro",
+                  "is_lifetime": false,
+                  "expires_human": "January 1, 2027",
+                  "days_remaining": 92,
+                  "in_grace_period": false,
+                  "grace_period_days": null,
+                  "last_checked_human": "5 mins ago",
+                  "account_url": "https://fluentcrm.com/account/",
+                  "support_url": "https://fluentcrm.com/support/"
                 }
               }
             }

@@ -27,7 +27,7 @@
       "delete": {
         "operationId": "deleteManager",
         "summary": "DELETE Remove Manager",
-        "description": "Remove a FluentCRM manager by their WordPress user ID. This removes all FluentCRM permissions from the user and clears their manager role flag. The WordPress user account itself is not affected.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `SettingsPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "Remove a FluentCRM manager by their WordPress user ID. This removes all FluentCRM permissions from the user and clears their manager role flag. The WordPress user account itself is not affected.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings` or `manage_options` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `ManagerPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Pro Settings"
         ],

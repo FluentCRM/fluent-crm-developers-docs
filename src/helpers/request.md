@@ -1,3 +1,8 @@
+---
+title: Request Helper
+description: "Read and sanitize input with the FluentCRM Request class."
+---
+
 # Request
 
 `FluentCrm\Framework\Http\Request\Request`

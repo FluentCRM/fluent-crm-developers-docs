@@ -27,7 +27,7 @@
       "post": {
         "operationId": "saveFunnelSequencesFallback",
         "summary": "POST Save Funnel Sequences (Fallback)",
-        "description": "Fallback endpoint to save funnel sequences when the funnel ID is provided in the request body instead of the URL path. Delegates to the same logic as the primary save sequences endpoint.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_write_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Fallback endpoint to save funnel sequences when the funnel ID is provided in the request body instead of the URL path. Delegates to the same logic as the primary save sequences endpoint.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels` or `fcrm_write_funnels` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],
