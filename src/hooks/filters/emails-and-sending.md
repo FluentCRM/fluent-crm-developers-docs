@@ -104,6 +104,10 @@ add_filter('fluent_crm/email_data_before_headers', function($data, $subscriber, 
 
 Parse smart codes in email text. This filter is called in many places — campaign body, subject, footer, pre-header, double optin emails, and more. It is the primary filter for resolving smart code tokens.
 
+::: warning Deprecated alias
+`fluentcrm_parse_campaign_email_text` (deprecated since 2.6.6) is still registered and calls `_deprecated_hook()`; it parses the text with the core parser. Use this `fluent_crm/` name.
+:::
+
 **Parameters**
 - `$text` String - Text containing smart code tokens
 - `$subscriber` [Subscriber Model](/database/models/subscriber)
@@ -384,6 +388,10 @@ add_filter('fluent_crm/default_email_design_template', function($slug) {
 ### `fluent_crm/email-design-template-{$template}`
 
 Dynamic filter to render the email body through a specific design template. The `{$template}` part is the template slug (e.g., `simple`, `classic`, `visual_builder`).
+
+::: warning Deprecated aliases
+The `fluentcrm_email-design-template-{plain,simple,classic,raw_classic,web_preview}` filters (deprecated since 2.6.6) are still registered for the built-in templates and call `_deprecated_hook()`. Hook the `fluent_crm/` name instead.
+:::
 
 **Parameters**
 - `$emailBody` String - Raw email body HTML
