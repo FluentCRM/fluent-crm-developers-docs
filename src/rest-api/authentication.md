@@ -268,7 +268,7 @@ Several permissions imply others: granting *Contacts Add/Update/Import* also req
 ## Next Steps
 
 Now that you have authentication set up, you can:
-- [Manage Contacts](/rest-api/contacts)
-- [Work with Lists and Tags](/rest-api/lists)
-- [Create Campaigns](/rest-api/campaigns)
-- [Access Reports](/rest-api/reports)
+- [Manage Contacts](/rest-api/operations/contacts/list-contacts)
+- [Work with Lists and Tags](/rest-api/operations/lists/list-lists)
+- [Create Campaigns](/rest-api/operations/campaigns/list-campaigns)
+- [Access Reports](/rest-api/operations/reports/get-dashboard-stats)

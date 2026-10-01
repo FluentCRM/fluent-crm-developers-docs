@@ -6,7 +6,7 @@ description: "EventTracker Model stores custom event tracking data for contacts 
 
 | DB Table Name | {wp_db_prefix}_fc_event_tracking                                              |
 |---------------|-------------------------------------------------------------------------------|
-| Schema        | <a href="/database/#fc-event-tracking-table">Check Schema</a>   |
+| Schema        | <a href="/database/#fc-event-tracking">Check Schema</a>   |
 | Source File   | fluent-crm/app/Models/EventTracker.php                                        |
 | Name Space    | FluentCrm\App\Models                                                          |
 | Class         | FluentCrm\App\Models\EventTracker                                             |

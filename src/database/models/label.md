@@ -6,7 +6,7 @@ description: "Label Model represents organizational labels (tags for campaigns a
 
 | DB Table Name | {wp_db_prefix}_fc_terms                                            |
 |---------------|--------------------------------------------------------------------|
-| Schema        | <a href="/database/#fc-terms-table">Check Schema</a> |
+| Schema        | <a href="/database/#fc-terms">Check Schema</a> |
 | Source File   | fluent-crm/app/Models/Label.php                                    |
 | Name Space    | FluentCrm\App\Models                                               |
 | Class         | FluentCrm\App\Models\Label                                         |

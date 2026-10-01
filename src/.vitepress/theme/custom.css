@@ -641,3 +641,23 @@ details.custom-block.details summary {
     border-color: var(--vp-c-brand-2);
     box-shadow: 0 2px 12px rgba(119, 66, 230, 0.15);
 }
+
+/* Database schema page: compact column tables */
+.db-schema-page .vp-doc table {
+    display: table;
+    width: 100%;
+    font-size: 13px;
+}
+
+.db-schema-page .vp-doc th,
+.db-schema-page .vp-doc td {
+    padding: 4px 10px;
+}
+
+.db-schema-page .vp-doc td code {
+    font-size: 0.9em;
+}
+
+.db-schema-page .vp-doc h3 {
+    font-size: 1.1rem;
+}

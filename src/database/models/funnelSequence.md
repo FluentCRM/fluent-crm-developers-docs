@@ -6,7 +6,7 @@ description: "Learn about the FunnelSequence Model in FluentCRM, designed to aut
 
 | DB Table Name | {wp_db_prefix}_fc_funnel_sequences                                      |
 |---------------|-------------------------------------------------------------------------|
-| Schema        | <a href="/database/#fc_funnel_sequences">Check Schema</a> |
+| Schema        | <a href="/database/#fc-funnel-sequences">Check Schema</a> |
 | Source File   | fluent-crm/app/Models/FunnelSequence.php                                |
 | Name Space    | FluentCrm\App\Models                                                    |
 | Class         | FluentCrm\App\Models\FunnelSequence                                     |

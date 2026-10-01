@@ -6,6 +6,7 @@ import modulesSidebar from './sidebars/modules.js'
 import restApiSidebar from './sidebars/rest-api.js'
 
 import { defineConfig } from 'vitepress'
+import { withMermaid } from 'vitepress-plugin-mermaid'
 import { fileURLToPath, URL } from 'node:url'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -59,8 +60,8 @@ function rawMarkdownPlugin() {
     }
 }
 
-export default defineConfig({
-    ignoreDeadLinks: true,
+export default withMermaid(defineConfig({
+    ignoreDeadLinks: false,
 
     // Keep base64 for client-side "Copy for LLM"
     transformPageData(pageData) {
@@ -89,12 +90,20 @@ export default defineConfig({
 
     vite: {
         plugins: [rawMarkdownPlugin()],
+        // Mermaid 11 imports this CJS-only package; pnpm hides it from Vite's pre-bundler unless listed
+        optimizeDeps: { include: ['fastdom', 'fastdom/extensions/fastdom-promised.js'] },
         assetsInclude: ['**/*.json'],
         resolve: {
             alias: {
                 '/assets': fileURLToPath(new URL('./public/assets', import.meta.url))
             }
         }
+    },
+
+    // Render ER diagrams at natural size (ZoomBox handles fit/zoom) with a readable font
+    mermaid: {
+        er: { layoutDirection: 'LR', useMaxWidth: false, fontSize: 16, minEntityWidth: 140, minEntityHeight: 50 },
+        themeVariables: { fontSize: '16px' }
     },
 
     title: 'FluentCRM Developers',
@@ -235,4 +244,4 @@ export default defineConfig({
         }
     },
 
-})
+}))

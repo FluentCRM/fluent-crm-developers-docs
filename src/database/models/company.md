@@ -6,7 +6,7 @@ description: "Company Model represents company/organization data in FluentCRM."
 
 | DB Table Name | {wp_db_prefix}_fc_companies                                              |
 |---------------|--------------------------------------------------------------------------|
-| Schema        | <a href="/database/#fc-companies-table">Check Schema</a>   |
+| Schema        | <a href="/database/#fc-companies">Check Schema</a>   |
 | Source File   | fluent-crm/app/Models/Company.php                                        |
 | Name Space    | FluentCrm\App\Models                                                     |
 | Class         | FluentCrm\App\Models\Company                                             |

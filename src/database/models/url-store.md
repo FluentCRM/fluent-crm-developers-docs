@@ -6,7 +6,7 @@ description: "Learn about the Url Store Model in FluentCRM, which stores shorten
 
 | DB Table Name | {wp_db_prefix}_fc_url_stores                                              |
 |---------------|---------------------------------------------------------------------------|
-| Schema        | <a href="/database/#fc-url-stores-table">Check Schema</a>   |
+| Schema        | <a href="/database/#fc-url-stores">Check Schema</a>   |
 | Source File   | fluent-crm/app/Models/UrlStores.php                                       |
 | Name Space    | FluentCrm\App\Models                                                      |
 | Class         | FluentCrm\App\Models\UrlStores                                            |

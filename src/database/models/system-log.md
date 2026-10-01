@@ -6,7 +6,7 @@ description: "SystemLog Model stores internal system log entries in FluentCRM."
 
 | DB Table Name | {wp_db_prefix}_fc_subscriber_notes                                            |
 |---------------|-------------------------------------------------------------------------------|
-| Schema        | <a href="/database/#fc-subscriber-notes-table">Check Schema</a> |
+| Schema        | <a href="/database/#fc-subscriber-notes">Check Schema</a> |
 | Source File   | fluent-crm/app/Models/SystemLog.php                                           |
 | Name Space    | FluentCrm\App\Models                                                          |
 | Class         | FluentCrm\App\Models\SystemLog                                                |
