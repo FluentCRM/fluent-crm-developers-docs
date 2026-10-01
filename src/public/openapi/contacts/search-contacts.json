@@ -40,7 +40,7 @@
           {
             "name": "search",
             "in": "query",
-            "description": "Search term to match against contact name and email.",
+            "description": "Same smart-search syntax as `search` on `GET /subscribers` (every word must match; email, phone, `#ID` and `key:value` scopes). Results are ordered best match first.",
             "required": false,
             "schema": {
               "type": "string"

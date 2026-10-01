@@ -54,7 +54,7 @@
           {
             "name": "search",
             "in": "query",
-            "description": "Search contacts by name, email, or other searchable fields.",
+            "description": "Smart search. Every word must appear in the first name, last name or email (word order does not matter). Free text is detected as an email (contains `@`; a full address is an exact match), a phone number (6+ digits, formatting ignored) or a contact ID (`#123`). Quoted text (`\"timothy cook\"`) matches a phrase in the full name or email. Scope to one field with `key:value` or `key:\"quoted value\"`; keys: `id` (comma-separated IDs), `email`, `name`, `first`/`first_name`, `last`/`last_name`, `phone`, `address`, `city`, `state`, `zip`/`postal_code`, `country`, `source`, or any contact custom-field slug. All terms combine with AND. An unknown key is searched as plain text and reported in `search_meta.unknown`.",
             "required": false,
             "schema": {
               "type": "string"
@@ -63,7 +63,7 @@
           {
             "name": "sort_by",
             "in": "query",
-            "description": "Column to sort by.",
+            "description": "Column to sort by, or `relevance` for best match first (ties by newest). With a `search` and the default `id` + `DESC`, results are ordered by relevance; any other column sort is honoured as given.",
             "required": false,
             "schema": {
               "type": "string",
@@ -103,6 +103,20 @@
               "enum": [
                 "true",
                 "false"
+              ]
+            }
+          },
+          {
+            "name": "search_custom_fields",
+            "in": "query",
+            "description": "Set to `yes` (or `true`/`1`) to also match plain `search` text against contact custom-field values. Off by default. Independent of `custom_fields`, which only adds values to the response. Scoped `slug:value` searches work either way.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "true",
+                "1"
               ]
             }
           },
@@ -272,6 +286,75 @@
                         "null"
                       ],
                       "description": "Echoes back the `custom_fields` query parameter value."
+                    },
+                    "search_meta": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "description": "How `search` was understood, or `null` when there is no search.",
+                      "properties": {
+                        "mode": {
+                          "type": "string",
+                          "enum": [
+                            "words",
+                            "email",
+                            "phone",
+                            "id",
+                            "scoped"
+                          ],
+                          "description": "What the free text was detected as; `id` or `scoped` when there is no free text."
+                        },
+                        "text": {
+                          "type": "string",
+                          "description": "The free text after scoped terms and `#ID` tokens are removed."
+                        },
+                        "words": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "Words and quoted phrases that must each match."
+                        },
+                        "ids": {
+                          "type": "array",
+                          "items": {
+                            "type": "integer"
+                          },
+                          "description": "Contact IDs from `#123` tokens."
+                        },
+                        "scoped": {
+                          "type": "array",
+                          "description": "`key:value` terms.",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "key": {
+                                "type": "string",
+                                "description": "Key as typed (lowercased), e.g. `zip`."
+                              },
+                              "field": {
+                                "type": "string",
+                                "description": "Resolved field, e.g. `postal_code`, or the custom-field slug."
+                              },
+                              "value": {
+                                "type": "string"
+                              },
+                              "custom": {
+                                "type": "boolean",
+                                "description": "True for a custom-field slug."
+                              }
+                            }
+                          }
+                        },
+                        "unknown": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "Keys that are not search fields; their tokens were searched as plain text."
+                        }
+                      }
                     }
                   }
                 },
@@ -335,7 +418,8 @@
                       }
                     ]
                   },
-                  "custom": null
+                  "custom": null,
+                  "search_meta": null
                 }
               }
             }
