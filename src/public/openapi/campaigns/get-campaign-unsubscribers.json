@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getCampaignUnsubscribers",
         "summary": "GET Get Campaign Unsubscribers",
-        "description": "Get a paginated list of contacts who unsubscribed as a result of this campaign. Each record includes the subscriber details and their unsubscribe reason.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Get a paginated list of contacts who unsubscribed as a result of this campaign. Each record includes the subscriber details and their unsubscribe reason.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Campaigns"
         ],

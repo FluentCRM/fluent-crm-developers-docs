@@ -27,7 +27,7 @@
       "post": {
         "operationId": "duplicateCampaign",
         "summary": "POST Duplicate Campaign",
-        "description": "Create a duplicate of an existing campaign. The new campaign is created in draft status with a `[Duplicate]` title prefix. All email content, UTM settings, design template, settings, labels, and A/B test subjects are copied to the new campaign.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Create a duplicate of an existing campaign. The new campaign is created in draft status with a `[Duplicate]` title prefix. All email content, UTM settings, design template, settings, labels, and A/B test subjects are copied to the new campaign.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Campaigns"
         ],

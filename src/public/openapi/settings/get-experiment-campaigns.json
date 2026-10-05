@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getExperimentCampaigns",
         "summary": "GET Experiment Campaigns",
-        "description": "Retrieve all campaigns sorted by ID in descending order. Used in the experimental settings UI to allow selecting campaigns for experimental features.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `SettingsPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Retrieve campaigns, newest first (ID descending), capped at 200 per request. Only `id`, `title`, `email_subject` and `status` are returned. Used in the experimental settings UI to allow selecting campaigns for experimental features.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `SettingsPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Settings"
         ],
@@ -38,7 +38,7 @@
         ],
         "responses": {
           "200": {
-            "description": "List of all campaigns.",
+            "description": "List of campaigns (bounded, newest first).",
             "content": {
               "application/json": {
                 "schema": {
@@ -61,57 +61,12 @@
                             "type": "string",
                             "description": "Campaign status."
                           },
-                          "type": {
-                            "type": "string",
-                            "description": "Campaign type."
-                          },
-                          "slug": {
-                            "type": "string"
-                          },
-                          "template_id": {
-                            "type": [
-                              "integer",
-                              "null"
-                            ]
-                          },
                           "email_subject": {
                             "type": [
                               "string",
                               "null"
-                            ]
-                          },
-                          "email_pre_header": {
-                            "type": [
-                              "string",
-                              "null"
-                            ]
-                          },
-                          "email_body": {
-                            "type": [
-                              "string",
-                              "null"
-                            ]
-                          },
-                          "design_template": {
-                            "type": [
-                              "string",
-                              "null"
-                            ]
-                          },
-                          "scheduled_at": {
-                            "type": [
-                              "string",
-                              "null"
                             ],
-                            "format": "date-time"
-                          },
-                          "created_at": {
-                            "type": "string",
-                            "format": "date-time"
-                          },
-                          "updated_at": {
-                            "type": "string",
-                            "format": "date-time"
+                            "description": "Campaign email subject."
                           }
                         }
                       }
@@ -123,18 +78,52 @@
                     {
                       "id": 10,
                       "title": "Welcome Campaign",
-                      "status": "sent",
-                      "type": "campaign",
-                      "slug": "welcome-campaign",
-                      "created_at": "2024-01-15 10:30:00",
-                      "updated_at": "2024-01-15 12:00:00"
+                      "email_subject": "Welcome aboard",
+                      "status": "sent"
                     }
                   ]
                 }
               }
             }
           }
-        }
+        },
+        "parameters": [
+          {
+            "name": "searchBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Case-insensitive substring match on the campaign title. Use it to reach campaigns beyond the 200 newest."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "default": 200
+            },
+            "description": "Maximum campaigns to return. Can only narrow the page: missing, non-positive or values above 200 fall back to 200."
+          },
+          {
+            "name": "include_ids",
+            "in": "query",
+            "required": false,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "maxItems": 200
+            },
+            "description": "Campaign IDs appended to the result even when they fall outside the limit or the search, so already-saved selections resolve to a title. Capped at 200 IDs."
+          }
+        ]
       }
     }
   },

@@ -25,4 +25,6 @@ Filter hooks are used to return modified values for certain parameters, based on
 7. **[Companies](/hooks/filters/companies)** — Company types, categories, profile sections, CSV export
 8. **[Block Email Editor](/hooks/filters/block-editor)** — Editor settings, patterns, capabilities, allowed blocks
 9. **[Webhooks & Integrations](/hooks/filters/webhooks-and-integrations)** — Webhook data, imports, migrations, commerce providers, WooCommerce, EDD, dynamic segments
-10. **[SMS Campaigns](/hooks/filters/sms)** <Badge type="danger" vertical="middle" text="Pro" /> — SMS providers, processing limits, scheduling, message content
+10. **[Messaging (SMS & WhatsApp)](/hooks/filters/sms)** <Badge type="danger" vertical="middle" text="Pro" /> — processing limits, scheduling, message content
+11. **[MCP](/hooks/filters/mcp)** — MCP server route, ability list, safety levels, bulk caps, agent guidance
+12. **[Settings & System](/hooks/filters/settings-and-system)** — Experimental settings, loopback requests, remote templates, block parsing, privacy redaction, uploads, smart links

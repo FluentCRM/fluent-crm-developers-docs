@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getTemplate",
         "summary": "GET Get Template",
-        "description": "Retrieve a single email template by ID. Returns the template content, email subject, edit type, design template, and settings including template configuration and footer settings. If the template ID does not exist, returns a blank template structure with defaults.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_templates`\n\n_Enforced by `TemplatePolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Retrieve a single email template by ID. Returns the template content, email subject, edit type, design template, and settings including template configuration and footer settings. If the template ID does not exist, returns a blank template structure with defaults.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `TemplatePolicy::template()`._\n\n<!-- /fc:access -->",
         "tags": [
           "Templates"
         ],

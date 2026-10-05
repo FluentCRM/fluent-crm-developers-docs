@@ -27,7 +27,7 @@
       "post": {
         "operationId": "createSmartLink",
         "summary": "POST Create Smart Link",
-        "description": "Create a new smart link with a target URL and optional actions (add/remove tags, add/remove lists, auto-login). A unique short slug is generated automatically. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contacts`\n\n_Enforced by `SmartLinksPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "Create a new smart link with a target URL and optional actions (add/remove tags, add/remove lists, auto-login). A unique short slug is generated automatically. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings` or `fcrm_manage_contacts` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SmartLinksPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Smart Links"
         ],

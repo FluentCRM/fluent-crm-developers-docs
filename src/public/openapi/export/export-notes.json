@@ -1,0 +1,160 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/exports/notes": {
+      "post": {
+        "operationId": "exportNotes",
+        "summary": "POST Export Contact Notes",
+        "description": "Download a contact's (or company's) notes as a CSV.\n\nThis is a **POST-only attachment endpoint**: submit it as a form (`application/x-www-form-urlencoded`) including a `_wpnonce` REST nonce. The server verifies the nonce, then streams the file and ends the request, so use it from a browser form or download link, not as a JSON API. <Badge type=\"warning\" text=\"Pro\" />\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contacts_export`\n\n_Enforced by `ExportPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "tags": [
+          "Export"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "subscriber_id": {
+                    "type": "integer",
+                    "description": "Contact (or company) ID whose notes are exported."
+                  },
+                  "route_prefix": {
+                    "type": "string",
+                    "description": "`subscribers` (default) for contact notes or `companies` for company notes.",
+                    "enum": [
+                      "subscribers",
+                      "companies"
+                    ],
+                    "default": "subscribers"
+                  },
+                  "_wpnonce": {
+                    "type": "string",
+                    "description": "A `wp_rest` nonce (`wp_create_nonce('wp_rest')`). **Required** \u2014 without a valid one the route returns 403 before any data is read. The admin UI submits it in a temporary form body so it never appears in a URL."
+                  }
+                },
+                "required": [
+                  "_wpnonce",
+                  "subscriber_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The export streams back as a file attachment (`{subscriber_id}-contact-notes-<date>.csv`); the response is not wrapped in the usual JSON envelope.",
+            "headers": {
+              "Content-Disposition": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "`attachment; filename=...`"
+              }
+            },
+            "content": {
+              "text/csv": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Invalid or missing `_wpnonce`, or the caller lacks the capability.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed \u2014 the response message names the offending field.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

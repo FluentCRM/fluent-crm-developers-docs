@@ -27,7 +27,7 @@
       "post": {
         "operationId": "createEmailPattern",
         "summary": "POST Create Email Pattern",
-        "description": "Create a pattern. `title` and `content` are both required and validated before anything is written.\n\nThe slug is generated server-side as `fluentcrm/<sanitised-title>-<uniqid>` and cannot be supplied. `content` is filtered through `wp_kses_post()`, so disallowed markup is stripped rather than rejected.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `EmailPatternPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Create a pattern. `title` and `content` are both required and validated before anything is written.\n\nThe slug is generated server-side as `fluentcrm/<sanitised-title>-<uniqid>` and cannot be supplied. `content` is filtered through `wp_kses_post()`, so disallowed markup is stripped rather than rejected.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `EmailPatternPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Email Patterns"
         ],

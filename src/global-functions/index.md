@@ -193,17 +193,6 @@ $statuses = fluentcrm_subscriber_editable_statuses($isOptions = false);
 
 ---
 
-### fluentcrm_subscriber_sms_statuses()
-
-Get SMS subscription statuses.
-
-```php
-$statuses = fluentcrm_subscriber_sms_statuses($isOptions = false);
-// ['sms_subscribed', 'sms_pending', 'sms_unsubscribed', 'sms_bounced']
-```
-
----
-
 ### fluentcrm_contact_types()
 
 Get contact type definitions.

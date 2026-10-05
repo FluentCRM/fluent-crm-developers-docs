@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getImportDriver",
         "summary": "GET Import Driver Details",
-        "description": "Retrieve configuration details for a specific import driver. For the `users` driver, returns available WordPress roles and configuration fields. When called with `summary=true`, returns a preview of matching users. For other drivers, the response is determined by the driver's filter hook.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contacts`\n\n_Enforced by `ImportUserPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Retrieve configuration details for a specific import driver. For the `users` driver, returns available WordPress roles and configuration fields. When called with `summary=true`, returns a preview of matching users. For other drivers, the response is determined by the driver's filter hook.\n\n<!-- fc:access -->\n\n**Required capability:** `list_users` or `fcrm_manage_contacts` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `ImportUserPolicy::getDriver()`._\n\n<!-- /fc:access -->",
         "tags": [
           "Import"
         ],

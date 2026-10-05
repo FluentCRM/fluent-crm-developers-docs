@@ -216,7 +216,7 @@ export default {
 </script>
 ```
 
-Use the Options API, matching core. Your own REST routes need a permission check like any other, see [Extending the REST API](/modules/extending-rest-api).
+Use the Options API, matching core. Your own REST routes need a permission check like any other, see [Extending the REST API](/rest-api/extending/).
 
 ### 4. Enqueue the script (PHP)
 

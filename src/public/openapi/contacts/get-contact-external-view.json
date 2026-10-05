@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getContactExternalView",
         "summary": "GET Get Contact External View",
-        "description": "Retrieve external profile section content for a contact. The content is provided by registered section providers via the `fluencrm_profile_section_{section_provider}` filter hook.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts`\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Retrieve external profile section content for a contact. The content is provided by registered section providers via the `fluencrm_profile_section_{section_provider}` filter hook.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts` or `fcrm_manage_contacts` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Contacts"
         ],

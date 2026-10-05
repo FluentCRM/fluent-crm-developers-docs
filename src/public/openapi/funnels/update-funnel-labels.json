@@ -27,7 +27,7 @@
       "put": {
         "operationId": "updateFunnelLabels",
         "summary": "PUT Update Funnel Labels",
-        "description": "Attach or detach labels from a specific automation funnel. Use the `action` parameter to specify whether to attach or detach the provided label IDs.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_write_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Attach or detach labels from a specific automation funnel. Use the `action` parameter to specify whether to attach or detach the provided label IDs.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels` or `fcrm_write_funnels` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],

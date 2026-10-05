@@ -27,7 +27,7 @@
       "get": {
         "operationId": "listAbandonedCarts",
         "summary": "GET List Abandoned Carts",
-        "description": "Retrieve a paginated list of abandoned carts with subscriber and automation data. Includes information about enabled cart-recovery drivers and whether automation funnels are configured.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Retrieve a paginated list of abandoned carts with subscriber and automation data. Includes information about enabled cart-recovery drivers and whether automation funnels are configured.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels` or `fcrm_write_funnels` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Abandon Carts"
         ],

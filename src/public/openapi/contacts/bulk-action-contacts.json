@@ -164,8 +164,29 @@
                         "description": "Custom field key."
                       },
                       "value": {
+                        "description": "Custom field value. A string, number, or array of options for multi-value fields.",
+                        "oneOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "number"
+                          },
+                          {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          }
+                        ]
+                      },
+                      "operation": {
                         "type": "string",
-                        "description": "Custom field value."
+                        "enum": [
+                          "add",
+                          "subtract"
+                        ],
+                        "description": "Optional. Only applied when the custom field is a number type (arithmetic add/subtract on the existing value) or a multi-value type (`select-multi`, `checkbox`; add/remove options). Any other value, or a field of another type, replaces the stored value with `value`."
                       }
                     }
                   }

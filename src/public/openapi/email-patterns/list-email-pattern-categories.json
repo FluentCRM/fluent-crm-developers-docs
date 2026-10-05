@@ -27,7 +27,7 @@
       "get": {
         "operationId": "listEmailPatternCategories",
         "summary": "GET List Pattern Categories",
-        "description": "Return the distinct category names currently in use, sorted alphabetically.\n\nThis is derived from the patterns themselves, **not** from the stored category records \u2014 a category created via `POST /email-patterns/categories` does not appear here until at least one pattern uses it. The result is a flat array of strings with no ids; use the ids from `wp_pattern_category` when you need them.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `EmailPatternPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Return the distinct category names currently in use, sorted alphabetically.\n\nThis is derived from the patterns themselves, **not** from the stored category records \u2014 a category created via `POST /email-patterns/categories` does not appear here until at least one pattern uses it. The result is a flat array of strings with no ids; use the ids from `wp_pattern_category` when you need them.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `EmailPatternPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Email Patterns"
         ],

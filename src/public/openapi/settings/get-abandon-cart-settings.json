@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getAbandonCartSettings",
         "summary": "GET Abandon Cart Settings",
-        "description": "Retrieve abandoned cart feature settings, available e-commerce providers, and provider-specific options. Returns settings for configuring abandoned cart tracking and recovery automations.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `SettingsPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Retrieve abandoned cart feature settings, available e-commerce providers, and provider-specific options. Each available provider may add a `<provider_slug>Options` key (for example `wooOptions`, `fluent_cartOptions`); keys for providers that are not active are absent. Returns settings for configuring abandoned cart tracking and recovery automations.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `SettingsPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Settings"
         ],
@@ -85,11 +85,12 @@
                     },
                     "fluent_cartOptions": {
                       "type": "object",
-                      "properties": {}
+                      "properties": {},
+                      "description": "Provider-specific options for FluentCart. Present only when the FluentCart driver is available (FluentCart is active) and returns options; omitted otherwise."
                     },
                     "wooOptions": {
                       "type": "object",
-                      "description": "WooCommerce status options used by abandoned-cart recovery settings.",
+                      "description": "WooCommerce status options used by abandoned-cart recovery settings. Present only when the WooCommerce driver is available (WooCommerce is active) and returns options; omitted otherwise.",
                       "properties": {
                         "all_statuses": {
                           "type": "object",

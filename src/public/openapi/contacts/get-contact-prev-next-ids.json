@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getContactPrevNextIds",
         "summary": "GET Get Contact Prev/Next IDs",
-        "description": "Get the previous and next contact IDs relative to a given contact ID, in the order the contact list shows them for the same filter and sort params. Returns up to 10 IDs in each direction, nearest first. Relevance order (`sort_by=relevance` with a `search`) is not supported and returns a 422. Useful for implementing prev/next navigation on a contact profile page.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts`\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Get the previous and next contact IDs relative to a given contact ID, in the order the contact list shows them for the same filter and sort params. Returns up to 10 IDs in each direction, nearest first. Relevance order (`sort_by=relevance` with a `search`) is not supported and returns a 422. Useful for implementing prev/next navigation on a contact profile page.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts` or `fcrm_manage_contacts` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Contacts"
         ],

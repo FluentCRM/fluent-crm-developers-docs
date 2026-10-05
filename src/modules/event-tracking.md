@@ -41,7 +41,11 @@ $tracker = FluentCrmApi('event_tracker')->track([
 ], true);
 ```
 
-The second parameter (`true`) triggers the `fluent_crm/track_event_activity_done` action after the event is recorded.
+The second parameter (`true`) marks the event as repeatable: if the same event already exists for the contact, its counter is incremented instead of a duplicate row being created. The `fluent_crm/event_tracked` action fires after every call.
+
+::: warning Experimental feature
+Event tracking is off by default. Enable **Event Tracking** under Settings → Experimental, otherwise the tracker returns a `not_enabled` error.
+:::
 
 ---
 

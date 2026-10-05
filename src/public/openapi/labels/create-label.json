@@ -27,7 +27,7 @@
       "post": {
         "operationId": "createLabel",
         "summary": "POST Create Label",
-        "description": "Create a new global label. Labels are stored in the `fc_terms` table with `taxonomy_name` of `global_label`. The `slug`, `title`, and `color` fields are sanitized server-side.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `CustomFieldsPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Create a new global label. Labels are stored in the `fc_terms` table with `taxonomy_name` of `global_label`. The `slug`, `title`, and `color` fields are sanitized server-side.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `CustomFieldsPolicy::create()`._\n\n<!-- /fc:access -->",
         "tags": [
           "Labels"
         ],

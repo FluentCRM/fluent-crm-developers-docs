@@ -27,7 +27,7 @@
       "post": {
         "operationId": "addManager",
         "summary": "POST Add Manager",
-        "description": "Add a WordPress user as a FluentCRM manager with specific permissions. The user must already exist in WordPress. Permission dependencies are validated before assignment.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `SettingsPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "Add a WordPress user as a FluentCRM manager with specific permissions. The user must already exist in WordPress. Permission dependencies are validated before assignment.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings` or `manage_options` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `ManagerPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Pro Settings"
         ],

@@ -1,3 +1,8 @@
+---
+title: Lists Model
+description: "Reference for the FluentCRM Lists model: table, source file, fillable columns and relations."
+---
+
 # Lists Model
 | DB Table Name | {wp_db_prefix}_fc_lists                                            |
 |---------------|--------------------------------------------------------------------|

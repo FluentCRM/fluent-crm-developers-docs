@@ -1,3 +1,8 @@
+---
+title: Docs Changelog
+description: "What changed in the FluentCRM developer documentation."
+---
+
 # FluentCRM Developer Changelog
 
 <Badge type="tip" vertical="top" text="Developer Updates" /> <Badge type="warning" vertical="top" text="Stay Current" />

@@ -76,6 +76,10 @@
                       "draft"
                     ],
                     "description": "New status to set (required when `action_name` is 'change_template_status')."
+                  },
+                  "search": {
+                    "type": "string",
+                    "description": "Only used when `select_all` is 'true': restricts the selection to templates whose title contains this text."
                   }
                 }
               },

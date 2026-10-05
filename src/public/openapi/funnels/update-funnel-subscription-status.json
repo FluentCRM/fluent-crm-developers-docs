@@ -27,7 +27,7 @@
       "put": {
         "operationId": "updateFunnelSubscriptionStatus",
         "summary": "PUT Update Funnel Subscription Status",
-        "description": "Update the status of a subscriber within a specific funnel. Cannot change status if the subscriber is already in `completed` state. Allowed target statuses are `active`, `completed`, and `cancelled`.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_write_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Update the status of a subscriber within a specific funnel. Cannot change status if the subscriber is already in `completed` state. Allowed target statuses are `active`, `completed`, and `cancelled`.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels` or `fcrm_write_funnels` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],

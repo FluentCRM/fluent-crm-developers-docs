@@ -27,7 +27,7 @@
       "post": {
         "operationId": "importFunnel",
         "summary": "POST Import Funnel",
-        "description": "Import an automation funnel from exported data. Creates a new funnel in `draft` status with all sequences and labels from the provided data.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_write_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Import an automation funnel from exported data. Creates a new funnel in `draft` status with all sequences and labels from the provided data.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels` or `fcrm_write_funnels` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],

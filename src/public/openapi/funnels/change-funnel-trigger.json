@@ -27,7 +27,7 @@
       "put": {
         "operationId": "changeFunnelTrigger",
         "summary": "PUT Change Funnel Trigger",
-        "description": "Change the trigger of an existing automation funnel. This resets the funnel's settings and conditions to empty values. Returns an error if the new trigger name is the same as the current one.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_write_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Change the trigger of an existing automation funnel. This resets the funnel's settings and conditions to empty values. Returns an error if the new trigger name is the same as the current one.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels` or `fcrm_write_funnels` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],

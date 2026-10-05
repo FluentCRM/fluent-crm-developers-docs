@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getContactPurchaseHistory",
         "summary": "GET Get Contact Purchase History",
-        "description": "Retrieve purchase/order history for a contact from a specific commerce provider. The data is fetched via the `fluent_crm/purchase_history_{provider}` filter hook, so the response structure depends on the active commerce integration (e.g., WooCommerce, EDD).\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts`\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Retrieve purchase/order history for a contact from a specific commerce provider. The data is fetched via the `fluent_crm/purchase_history_{provider}` filter hook, so the response structure depends on the active commerce integration (e.g., WooCommerce, EDD).\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts` or `fcrm_manage_contacts` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Contacts"
         ],

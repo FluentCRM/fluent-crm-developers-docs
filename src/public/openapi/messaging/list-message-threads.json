@@ -1,0 +1,470 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/messaging/threads": {
+      "get": {
+        "operationId": "listMessagingThreads",
+        "summary": "GET List Message Threads",
+        "description": "List conversations for the Inbox rail, newest activity first (ordered by `updated_at` DESC, then `id` DESC). A thread is one phone number on one channel. Consent-only threads (created by recording an opt-out for a number that was never messaged, `initiated_by = system` with no messages) are hidden until a real message lands on them. Each row includes a `last_message` preview and a derived WhatsApp `session` (24-hour window; computed for the whole page in a single query).\n\nPagination is standard `page` + `per_page` (default 25, clamped to 1-100). For infinite scroll pass `before=<thread id>` to get only rows strictly after that thread in rail order, which stays stable when active threads jump to the top between requests. Note the envelope is `conversations`/`has_more`, not the usual paginator. **PRO** (FluentCampaign Pro Messaging module).\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `InboxPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro **with the Messaging module enabled**. While no messaging channel (SMS or WhatsApp) is switched on the route is not registered at all and returns a 404.\n\n<!-- /fc:access -->",
+        "tags": [
+          "Messaging"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "channel",
+            "in": "query",
+            "description": "Only threads on this channel. Omit for all channels.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "sms",
+                "whatsapp"
+              ]
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search by phone number (and linked contact fields).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "unread_only",
+            "in": "query",
+            "description": "Truthy value returns only threads with `unread_count > 0`.",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "description": "Keyset cursor: a thread ID. Returns threads that sort after it in rail order.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Rows per page. Clamped to 1-100.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 25
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Conversations for the rail.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "conversations": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/MessageThread"
+                      }
+                    },
+                    "total": {
+                      "type": "integer",
+                      "description": "Total matching threads."
+                    },
+                    "per_page": {
+                      "type": "integer",
+                      "description": "Page size used."
+                    },
+                    "current_page": {
+                      "type": "integer",
+                      "description": "Current page."
+                    },
+                    "has_more": {
+                      "type": "boolean",
+                      "description": "True when more pages remain."
+                    }
+                  }
+                },
+                "example": {
+                  "conversations": [
+                    {
+                      "id": 12,
+                      "channel": "whatsapp",
+                      "phone_number": "+14155550123",
+                      "profile_name": "Jane Cooper",
+                      "wa_id": "14155550123",
+                      "status": "subscribed",
+                      "unread_count": 2,
+                      "updated_at": "2026-09-29 14:12:08",
+                      "session": {
+                        "has_active_session": true,
+                        "expires_at": "2026-09-30 14:12:08"
+                      },
+                      "subscriber": {
+                        "id": 42,
+                        "full_name": "Jane Cooper",
+                        "email": "jane@example.com",
+                        "phone": "+14155550123",
+                        "photo": "https://www.gravatar.com/avatar/abc?s=128",
+                        "status": "subscribed"
+                      },
+                      "last_message": {
+                        "text": "Is my order on the way?",
+                        "direction": "inbound",
+                        "status": "received",
+                        "message_type": "text",
+                        "created_at": "2026-09-29 14:12:08"
+                      }
+                    }
+                  ],
+                  "total": 41,
+                  "per_page": 25,
+                  "current_page": 1,
+                  "has_more": true
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      },
+      "MessageThread": {
+        "type": "object",
+        "description": "A conversation: one phone number on one channel. Unique on (channel, phone_number).",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Thread ID."
+          },
+          "channel": {
+            "type": "string",
+            "description": "Channel slug.",
+            "enum": [
+              "sms",
+              "whatsapp"
+            ]
+          },
+          "phone_number": {
+            "type": "string",
+            "description": "The conversation's phone number, as stored."
+          },
+          "profile_name": {
+            "type": "string",
+            "description": "WhatsApp profile name from the thread meta, or an empty string."
+          },
+          "wa_id": {
+            "type": "string",
+            "description": "WhatsApp ID from the thread meta, or an empty string."
+          },
+          "status": {
+            "type": "string",
+            "description": "Consent status of this number on this channel.",
+            "enum": [
+              "subscribed",
+              "unsubscribed",
+              "pending",
+              "bounced"
+            ]
+          },
+          "unread_count": {
+            "type": "integer",
+            "description": "Inbound messages after the last-seen cursor (stored cache)."
+          },
+          "updated_at": {
+            "type": "string",
+            "nullable": true,
+            "description": "Time of the newest message activity (`Y-m-d H:i:s`). Marking a thread seen or changing consent does not touch it."
+          },
+          "session": {
+            "$ref": "#/components/schemas/MessageSession"
+          },
+          "subscriber": {
+            "$ref": "#/components/schemas/MessageThreadContact"
+          },
+          "last_message": {
+            "$ref": "#/components/schemas/MessageThreadPreview"
+          }
+        }
+      },
+      "MessageSession": {
+        "type": "object",
+        "description": "WhatsApp 24-hour customer-service window, derived from the newest inbound message. SMS threads always report an open window with a null expiry.",
+        "properties": {
+          "has_active_session": {
+            "type": "boolean",
+            "description": "True while free-form messages may be sent. Always true for SMS. For WhatsApp, true only if the contact's last inbound message is less than 24 hours old."
+          },
+          "expires_at": {
+            "type": "string",
+            "nullable": true,
+            "description": "When the window closes (`Y-m-d H:i:s`, site time). Null for SMS and for WhatsApp threads with no inbound message. For a WhatsApp thread whose window already closed this is the time it closed."
+          }
+        }
+      },
+      "MessageThreadContact": {
+        "type": "object",
+        "nullable": true,
+        "description": "The linked CRM contact, or null when the number is not a contact.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Contact ID."
+          },
+          "full_name": {
+            "type": "string",
+            "description": "Contact full name."
+          },
+          "email": {
+            "type": "string",
+            "description": "Contact email."
+          },
+          "phone": {
+            "type": "string",
+            "description": "Contact phone."
+          },
+          "photo": {
+            "type": "string",
+            "description": "Avatar URL."
+          },
+          "status": {
+            "type": "string",
+            "description": "Contact subscription status (email-level), e.g. `subscribed`."
+          },
+          "lists": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List titles. Only present on single-thread payloads (`thread` objects), not on the conversation rail."
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Tag titles. Only present on single-thread payloads."
+          }
+        }
+      },
+      "MessageThreadPreview": {
+        "type": "object",
+        "nullable": true,
+        "description": "Preview of the thread's newest message. Populated on the list endpoint only; always null on single-thread payloads.",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Message content, or the first attachment's caption / filename when the content is empty."
+          },
+          "direction": {
+            "type": "string",
+            "description": "`inbound` or `outbound`.",
+            "enum": [
+              "inbound",
+              "outbound"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "description": "Message status.",
+            "enum": [
+              "scheduling",
+              "scheduled",
+              "pending",
+              "processing",
+              "sent",
+              "delivered",
+              "read",
+              "failed",
+              "cancelled",
+              "received"
+            ]
+          },
+          "message_type": {
+            "type": "string",
+            "description": "`text`, `media` or `template`.",
+            "enum": [
+              "text",
+              "media",
+              "template"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "nullable": true,
+            "description": "Message `created_at`, `Y-m-d H:i:s`."
+          }
+        }
+      },
+      "ThreadMessage": {
+        "type": "object",
+        "description": "One message in a thread, as shaped for the Inbox.",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Message ID."
+          },
+          "thread_id": {
+            "type": "integer",
+            "description": "Parent thread ID."
+          },
+          "direction": {
+            "type": "string",
+            "description": "`inbound` (from the contact) or `outbound`.",
+            "enum": [
+              "inbound",
+              "outbound"
+            ]
+          },
+          "message_type": {
+            "type": "string",
+            "description": "Derived, not stored: `media` when the meta holds attachments, `template` when it references a template, otherwise `text`.",
+            "enum": [
+              "text",
+              "media",
+              "template"
+            ]
+          },
+          "content": {
+            "type": "string",
+            "nullable": true,
+            "description": "Message body. For a template send this is the template's body text, not the rendered variables."
+          },
+          "template_name": {
+            "type": "string",
+            "description": "Template name for template messages, else an empty string."
+          },
+          "media": {
+            "type": "array",
+            "description": "Attachment objects from the message meta (shape depends on the provider, typically `type`, `url`, `filename`, `caption`).",
+            "items": {
+              "type": "object"
+            }
+          },
+          "status": {
+            "type": "string",
+            "description": "Delivery status.",
+            "enum": [
+              "scheduling",
+              "scheduled",
+              "pending",
+              "processing",
+              "sent",
+              "delivered",
+              "read",
+              "failed",
+              "cancelled",
+              "received"
+            ]
+          },
+          "error_message": {
+            "type": "string",
+            "description": "The provider's refusal reason for a failed message, else an empty string."
+          },
+          "created_at": {
+            "type": "string",
+            "nullable": true,
+            "description": "Effective message time, `Y-m-d H:i:s`: `sent_at`, falling back to `scheduled_at`, then `created_at`."
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

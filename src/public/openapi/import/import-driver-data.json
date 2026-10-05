@@ -27,7 +27,7 @@
       "post": {
         "operationId": "importDriverData",
         "summary": "POST Import Data via Driver",
-        "description": "Execute the import process for a specific driver. For the `users` driver, imports WordPress users as contacts in batches. For other drivers, the import behavior is determined by the driver's filter hook. Call repeatedly with incrementing `importing_page` until `has_more` is `false`.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contacts`\n\n_Enforced by `ImportUserPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Execute the import process for a specific driver. For the `users` driver, imports WordPress users as contacts in batches. For other drivers, the import behavior is determined by the driver's filter hook. Call repeatedly with incrementing `importing_page` until `has_more` is `false`.\n\n<!-- fc:access -->\n\n**Required capability:** `list_users` or `fcrm_manage_contacts` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `ImportUserPolicy::importData()`._\n\n<!-- /fc:access -->",
         "tags": [
           "Import"
         ],

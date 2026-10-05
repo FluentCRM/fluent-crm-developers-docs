@@ -27,7 +27,7 @@
       "put": {
         "operationId": "updateFunnelProperty",
         "summary": "PUT Update Funnel Property",
-        "description": "Update the status of an automation funnel. Only allows changing between `draft` and `published` statuses. Returns an error if the funnel already has the requested status.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_write_funnels`\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Update the status of an automation funnel. Only allows changing between `draft` and `published` statuses. Returns an error if the funnel already has the requested status.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels` or `fcrm_write_funnels` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],

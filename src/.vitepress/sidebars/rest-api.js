@@ -7,6 +7,16 @@ export default [
         ]
     },
     {
+        text: 'Extending the REST API',
+        collapsed: true,
+        items: [
+            { text: 'Overview', link: '/rest-api/extending/' },
+            { text: 'Routing', link: '/rest-api/extending/routing' },
+            { text: 'Controllers', link: '/rest-api/extending/controllers' },
+            { text: 'Policies & Permissions', link: '/rest-api/extending/policies' },
+        ]
+    },
+    {
         text: 'Contacts (32)',
         collapsed: true,
         items: [
@@ -191,7 +201,7 @@ export default [
         ]
     },
     {
-        text: 'Funnels (Automations) (32)',
+        text: 'Funnels (Automations) (33)',
         collapsed: true,
         items: [
             { text: 'Get All Funnel Activities <badge type="tip">GET</badge>', link: '/rest-api/operations/funnels/get-funnel-all-activities' },
@@ -209,6 +219,7 @@ export default [
             { text: 'Clone Funnel <badge type="warning">POST</badge>', link: '/rest-api/operations/funnels/clone-funnel' },
             { text: 'Create Funnel <badge type="warning">POST</badge>', link: '/rest-api/operations/funnels/create-funnel' },
             { text: 'Create Funnel from Template <badge type="warning">POST</badge>', link: '/rest-api/operations/funnels/create-funnel-from-template' },
+            { text: 'Export Automation <badge type="warning">POST</badge>', link: '/rest-api/operations/funnels/export-funnel' },
             { text: 'Force Advance Funnel Subscriber <badge type="warning">POST</badge>', link: '/rest-api/operations/funnels/force-advance-funnel-subscriber' },
             { text: 'Import Funnel <badge type="warning">POST</badge>', link: '/rest-api/operations/funnels/import-funnel' },
             { text: 'Remove Bulk Subscribers from Funnels <badge type="warning">POST</badge>', link: '/rest-api/operations/funnels/remove-funnel-bulk-subscribers' },
@@ -293,11 +304,20 @@ export default [
         ]
     },
     {
-        text: 'Export (Pro) (2)',
+        text: 'Export (Pro) (11)',
         collapsed: true,
         items: [
             { text: 'Export Contacts (Page, GET) <badge type="tip">GET</badge>', link: '/rest-api/operations/export/export-contacts-page-get' },
+            { text: 'Export Campaign Emails <badge type="warning">POST</badge>', link: '/rest-api/operations/export/export-campaign-emails' },
+            { text: 'Export Companies <badge type="warning">POST</badge>', link: '/rest-api/operations/export/export-companies' },
+            { text: 'Export Contact Notes <badge type="warning">POST</badge>', link: '/rest-api/operations/export/export-notes' },
             { text: 'Export Contacts (Page) <badge type="warning">POST</badge>', link: '/rest-api/operations/export/export-contacts-page' },
+            { text: 'Export Dynamic Segment <badge type="warning">POST</badge>', link: '/rest-api/operations/export/export-dynamic-segments' },
+            { text: 'Export Email Campaign <badge type="warning">POST</badge>', link: '/rest-api/operations/export/export-campaigns' },
+            { text: 'Export Email Sequence <badge type="warning">POST</badge>', link: '/rest-api/operations/export/export-sequences' },
+            { text: 'Export Email Template <badge type="warning">POST</badge>', link: '/rest-api/operations/export/export-templates' },
+            { text: 'Export Messaging Campaign <badge type="warning">POST</badge>', link: '/rest-api/operations/export/export-message-campaigns' },
+            { text: 'Export Recurring Campaign <badge type="warning">POST</badge>', link: '/rest-api/operations/export/export-recurring-campaigns' },
         ]
     },
     {
@@ -507,68 +527,45 @@ export default [
         ]
     },
     {
-        text: 'Pro Settings (13)',
+        text: 'Pro Settings (8)',
         collapsed: true,
         items: [
             { text: 'Get License Status <badge type="tip">GET</badge>', link: '/rest-api/operations/pro-settings/get-license-status' },
-            { text: 'Get SMS Settings <badge type="tip">GET</badge>', link: '/rest-api/operations/pro-settings/get-sms-settings' },
-            { text: 'Get WhatsApp Settings <badge type="tip">GET</badge>', link: '/rest-api/operations/pro-settings/get-whatsapp-settings' },
             { text: 'List Managers <badge type="tip">GET</badge>', link: '/rest-api/operations/pro-settings/get-managers' },
             { text: 'Add Manager <badge type="warning">POST</badge>', link: '/rest-api/operations/pro-settings/add-manager' },
-            { text: 'Disable SMS <badge type="warning">POST</badge>', link: '/rest-api/operations/pro-settings/disable-sms' },
             { text: 'Import Funnel <badge type="warning">POST</badge>', link: '/rest-api/operations/pro-settings/import-funnel' },
             { text: 'Save License <badge type="warning">POST</badge>', link: '/rest-api/operations/pro-settings/save-license' },
-            { text: 'Save SMS Settings <badge type="warning">POST</badge>', link: '/rest-api/operations/pro-settings/save-sms-settings' },
-            { text: 'Save WhatsApp Settings <badge type="warning">POST</badge>', link: '/rest-api/operations/pro-settings/save-whatsapp-settings' },
             { text: 'Update Manager <badge type="info">PUT</badge>', link: '/rest-api/operations/pro-settings/update-manager' },
             { text: 'Deactivate License <badge type="danger">DELETE</badge>', link: '/rest-api/operations/pro-settings/deactivate-license' },
             { text: 'Delete Manager <badge type="danger">DELETE</badge>', link: '/rest-api/operations/pro-settings/delete-manager' },
         ]
     },
     {
-        text: 'SMS (Pro) (25)',
+        text: 'Messaging (Pro) (12)',
         collapsed: true,
         items: [
-            { text: 'Get SMS Campaign <badge type="tip">GET</badge>', link: '/rest-api/operations/sms/get-sms-campaign' },
-            { text: 'Get SMS Campaign Processing Status <badge type="tip">GET</badge>', link: '/rest-api/operations/sms/get-sms-campaign-processing-stat' },
-            { text: 'Get SMS Campaign Recipients <badge type="tip">GET</badge>', link: '/rest-api/operations/sms/get-sms-campaign-recipients' },
-            { text: 'Get SMS Campaign Recipients Count <badge type="tip">GET</badge>', link: '/rest-api/operations/sms/get-sms-campaign-recipients-count' },
-            { text: 'Get SMS Campaign Status <badge type="tip">GET</badge>', link: '/rest-api/operations/sms/get-sms-campaign-status' },
-            { text: 'Get Subscriber SMS Logs <badge type="tip">GET</badge>', link: '/rest-api/operations/sms/get-subscriber-sms-logs' },
-            { text: 'Get Subscriber SMS Statistics <badge type="tip">GET</badge>', link: '/rest-api/operations/sms/get-subscriber-sms-stats' },
-            { text: 'List All SMS Messages <badge type="tip">GET</badge>', link: '/rest-api/operations/sms/list-sms-messages' },
-            { text: 'List SMS Campaigns <badge type="tip">GET</badge>', link: '/rest-api/operations/sms/list-sms-campaigns' },
-            { text: 'Apply Tag Actions to SMS Campaign Recipients <badge type="warning">POST</badge>', link: '/rest-api/operations/sms/do-sms-campaign-tag-actions' },
-            { text: 'Bulk Action on SMS Campaigns <badge type="warning">POST</badge>', link: '/rest-api/operations/sms/bulk-action-sms-campaigns' },
-            { text: 'Create SMS Campaign <badge type="warning">POST</badge>', link: '/rest-api/operations/sms/create-sms-campaign' },
-            { text: 'Duplicate SMS Campaign <badge type="warning">POST</badge>', link: '/rest-api/operations/sms/duplicate-sms-campaign' },
-            { text: 'Estimate SMS Campaign Contacts <badge type="warning">POST</badge>', link: '/rest-api/operations/sms/estimate-sms-campaign-contacts' },
-            { text: 'Pause SMS Campaign <badge type="warning">POST</badge>', link: '/rest-api/operations/sms/pause-sms-campaign' },
-            { text: 'Resend SMS Message <badge type="warning">POST</badge>', link: '/rest-api/operations/sms/resend-sms-message' },
-            { text: 'Resume SMS Campaign <badge type="warning">POST</badge>', link: '/rest-api/operations/sms/resume-sms-campaign' },
-            { text: 'Schedule SMS Campaign <badge type="warning">POST</badge>', link: '/rest-api/operations/sms/schedule-sms-campaign' },
-            { text: 'Send Custom SMS to Subscriber <badge type="warning">POST</badge>', link: '/rest-api/operations/sms/send-subscriber-custom-sms' },
-            { text: 'Unschedule SMS Campaign <badge type="warning">POST</badge>', link: '/rest-api/operations/sms/unschedule-sms-campaign' },
-            { text: 'Unschedule SMS Campaign (Legacy) <badge type="warning">POST</badge>', link: '/rest-api/operations/sms/unschedule-sms-campaign-legacy' },
-            { text: 'Update SMS Campaign <badge type="info">PUT</badge>', link: '/rest-api/operations/sms/update-sms-campaign' },
-            { text: 'Update SMS Campaign Labels <badge type="info">PUT</badge>', link: '/rest-api/operations/sms/update-sms-campaign-labels' },
-            { text: 'Delete SMS Campaign <badge type="danger">DELETE</badge>', link: '/rest-api/operations/sms/delete-sms-campaign' },
-            { text: 'Delete SMS Messages <badge type="danger">DELETE</badge>', link: '/rest-api/operations/sms/delete-sms-messages' },
+            { text: 'Get Messaging Campaign <badge type="tip">GET</badge>', link: '/rest-api/operations/messaging/get-campaign' },
+            { text: 'Get Messaging Campaign Status <badge type="tip">GET</badge>', link: '/rest-api/operations/messaging/get-campaign-status' },
+            { text: 'Get Subscriber Message Logs <badge type="tip">GET</badge>', link: '/rest-api/operations/messaging/get-subscriber-message-logs' },
+            { text: 'List Message Threads <badge type="tip">GET</badge>', link: '/rest-api/operations/messaging/list-message-threads' },
+            { text: 'List Messaging Campaigns <badge type="tip">GET</badge>', link: '/rest-api/operations/messaging/list-campaigns' },
+            { text: 'List Messaging Messages <badge type="tip">GET</badge>', link: '/rest-api/operations/messaging/list-messages' },
+            { text: 'List Thread Messages <badge type="tip">GET</badge>', link: '/rest-api/operations/messaging/list-thread-messages' },
+            { text: 'Create Messaging Campaign <badge type="warning">POST</badge>', link: '/rest-api/operations/messaging/create-campaign' },
+            { text: 'Schedule Messaging Campaign <badge type="warning">POST</badge>', link: '/rest-api/operations/messaging/schedule-campaign' },
+            { text: 'Send Subscriber SMS <badge type="warning">POST</badge>', link: '/rest-api/operations/messaging/send-subscriber-message' },
+            { text: 'Send Thread Message <badge type="warning">POST</badge>', link: '/rest-api/operations/messaging/send-thread-message' },
+            { text: 'Update Messaging Campaign <badge type="info">PUT</badge>', link: '/rest-api/operations/messaging/update-campaign' },
         ]
     },
     {
-        text: 'WhatsApp (Pro) (9)',
+        text: 'WhatsApp (Pro) (4)',
         collapsed: true,
         items: [
-            { text: 'Get Subscriber WhatsApp Messages <badge type="tip">GET</badge>', link: '/rest-api/operations/whatsapp/get-subscriber-whatsapp-messages' },
-            { text: 'Get Subscriber WhatsApp Session <badge type="tip">GET</badge>', link: '/rest-api/operations/whatsapp/get-subscriber-whatsapp-session' },
-            { text: 'Get Subscriber WhatsApp Stats <badge type="tip">GET</badge>', link: '/rest-api/operations/whatsapp/get-subscriber-whatsapp-stats' },
-            { text: 'List WhatsApp Templates <badge type="tip">GET</badge>', link: '/rest-api/operations/whatsapp/list-whatsapp-templates' },
-            { text: 'Create WhatsApp Template <badge type="warning">POST</badge>', link: '/rest-api/operations/whatsapp/create-whatsapp-template' },
-            { text: 'Send Subscriber WhatsApp Message <badge type="warning">POST</badge>', link: '/rest-api/operations/whatsapp/send-subscriber-whatsapp-message' },
-            { text: 'Sync WhatsApp Templates <badge type="warning">POST</badge>', link: '/rest-api/operations/whatsapp/sync-whatsapp-templates' },
-            { text: 'Validate WhatsApp Template <badge type="warning">POST</badge>', link: '/rest-api/operations/whatsapp/validate-whatsapp-template' },
-            { text: 'Delete WhatsApp Template <badge type="danger">DELETE</badge>', link: '/rest-api/operations/whatsapp/delete-whatsapp-template' },
+            { text: 'Get Contact WhatsApp Messages <badge type="tip">GET</badge>', link: '/rest-api/operations/whatsapp/get-subscriber-whatsapp-messages' },
+            { text: 'List Messaging Templates <badge type="tip">GET</badge>', link: '/rest-api/operations/whatsapp/list-whatsapp-templates' },
+            { text: 'Create Messaging Template <badge type="warning">POST</badge>', link: '/rest-api/operations/whatsapp/create-whatsapp-template' },
+            { text: 'Send WhatsApp Message to Contact <badge type="warning">POST</badge>', link: '/rest-api/operations/whatsapp/send-subscriber-whatsapp-message' },
         ]
     },
     {

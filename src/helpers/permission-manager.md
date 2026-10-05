@@ -1,3 +1,8 @@
+---
+title: Permission Manager
+description: "Check and manage FluentCRM capabilities with the PermissionManager helper."
+---
+
 # Permission Manager
 
 `FluentCrm\App\Services\PermissionManager`

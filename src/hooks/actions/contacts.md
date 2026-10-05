@@ -353,26 +353,6 @@ add_action('fluent_crm/subscriber_confirmed_via_double_optin', function($subscri
 
 ---
 
-### `fluent_crm/subscriber_sms_status_changed`
-
-This action fires when a subscriber's SMS status is changed.
-
-**Parameters**
-- `$subscriber` [Subscriber Model](/database/models/subscriber)
-- `$oldStatus` string - previous SMS status
-- `$newStatus` string - new SMS status
-
-**Usage:**
-```php
-add_action('fluent_crm/subscriber_sms_status_changed', function($subscriber, $oldStatus, $newStatus) {
-   // SMS status changed
-}, 10, 3);
-```
-
-**Source:** `app/Http/Controllers/SubscriberController.php`
-
----
-
 ## Contact Type Changes
 
 ### `fluent_crm/subscriber_contact_type_to_{$new_type}`

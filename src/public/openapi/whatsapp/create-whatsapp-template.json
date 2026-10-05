@@ -27,7 +27,7 @@
       "post": {
         "operationId": "createWhatsAppTemplate",
         "summary": "POST Create WhatsApp Template",
-        "description": "Submit a WhatsApp template to the configured provider for review. **PRO** (requires FluentCampaign Pro WhatsApp module).\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails`\n\n_Enforced by `SMSPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro **with the SMS module enabled**. While SMS is switched off the route is not registered at all and returns a 404.\n\n<!-- /fc:access -->",
+        "description": "Create a template. For `channel=whatsapp` (default) the payload is validated against Meta's rules (see *Validate*), submitted to the configured provider for review, and stored locally with the status the provider returns (normally `PENDING`; Meta usually reviews within minutes). For `channel=sms` a local reusable text body is stored immediately as `APPROVED`; only `name` (max 192 chars) and `body_text` (max 1600 chars) are used and the name must be unique among non-DISABLED SMS templates.\n\nWhatsApp specifics: `name` is passed through `sanitize_key()` (lowercased). `category` is upper-cased; the Meta driver silently falls back to MARKETING for anything other than MARKETING, UTILITY or AUTHENTICATION. Only the first 3 buttons are submitted. Header support is text only. Every `{{n}}` in the body needs a sample in `variables` or the request is refused with the validator's error list.\n\nFailures are 422 with `message` and, for validation, an `errors` array: channel not enabled, validation errors, provider without template support, or the provider's own rejection message.\n\n**PRO** (FluentCampaign Pro). The route exists only while the Messaging module (the `messaging_module` experimental setting) is switched on, and the policy answers 403 unless at least one channel (SMS or WhatsApp) is active.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_templates`\n\n_Enforced by `MessagePolicy::store()`._\n\n**Requires:** FluentCampaign Pro **with the Messaging module enabled**. While no messaging channel (SMS or WhatsApp) is switched on the route is not registered at all and returns a 404.\n\n<!-- /fc:access -->",
         "tags": [
           "WhatsApp"
         ],
@@ -43,42 +43,82 @@
               "schema": {
                 "type": "object",
                 "properties": {
+                  "channel": {
+                    "type": "string",
+                    "description": "Target channel.",
+                    "enum": [
+                      "whatsapp",
+                      "sms"
+                    ],
+                    "default": "whatsapp"
+                  },
                   "name": {
                     "type": "string",
-                    "description": "Template name."
+                    "description": "WhatsApp: lowercase letters, digits, underscores (1-512 chars). SMS: free text up to 192 chars."
                   },
                   "language": {
                     "type": "string",
-                    "description": "Language code.",
+                    "description": "WhatsApp language code.",
                     "default": "en_US"
                   },
                   "category": {
                     "type": "string",
-                    "description": "Template category.",
+                    "description": "WhatsApp category.",
+                    "enum": [
+                      "MARKETING",
+                      "UTILITY",
+                      "AUTHENTICATION"
+                    ],
                     "default": "MARKETING"
                   },
                   "header_text": {
                     "type": "string",
-                    "description": "Optional header text."
+                    "description": "Optional text header, max 60 characters (WhatsApp)."
                   },
                   "body_text": {
                     "type": "string",
-                    "description": "Template body text."
+                    "description": "Body. WhatsApp: max 1024 characters, placeholders {{1}}..{{n}} numbered without gaps, must not start or end with a placeholder. SMS: max 1600 characters."
                   },
                   "footer_text": {
                     "type": "string",
-                    "description": "Optional footer text."
+                    "description": "Optional footer, max 60 characters (WhatsApp)."
                   },
                   "buttons": {
                     "type": "array",
+                    "description": "Up to 3 buttons; button text max 20 characters.",
                     "items": {
-                      "type": "object"
-                    },
-                    "description": "Template buttons."
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "description": "Button type.",
+                          "enum": [
+                            "QUICK_REPLY",
+                            "URL",
+                            "PHONE_NUMBER"
+                          ]
+                        },
+                        "text": {
+                          "type": "string",
+                          "description": "Button label."
+                        },
+                        "url": {
+                          "type": "string",
+                          "description": "URL for URL buttons."
+                        },
+                        "phone_number": {
+                          "type": "string",
+                          "description": "Number for PHONE_NUMBER buttons."
+                        }
+                      }
+                    }
                   },
                   "variables": {
                     "type": "object",
-                    "description": "Template variable examples."
+                    "description": "Reviewer sample value for each placeholder, keyed by position (\"1\", \"2\", ...). Required for every placeholder in the body.",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
                   }
                 },
                 "required": [
@@ -90,7 +130,15 @@
                 "name": "order_update",
                 "language": "en_US",
                 "category": "UTILITY",
+                "header_text": "",
                 "body_text": "Hi {{1}}, your order {{2}} has shipped.",
+                "footer_text": "Reply STOP to opt out",
+                "buttons": [
+                  {
+                    "type": "QUICK_REPLY",
+                    "text": "Track order"
+                  }
+                ],
                 "variables": {
                   "1": "Jane",
                   "2": "#1001"
@@ -101,7 +149,7 @@
         },
         "responses": {
           "200": {
-            "description": "Template submitted for provider review.",
+            "description": "Template submitted (WhatsApp) or saved (SMS).",
             "content": {
               "application/json": {
                 "schema": {
@@ -109,19 +157,57 @@
                   "properties": {
                     "message": {
                       "type": "string",
-                      "description": "Success message."
+                      "description": "Template submitted. Provider review usually completes within minutes. (SMS: SMS template saved.)"
                     },
                     "template": {
-                      "$ref": "#/components/schemas/WhatsAppTemplate"
+                      "$ref": "#/components/schemas/MessageTemplate"
                     },
                     "warnings": {
                       "type": "array",
                       "items": {
                         "type": "string"
                       },
-                      "description": "Validation warnings."
+                      "description": "Non-blocking validator warnings, for example too many variables for the body length."
                     }
                   }
+                },
+                "example": {
+                  "message": "Template submitted. Provider review usually completes within minutes.",
+                  "template": {
+                    "id": 12,
+                    "channel": "whatsapp",
+                    "provider": "meta_cloud",
+                    "name": "order_update",
+                    "language": "en_US",
+                    "category": "UTILITY",
+                    "status": "PENDING",
+                    "header_text": "",
+                    "body_text": "Hi {{1}}, your order {{2}} has shipped.",
+                    "footer_text": "Reply STOP to opt out",
+                    "buttons": [
+                      {
+                        "type": "QUICK_REPLY",
+                        "text": "Track order"
+                      }
+                    ],
+                    "variables": {
+                      "1": "Jane",
+                      "2": "#1001"
+                    },
+                    "provider_template_id": "1029384756102938",
+                    "rejection_reason": "",
+                    "last_synced_at": "2026-09-30 10:00:00",
+                    "created_by": 1,
+                    "created_at": "2026-09-30 10:00:00",
+                    "updated_at": "2026-09-30 10:00:00",
+                    "provider_label": "Meta Cloud API",
+                    "current_provider": "meta_cloud",
+                    "current_provider_label": "Meta Cloud API",
+                    "is_current_provider": true,
+                    "is_selectable": true,
+                    "disabled_reason": ""
+                  },
+                  "warnings": []
                 }
               }
             }
@@ -147,7 +233,7 @@
             }
           },
           "422": {
-            "description": "Validation failed \u2014 the response message names the offending field.",
+            "description": "Channel not enabled, validation failed (body includes an `errors` string array), provider has no template support, or the provider rejected the submission.",
             "content": {
               "application/json": {
                 "schema": {
@@ -184,8 +270,9 @@
           }
         }
       },
-      "WhatsAppTemplate": {
+      "MessageTemplate": {
         "type": "object",
+        "description": "A row of fc_message_templates. WhatsApp rows mirror a Meta/Twilio template; SMS rows (only returned when channel=sms or all) are local text bodies.",
         "properties": {
           "id": {
             "type": "integer",
@@ -195,36 +282,44 @@
             "type": "string",
             "description": "Template channel.",
             "enum": [
-              "whatsapp"
+              "whatsapp",
+              "sms"
             ]
           },
           "provider": {
             "type": "string",
-            "description": "Provider slug."
+            "description": "Provider slug the template belongs to (meta_cloud or twilio_whatsapp). Empty for SMS."
           },
           "name": {
             "type": "string",
-            "description": "Provider template name."
+            "description": "Template name. WhatsApp names are lowercase letters, digits and underscores."
           },
           "language": {
             "type": "string",
-            "description": "Template language code."
+            "description": "Language code, for example en_US. SMS rows always use en."
           },
           "category": {
             "type": "string",
-            "description": "Template category."
+            "description": "Meta category: MARKETING, UTILITY or AUTHENTICATION. Empty for SMS."
           },
           "status": {
             "type": "string",
-            "description": "Provider review status."
+            "description": "Review status.",
+            "enum": [
+              "PENDING",
+              "APPROVED",
+              "REJECTED",
+              "PAUSED",
+              "DISABLED"
+            ]
           },
           "header_text": {
             "type": "string",
-            "description": "Header text, when present."
+            "description": "Text header, when present."
           },
           "body_text": {
             "type": "string",
-            "description": "Template body text."
+            "description": "Body text with {{1}}, {{2}} placeholders."
           },
           "footer_text": {
             "type": "string",
@@ -232,36 +327,36 @@
           },
           "buttons": {
             "type": "array",
-            "description": "Template buttons.",
+            "description": "Buttons (QUICK_REPLY, URL, PHONE_NUMBER).",
             "items": {
               "type": "object"
             }
           },
           "variables": {
             "type": "object",
-            "description": "Template variable examples or defaults."
+            "description": "Example values for the placeholders, as submitted for review."
           },
           "provider_template_id": {
             "type": "string",
-            "description": "Provider-side template ID."
+            "description": "Provider-side template ID (Meta template id or Twilio Content SID)."
           },
           "rejection_reason": {
             "type": "string",
-            "description": "Provider rejection reason, when present."
+            "description": "Provider rejection reason, when rejected."
           },
           "last_synced_at": {
             "type": [
               "string",
               "null"
             ],
-            "description": "Last provider sync timestamp."
+            "description": "When the row was last confirmed against the provider."
           },
           "created_by": {
             "type": [
               "integer",
               "null"
             ],
-            "description": "WordPress user ID that created the row."
+            "description": "WordPress user ID that submitted the template."
           },
           "created_at": {
             "type": "string",
@@ -270,6 +365,30 @@
           "updated_at": {
             "type": "string",
             "description": "Update timestamp."
+          },
+          "provider_label": {
+            "type": "string",
+            "description": "Display label of the template's provider."
+          },
+          "current_provider": {
+            "type": "string",
+            "description": "Provider currently configured for WhatsApp."
+          },
+          "current_provider_label": {
+            "type": "string",
+            "description": "Display label of the current provider."
+          },
+          "is_current_provider": {
+            "type": "boolean",
+            "description": "True when the template belongs to the configured provider."
+          },
+          "is_selectable": {
+            "type": "boolean",
+            "description": "Whether the template may be picked for a send. Templates of another provider are not selectable."
+          },
+          "disabled_reason": {
+            "type": "string",
+            "description": "Why the template is not selectable; empty when it is."
           }
         }
       }

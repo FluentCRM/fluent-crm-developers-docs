@@ -27,7 +27,7 @@
       "post": {
         "operationId": "bulkActionRecurringCampaigns",
         "summary": "POST Bulk Action Recurring Campaigns",
-        "description": "Perform a bulk action on multiple recurring campaigns. Supported actions are `apply_labels` (attach labels to campaigns) and `delete_campaigns` (delete campaigns and their child emails). When `select_all` is `true`, the action is applied to all recurring campaigns regardless of the `campaign_ids` provided. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "Perform a bulk action on multiple recurring campaigns. Supported actions are `apply_labels` (attach labels to campaigns) and `delete_campaigns` (delete campaigns and their child emails). When `select_all` is `true`, the action is applied to all recurring campaigns regardless of the `campaign_ids` provided. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails` or `fcrm_manage_email_delete` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SequencePolicy::handleRecurringBulkAction()`._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Recurring Campaigns"
         ],

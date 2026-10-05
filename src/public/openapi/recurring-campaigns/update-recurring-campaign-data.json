@@ -27,7 +27,7 @@
       "post": {
         "operationId": "updateRecurringCampaignData",
         "summary": "POST Update Recurring Campaign Email Data",
-        "description": "Update the email content and settings for an existing recurring campaign. Includes email body, subject, pre-header, UTM parameters, template, footer settings, and design template. The campaign's next scheduled send time is recalculated based on the scheduling settings. Footer content must include an unsubscribe or manage subscription URL if a custom footer is enabled. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails`\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "Update the email content and settings for an existing recurring campaign. Includes email body, subject, pre-header, UTM parameters, template, footer settings, and design template. The campaign's next scheduled send time is recalculated based on the scheduling settings. Footer content must include an unsubscribe or manage subscription URL if a custom footer is enabled. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SequencePolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Recurring Campaigns"
         ],

@@ -27,7 +27,7 @@
       "post": {
         "operationId": "trackContactEvent",
         "summary": "POST Track Contact Event",
-        "description": "Track a custom event for a contact. Requires the `event_tracking` experimental feature to be enabled. Events can be marked as repeatable or unique.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contacts`\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Track a custom event for a contact. Requires the `event_tracking` experimental feature to be enabled. Events can be marked as repeatable or unique.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts` or `fcrm_manage_contacts` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Contacts"
         ],
