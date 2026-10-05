@@ -521,7 +521,7 @@ add_filter('fluent_crm/default_avatar', function($url, $email) {
 ### `fluent_crm/get_avatar`
 
 Filter the final avatar URL for a contact. Only runs when **Enable Gravatar** is switched on; the
-default value is the Gravatar URL, with a `ui-avatars.com` fallback appended when
+default value is the Gravatar URL, with a `textavatars.com` initials fallback appended when
 **Gravatar fallback** is enabled and a name is available.
 
 **Parameters**

@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getContactPrevNextIds",
         "summary": "GET Get Contact Prev/Next IDs",
-        "description": "Get the previous and next contact IDs relative to a given contact ID within the current filter context. Returns up to 10 IDs in each direction. Useful for implementing prev/next navigation on a contact profile page.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts`\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Get the previous and next contact IDs relative to a given contact ID, in the order the contact list shows them for the same filter and sort params. Returns up to 10 IDs in each direction, nearest first. Relevance order (`sort_by=relevance` with a `search`) is not supported and returns a 422. Useful for implementing prev/next navigation on a contact profile page.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts`\n\n_Enforced by `SubscriberPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Contacts"
         ],
@@ -60,9 +60,19 @@
             }
           },
           {
+            "name": "sort_by",
+            "in": "query",
+            "description": "Column the contact list is sorted by, such as `created_at`, `last_name` or `last_activity`. Ties are broken by contact ID. Unknown columns fall back to `id`.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "id"
+            }
+          },
+          {
             "name": "sort_type",
             "in": "query",
-            "description": "Sort direction of the contact list.",
+            "description": "Sort direction of the contact list. Case-insensitive; anything other than `ASC` is treated as `DESC`.",
             "required": false,
             "schema": {
               "type": "string",
@@ -140,6 +150,18 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "company_ids[]",
+            "in": "query",
+            "description": "Company IDs filter: only contacts linked to one of these companies.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
           }
         ],
         "responses": {
@@ -212,7 +234,7 @@
             }
           },
           "422": {
-            "description": "Missing required parameters.",
+            "description": "Missing required parameters, or relevance order with a search.",
             "content": {
               "application/json": {
                 "schema": {
@@ -225,6 +247,24 @@
                 },
                 "example": {
                   "message": "filter_type and current_id are required"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "`sort_by` is not `id` and the current contact does not exist.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "Subscriber not found"
                 }
               }
             }
