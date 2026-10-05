@@ -27,7 +27,7 @@
       "post": {
         "operationId": "bulkActionContacts",
         "summary": "POST Bulk Action Contacts",
-        "description": "Perform a bulk action on multiple contacts. Supports adding/removing tags and lists, changing status/type, deleting contacts, sending double opt-in, adding to email sequences/automation funnels/companies, removing from companies, and updating custom fields. When `is_all` is `yes`, processes contacts matching the filter query in chunks.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contacts`\n\n_Enforced by `SubscriberPolicy::handleBulkActions()`._\n\n<!-- /fc:access -->",
+        "description": "Perform a bulk action on multiple contacts. Supports adding/removing tags and lists, changing status/type, deleting contacts, sending double opt-in, adding to email sequences/automation funnels/companies, removing from companies, and updating custom fields. When `is_all` is `yes`, processes contacts matching the filter query in chunks. A select-all `delete_contacts` can carry the count the user confirmed (`expected_total`): the first batch is refused with a 409 when more contacts match, and returns `max_contact_id`, which later batches send back so contacts created during the run are not deleted.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contacts`\n\n_Enforced by `SubscriberPolicy::handleBulkActions()`._\n\n<!-- /fc:access -->",
         "tags": [
           "Contacts"
         ],
@@ -82,7 +82,7 @@
                   },
                   "contact_query": {
                     "type": "object",
-                    "description": "Filter query to select contacts when `is_all` is `yes`.",
+                    "description": "Filter query to select contacts when `is_all` is `yes`: the same params `GET /subscribers` takes (`filter_type`, `search`, `search_custom_fields`, `tags`, `lists`, `statuses`, `company_ids`, `advanced_filters`), so the action reaches exactly the contacts the list shows.",
                     "properties": {
                       "filter_type": {
                         "type": "string",
@@ -135,6 +135,14 @@
                     "type": "integer",
                     "description": "Last processed contact ID for chunked processing (when `is_all` is `yes`).",
                     "default": 0
+                  },
+                  "expected_total": {
+                    "type": "integer",
+                    "description": "`delete_contacts` with `is_all`, first batch only: how many contacts the user confirmed. Refused with a 409 (nothing deleted) when more match now. Omit to skip the check."
+                  },
+                  "max_contact_id": {
+                    "type": "integer",
+                    "description": "`delete_contacts` with `is_all`, later batches: the `max_contact_id` the first batch returned. Contacts with a higher id are not deleted."
                   },
                   "action_options": {
                     "type": "array",
@@ -200,6 +208,10 @@
                     "is_completed": {
                       "type": "boolean",
                       "description": "Only present when all contacts have been processed in `is_all` mode."
+                    },
+                    "max_contact_id": {
+                      "type": "integer",
+                      "description": "Select-all `delete_contacts` sent with `expected_total` or `max_contact_id`: the highest contact id the run may delete. Send it back as `max_contact_id`."
                     }
                   }
                 },
@@ -225,6 +237,29 @@
                 },
                 "example": {
                   "message": "Subscribers selection is required"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Select-all `delete_contacts`: more contacts match than `expected_total`. Nothing was changed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "matching_total": {
+                      "type": "integer",
+                      "description": "How many contacts match now."
+                    }
+                  }
+                },
+                "example": {
+                  "message": "The list changed: 30 contacts match now, but 25 were confirmed. Nothing was changed. Review the list and try again.",
+                  "matching_total": 30
                 }
               }
             }
