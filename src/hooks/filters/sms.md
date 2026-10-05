@@ -78,7 +78,9 @@ add_filter('fluent_crm/parse_whatsapp_smartcode', function($content, $subscriber
 ### `fluent_crm/sms_opt_in_confirmation_message`
 
 Filter the confirmation message sent back to a contact when they opt **in** to SMS by replying to a
-keyword (for example `START`).
+keyword (for example `START`). Return an empty string to send no confirmation. The filter does not
+run for Twilio, which sends its own START/STOP compliance replies. The confirmation is queued as an
+outbound message with `ref_type = 'status_confirmation'` and delivered through the normal queue.
 
 **Parameters**
 - `$messageContent` String - the confirmation message
@@ -99,7 +101,13 @@ add_filter('fluent_crm/sms_opt_in_confirmation_message', function($messageConten
 ### `fluent_crm/sms_opt_out_confirmation_message`
 
 Filter the confirmation message sent back to a contact when they opt **out** of SMS by replying to a
-keyword (for example `STOP`).
+keyword (for example `STOP`). Return an empty string to send no confirmation. The filter does not
+run for Twilio, which sends its own START/STOP compliance replies.
+
+The confirmation is queued as an outbound message with `ref_type = 'status_confirmation'` and an
+`opt_out` event in its meta. It is the only outbound message the scheduler delivers to a contact
+whose SMS consent is `unsubscribed`; the exemption applies to that queued row alone, so it cannot
+be resent from the inbox, and the Resend action refuses confirmation rows.
 
 **Parameters**
 - `$messageContent` String - the confirmation message

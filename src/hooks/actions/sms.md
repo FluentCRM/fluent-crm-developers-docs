@@ -181,14 +181,27 @@ add_action('fluent_crm/sms_campaign_deleted', function($campaignId) {
 
 ## Sending & Delivery
 
+::: info One hook per message, named after the channel
+The scheduler fires `fluent_crm/{channel}_sent` or `fluent_crm/{channel}_failed` exactly once per
+outbound message, where `{channel}` is the conversation thread's `channel` (`sms` or `whatsapp`). A
+WhatsApp message fires the `whatsapp_*` hook **instead of** the `sms_*` one, never both. A channel
+registered by an add-on gets its own `fluent_crm/{slug}_sent` and `_failed` the same way.
+
+`$message` is a `Message` model (an `fc_messages` row), already updated when the hook runs. The
+channel, destination number and contact hang off `$message->thread` (`channel`, `phone_number`,
+`contact_id`, and `->subscriber`). Legacy listeners written against the old `SMSMessage` model
+should read `$message->thread->phone_number` instead of `mobile_number`, and the error text from
+`$message->meta['error_message']` instead of `notes`.
+:::
+
 ### `fluent_crm/sms_sent`
 
-Fires after an SMS message is successfully sent, once the message row has been marked sent and the
-campaign's `sent_count` incremented.
+Fires after an SMS message is successfully sent. By the time the listener runs, the message row has
+been updated and the campaign's `sent_count` incremented.
 
 **Parameters**
-- `$smsMessage` SMSMessage Model - the pre-update instance, so its `status` still reflects the value from before the send was recorded
-- `$result` Array - the driver's response; carries `provider_message_id` when the provider returns one
+- `$message` Message Model - already updated: `status` is `sent`, `sent_at` and `updated_at` are set, and `provider_message_id` is filled when the provider returned one
+- `$result` Array - the driver's response: `status` (`success`), `status_code`, `message`, `response`, and `provider_message_id` when the provider returns one
 
 **Usage:**
 ```php
@@ -204,16 +217,18 @@ add_action('fluent_crm/sms_sent', function($smsMessage, $result) {
 
 ### `fluent_crm/sms_failed`
 
-Fires after an SMS message fails to send, once the message row has been marked `failed` and the
-campaign's `failed_count` incremented.
+Fires after an SMS message fails, once the message row has been marked `failed` and the campaign's
+`failed_count` incremented. It fires on **every** failure path: pre-send guards that never reach
+the provider (no conversation thread, no phone number, unknown channel, or a contact who is not
+subscribed on the channel), a provider error response, and an exception thrown during the send.
 
 **Parameters**
-- `$smsMessage` SMSMessage Model - the pre-update instance, so its `status` still reflects the value from before the failure was recorded
-- `$errorMessage` String - error message from the provider; also stored on the message's `notes` column
+- `$message` Message Model - already updated: `status` is `failed` and `meta['error_message']` holds the reason
+- `$errorMessage` String - the guard's reason, the driver response's `message` (or `Unknown error` when it carries none), or the exception message
 
 **Usage:**
 ```php
-add_action('fluent_crm/sms_failed', function($smsMessage, $errorMessage) {
+add_action('fluent_crm/sms_failed', function($message, $errorMessage) {
     // SMS failed - log or retry
     error_log('SMS failed: ' . $errorMessage);
 }, 10, 2);
@@ -225,19 +240,18 @@ add_action('fluent_crm/sms_failed', function($smsMessage, $errorMessage) {
 
 ### `fluent_crm/whatsapp_sent`
 
-WhatsApp counterpart of [`fluent_crm/sms_sent`](#fluent-crm-sms-sent) — messages route here when
-their `channel` is `whatsapp`. Fires after a WhatsApp message is successfully sent, once the message
-row has been marked sent and the campaign's `sent_count` incremented. Note it fires **in addition
-to** the generic `fluent_crm/sms_sent` (which runs for every channel), not instead of it — the same
-applies to `whatsapp_failed` and `sms_failed`.
+WhatsApp counterpart of [`fluent_crm/sms_sent`](#fluent-crm-sms-sent): a message fires this hook
+when its thread's `channel` is `whatsapp`, and does **not** fire `fluent_crm/sms_sent`. It runs
+after the message row has been marked sent and the campaign's `sent_count` incremented, and fires
+once per message.
 
 **Parameters**
-- `$smsMessage` SMSMessage Model - the pre-update instance, so its `status` still reflects the value from before the send was recorded
+- `$message` Message Model - already updated: `status` is `sent`, `sent_at` and `updated_at` are set, and `provider_message_id` is filled when the provider returned one
 - `$result` Array - the WhatsApp driver's response (`status`, `status_code`, `message`, `response`); carries `provider_message_id` when the provider returns one
 
 **Usage:**
 ```php
-add_action('fluent_crm/whatsapp_sent', function($smsMessage, $result) {
+add_action('fluent_crm/whatsapp_sent', function($message, $result) {
     // WhatsApp message sent successfully
     // $result contains provider-specific response data
 }, 10, 2);
@@ -250,18 +264,18 @@ add_action('fluent_crm/whatsapp_sent', function($smsMessage, $result) {
 ### `fluent_crm/whatsapp_failed`
 
 WhatsApp counterpart of [`fluent_crm/sms_failed`](#fluent-crm-sms-failed). Fires after a WhatsApp
-message fails to send, once the message row has been marked `failed` and the campaign's
-`failed_count` incremented. Pre-send guards that mark a message failed without attempting a send —
-for example a contact whose `whatsapp_status` is not `whatsapp_subscribed` — do **not** fire this
-hook.
+message fails, once the message row has been marked `failed` and the campaign's `failed_count`
+incremented. Like the SMS hook it fires on every failure path, including pre-send guards that never
+reach the provider, such as a contact whose WhatsApp thread is not `subscribed`; in that case
+`$errorMessage` is `Contact is not subscribed for WhatsApp`.
 
 **Parameters**
-- `$smsMessage` SMSMessage Model - the pre-update instance, so its `status` still reflects the value from before the failure was recorded
-- `$errorMessage` String - the driver response's `message`, or `Unknown error` when it carries none; also stored on the message's `notes` column
+- `$message` Message Model - already updated: `status` is `failed` and `meta['error_message']` holds the reason
+- `$errorMessage` String - the guard's reason, the driver response's `message` (or `Unknown error` when it carries none), or the exception message
 
 **Usage:**
 ```php
-add_action('fluent_crm/whatsapp_failed', function($smsMessage, $errorMessage) {
+add_action('fluent_crm/whatsapp_failed', function($message, $errorMessage) {
     // WhatsApp send failed - log or retry
     error_log('WhatsApp failed: ' . $errorMessage);
 }, 10, 2);
@@ -276,10 +290,13 @@ add_action('fluent_crm/whatsapp_failed', function($smsMessage, $errorMessage) {
 ### `fluent_crm/contact_sms_subscribed`
 
 Fires when an inbound message opts a contact in to SMS. The contact is matched by `phone`, so nothing
-fires for an unknown number. The contact's `sms_status` is already saved as `sms_subscribed`.
+fires for an unknown number, although the number's consent is still recorded. Consent lives on the
+conversation thread (`fc_message_threads.status`), not on the contact: every SMS thread of the
+contact is already `subscribed` when this fires. Unless the provider is Twilio, which sends its own
+compliance reply, a confirmation message has already been queued to the contact.
 
 **Parameters**
-- `$subscriber` [Subscriber Model](/database/models/subscriber) - already saved with `sms_status = 'sms_subscribed'`
+- `$subscriber` [Subscriber Model](/database/models/subscriber) - the contact whose SMS threads are now `subscribed`
 - `$data` Array - the inbound webhook context; includes a `provider` key
 
 **Usage:**
@@ -296,11 +313,14 @@ add_action('fluent_crm/contact_sms_subscribed', function($subscriber, $data) {
 ### `fluent_crm/contact_sms_unsubscribed`
 
 Fires when an inbound message opts a contact out of SMS. The contact is matched by `phone`, so
-nothing fires for an unknown number. The contact's `sms_status` is already saved as
-`sms_unsubscribed`.
+nothing fires for an unknown number, although the number's consent is still recorded. Consent lives
+on the conversation thread (`fc_message_threads.status`), not on the contact: every SMS thread of
+the contact is already `unsubscribed` when this fires. Unless the provider is Twilio, which sends
+its own compliance reply, the opt-out confirmation has already been queued; it is the one outbound
+message the scheduler delivers to an unsubscribed contact.
 
 **Parameters**
-- `$subscriber` [Subscriber Model](/database/models/subscriber) - already saved with `sms_status = 'sms_unsubscribed'`
+- `$subscriber` [Subscriber Model](/database/models/subscriber) - the contact whose SMS threads are now `unsubscribed`
 - `$data` Array - the inbound webhook context; includes a `provider` key
 
 **Usage:**
@@ -319,11 +339,12 @@ add_action('fluent_crm/contact_sms_unsubscribed', function($subscriber, $data) {
 WhatsApp counterpart of [`fluent_crm/contact_sms_subscribed`](#fluent-crm-contact-sms-subscribed).
 Fires when an inbound WhatsApp message — a `start`/`subscribe` keyword arriving on the Twilio
 WhatsApp or Meta Cloud webhook — opts a contact in to WhatsApp. The contact is matched by `phone`,
-so nothing fires for an unknown number. The contact's `whatsapp_status` is already saved as
-`whatsapp_subscribed`.
+so nothing fires for an unknown number, although the number's consent is still recorded. Consent
+lives on the conversation thread (`fc_message_threads.status`): every WhatsApp thread of the contact
+is already `subscribed` when this fires.
 
 **Parameters**
-- `$subscriber` [Subscriber Model](/database/models/subscriber) - already saved with `whatsapp_status = 'whatsapp_subscribed'`
+- `$subscriber` [Subscriber Model](/database/models/subscriber) - the contact whose WhatsApp threads are now `subscribed`
 - `$data` Array - the inbound webhook context; includes a `provider` key (`twilio_whatsapp` or `meta_cloud`)
 
 **Usage:**
@@ -342,11 +363,13 @@ add_action('fluent_crm/contact_whatsapp_subscribed', function($subscriber, $data
 WhatsApp counterpart of [`fluent_crm/contact_sms_unsubscribed`](#fluent-crm-contact-sms-unsubscribed).
 Fires when an inbound WhatsApp message — a `stop`/`cancel`/`unsubscribe` keyword arriving on the
 Twilio WhatsApp or Meta Cloud webhook — opts a contact out of WhatsApp. The contact is matched by
-`phone`, so nothing fires for an unknown number. The contact's `whatsapp_status` is already saved as
-`whatsapp_unsubscribed`.
+`phone`, so nothing fires for an unknown number, although the number's consent is still recorded.
+Consent lives on the conversation thread (`fc_message_threads.status`): every WhatsApp thread of the
+contact is already `unsubscribed` when this fires. The opt-out confirmation, if enabled, is sent
+directly through the provider after this hook.
 
 **Parameters**
-- `$subscriber` [Subscriber Model](/database/models/subscriber) - already saved with `whatsapp_status = 'whatsapp_unsubscribed'`
+- `$subscriber` [Subscriber Model](/database/models/subscriber) - the contact whose WhatsApp threads are now `unsubscribed`
 - `$data` Array - the inbound webhook context; includes a `provider` key (`twilio_whatsapp` or `meta_cloud`)
 
 **Usage:**
