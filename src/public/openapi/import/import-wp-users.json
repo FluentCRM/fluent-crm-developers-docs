@@ -98,7 +98,7 @@
                       "yes",
                       "no"
                     ],
-                    "description": "Whether to send a double opt-in confirmation email."
+                    "description": "`yes` to send the double opt-in confirmation email to new contacts. Sent only when the import's status for new contacts is `pending`; ignored otherwise."
                   },
                   "import_silently": {
                     "type": "string",

@@ -139,7 +139,7 @@
                   },
                   "double_optin": {
                     "type": "boolean",
-                    "description": "Send double opt-in confirmation email."
+                    "description": "Send the double opt-in confirmation email. Sent only when the contact ends up `pending`; ignored for any other status."
                   },
                   "__force_update": {
                     "type": "string",
