@@ -532,7 +532,6 @@ export default [
             { text: 'Get License Status <badge type="tip">GET</badge>', link: '/rest-api/operations/pro-settings/get-license-status' },
             { text: 'List Managers <badge type="tip">GET</badge>', link: '/rest-api/operations/pro-settings/get-managers' },
             { text: 'Add Manager <badge type="warning">POST</badge>', link: '/rest-api/operations/pro-settings/add-manager' },
-            { text: 'Import Funnel <badge type="warning">POST</badge>', link: '/rest-api/operations/pro-settings/import-funnel' },
             { text: 'Save License <badge type="warning">POST</badge>', link: '/rest-api/operations/pro-settings/save-license' },
             { text: 'Update Manager <badge type="info">PUT</badge>', link: '/rest-api/operations/pro-settings/update-manager' },
             { text: 'Deactivate License <badge type="danger">DELETE</badge>', link: '/rest-api/operations/pro-settings/deactivate-license' },
