@@ -77,12 +77,18 @@
                       }
                     },
                     "click_status": {
-                      "type": "string",
-                      "description": "Whether click tracking was enabled for this campaign (e.g., `yes`, `no`)."
+                      "oneOf": [
+                        { "type": "boolean" },
+                        { "type": "string", "enum": ["anonymous"] }
+                      ],
+                      "description": "Normalized click tracking: true, false, or anonymous."
                     },
                     "open_status": {
-                      "type": "string",
-                      "description": "Whether open tracking was enabled for this campaign (e.g., `yes`, `no`)."
+                      "oneOf": [
+                        { "type": "boolean" },
+                        { "type": "string", "enum": ["anonymous"] }
+                      ],
+                      "description": "Normalized open tracking: true, false, or anonymous."
                     }
                   }
                 },
@@ -99,8 +105,8 @@
                       "unique": 72
                     }
                   ],
-                  "click_status": "yes",
-                  "open_status": "yes"
+                  "click_status": true,
+                  "open_status": true
                 }
               }
             }
