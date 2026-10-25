@@ -17,7 +17,7 @@ export default [
         ]
     },
     {
-        text: 'Contacts (32)',
+        text: 'Contacts (33)',
         collapsed: true,
         items: [
             { text: 'Get Contact <badge type="tip">GET</badge>', link: '/rest-api/operations/contacts/get-contact' },
@@ -41,6 +41,7 @@ export default [
             { text: 'Create Contact <badge type="warning">POST</badge>', link: '/rest-api/operations/contacts/create-contact' },
             { text: 'Create Contact Note <badge type="warning">POST</badge>', link: '/rest-api/operations/contacts/create-contact-note' },
             { text: 'Save Contact External View <badge type="warning">POST</badge>', link: '/rest-api/operations/contacts/save-contact-external-view' },
+            { text: 'Save Contact Quick Pins <badge type="warning">POST</badge>', link: '/rest-api/operations/contacts/save-contact-quick-pins' },
             { text: 'Send Contact Custom Email <badge type="warning">POST</badge>', link: '/rest-api/operations/contacts/send-contact-custom-email' },
             { text: 'Send Contact Double Opt-in <badge type="warning">POST</badge>', link: '/rest-api/operations/contacts/send-contact-double-optin' },
             { text: 'Sync Contact Segments <badge type="warning">POST</badge>', link: '/rest-api/operations/contacts/sync-contact-segments' },
@@ -239,7 +240,7 @@ export default [
         ]
     },
     {
-        text: 'Reports (25)',
+        text: 'Reports (28)',
         collapsed: true,
         items: [
             { text: 'Automation Reports <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-automation-reports' },
@@ -253,6 +254,7 @@ export default [
             { text: 'Email Unsubscribe Stats <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-email-unsub-stats' },
             { text: 'Get Advanced Report Providers <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-advanced-report-providers' },
             { text: 'Get Ajax Options <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-ajax-options' },
+            { text: 'Get Campaign Calendar <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-campaign-calendar' },
             { text: 'Get Cascade Selections <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-cascade-selections' },
             { text: 'Get Contact Growth <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-contact-growth' },
             { text: 'Get Dashboard Stats <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-dashboard-stats' },
@@ -260,6 +262,8 @@ export default [
             { text: 'Get Email Open Stats <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-email-open-stats' },
             { text: 'Get Email Performance <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-email-performance' },
             { text: 'Get Email Sent Stats <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-email-sent-stats' },
+            { text: 'Get Messaging Performance <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-messaging-performance' },
+            { text: 'Get Messaging Stats <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-messaging-stats' },
             { text: 'Get Report Emails <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-report-emails' },
             { text: 'Get Report Options <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-report-options' },
             { text: 'Get Taxonomy Terms <badge type="tip">GET</badge>', link: '/rest-api/operations/reports/get-taxonomy-terms' },
@@ -387,7 +391,7 @@ export default [
         ]
     },
     {
-        text: 'Settings (41)',
+        text: 'Settings (42)',
         collapsed: true,
         items: [
             { text: 'Database Index Health <badge type="tip">GET</badge>', link: '/rest-api/operations/settings/get-db-index-health' },
@@ -415,6 +419,7 @@ export default [
             { text: 'Install Fluent Support <badge type="warning">POST</badge>', link: '/rest-api/operations/settings/install-fluent-support' },
             { text: 'Install FluentCart <badge type="warning">POST</badge>', link: '/rest-api/operations/settings/install-fluent-cart' },
             { text: 'Install FluentSMTP <badge type="warning">POST</badge>', link: '/rest-api/operations/settings/install-fluent-smtp' },
+            { text: 'Preview Double Opt-in <badge type="warning">POST</badge>', link: '/rest-api/operations/settings/preview-double-optin' },
             { text: 'Repair Database Indexes <badge type="warning">POST</badge>', link: '/rest-api/operations/settings/repair-db-indexes' },
             { text: 'Reset Database <badge type="warning">POST</badge>', link: '/rest-api/operations/settings/reset-database' },
             { text: 'Run Cron Event <badge type="warning">POST</badge>', link: '/rest-api/operations/settings/run-cron' },
@@ -526,7 +531,7 @@ export default [
         ]
     },
     {
-        text: 'Pro Settings (8)',
+        text: 'Pro Settings (7)',
         collapsed: true,
         items: [
             { text: 'Get License Status <badge type="tip">GET</badge>', link: '/rest-api/operations/pro-settings/get-license-status' },

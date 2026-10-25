@@ -187,10 +187,27 @@
           {
             "name": "search",
             "in": "query",
-            "description": "Search term applied to the contact query.",
+            "description": "Search text, in the same syntax as the contacts list `search` parameter.",
             "required": false,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "search_custom_fields",
+            "in": "query",
+            "description": "Also match free search text against contact custom-field values. Accepts `true`, `1` or `yes`.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false",
+                "yes",
+                "no",
+                "1",
+                "0"
+              ]
             }
           },
           {

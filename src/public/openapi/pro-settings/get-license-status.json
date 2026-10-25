@@ -128,6 +128,26 @@
                     "last_checked_human": {
                       "type": "string",
                       "description": "Relative time of the last remote license check, e.g. `5 mins ago`. Empty string if never checked."
+                    },
+                    "price_id": {
+                      "type": "string",
+                      "description": "Price identifier of the licence on the store. Often empty."
+                    },
+                    "customer_name": {
+                      "type": "string",
+                      "description": "Licence holder's name, as the licensing server returns it."
+                    },
+                    "customer_email_masked": {
+                      "type": "string",
+                      "description": "Licence holder's email, masked by the licensing server and with the domain masked again before it is returned."
+                    },
+                    "last_checked": {
+                      "type": "string",
+                      "description": "When the licence was last checked with the licensing server (`Y-m-d H:i:s`, UTC)."
+                    },
+                    "is_expired": {
+                      "type": "boolean",
+                      "description": "True when the licensing server reports the licence as expired."
                     }
                   }
                 },

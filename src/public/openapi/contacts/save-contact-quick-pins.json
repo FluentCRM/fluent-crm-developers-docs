@@ -1,0 +1,198 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/subscribers/quick-pins": {
+      "post": {
+        "operationId": "saveContactQuickPins",
+        "summary": "POST Save Contact Quick Pins",
+        "description": "Replace the current user's pinned list and tag quick filters on the contacts list. Pins belong to the user who makes the request and are stored as a user option, so each user has their own set.\n\nThe saved set replaces the old one. Before saving, FluentCRM drops entries with an unknown `type`, entries whose list or tag does not exist, and duplicates. It keeps the order you send and stores at most 8 pins. Send an empty array to clear all pins. The response returns the pins as stored.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_contacts`\n\n_Enforced by `SubscriberPolicy::saveQuickPins()`._\n\n<!-- /fc:access -->",
+        "tags": [
+          "Contacts"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "pins": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "description": "What the pin filters by.",
+                          "enum": [
+                            "list",
+                            "tag"
+                          ]
+                        },
+                        "id": {
+                          "type": "integer",
+                          "description": "ID of the list or tag."
+                        }
+                      }
+                    },
+                    "description": "The pins in display order. At most 8 are kept; an empty array clears them."
+                  }
+                }
+              },
+              "example": {
+                "pins": [
+                  {
+                    "type": "list",
+                    "id": 3
+                  },
+                  {
+                    "type": "tag",
+                    "id": 12
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The pins as stored, after invalid and duplicate entries were removed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "pins": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "description": "What the pin filters by.",
+                            "enum": [
+                              "list",
+                              "tag"
+                            ]
+                          },
+                          "id": {
+                            "type": "integer",
+                            "description": "ID of the list or tag."
+                          }
+                        }
+                      },
+                      "description": "The stored pins, in order."
+                    }
+                  }
+                },
+                "example": {
+                  "pins": [
+                    {
+                      "type": "list",
+                      "id": 3
+                    },
+                    {
+                      "type": "tag",
+                      "id": 12
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed \u2014 the response message names the offending field.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

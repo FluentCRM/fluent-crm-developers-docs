@@ -127,7 +127,19 @@
                   },
                   "search": {
                     "type": "string",
-                    "description": "Search term applied to the contact query."
+                    "description": "Search text, in the same syntax as the contacts list `search` parameter."
+                  },
+                  "search_custom_fields": {
+                    "type": "string",
+                    "enum": [
+                      "true",
+                      "false",
+                      "yes",
+                      "no",
+                      "1",
+                      "0"
+                    ],
+                    "description": "Also match free search text against contact custom-field values. Accepts `true`, `1` or `yes`."
                   },
                   "sort_by": {
                     "type": "string",

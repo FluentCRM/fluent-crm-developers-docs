@@ -54,16 +54,33 @@
           {
             "name": "search",
             "in": "query",
-            "description": "Search contacts by name, email, or other searchable fields.",
+            "description": "Search text. Every word must match the first name, last name or email. Also supported: `\"quoted phrase\"`, a full or partial email, a phone number (compared on digits, 6 or more), `#123` for a contact ID, and `field:value` scoped to one field (`id`, `email`, `name`, `first_name`/`first`, `last_name`/`last`, `phone`, `address`, `city`, `state`, `postal_code`/`zip`, `country`, `source`) or to a custom field by its slug. Quote a scoped value that has spaces: `city:\"new york\"`. Terms combine with AND; at most 20 terms are read. A `key:value` with an unknown key is searched as plain text.",
             "required": false,
             "schema": {
               "type": "string"
             }
           },
           {
+            "name": "search_custom_fields",
+            "in": "query",
+            "description": "Also match free search text against contact custom-field values. Accepts `true`, `1` or `yes`.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false",
+                "yes",
+                "no",
+                "1",
+                "0"
+              ]
+            }
+          },
+          {
             "name": "sort_by",
             "in": "query",
-            "description": "Column to sort by.",
+            "description": "Column to sort by. `relevance` ranks search matches (exact before prefix before contains); without a search it falls back to id order.",
             "required": false,
             "schema": {
               "type": "string",
@@ -189,6 +206,23 @@
             }
           },
           {
+            "name": "with_status_counts",
+            "in": "query",
+            "description": "Also return `status_counts`, the number of matching contacts per status (ignoring the status filter). Simple filter mode only. Accepts `true`, `1` or `yes`.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false",
+                "yes",
+                "no",
+                "1",
+                "0"
+              ]
+            }
+          },
+          {
             "name": "per_page",
             "in": "query",
             "description": "Number of contacts per page.",
@@ -272,6 +306,87 @@
                         "null"
                       ],
                       "description": "Echoes back the `custom_fields` query parameter value."
+                    },
+                    "search_meta": {
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "description": "How the search text was understood, for the UI. null when `search` is empty.",
+                      "properties": {
+                        "custom_fields": {
+                          "type": "boolean",
+                          "description": "True when free text was also matched against custom-field values."
+                        },
+                        "mode": {
+                          "type": "string",
+                          "enum": [
+                            "words",
+                            "email",
+                            "phone",
+                            "id",
+                            "scoped"
+                          ],
+                          "description": "How the free text was read."
+                        },
+                        "text": {
+                          "type": "string",
+                          "description": "The free text, without scoped terms."
+                        },
+                        "words": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "Words and quoted phrases that must match."
+                        },
+                        "ids": {
+                          "type": "array",
+                          "items": {
+                            "type": "integer"
+                          },
+                          "description": "Contact IDs from `#123` terms."
+                        },
+                        "scoped": {
+                          "type": "array",
+                          "description": "The `field:value` terms.",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "key": {
+                                "type": "string",
+                                "description": "The key as typed (an alias such as `zip` stays as typed)."
+                              },
+                              "field": {
+                                "type": "string",
+                                "description": "The field searched."
+                              },
+                              "value": {
+                                "type": "string",
+                                "description": "The value searched for."
+                              },
+                              "custom": {
+                                "type": "boolean",
+                                "description": "True for a custom field."
+                              }
+                            }
+                          }
+                        },
+                        "unknown": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "Keys that were not known fields and were searched as plain text."
+                        }
+                      }
+                    },
+                    "status_counts": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "integer"
+                      },
+                      "description": "Present only when `with_status_counts` is set and the filter type is simple. Contacts per status for the current filters, ignoring the status filter; every status is listed, with 0 when none match."
                     }
                   }
                 },
@@ -335,7 +450,8 @@
                       }
                     ]
                   },
-                  "custom": null
+                  "custom": null,
+                  "search_meta": null
                 }
               }
             }

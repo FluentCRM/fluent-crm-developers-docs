@@ -1,0 +1,228 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/reports/campaign-calendar": {
+      "get": {
+        "operationId": "getCampaignCalendar",
+        "summary": "GET Campaign Calendar",
+        "description": "List every campaign dated inside a date range, for the Reports calendar. The list covers email campaigns, emails sent by recurring campaigns plus each recurring campaign's next run, and, when Messaging is enabled, campaigns on the active messaging channels.\n\nA campaign is dated by `scheduled_at`, or by `created_at` when it has no schedule, so an unscheduled draft appears on the day it was created. The range is capped at 366 days from its start. Rows are sorted by date, then by id.\n\n`status` folds the raw campaign status into one of `draft`, `scheduled`, `sent`, `failed` or `cancelled`. In-flight states such as `pending`, `working` and `paused`, and an active recurring campaign, count as `scheduled`. A status FluentCRM does not map is returned unchanged. `raw_status` always holds the stored value.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "tags": [
+          "Reports"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "date_range",
+            "in": "query",
+            "description": "Date range as a two-element array `[from, to]` in `YYYY-MM-DD` format, read in the site timezone. Defaults to the last 30 days if omitted.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "date"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "style": "form",
+            "explode": true
+          },
+          {
+            "name": "types",
+            "in": "query",
+            "description": "Campaign types to include: `email` and/or a messaging channel slug. Omit for all types. A channel that is not active is ignored.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "email",
+                  "sms",
+                  "whatsapp"
+                ]
+              }
+            },
+            "style": "form",
+            "explode": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Campaigns dated inside the range.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "campaigns": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "Campaign ID."
+                          },
+                          "parent_id": {
+                            "type": "integer",
+                            "description": "Parent campaign ID: the recurring campaign for a `recurring_mail`, else 0."
+                          },
+                          "type": {
+                            "type": "string",
+                            "description": "`email`, or the messaging channel slug.",
+                            "enum": [
+                              "email",
+                              "sms",
+                              "whatsapp"
+                            ]
+                          },
+                          "kind": {
+                            "type": "string",
+                            "description": "`campaign`, `recurring_mail` (an email a recurring campaign produced) or `recurring_campaign` (its next pending run).",
+                            "enum": [
+                              "campaign",
+                              "recurring_mail",
+                              "recurring_campaign"
+                            ]
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "Campaign title."
+                          },
+                          "status": {
+                            "type": "string",
+                            "description": "Calendar status. See the description for how raw statuses map."
+                          },
+                          "raw_status": {
+                            "type": "string",
+                            "description": "The status stored on the campaign."
+                          },
+                          "date": {
+                            "type": "string",
+                            "description": "`scheduled_at`, or `created_at` when unscheduled (`Y-m-d H:i:s`, site time)."
+                          },
+                          "recipients": {
+                            "type": "integer",
+                            "description": "Recipient count stored on the campaign."
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "campaigns": [
+                    {
+                      "id": 1491,
+                      "parent_id": 0,
+                      "type": "email",
+                      "kind": "campaign",
+                      "title": "October newsletter",
+                      "status": "draft",
+                      "raw_status": "draft",
+                      "date": "2026-10-01 09:25:08",
+                      "recipients": 0
+                    },
+                    {
+                      "id": 1502,
+                      "parent_id": 0,
+                      "type": "email",
+                      "kind": "campaign",
+                      "title": "Product launch",
+                      "status": "scheduled",
+                      "raw_status": "scheduled",
+                      "date": "2026-10-20 10:00:00",
+                      "recipients": 1840
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}
