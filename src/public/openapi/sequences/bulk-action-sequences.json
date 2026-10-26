@@ -27,7 +27,7 @@
       "post": {
         "operationId": "bulkActionSequences",
         "summary": "POST Bulk Action Sequences",
-        "description": "Permanently delete multiple email sequences in bulk. Removes all associated sequence emails, campaign emails, URL metrics, and campaign metadata. Use `select_all` to delete all sequences. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_delete`\n\n_Enforced by `SequencePolicy::handleSequenceBulkDelete()`._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "Permanently delete multiple email sequences in bulk. Removes all associated sequence emails, campaign emails, URL metrics, campaign metadata and subscriber trackers. Only the ids in `sequence_ids` are deleted; there is no \"all sequences\" mode. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_delete`\n\n_Enforced by `SequencePolicy::handleSequenceBulkDelete()`._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Sequences"
         ],
@@ -48,17 +48,12 @@
                     "items": {
                       "type": "integer"
                     },
-                    "description": "Array of sequence IDs to delete."
-                  },
-                  "select_all": {
-                    "type": "string",
-                    "enum": [
-                      "true",
-                      "false"
-                    ],
-                    "description": "If `true`, deletes all sequences regardless of `sequence_ids`."
+                    "description": "Sequence IDs to delete. Required."
                   }
-                }
+                },
+                "required": [
+                  "sequence_ids"
+                ]
               },
               "example": {
                 "sequence_ids": [
@@ -84,7 +79,7 @@
                   }
                 },
                 "example": {
-                  "message": "Selected Sequences has been deleted permanently"
+                  "message": "Selected email sequences have been permanently deleted"
                 }
               }
             }

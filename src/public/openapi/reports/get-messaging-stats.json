@@ -1,0 +1,194 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/reports/messaging-stats": {
+      "get": {
+        "operationId": "getMessagingStats",
+        "summary": "GET Messaging Stats",
+        "description": "Return time series for the Messaging report charts: one zero-filled, date-keyed object per requested metric. The bucket size (daily, weekly or monthly) follows the length of the date range, as in the email report charts.\n\n`opt_outs` counts only inbound keyword opt-outs (such as a STOP reply). Opt-outs made from the inbox or a contact profile are not counted, because consent changes carry no timestamp.\n\nReturns 404 when the Messaging module is off.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "tags": [
+          "Reports"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "date_range",
+            "in": "query",
+            "description": "Date range as a two-element array `[from, to]` in `YYYY-MM-DD` format, read in the site timezone. Defaults to the last 30 days if omitted.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "date"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "style": "form",
+            "explode": true
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "description": "Limit the figures to one messaging channel. Omit, or send an unknown value, for all channels.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "sms",
+                "whatsapp"
+              ]
+            }
+          },
+          {
+            "name": "metrics",
+            "in": "query",
+            "description": "Metrics to return. Unknown names are ignored; if none are left, all four are returned.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "sent",
+                  "failed",
+                  "received",
+                  "opt_outs"
+                ]
+              }
+            },
+            "style": "form",
+            "explode": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "One series per requested metric.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "stats": {
+                      "type": "object",
+                      "description": "Keyed by metric name. Each value is a date-keyed object: keys are `YYYY-MM-DD` (daily/weekly) or `Mon YYYY` (monthly), values are counts.",
+                      "additionalProperties": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "stats": {
+                    "sent": {
+                      "2026-10-01": 120,
+                      "2026-10-02": 95
+                    },
+                    "failed": {
+                      "2026-10-01": 3,
+                      "2026-10-02": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Messaging is not enabled on this site.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

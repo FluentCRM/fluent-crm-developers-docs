@@ -1,0 +1,254 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/setting/double-optin/preview": {
+      "post": {
+        "operationId": "previewDoubleOptin",
+        "summary": "POST Preview Double Opt-in",
+        "description": "Render a preview of unsaved double opt-in settings. Nothing is saved and no email is sent.\n\n`target` picks what to render. By default the endpoint renders the confirmation email and returns its HTML, subject and sender. With `target` set to `confirmation` it renders the page a contact sees after they confirm, built from `settings.after_confirm_message` with the same markup and stylesheet as the public page. That message is filtered with `wp_kses_post()` unless the user has the `unfiltered_html` capability.\n\nSmart codes are filled from the contact in `contact_id`. Without it, FluentCRM uses the contact linked to the current user, then the first subscribed contact. If none exists, the request fails.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `SettingsPolicy::previewDoubleOptin()`._\n\n<!-- /fc:access -->",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "settings": {
+                    "type": "object",
+                    "description": "The double opt-in settings to preview, in the same shape that `PUT /setting/double-optin` accepts. The email uses `email_subject`, `email_pre_header`, `email_body` and `design_template`; the confirmation page uses `after_confirm_message`.",
+                    "properties": {
+                      "email_subject": {
+                        "type": "string",
+                        "description": "Email subject. Smart codes are filled."
+                      },
+                      "email_pre_header": {
+                        "type": "string",
+                        "description": "Preheader text."
+                      },
+                      "email_body": {
+                        "type": "string",
+                        "description": "Email body HTML."
+                      },
+                      "design_template": {
+                        "type": "string",
+                        "description": "Email design template.",
+                        "default": "simple"
+                      },
+                      "after_confirm_message": {
+                        "type": "string",
+                        "description": "HTML shown on the confirmation page. Used only when `target` is `confirmation`."
+                      }
+                    }
+                  },
+                  "target": {
+                    "type": "string",
+                    "description": "What to render. Any value other than `confirmation` renders the email.",
+                    "enum": [
+                      "email",
+                      "confirmation"
+                    ],
+                    "default": "email"
+                  },
+                  "contact_id": {
+                    "type": "integer",
+                    "description": "Contact whose data fills the smart codes. Optional."
+                  }
+                }
+              },
+              "example": {
+                "target": "email",
+                "contact_id": 42,
+                "settings": {
+                  "email_subject": "Please confirm your subscription",
+                  "email_body": "<p>Hi {{contact.first_name}},</p><p>{{crm.activate_button}}</p>",
+                  "design_template": "simple",
+                  "after_confirm_message": "<h2>Thanks for confirming</h2>"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The rendered preview. The keys depend on `target`.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "preview_html": {
+                          "type": "string",
+                          "description": "Full HTML of the email."
+                        },
+                        "preview_subject": {
+                          "type": "string",
+                          "description": "Subject line with smart codes filled."
+                        },
+                        "subjects": {
+                          "type": "array",
+                          "description": "The subject in the list shape the email preview modal uses.",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer",
+                                "description": "Always 0."
+                              },
+                              "key": {
+                                "type": "integer",
+                                "description": "Always 100."
+                              },
+                              "value": {
+                                "type": "string",
+                                "description": "The subject."
+                              }
+                            }
+                          }
+                        },
+                        "sender": {
+                          "type": "object",
+                          "description": "The From name and address the email would use."
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "confirmation_html": {
+                          "type": "string",
+                          "description": "HTML of the confirmation page, with its stylesheet link."
+                        }
+                      }
+                    }
+                  ]
+                },
+                "examples": {
+                  "email": {
+                    "summary": "Email preview (default)",
+                    "value": {
+                      "preview_html": "<!DOCTYPE html><html>...</html>",
+                      "preview_subject": "Please confirm your subscription",
+                      "subjects": [
+                        {
+                          "id": 0,
+                          "key": 100,
+                          "value": "Please confirm your subscription"
+                        }
+                      ],
+                      "sender": {
+                        "name": "Acme",
+                        "email": "news@example.com"
+                      }
+                    }
+                  },
+                  "confirmation": {
+                    "summary": "Confirmation page preview",
+                    "value": {
+                      "confirmation_html": "<link rel=\"stylesheet\" href=\"...\"><div class=\"fluentcrm_unsubscribe_wrapper\">...</div>"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed \u2014 the response message names the offending field.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

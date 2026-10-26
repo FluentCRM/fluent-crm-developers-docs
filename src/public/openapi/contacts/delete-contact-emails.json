@@ -27,7 +27,7 @@
       "delete": {
         "operationId": "deleteContactEmails",
         "summary": "DELETE Delete Contact Emails",
-        "description": "Delete specific email records for a contact by their email IDs. Only deletes campaign emails belonging to the specified contact.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_delete`\n\n_Enforced by `SubscriberPolicy::deleteEmails()`._\n\n<!-- /fc:access -->",
+        "description": "Delete specific email records for a contact by their email IDs. Only deletes campaign emails belonging to the specified contact.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_delete`\n\nThe policy also re-asserts `verifyRequest()`, so the caller must additionally hold `fcrm_read_contacts`, `fcrm_manage_contacts`.\n\n_Enforced by `SubscriberPolicy::deleteEmails()`._\n\n<!-- /fc:access -->",
         "tags": [
           "Contacts"
         ],

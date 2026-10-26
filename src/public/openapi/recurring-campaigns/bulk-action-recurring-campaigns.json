@@ -27,7 +27,7 @@
       "post": {
         "operationId": "bulkActionRecurringCampaigns",
         "summary": "POST Bulk Action Recurring Campaigns",
-        "description": "Perform a bulk action on multiple recurring campaigns. Supported actions are `apply_labels` (attach labels to campaigns) and `delete_campaigns` (delete campaigns and their child emails). When `select_all` is `true`, the action is applied to all recurring campaigns regardless of the `campaign_ids` provided. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails` or `fcrm_manage_email_delete` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SequencePolicy::handleRecurringBulkAction()`._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "Perform a bulk action on multiple recurring campaigns. Supported actions are `apply_labels` (attach labels to campaigns) and `delete_campaigns` (delete campaigns and their child emails). The action applies only to the ids in `campaign_ids`; there is no \"all recurring campaigns\" mode. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_emails` or `fcrm_manage_email_delete` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `SequencePolicy::handleRecurringBulkAction()`._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Recurring Campaigns"
         ],
@@ -62,14 +62,6 @@
                       "type": "integer"
                     }
                   },
-                  "select_all": {
-                    "type": "string",
-                    "description": "When set to `true`, the action is applied to all recurring campaigns, ignoring `campaign_ids`.",
-                    "enum": [
-                      "true",
-                      "false"
-                    ]
-                  },
                   "labels": {
                     "type": "array",
                     "description": "Array of label IDs to attach. Required when `action_name` is `apply_labels`.",
@@ -103,14 +95,6 @@
                       8
                     ]
                   }
-                },
-                "select_all": {
-                  "summary": "Delete all campaigns",
-                  "value": {
-                    "action_name": "delete_campaigns",
-                    "campaign_ids": [],
-                    "select_all": "true"
-                  }
                 }
               }
             }
@@ -134,13 +118,13 @@
                   "labels_applied": {
                     "summary": "Labels applied",
                     "value": {
-                      "message": "Labels has been applied successfully"
+                      "message": "The labels have been applied."
                     }
                   },
                   "campaigns_deleted": {
                     "summary": "Campaigns deleted",
                     "value": {
-                      "message": "Selected Recurring Email Campaigns has been deleted"
+                      "message": "Selected recurring email campaigns have been deleted"
                     }
                   }
                 }
@@ -163,7 +147,7 @@
                   "no_ids": {
                     "summary": "No campaign IDs provided",
                     "value": {
-                      "message": "Please provide Recurring Campaign IDs"
+                      "message": "Please provide recurring campaign IDs"
                     }
                   },
                   "no_labels": {

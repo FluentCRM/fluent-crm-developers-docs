@@ -1,0 +1,210 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/reports/messaging-performance": {
+      "get": {
+        "operationId": "getMessagingPerformance",
+        "summary": "GET Messaging Performance",
+        "description": "Return the stat-card totals for the Messaging report over a date range: outbound messages sent, delivered and failed, and inbound messages received. Messages are dated by their activity time.\n\n`attempted` is `sent` plus `failed`. The delivered percentage is relative to `sent`; the failed percentage is relative to `attempted`. Both are 0 when their base is 0.\n\nReturns 404 when the Messaging module is off.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_emails` or `fcrm_manage_emails` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `CampaignPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "tags": [
+          "Reports"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "date_range",
+            "in": "query",
+            "description": "Date range as a two-element array `[from, to]` in `YYYY-MM-DD` format, read in the site timezone. Defaults to the last 30 days if omitted.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "format": "date"
+              },
+              "minItems": 2,
+              "maxItems": 2
+            },
+            "style": "form",
+            "explode": true
+          },
+          {
+            "name": "channel",
+            "in": "query",
+            "description": "Limit the figures to one messaging channel. Omit, or send an unknown value, for all channels.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "sms",
+                "whatsapp"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Messaging totals for the range.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "stats": {
+                      "type": "object",
+                      "properties": {
+                        "totals": {
+                          "type": "object",
+                          "properties": {
+                            "attempted": {
+                              "type": "integer",
+                              "description": "Outbound messages sent or failed."
+                            },
+                            "sent": {
+                              "type": "integer",
+                              "description": "Outbound messages sent (including delivered and read)."
+                            },
+                            "delivered": {
+                              "type": "integer",
+                              "description": "Outbound messages delivered or read."
+                            },
+                            "failed": {
+                              "type": "integer",
+                              "description": "Outbound messages that failed."
+                            },
+                            "received": {
+                              "type": "integer",
+                              "description": "Inbound messages received."
+                            }
+                          }
+                        },
+                        "percentages": {
+                          "type": "object",
+                          "properties": {
+                            "delivered": {
+                              "type": "number",
+                              "description": "Delivered as a percentage of sent, to 2 decimals."
+                            },
+                            "failed": {
+                              "type": "number",
+                              "description": "Failed as a percentage of attempted, to 2 decimals."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "stats": {
+                    "totals": {
+                      "attempted": 520,
+                      "sent": 500,
+                      "delivered": 470,
+                      "failed": 20,
+                      "received": 64
+                    },
+                    "percentages": {
+                      "delivered": 94,
+                      "failed": 3.85
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Messaging is not enabled on this site.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}
