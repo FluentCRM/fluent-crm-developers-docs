@@ -50,8 +50,10 @@
                     "type": "array",
                     "description": "Advanced-filter groups. Rules within one group are combined with AND; separate groups are combined with OR.",
                     "minItems": 1,
-                    "example": [
-                      [
+                    "items": {
+                      "type": "array",
+                      "minItems": 1,
+                      "example": [
                         {
                           "source": [
                             "segment",
@@ -70,11 +72,7 @@
                           "operator": "days_within",
                           "value": 14
                         }
-                      ]
-                    ],
-                    "items": {
-                      "type": "array",
-                      "minItems": 1,
+                      ],
                       "items": {
                         "type": "object",
                         "required": [
@@ -140,7 +138,8 @@
                   "properties": {
                     "count": {
                       "type": "integer",
-                      "description": "Number of contacts matching the provided filters."
+                      "description": "Number of contacts matching the provided filters.",
+                      "example": 245
                     }
                   }
                 },

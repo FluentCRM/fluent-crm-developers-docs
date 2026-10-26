@@ -171,6 +171,19 @@
             "items": {
               "type": "array",
               "minItems": 1,
+              "example": [
+                {
+                  "source": [
+                    "segment",
+                    "tags"
+                  ],
+                  "operator": "in",
+                  "value": [
+                    12,
+                    18
+                  ]
+                }
+              ],
               "items": {
                 "$ref": "#/components/schemas/SegmentFilterRule"
               }

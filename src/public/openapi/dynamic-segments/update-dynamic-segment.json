@@ -99,6 +99,26 @@
                           "description": "Updated advanced-filter groups. Rules within a group use AND; groups use OR.",
                           "items": {
                             "type": "array",
+                            "example": [
+                              {
+                                "source": [
+                                  "segment",
+                                  "status"
+                                ],
+                                "operator": "in",
+                                "value": [
+                                  "subscribed"
+                                ]
+                              },
+                              {
+                                "source": [
+                                  "activities",
+                                  "email_opened"
+                                ],
+                                "operator": "days_within",
+                                "value": 14
+                              }
+                            ],
                             "items": {
                               "type": "object"
                             }
