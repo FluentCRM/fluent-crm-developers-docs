@@ -27,7 +27,7 @@
       "put": {
         "operationId": "updateDynamicSegment",
         "summary": "PUT Update Dynamic Segment",
-        "description": "Update an existing custom dynamic segment's title, conditions, and filter settings. The segment data is sent as a JSON-encoded string. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contact_cats`\n\n_Enforced by `DynamicSegmentPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "Update an existing custom dynamic segment's title and grouped filters. The `segment` parameter is a JSON-encoded string. Rules within one group are combined with AND; separate groups are combined with OR. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contact_cats`\n\n_Enforced by `DynamicSegmentPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Dynamic Segments"
         ],
@@ -59,12 +59,13 @@
                 "properties": {
                   "segment": {
                     "type": "string",
-                    "description": "JSON-encoded segment object containing the updated title, conditions, and filter settings."
+                    "description": "JSON-encoded segment object containing the updated title and at least one grouped filter rule. Rules within one group use AND; separate groups use OR.",
+                    "example": "{\"title\":\"Recently engaged subscribers\",\"filters\":[[{\"source\":[\"segment\",\"status\"],\"operator\":\"in\",\"value\":[\"subscribed\"]},{\"source\":[\"activities\",\"email_opened\"],\"operator\":\"days_within\",\"value\":14}]]}"
                   }
                 }
               },
               "example": {
-                "segment": "{\"title\":\"Highly Engaged Subscribers\",\"conditions\":[{\"field\":\"status\",\"operator\":\"whereIn\",\"value\":[\"subscribed\"]},{\"field\":\"last_activity\",\"operator\":\">=\",\"value\":7}],\"condition_match\":\"match_all\",\"email_activities\":{\"status\":\"yes\",\"last_email_open\":{\"value\":14,\"operator\":\">=\"},\"last_email_link_click\":{\"value\":0,\"operator\":\">=\"},\"last_email_activity_match\":\"match_any\"}}"
+                "segment": "{\"title\":\"Recently engaged subscribers\",\"filters\":[[{\"source\":[\"segment\",\"status\"],\"operator\":\"in\",\"value\":[\"subscribed\"]},{\"source\":[\"activities\",\"email_opened\"],\"operator\":\"days_within\",\"value\":14}]]}"
               }
             }
           }
@@ -93,23 +94,15 @@
                           "type": "string",
                           "description": "Updated segment title."
                         },
-                        "conditions": {
+                        "filters": {
                           "type": "array",
-                          "description": "Updated filter conditions.",
+                          "description": "Updated advanced-filter groups. Rules within a group use AND; groups use OR.",
                           "items": {
-                            "type": "object"
+                            "type": "array",
+                            "items": {
+                              "type": "object"
+                            }
                           }
-                        },
-                        "condition_match": {
-                          "type": "string",
-                          "enum": [
-                            "match_all",
-                            "match_any"
-                          ]
-                        },
-                        "email_activities": {
-                          "type": "object",
-                          "description": "Updated email activity filter settings."
                         }
                       }
                     }
@@ -119,34 +112,29 @@
                   "message": "Segment has been updated",
                   "segment": {
                     "id": 12,
-                    "title": "Highly Engaged Subscribers",
-                    "conditions": [
-                      {
-                        "field": "status",
-                        "operator": "whereIn",
-                        "value": [
-                          "subscribed"
-                        ]
-                      },
-                      {
-                        "field": "last_activity",
-                        "operator": ">=",
-                        "value": 7
-                      }
-                    ],
-                    "condition_match": "match_all",
-                    "email_activities": {
-                      "status": "yes",
-                      "last_email_open": {
-                        "value": 14,
-                        "operator": ">="
-                      },
-                      "last_email_link_click": {
-                        "value": 0,
-                        "operator": ">="
-                      },
-                      "last_email_activity_match": "match_any"
-                    }
+                    "title": "Recently engaged subscribers",
+                    "filters": [
+                      [
+                        {
+                          "source": [
+                            "segment",
+                            "status"
+                          ],
+                          "operator": "in",
+                          "value": [
+                            "subscribed"
+                          ]
+                        },
+                        {
+                          "source": [
+                            "activities",
+                            "email_opened"
+                          ],
+                          "operator": "days_within",
+                          "value": 14
+                        }
+                      ]
+                    ]
                   }
                 }
               }

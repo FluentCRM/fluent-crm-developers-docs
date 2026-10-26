@@ -27,7 +27,7 @@
       "post": {
         "operationId": "createDynamicSegment",
         "summary": "POST Create Dynamic Segment",
-        "description": "Create a new custom dynamic segment with filter conditions. The segment data is stored as a JSON-encoded string in the `segment` parameter. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contact_cats`\n\n_Enforced by `DynamicSegmentPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
+        "description": "Create a new custom dynamic segment with grouped filters. The `segment` parameter is a JSON-encoded string containing `title` and `filters`. Rules within one group are combined with AND; separate groups are combined with OR. Requires FluentCampaign Pro.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contact_cats`\n\n_Enforced by `DynamicSegmentPolicy::verifyRequest()`, the policy default for this route group._\n\n**Requires:** FluentCampaign Pro. Without it the route does not exist.\n\n<!-- /fc:access -->",
         "tags": [
           "Dynamic Segments"
         ],
@@ -48,12 +48,13 @@
                 "properties": {
                   "segment": {
                     "type": "string",
-                    "description": "JSON-encoded segment object containing the title, conditions, and filter settings."
+                    "description": "JSON-encoded segment object containing a title and at least one grouped filter rule. Rules within one group use AND; separate groups use OR.",
+                    "example": "{\"title\":\"Contacts with either tag\",\"filters\":[[{\"source\":[\"segment\",\"tags\"],\"operator\":\"in\",\"value\":[12,18]}]]}"
                   }
                 }
               },
               "example": {
-                "segment": "{\"title\":\"Engaged Subscribers\",\"conditions\":[{\"field\":\"status\",\"operator\":\"whereIn\",\"value\":[\"subscribed\"]}],\"condition_match\":\"match_all\",\"email_activities\":{\"status\":\"no\",\"last_email_open\":{\"value\":0,\"operator\":\">=\"},\"last_email_link_click\":{\"value\":0,\"operator\":\">=\"},\"last_email_activity_match\":\"match_any\"}}"
+                "segment": "{\"title\":\"Contacts with either tag\",\"filters\":[[{\"source\":[\"segment\",\"tags\"],\"operator\":\"in\",\"value\":[12,18]}]]}"
               }
             }
           }
@@ -80,29 +81,22 @@
                   "segment": {
                     "id": 12,
                     "slug": "custom_segment",
-                    "title": "Engaged Subscribers",
-                    "conditions": [
-                      {
-                        "field": "status",
-                        "operator": "whereIn",
-                        "value": [
-                          "subscribed"
-                        ]
-                      }
-                    ],
-                    "condition_match": "match_all",
-                    "email_activities": {
-                      "status": "no",
-                      "last_email_open": {
-                        "value": 0,
-                        "operator": ">="
-                      },
-                      "last_email_link_click": {
-                        "value": 0,
-                        "operator": ">="
-                      },
-                      "last_email_activity_match": "match_any"
-                    }
+                    "title": "Contacts with either tag",
+                    "filters": [
+                      [
+                        {
+                          "source": [
+                            "segment",
+                            "tags"
+                          ],
+                          "operator": "in",
+                          "value": [
+                            12,
+                            18
+                          ]
+                        }
+                      ]
+                    ]
                   }
                 }
               }
@@ -121,7 +115,7 @@
                   }
                 },
                 "example": {
-                  "message": "Please provide segment title"
+                  "message": "Add at least one condition. A segment without conditions would include every contact."
                 }
               }
             }
@@ -170,64 +164,44 @@
             "type": "string",
             "description": "Display name of the segment."
           },
-          "conditions": {
+          "filters": {
             "type": "array",
-            "description": "Array of filter conditions.",
+            "description": "Filter groups. Rules within a group use AND; groups use OR.",
+            "minItems": 1,
             "items": {
-              "$ref": "#/components/schemas/SegmentCondition"
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/components/schemas/SegmentFilterRule"
+              }
             }
-          },
-          "condition_match": {
-            "type": "string",
-            "description": "How to combine conditions.",
-            "enum": [
-              "match_all",
-              "match_any"
-            ]
-          },
-          "email_activities": {
-            "$ref": "#/components/schemas/EmailActivityFilter"
           }
         }
       },
-      "SegmentCondition": {
+      "SegmentFilterRule": {
         "type": "object",
-        "description": "A single filter condition for the segment.",
+        "description": "A single advanced contact filter rule.",
+        "required": [
+          "source",
+          "operator",
+          "value"
+        ],
         "properties": {
-          "field": {
-            "type": "string",
-            "description": "Field to filter on.",
-            "enum": [
-              "email",
-              "first_name",
-              "last_name",
-              "city",
-              "state",
-              "country",
-              "status",
-              "source",
-              "created_at",
-              "last_activity",
-              "tags",
-              "lists"
-            ]
+          "source": {
+            "type": "array",
+            "description": "Two-part filter source: provider followed by property, for example `[\"segment\", \"tags\"]` or `[\"activities\", \"email_opened\"]`.",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "string"
+            }
           },
           "operator": {
             "type": "string",
-            "description": "Comparison operator. Available operators depend on the field type.",
-            "enum": [
-              "=",
-              "!=",
-              "LIKE",
-              "NOT LIKE",
-              "whereIn",
-              "whereNotIn",
-              ">=",
-              "<="
-            ]
+            "description": "Advanced-filter operator supported by the selected source, such as `in`, `contains`, or `days_within`."
           },
           "value": {
-            "description": "Value to compare against. Can be a string for text fields, an array for select fields, or a number for date fields (days ago).",
+            "description": "Value to compare against. Its type depends on the selected source and operator.",
             "oneOf": [
               {
                 "type": "string"
@@ -235,70 +209,19 @@
               {
                 "type": "array",
                 "items": {
-                  "type": "string"
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "integer"
+                    }
+                  ]
                 }
               },
               {
                 "type": "integer"
               }
-            ]
-          }
-        }
-      },
-      "EmailActivityFilter": {
-        "type": "object",
-        "description": "Email activity filter settings.",
-        "properties": {
-          "status": {
-            "type": "string",
-            "description": "Whether email activity filtering is enabled.",
-            "enum": [
-              "yes",
-              "no"
-            ]
-          },
-          "last_email_open": {
-            "type": "object",
-            "description": "Last email open filter.",
-            "properties": {
-              "value": {
-                "type": "integer",
-                "description": "Number of days ago. 0 to disable."
-              },
-              "operator": {
-                "type": "string",
-                "description": "Date comparison operator.",
-                "enum": [
-                  ">=",
-                  "<="
-                ]
-              }
-            }
-          },
-          "last_email_link_click": {
-            "type": "object",
-            "description": "Last email link click filter.",
-            "properties": {
-              "value": {
-                "type": "integer",
-                "description": "Number of days ago. 0 to disable."
-              },
-              "operator": {
-                "type": "string",
-                "description": "Date comparison operator.",
-                "enum": [
-                  ">=",
-                  "<="
-                ]
-              }
-            }
-          },
-          "last_email_activity_match": {
-            "type": "string",
-            "description": "Whether to match all or any email activity conditions.",
-            "enum": [
-              "match_all",
-              "match_any"
             ]
           }
         }
