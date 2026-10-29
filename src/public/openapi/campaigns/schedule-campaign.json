@@ -82,6 +82,24 @@
                     ],
                     "default": "schedule",
                     "description": "Sending type. Use `range_schedule` when `scheduled_at` is an array of two datetimes."
+                  },
+                  "open_tracking": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "anonymous",
+                      "no"
+                    ],
+                    "description": "Per-campaign open tracking. `anonymous` or `no` makes tracking stricter than the site's compliance setting; it can never make it looser. An empty string follows the site setting. Omit the key to keep the choice already stored on the campaign. The value is stored in `settings.open_tracking`."
+                  },
+                  "click_tracking": {
+                    "type": "string",
+                    "enum": [
+                      "",
+                      "anonymous",
+                      "no"
+                    ],
+                    "description": "Per-campaign click tracking. `anonymous` or `no` makes tracking stricter than the site's compliance setting; it can never make it looser. An empty string follows the site setting. Omit the key to keep the choice already stored on the campaign. The value is stored in `settings.click_tracking`."
                   }
                 }
               },
