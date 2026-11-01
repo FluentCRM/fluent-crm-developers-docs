@@ -242,11 +242,16 @@
                   "properties": {
                     "message": {
                       "type": "string"
+                    },
+                    "code": {
+                      "type": "string",
+                      "description": "Stable machine-readable error code."
                     }
                   }
                 },
                 "example": {
-                  "message": "Subscriber not found"
+                  "message": "Contact not found",
+                  "code": "contact_not_found"
                 }
               }
             }
