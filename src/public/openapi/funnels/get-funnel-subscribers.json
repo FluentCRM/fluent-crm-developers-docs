@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getFunnelSubscribers",
         "summary": "GET Get Funnel Subscribers",
-        "description": "Retrieve a paginated list of subscribers enrolled in a specific automation funnel. Includes subscriber details, sequence progress, and metrics. Supports filtering by search, status, and sequence ID. Optionally includes the funnel object and sequence list.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels` or `fcrm_write_funnels` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Retrieve a paginated list of subscribers enrolled in a specific automation funnel. Includes subscriber details, sequence progress, and metrics. Supports filtering by search, status, sequence ID, and the step a contact is currently at. Optionally includes the funnel object, the sequence list, and how many contacts each step currently holds.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels` or `fcrm_write_funnels` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],
@@ -82,9 +82,18 @@
             }
           },
           {
+            "name": "current_step",
+            "in": "query",
+            "description": "Return only contacts currently held at this step ID: active contacts whose last step it was (for example, a Wait step), and waiting contacts parked on it as a required goal.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
             "name": "with[]",
             "in": "query",
-            "description": "Include additional data. Supported values: `funnel`, `sequences`.",
+            "description": "Include additional data. Supported values: `funnel`, `sequences`, `step_counts`.",
             "required": false,
             "schema": {
               "type": "array",
@@ -92,7 +101,8 @@
                 "type": "string",
                 "enum": [
                   "funnel",
-                  "sequences"
+                  "sequences",
+                  "step_counts"
                 ]
               }
             }
@@ -465,6 +475,20 @@
                             "format": "date-time"
                           }
                         }
+                      }
+                    },
+                    "step_counts": {
+                      "type": [
+                        "object",
+                        "array"
+                      ],
+                      "description": "Present when `with[]=step_counts`. How many contacts each step currently holds, keyed by step ID, counted the same way as the `current_step` filter. Steps holding nobody are left out, and an empty result is returned as an empty array.",
+                      "additionalProperties": {
+                        "type": "integer"
+                      },
+                      "example": {
+                        "12": 4,
+                        "15": 1
                       }
                     }
                   }
