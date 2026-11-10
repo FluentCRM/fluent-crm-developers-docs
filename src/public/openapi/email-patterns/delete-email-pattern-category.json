@@ -27,7 +27,7 @@
       "delete": {
         "operationId": "deleteEmailPatternCategory",
         "summary": "DELETE Delete Pattern Category",
-        "description": "Delete a pattern category.\n\nPatterns are **not** touched: each stores its category as a plain name, so they keep that name and simply stop resolving to a category id.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_delete`\n\n_Enforced by `EmailPatternPolicy::deleteCategory()`._\n\n<!-- /fc:access -->",
+        "description": "Delete a pattern category.\n\nPatterns are **not** touched: each stores its category as a plain name, so they keep that name and simply stop resolving to a category id.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_delete`\n\nThe policy also re-asserts `verifyRequest()`, so the caller must additionally hold `fcrm_read_emails`, `fcrm_manage_emails`.\n\n_Enforced by `EmailPatternPolicy::deleteCategory()`._\n\n<!-- /fc:access -->",
         "tags": [
           "Email Patterns"
         ],

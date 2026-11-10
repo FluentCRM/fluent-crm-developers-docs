@@ -27,7 +27,7 @@
       "post": {
         "operationId": "bulkActionTemplates",
         "summary": "POST Bulk Action Templates",
-        "description": "Perform a bulk action on multiple email templates. Supports changing the status of templates or permanently deleting them. When `select_all` is 'true', the action is applied to all templates regardless of the provided IDs.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_delete`\n\n_Enforced by `TemplatePolicy::handleBulkAction()`._\n\n<!-- /fc:access -->",
+        "description": "Perform a bulk action on multiple email templates. Supports changing the status of templates or permanently deleting them. When `select_all` is 'true', the action is applied to all templates regardless of the provided IDs.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_delete` or `fcrm_manage_email_templates` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `TemplatePolicy::handleBulkAction()`._\n\n<!-- /fc:access -->",
         "tags": [
           "Templates"
         ],

@@ -122,6 +122,16 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "custom_filters",
+            "in": "query",
+            "description": "Filter by company custom fields: a list of `{field, operator, value}` conditions, as an array or a JSON string, all of which must match. `field` is a custom field slug, each used once. Operators: `in` for select, radio and checkbox fields (`value` is a list of the field's options), `contains` or `eq` for text fields, `eq`, `gt` or `lt` for number and date fields. An unknown field, operator or value fails with 422.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "[{\"field\":\"tier\",\"operator\":\"in\",\"value\":[\"Gold\"]}]"
+            }
           }
         ],
         "responses": {

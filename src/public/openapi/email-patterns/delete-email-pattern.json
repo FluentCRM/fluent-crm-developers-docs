@@ -27,7 +27,7 @@
       "delete": {
         "operationId": "deleteEmailPattern",
         "summary": "DELETE Delete Email Pattern",
-        "description": "Permanently delete a pattern. Emails already built from it are unaffected \u2014 the block markup was copied into them at insert time.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_delete`\n\n_Enforced by `EmailPatternPolicy::delete()`._\n\n<!-- /fc:access -->",
+        "description": "Permanently delete a pattern. Emails already built from it are unaffected \u2014 the block markup was copied into them at insert time.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_delete`\n\nThe policy also re-asserts `verifyRequest()`, so the caller must additionally hold `fcrm_read_emails`, `fcrm_manage_emails`.\n\n_Enforced by `EmailPatternPolicy::delete()`._\n\n<!-- /fc:access -->",
         "tags": [
           "Email Patterns"
         ],

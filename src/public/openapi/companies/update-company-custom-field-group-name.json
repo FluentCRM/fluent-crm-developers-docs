@@ -27,7 +27,7 @@
       "put": {
         "operationId": "updateCompanyCustomFieldGroupName",
         "summary": "PUT Rename Company Custom Field Group",
-        "description": "Rename a company custom-field group, moving every field assigned to `old_name` over to `new_name` in one operation.\n\nGroups are not standalone records \u2014 they exist only as a label on each custom field \u2014 so this endpoint is the only way to rename one without editing every field individually.\n\nThe full updated field set is returned so the caller can refresh without a second request.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_contact_cats`\n\n_Enforced by `CompanyPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Rename a company custom-field group, moving every field assigned to `old_name` over to `new_name` in one operation.\n\nGroups are not standalone records \u2014 they exist only as a label on each custom field \u2014 so this endpoint is the only way to rename one without editing every field individually.\n\nThe full updated field set is returned so the caller can refresh without a second request.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `CompanyPolicy::updateCustomFieldGroupName()`._\n\n<!-- /fc:access -->",
         "tags": [
           "Companies"
         ],
