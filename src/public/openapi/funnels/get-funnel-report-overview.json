@@ -1,0 +1,427 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/funnels/{id}/report/overview": {
+      "get": {
+        "operationId": "getFunnelReportOverview",
+        "summary": "GET Get Funnel Report Overview",
+        "description": "Retrieve the automation report: contacts by status, a daily entered / completed timeline, per-step numbers (reached, held there now, goal outcomes, email stats, and the contacts per path of each conditional step), email stats, and revenue. Pass `days` to limit every number to contacts who entered in that range.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels` or `fcrm_write_funnels` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "tags": [
+          "Funnels"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The funnel ID.",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "days",
+            "in": "query",
+            "description": "Limit the report to contacts who entered in the last N days. `0` (the default) is all time; any other value falls back to `0`.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "enum": [
+                0,
+                7,
+                30,
+                90,
+                365
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The automation report.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "report": {
+                      "type": "object",
+                      "properties": {
+                        "range_days": {
+                          "type": "integer",
+                          "description": "The `days` range applied; 0 for all time."
+                        },
+                        "statuses": {
+                          "type": [
+                            "object",
+                            "array"
+                          ],
+                          "description": "Contacts who entered in the range, by automation status (`active`, `waiting`, `completed`, `cancelled`, ...). An empty result is an empty array.",
+                          "additionalProperties": {
+                            "type": "integer"
+                          }
+                        },
+                        "previous": {
+                          "type": [
+                            "integer",
+                            "null"
+                          ],
+                          "description": "Contacts who entered in the same-length range just before this one, for a \"vs previous\" comparison. Null for all time."
+                        },
+                        "timeline": {
+                          "type": "array",
+                          "description": "Entries and completions per site-local day, oldest first, every day present. Covers the range (at least 7 days); for all time, since the first entry, capped at 365 days.",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "date": {
+                                "type": "string",
+                                "description": "Day, `Y-m-d`.",
+                                "format": "date"
+                              },
+                              "entered": {
+                                "type": "integer",
+                                "description": "Contacts who entered that day."
+                              },
+                              "completed": {
+                                "type": "integer",
+                                "description": "Contacts who completed that day."
+                              }
+                            }
+                          }
+                        },
+                        "steps": {
+                          "type": "object",
+                          "description": "Per-step numbers keyed by step ID, for every step of the automation. Counts are limited to contacts who entered in the range.",
+                          "additionalProperties": {
+                            "type": "object",
+                            "properties": {
+                              "reached": {
+                                "type": "integer",
+                                "description": "Contacts who reached this step. For a required goal: met + waiting + timed out."
+                              },
+                              "here_now": {
+                                "type": "integer",
+                                "description": "Contacts held at this step right now (scheduled after it, or parked on it as a required goal). Same count as the subscribers endpoint's `current_step` filter."
+                              },
+                              "met": {
+                                "type": "integer",
+                                "description": "Goal steps only. Contacts who met the goal."
+                              },
+                              "waiting": {
+                                "type": "integer",
+                                "description": "Goal steps only. Contacts waiting at the goal now."
+                              },
+                              "timed_out": {
+                                "type": "integer",
+                                "description": "Goal steps only. Contacts who moved past a required goal without meeting it. Always 0 for an optional goal."
+                              },
+                              "required": {
+                                "type": "boolean",
+                                "description": "Goal steps only. Whether the goal is required (contacts wait at it)."
+                              },
+                              "time_limit": {
+                                "type": "integer",
+                                "description": "Goal steps only. How long a contact waits at a required goal before timing out, in seconds; 0 for no limit or an optional goal."
+                              },
+                              "days_to_goal": {
+                                "type": "array",
+                                "items": {
+                                  "type": "integer"
+                                },
+                                "description": "Goal steps only. Contacts who met the goal by whole days taken: index 0 is day 1, up to the last day anyone took."
+                              },
+                              "email": {
+                                "type": "object",
+                                "description": "Email steps only. The step's entry from `emails`."
+                              },
+                              "paths": {
+                                "type": "object",
+                                "description": "Conditional steps only. Contacts per path taken, keyed by path key: `yes` / `no` for a Check condition or a two-way A/B split, the path's key (or `else`) for a Multi-path step, or the variant's key for an A/B/n split. A path nobody took is left out, and the key is missing altogether for steps run before paths were recorded. Pass `{step id}:{path key}` as `path` to the subscribers endpoint to list a path's contacts.",
+                                "additionalProperties": {
+                                  "type": "object",
+                                  "properties": {
+                                    "count": {
+                                      "type": "integer",
+                                      "description": "Contacts who took this path."
+                                    },
+                                    "completed": {
+                                      "type": "integer",
+                                      "description": "Of those, how many have completed the automation."
+                                    }
+                                  }
+                                },
+                                "example": {
+                                  "yes": {
+                                    "count": 42,
+                                    "completed": 30
+                                  },
+                                  "no": {
+                                    "count": 17,
+                                    "completed": 9
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "emails": {
+                          "type": "array",
+                          "description": "Stats for each Send Email step. Over all time these are the email's own campaign stats; over a range they are counted from the range's contacts.",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "step_id": {
+                                "type": "integer",
+                                "description": "The email step ID."
+                              },
+                              "campaign_id": {
+                                "type": "integer",
+                                "description": "The email's campaign ID."
+                              },
+                              "subject": {
+                                "type": "string",
+                                "description": "Email subject."
+                              },
+                              "sent": {
+                                "type": "integer",
+                                "description": "Emails sent."
+                              },
+                              "opens": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ],
+                                "description": "Contacts who opened. Null over a date range when the email tracks opens anonymously."
+                              },
+                              "clicks": {
+                                "type": [
+                                  "integer",
+                                  "null"
+                                ],
+                                "description": "Contacts who clicked. Null over a date range when the email tracks clicks anonymously."
+                              },
+                              "unsubs": {
+                                "type": "integer",
+                                "description": "Contacts who unsubscribed from this email."
+                              }
+                            }
+                          }
+                        },
+                        "revenue": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "number",
+                              "description": "Revenue recorded by the range's contacts on goal and integration steps, in major currency units."
+                            },
+                            "orders": {
+                              "type": "integer",
+                              "description": "Number of revenue records."
+                            },
+                            "currency": {
+                              "type": "string",
+                              "description": "Currency code; `USD` when none is recorded."
+                            }
+                          }
+                        },
+                        "blocks": {
+                          "type": "object",
+                          "description": "Step type titles keyed by action name (for example, `send_custom_email` => `Send Custom Email`).",
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "report": {
+                    "range_days": 30,
+                    "statuses": {
+                      "active": 12,
+                      "waiting": 3,
+                      "completed": 40
+                    },
+                    "previous": 48,
+                    "timeline": [
+                      {
+                        "date": "2026-11-09",
+                        "entered": 2,
+                        "completed": 1
+                      },
+                      {
+                        "date": "2026-11-10",
+                        "entered": 3,
+                        "completed": 0
+                      }
+                    ],
+                    "steps": {
+                      "101": {
+                        "reached": 55,
+                        "here_now": 0,
+                        "email": {
+                          "step_id": 101,
+                          "campaign_id": 880,
+                          "subject": "Welcome",
+                          "sent": 55,
+                          "opens": 31,
+                          "clicks": 9,
+                          "unsubs": 1
+                        }
+                      },
+                      "102": {
+                        "reached": 55,
+                        "here_now": 0,
+                        "paths": {
+                          "yes": {
+                            "count": 38,
+                            "completed": 30
+                          },
+                          "no": {
+                            "count": 17,
+                            "completed": 10
+                          }
+                        }
+                      },
+                      "103": {
+                        "reached": 20,
+                        "here_now": 3,
+                        "met": 15,
+                        "waiting": 3,
+                        "timed_out": 2,
+                        "required": true,
+                        "time_limit": 604800,
+                        "days_to_goal": [
+                          6,
+                          4,
+                          2,
+                          0,
+                          3
+                        ]
+                      }
+                    },
+                    "emails": [
+                      {
+                        "step_id": 101,
+                        "campaign_id": 880,
+                        "subject": "Welcome",
+                        "sent": 55,
+                        "opens": 31,
+                        "clicks": 9,
+                        "unsubs": 1
+                      }
+                    ],
+                    "revenue": {
+                      "total": 1290.5,
+                      "orders": 14,
+                      "currency": "USD"
+                    },
+                    "blocks": {
+                      "send_custom_email": "Send Custom Email",
+                      "funnel_condition": "Check Condition",
+                      "funnel_router": "Multi-path"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated \u2014 missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Funnel not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}

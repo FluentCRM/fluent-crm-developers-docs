@@ -27,7 +27,7 @@
       "delete": {
         "operationId": "deleteTemplate",
         "summary": "DELETE Delete Template",
-        "description": "Permanently delete a single email template by ID. This removes the template and all associated metadata.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_delete`\n\n_Enforced by `TemplatePolicy::delete()`._\n\n<!-- /fc:access -->",
+        "description": "Permanently delete a single email template by ID. This removes the template and all associated metadata.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_delete`\n\nThe policy also re-asserts `verifyRequest()`, so the caller must additionally hold `fcrm_manage_email_templates`.\n\n_Enforced by `TemplatePolicy::delete()`._\n\n<!-- /fc:access -->",
         "tags": [
           "Templates"
         ],

@@ -131,23 +131,23 @@
                     },
                     "price_id": {
                       "type": "string",
-                      "description": "Price identifier of the licence on the store. Often empty."
+                      "description": "Price identifier of the licence on the store. Often empty. Present only when a license is registered."
                     },
                     "customer_name": {
                       "type": "string",
-                      "description": "Licence holder's name, as the licensing server returns it."
+                      "description": "Licence holder's name, as the licensing server returns it. Present only when a license is registered."
                     },
                     "customer_email_masked": {
                       "type": "string",
-                      "description": "Licence holder's email, masked by the licensing server and with the domain masked again before it is returned."
+                      "description": "Licence holder's email, masked by the licensing server and with the domain masked again before it is returned. Present only when a license is registered."
                     },
                     "last_checked": {
                       "type": "string",
-                      "description": "When the licence was last checked with the licensing server (`Y-m-d H:i:s`, UTC)."
+                      "description": "When the licence was last checked with the licensing server (`Y-m-d H:i:s`, UTC). Present only when a license is registered."
                     },
                     "is_expired": {
                       "type": "boolean",
-                      "description": "True when the licensing server reports the licence as expired."
+                      "description": "True when the licensing server reports the licence as expired. Present only when a license is registered."
                     }
                   }
                 },

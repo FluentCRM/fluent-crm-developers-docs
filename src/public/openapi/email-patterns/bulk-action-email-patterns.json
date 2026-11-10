@@ -27,7 +27,7 @@
       "post": {
         "operationId": "bulkActionEmailPatterns",
         "summary": "POST Bulk Delete Email Patterns",
-        "description": "Delete several patterns in one request. `delete_patterns` is the only supported action \u2014 anything else is rejected.\n\nThere are two selection modes. By default the ids in `pattern_ids` are deleted. When `select_all` is truthy the id list is ignored and **every pattern matching `search` is deleted** \u2014 with an empty `search`, that is every pattern on the site.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_delete`\n\n_Enforced by `EmailPatternPolicy::handleBulkAction()`._\n\n<!-- /fc:access -->",
+        "description": "Delete several patterns in one request. `delete_patterns` is the only supported action \u2014 anything else is rejected.\n\nThere are two selection modes. By default the ids in `pattern_ids` are deleted. When `select_all` is truthy the id list is ignored and **every pattern matching `search` is deleted** \u2014 with an empty `search`, that is every pattern on the site.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_email_delete`\n\nThe policy also re-asserts `verifyRequest()`, so the caller must additionally hold `fcrm_read_emails`, `fcrm_manage_emails`.\n\n_Enforced by `EmailPatternPolicy::handleBulkAction()`._\n\n<!-- /fc:access -->",
         "tags": [
           "Email Patterns"
         ],

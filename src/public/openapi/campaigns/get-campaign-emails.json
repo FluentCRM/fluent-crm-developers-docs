@@ -71,6 +71,27 @@
             }
           },
           {
+            "name": "link_ids[]",
+            "in": "query",
+            "description": "With `filter_type=click`, return only recipients who clicked at least one of these links (URL IDs from the campaign's link report). Every ID must be a link clicked in this campaign; otherwise, or with any other `filter_type`, the request fails with 422.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "name": "with_tags",
+            "in": "query",
+            "description": "Set to also load each recipient's current tags (`subscriber.tags`).",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
             "name": "with_campaign",
             "in": "query",
             "description": "Set to include the campaign object (with tracking status) in the response.",

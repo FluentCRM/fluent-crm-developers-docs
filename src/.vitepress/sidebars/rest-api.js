@@ -201,13 +201,14 @@ export default [
         ]
     },
     {
-        text: 'Funnels (Automations) (33)',
+        text: 'Funnels (Automations) (34)',
         collapsed: true,
         items: [
             { text: 'Get All Funnel Activities <badge type="tip">GET</badge>', link: '/rest-api/operations/funnels/get-funnel-all-activities' },
             { text: 'Get Funnel <badge type="tip">GET</badge>', link: '/rest-api/operations/funnels/get-funnel' },
             { text: 'Get Funnel Email Reports <badge type="tip">GET</badge>', link: '/rest-api/operations/funnels/get-funnel-email-reports' },
             { text: 'Get Funnel Report <badge type="tip">GET</badge>', link: '/rest-api/operations/funnels/get-funnel-report' },
+            { text: 'Get Funnel Report Overview <badge type="tip">GET</badge>', link: '/rest-api/operations/funnels/get-funnel-report-overview' },
             { text: 'Get Funnel Subscriber Reporting <badge type="tip">GET</badge>', link: '/rest-api/operations/funnels/get-funnel-subscriber-reporting' },
             { text: 'Get Funnel Subscribers <badge type="tip">GET</badge>', link: '/rest-api/operations/funnels/get-funnel-subscribers' },
             { text: 'Get Funnel Syncable Counts <badge type="tip">GET</badge>', link: '/rest-api/operations/funnels/get-funnel-syncable-counts' },
