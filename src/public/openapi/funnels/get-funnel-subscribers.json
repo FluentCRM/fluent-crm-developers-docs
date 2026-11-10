@@ -27,7 +27,7 @@
       "get": {
         "operationId": "getFunnelSubscribers",
         "summary": "GET Get Funnel Subscribers",
-        "description": "Retrieve a paginated list of subscribers enrolled in a specific automation funnel. Includes subscriber details, sequence progress, and metrics. Supports filtering by search, status, sequence ID, and the step a contact is currently at. Optionally includes the funnel object, the sequence list, and how many contacts each step currently holds.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels` or `fcrm_write_funnels` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "description": "Retrieve a paginated list of subscribers enrolled in a specific automation funnel. Includes subscriber details, sequence progress, and metrics. Supports filtering by search, status, sequence ID, the step a contact is currently at, and the path a contact took at a conditional step. Optionally includes the funnel object, the sequence list, how many contacts each step currently holds, and contacts by status.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_read_funnels` or `fcrm_write_funnels` \u2014 which one applies depends on the action being performed.\n\n_Enforced by `FunnelPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
         "tags": [
           "Funnels"
         ],
@@ -58,12 +58,13 @@
           {
             "name": "status",
             "in": "query",
-            "description": "Filter by funnel subscriber status. Use `all` to include all statuses.",
+            "description": "Filter by funnel subscriber status. Use `in_progress` for contacts still in the automation (`active` plus `waiting`), or `all` to include all statuses.",
             "required": false,
             "schema": {
               "type": "string",
               "enum": [
                 "all",
+                "in_progress",
                 "active",
                 "completed",
                 "cancelled",
@@ -91,9 +92,19 @@
             }
           },
           {
+            "name": "path",
+            "in": "query",
+            "description": "Return only contacts who took one path of a conditional step, as `{step id}:{path key}` (for example `102:yes` or `118:else`). The path keys are those in the report overview's `steps.{id}.paths`. Contacts who ran the step before paths were recorded do not match. A value without a step ID or key is ignored.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "102:yes"
+            }
+          },
+          {
             "name": "with[]",
             "in": "query",
-            "description": "Include additional data. Supported values: `funnel`, `sequences`, `step_counts`.",
+            "description": "Include additional data. Supported values: `funnel`, `sequences`, `step_counts`, `status_counts`.",
             "required": false,
             "schema": {
               "type": "array",
@@ -102,7 +113,8 @@
                 "enum": [
                   "funnel",
                   "sequences",
-                  "step_counts"
+                  "step_counts",
+                  "status_counts"
                 ]
               }
             }
@@ -489,6 +501,21 @@
                       "example": {
                         "12": 4,
                         "15": 1
+                      }
+                    },
+                    "status_counts": {
+                      "type": [
+                        "object",
+                        "array"
+                      ],
+                      "description": "Present when `with[]=status_counts`. Contacts in the automation by status (`active`, `waiting`, `completed`, `cancelled`, ...), across the whole automation and unaffected by the other filters. Statuses with no contacts are left out, and an empty result is returned as an empty array.",
+                      "additionalProperties": {
+                        "type": "integer"
+                      },
+                      "example": {
+                        "active": 12,
+                        "waiting": 3,
+                        "completed": 40
                       }
                     }
                   }
