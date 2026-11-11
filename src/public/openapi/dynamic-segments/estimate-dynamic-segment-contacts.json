@@ -47,75 +47,83 @@
                 ],
                 "properties": {
                   "filters": {
-                    "type": "object",
-                    "description": "Filter configuration object containing conditions and email activity settings.",
-                    "properties": {
-                      "conditions": {
-                        "type": "array",
-                        "description": "Array of filter conditions.",
-                        "items": {
-                          "type": "object",
-                          "properties": {
-                            "field": {
-                              "type": "string",
-                              "description": "Field to filter on."
-                            },
-                            "operator": {
-                              "type": "string",
-                              "description": "Comparison operator."
-                            },
-                            "value": {
-                              "description": "Value to compare against."
+                    "type": "array",
+                    "description": "Advanced-filter groups. Rules within one group are combined with AND; separate groups are combined with OR.",
+                    "minItems": 1,
+                    "items": {
+                      "type": "array",
+                      "minItems": 1,
+                      "example": [
+                        {
+                          "source": [
+                            "segment",
+                            "status"
+                          ],
+                          "operator": "in",
+                          "value": [
+                            "subscribed"
+                          ]
+                        },
+                        {
+                          "source": [
+                            "activities",
+                            "email_opened"
+                          ],
+                          "operator": "days_within",
+                          "value": 14
+                        }
+                      ],
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "source",
+                          "operator",
+                          "value"
+                        ],
+                        "properties": {
+                          "source": {
+                            "type": "array",
+                            "minItems": 2,
+                            "maxItems": 2,
+                            "items": {
+                              "type": "string"
                             }
+                          },
+                          "operator": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "description": "Value to compare against; its type depends on the source and operator."
                           }
                         }
-                      },
-                      "condition_match": {
-                        "type": "string",
-                        "description": "How to combine conditions.",
-                        "enum": [
-                          "match_all",
-                          "match_any"
-                        ]
-                      },
-                      "email_activities": {
-                        "type": "object",
-                        "description": "Email activity filter settings."
                       }
                     }
                   }
                 }
               },
               "example": {
-                "filters": {
-                  "conditions": [
+                "filters": [
+                  [
                     {
-                      "field": "status",
-                      "operator": "whereIn",
+                      "source": [
+                        "segment",
+                        "status"
+                      ],
+                      "operator": "in",
                       "value": [
                         "subscribed"
                       ]
                     },
                     {
-                      "field": "created_at",
-                      "operator": ">=",
-                      "value": 30
+                      "source": [
+                        "activities",
+                        "email_opened"
+                      ],
+                      "operator": "days_within",
+                      "value": 14
                     }
-                  ],
-                  "condition_match": "match_all",
-                  "email_activities": {
-                    "status": "no",
-                    "last_email_open": {
-                      "value": 0,
-                      "operator": ">="
-                    },
-                    "last_email_link_click": {
-                      "value": 0,
-                      "operator": ">="
-                    },
-                    "last_email_activity_match": "match_any"
-                  }
-                }
+                  ]
+                ]
               }
             }
           }
@@ -130,7 +138,8 @@
                   "properties": {
                     "count": {
                       "type": "integer",
-                      "description": "Number of contacts matching the provided filters."
+                      "description": "Number of contacts matching the provided filters.",
+                      "example": 245
                     }
                   }
                 },
