@@ -119,15 +119,6 @@
             }
           },
           {
-            "name": "segment",
-            "in": "query",
-            "description": "Dynamic segment as \"slug:id\", for example \"custom_segment:12\" or \"wp_users:0\" (simple filter mode only; requires FluentCRM Pro). ANDed with the other filters; a segment that does not exist matches no contacts.",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
             "name": "advanced_filters",
             "in": "query",
             "description": "JSON-encoded advanced filter groups (advanced mode).",
