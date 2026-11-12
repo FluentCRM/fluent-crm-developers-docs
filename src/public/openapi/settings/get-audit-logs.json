@@ -271,6 +271,10 @@
                     "enabled": {
                       "type": "boolean",
                       "description": "Whether the audit log is currently recording."
+                    },
+                    "timezone": {
+                      "type": "string",
+                      "description": "Site timezone shown next to times, e.g. `Asia/Dhaka` or `UTC+6`."
                     }
                   }
                 },
@@ -301,7 +305,8 @@
                   ],
                   "has_more": false,
                   "next_cursor": null,
-                  "enabled": true
+                  "enabled": true,
+                  "timezone": "UTC+6"
                 }
               }
             }
