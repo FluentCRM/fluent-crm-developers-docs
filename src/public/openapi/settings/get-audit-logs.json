@@ -217,13 +217,6 @@
                               "system"
                             ]
                           },
-                          "request_id": {
-                            "type": [
-                              "string",
-                              "null"
-                            ],
-                            "description": "Groups rows written by the same request."
-                          },
                           "ip": {
                             "type": [
                               "string",
@@ -274,7 +267,7 @@
                     },
                     "timezone": {
                       "type": "string",
-                      "description": "Site timezone shown next to times, e.g. `Asia/Dhaka` or `UTC+6`."
+                      "description": "Site timezone shown next to times, e.g. `Asia/Dhaka` or `UTC+06:00`."
                     }
                   }
                 },
@@ -290,7 +283,6 @@
                       "user_id": 1,
                       "user_name": "Jane Admin",
                       "source": "admin",
-                      "request_id": "Ncefzhaaku8Hp1q4",
                       "ip": null,
                       "data": {
                         "scheduled_at": "2026-11-20 10:00:00",
@@ -306,7 +298,7 @@
                   "has_more": false,
                   "next_cursor": null,
                   "enabled": true,
-                  "timezone": "UTC+6"
+                  "timezone": "UTC+06:00"
                 }
               }
             }
