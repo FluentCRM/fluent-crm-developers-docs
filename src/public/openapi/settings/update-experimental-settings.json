@@ -82,6 +82,26 @@
                       "yes",
                       "no"
                     ]
+                  },
+                  "audit_log": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "description": "Record important manager actions in the audit log. On by default."
+                  },
+                  "audit_log_retention_days": {
+                    "type": "integer",
+                    "description": "Days to keep audit log entries. `0` keeps them forever; any other value is raised to at least 30."
+                  },
+                  "audit_log_store_ip": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "description": "Store the IP address of each audited action."
                   }
                 },
                 "additionalProperties": {

@@ -391,12 +391,14 @@ export default [
         ]
     },
     {
-        text: 'Settings (42)',
+        text: 'Settings (46)',
         collapsed: true,
         items: [
             { text: 'Database Index Health <badge type="tip">GET</badge>', link: '/rest-api/operations/settings/get-db-index-health' },
             { text: 'Export System Logs <badge type="tip">GET</badge>', link: '/rest-api/operations/settings/export-system-logs' },
             { text: 'Get Abandon Cart Settings <badge type="tip">GET</badge>', link: '/rest-api/operations/settings/get-abandon-cart-settings' },
+            { text: 'Get Audit Log Filters <badge type="tip">GET</badge>', link: '/rest-api/operations/settings/get-audit-log-filters' },
+            { text: 'Get Audit Logs <badge type="tip">GET</badge>', link: '/rest-api/operations/settings/get-audit-logs' },
             { text: 'Get Auto Subscribe Settings <badge type="tip">GET</badge>', link: '/rest-api/operations/settings/get-auto-subscribe-settings' },
             { text: 'Get Bounce Configs <badge type="tip">GET</badge>', link: '/rest-api/operations/settings/get-bounce-configs' },
             { text: 'Get Compliance Settings <badge type="tip">GET</badge>', link: '/rest-api/operations/settings/get-compliance-settings' },
@@ -412,6 +414,7 @@ export default [
             { text: 'Test GET Request <badge type="tip">GET</badge>', link: '/rest-api/operations/settings/test-get-request' },
             { text: 'Complete Installation Wizard <badge type="warning">POST</badge>', link: '/rest-api/operations/settings/complete-installation' },
             { text: 'Create REST API Key <badge type="warning">POST</badge>', link: '/rest-api/operations/settings/create-rest-key' },
+            { text: 'Export Audit Logs <badge type="warning">POST</badge>', link: '/rest-api/operations/settings/export-audit-logs' },
             { text: 'Install Fluent Boards <badge type="warning">POST</badge>', link: '/rest-api/operations/settings/install-fluent-boards' },
             { text: 'Install Fluent Booking <badge type="warning">POST</badge>', link: '/rest-api/operations/settings/install-fluent-booking' },
             { text: 'Install Fluent Community <badge type="warning">POST</badge>', link: '/rest-api/operations/settings/install-fluent-community' },
@@ -432,6 +435,7 @@ export default [
             { text: 'Save Double Opt-in Settings <badge type="info">PUT</badge>', link: '/rest-api/operations/settings/save-double-optin-settings' },
             { text: 'Save Global Settings <badge type="info">PUT</badge>', link: '/rest-api/operations/settings/save-settings' },
             { text: 'Test PUT Request <badge type="info">PUT</badge>', link: '/rest-api/operations/settings/test-put-request' },
+            { text: 'Delete Audit Logs <badge type="danger">DELETE</badge>', link: '/rest-api/operations/settings/delete-audit-logs' },
             { text: 'Delete REST API Key <badge type="danger">DELETE</badge>', link: '/rest-api/operations/settings/delete-rest-key' },
             { text: 'Remove Old Logs <badge type="danger">DELETE</badge>', link: '/rest-api/operations/settings/remove-old-logs' },
             { text: 'Reset System Logs <badge type="danger">DELETE</badge>', link: '/rest-api/operations/settings/reset-system-logs' },

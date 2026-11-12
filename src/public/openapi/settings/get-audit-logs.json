@@ -1,0 +1,364 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "FluentCRM API",
+    "description": "Complete REST API documentation for FluentCRM \u2014 a self-hosted email marketing and CRM plugin for WordPress.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://{website}/wp-json/fluent-crm/v2",
+      "description": "Your WordPress website",
+      "variables": {
+        "website": {
+          "default": "YourWebsite.com",
+          "description": "Your WordPress website domain (without https://)"
+        }
+      }
+    }
+  ],
+  "security": [
+    {
+      "ApplicationPasswords": []
+    }
+  ],
+  "paths": {
+    "/setting/audit-logs": {
+      "get": {
+        "operationId": "getAuditLogs",
+        "summary": "GET Audit Logs",
+        "description": "List audit log entries (who did what in FluentCRM), newest first. Paging is by cursor: pass `next_cursor` from the previous response as `cursor` while `has_more` is true. No total count is returned, so the call stays fast on very large logs. Without `date_from`, only the last 30 days are returned.\n\n<!-- fc:access -->\n\n**Required capability:** `fcrm_manage_settings`\n\n_Enforced by `SettingsPolicy::verifyRequest()`, the policy default for this route group._\n\n<!-- /fc:access -->",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "ApplicationPasswords": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "date_from",
+            "in": "query",
+            "description": "Start date (site timezone), `Y-m-d`. Defaults to 30 days ago.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "description": "End date (site timezone), `Y-m-d`, inclusive.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "description": "WordPress user IDs to include. Array or comma-separated; `0` is System.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "description": "Event keys to include, for example `campaign.scheduled`. Array or comma-separated.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "group",
+            "in": "query",
+            "description": "Event group name from `GET /setting/audit-logs/filters`; expands to that group's event keys.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "severity",
+            "in": "query",
+            "description": "Minimum severity: `1` info, `2` important, `3` critical.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "object_type",
+            "in": "query",
+            "description": "Object type, for example `campaign`, `funnel`, `contact`.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "object_id",
+            "in": "query",
+            "description": "Object ID; used together with `object_type`.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "description": "Sources to include: `admin`, `mcp`, `rest_api`, `cli`, `cron`, `system`.",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search object titles (title snapshot at the time of the action).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "Return rows with an ID lower than this. Pass `next_cursor` from the previous page.",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "Rows per page, 10 to 100.",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 50
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of audit log entries.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "logs": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "action": {
+                            "type": "string",
+                            "description": "Event key, for example `campaign.scheduled`."
+                          },
+                          "severity": {
+                            "type": "integer",
+                            "description": "1 info, 2 important, 3 critical."
+                          },
+                          "object_type": {
+                            "type": "string"
+                          },
+                          "object_id": {
+                            "type": [
+                              "integer",
+                              "null"
+                            ]
+                          },
+                          "object_title": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "Title at the time of the action."
+                          },
+                          "user_id": {
+                            "type": "integer",
+                            "description": "0 for System."
+                          },
+                          "user_name": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "source": {
+                            "type": "string",
+                            "enum": [
+                              "admin",
+                              "mcp",
+                              "rest_api",
+                              "cli",
+                              "cron",
+                              "system"
+                            ]
+                          },
+                          "ip": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "description": "Only stored when IP storage is turned on."
+                          },
+                          "data": {
+                            "type": "object",
+                            "description": "Event details. Secret values are never stored."
+                          },
+                          "label": {
+                            "type": "string",
+                            "description": "Readable description in the site language."
+                          },
+                          "group": {
+                            "type": "string"
+                          },
+                          "object_url": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "description": "Site-local time."
+                          },
+                          "created_at_gmt": {
+                            "type": "string",
+                            "description": "GMT time as stored."
+                          }
+                        }
+                      }
+                    },
+                    "has_more": {
+                      "type": "boolean"
+                    },
+                    "next_cursor": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "enabled": {
+                      "type": "boolean",
+                      "description": "Whether the audit log is currently recording."
+                    },
+                    "timezone": {
+                      "type": "string",
+                      "description": "Site timezone shown next to times, e.g. `Asia/Dhaka` or `UTC+06:00`."
+                    }
+                  }
+                },
+                "example": {
+                  "logs": [
+                    {
+                      "id": 42,
+                      "action": "campaign.scheduled",
+                      "severity": 2,
+                      "object_type": "campaign",
+                      "object_id": 12,
+                      "object_title": "November newsletter",
+                      "user_id": 1,
+                      "user_name": "Jane Admin",
+                      "source": "admin",
+                      "ip": null,
+                      "data": {
+                        "scheduled_at": "2026-11-20 10:00:00",
+                        "recipients": 1200
+                      },
+                      "label": "Scheduled campaign November newsletter",
+                      "group": "Email campaigns",
+                      "object_url": "https://example.com/wp-admin/admin.php?page=fluentcrm-admin#/email/campaigns/12/view",
+                      "created_at": "2026-11-12 15:48:53",
+                      "created_at_gmt": "2026-11-12 09:48:53"
+                    }
+                  ],
+                  "has_more": false,
+                  "next_cursor": null,
+                  "enabled": true,
+                  "timezone": "UTC+06:00"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not authenticated: missing or invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but the user lacks the capability this route requires.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message"
+          },
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "integer",
+                "description": "HTTP status code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApplicationPasswords": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "WordPress Application Passwords \u2014 use Basic auth with your WordPress username and an application password in the format: username:application_password"
+      }
+    }
+  }
+}
